@@ -12,6 +12,15 @@
     "background": {
       "service_worker": "background.js"
     },
+    "commands": {
+      "_execute_action": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+Y",
+          "mac": "Command+Shift+Y"
+        },
+        "description": "Copies address from WorldShare"
+      }
+    },
     "action": {
         "default_icon": {
             "16": "images/jason-16.png",
