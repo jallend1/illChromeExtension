@@ -1,12 +1,11 @@
-console.log('We ARE cookin!');
-
-let addressObject = {
-    attention: null,
-    line1: null,
-    line2: null,
-    locality: null,
-    region: null,
-    postal: null
+function copyWorldShareAddress(){
+  let addressObject = {
+      attention: null,
+      line1: null,
+      line2: null,
+      locality: null,
+      region: null,
+      postal: null
   };
 
   const convertStateNameToAbbreviation = (stateName) => {
@@ -125,5 +124,12 @@ let addressObject = {
   };
 
   const addressString = createAddressString();
+  window.focus();
+  navigator.clipboard.writeText(addressString).then(() => {
+    console.log('Address copied to clipboard');
+  }).catch((error) => {
+    console.error('Failed to copy address to clipboard', error);
+  });
+}
 
-  navigator.clipboard.writeText(addressString);
+copyWorldShareAddress();

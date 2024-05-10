@@ -3,21 +3,23 @@
     "name": "ILL Tools",
     "description": "Compilation of tools for ILL staff",
     "version": "1.0",
+    "permissions": [
+      "activeTab",
+      "storage",
+      "scripting",
+      "tabs"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
     "action": {
-      "default_popup": "index.html",
         "default_icon": {
             "16": "images/jason-16.png",
             "32": "images/jason-32.png",
             "48": "images/jason-48.png",
             "128": "images/jason-128.png"
         }
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://kingcountylibrarysystem.share.worldcat.org/*"],
-        "js": ["scripts/copyWorldShareAddress.js"]
-      }
-    ]
+    }
   }
   
   
