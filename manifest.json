@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "ILL Tools",
-    "description": "Compilation of tools for ILL staff",
+    "name": "Jason's ILL Toolkit",
+    "description": "Compilation of ILL tools for Jason",
     "version": "1.0",
     "permissions": [
       "activeTab",
@@ -20,6 +20,4 @@
             "128": "images/jason-128.png"
         }
     }
-  }
-  
-  
+}
