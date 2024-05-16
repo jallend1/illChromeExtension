@@ -25,7 +25,14 @@
           "default": "Ctrl+Shift+1",
           "mac": "Command+Shift+1"
         },
-        "description": "Testing"
+        "description": "Copy the request data from WorldShare to clipboard"
+      },
+      "pasteToEvergreen": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+2",
+          "mac": "Command+Shift+2"
+        },
+        "description": "Paste the request data from the clipboard to Evergreen"
       },
       "_execute_action": {
         "suggested_key": {
