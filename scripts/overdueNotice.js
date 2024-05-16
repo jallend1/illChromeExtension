@@ -7,7 +7,7 @@ copies an overdue notice letter containing the relevant info to the clipboard. *
 // TODO: Store content as object to allow pasting into new email form with subject and recipient filled in
 
 window.focus();
-
+console.log('overdueNotice.js loaded');
 let todaysDate = new Date().toLocaleDateString();
 const overdueTitles = [];
 let overdueText = '';
