@@ -1,38 +1,4 @@
-// Things to integrate with the extension
-// DONE 1. Copy the WorldShare address to clipboard (WorldShare)
-// *2. Copy the request information to clipboard (WorldShare - No context...Toggle? Keyboard CTRL-SHIFT-I?)
-// *3. Paste the request information (Evergreen - Contextual with URL staff/cat/ill/track?)
-// PARTIALLY DONE *4. Generate an overdue letter (Evergreen - Contextual with URL staff/circ/patron/*?)
-//   4a. Isolate overdueNotice function into own file
-// *5. Generate an invoice for external partners (Evergreen - Contextual with patron type or name?)
-
-chrome.commands.onCommand.addListener((command) => {
-    console.log(command);
-    if(command === 'generate_overdue') {
-        // chrome.scripting.executeScript({
-        //     target: { tabId: tab.id },
-        //     files: ['./scripts/overdueNotice.js']
-        // });
-        // Send a message to the content script in the active tab.
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.scripting.executeScript({
-                target: { tabId: activeTab.id },
-                function: overdueNotice
-            });
-        });
-    }
-  });
-
-chrome.action.onClicked.addListener(async (tab) => {
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['./scripts/copyWorldShareAddress.js']
-    });
-});
-
-function overdueNotice(){
-    /* Description: Scrapes the page for any overdue interlibrary loan titles and
+/* Description: Scrapes the page for any overdue interlibrary loan titles and
 copies an overdue notice letter containing the relevant info to the clipboard. */
 
 // TODO: Add logic to handle LOST titles, whose divs do not have an alert class
@@ -101,4 +67,3 @@ Unfortunately, we are not able to issue renewals on interlibrary loan books. If 
 Please do not hesitate to reach out to me if you have any questions. And if you have returned this book since the date above? Please accept our sincerest thanks!`;
 
 navigator.clipboard.writeText(letterContent);
-}
