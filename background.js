@@ -1,14 +1,19 @@
 // Things to integrate with the extension
 // DONE 1. Copy the WorldShare address to clipboard (WorldShare)
 // DONE 2. Copy the request information to clipboard (WorldShare - No context...Toggle? Keyboard CTRL-SHIFT-I?)
-// *3. Paste the request information (Evergreen - Contextual with URL staff/cat/ill/track?)
+// DONE *3. Paste the request information (Evergreen - Contextual with URL staff/cat/ill/track?)
 // DONE 4. Generate an overdue letter (Evergreen - Contextual with URL staff/circ/patron/*?)
 // DONE 4a. Isolate overdueNotice function into own file
 // *5. Generate an invoice for external partners (Evergreen - Contextual with patron type or name?)
 // *6. Automatically switch tabs from request screen to Evergreen tab and auto-fill?
 // *7 Add an HTML file detailing all the shortcuts
+// *8 Add a context menu for right-clicking on page and revealing custom options?
+// *9 Move copy from WorldShare into command palette for consistency?
+// * 10 Move state abbreviation conversion into its own file because it's now being used by multiple sources
 
 chrome.commands.onCommand.addListener((command) => {
+    // Generates overdue notice for patron if there are ILLs overdue on patron's account
+    // Requires having the list of checked out items open on screen
     if(command === 'generate_overdue') {
         chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
             chrome.scripting.executeScript({
@@ -16,14 +21,18 @@ chrome.commands.onCommand.addListener((command) => {
                 files: ['./scripts/overdueNotice.js']
             });
         });
-    } else if(command === 'copyFromOCLC') {
+    } 
+    // Copies the request data (Title, patron barcode, lending library address) from the WorldShare request and stores it in the clipboard
+    else if(command === 'copyFromOCLC') {
         chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
             chrome.scripting.executeScript({
                 target: { tabId: activeTab.id },
                 files: ['./scripts/copyFromOCLC.js']
             });
         });
-    } else if(command === 'pasteToEvergreen') {
+    } 
+    // Parses the copied request data from the copyFromOCLC command and pastes it into the Evergreen ILL request form
+    else if(command === 'pasteToEvergreen') {
         chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
             chrome.scripting.executeScript({
                 target: { tabId: activeTab.id },
@@ -33,6 +42,7 @@ chrome.commands.onCommand.addListener((command) => {
     }
   });
 
+// Copies the WorldShare address to clipboard and formats it for pasting into Dymo
 chrome.action.onClicked.addListener(async (tab) => {
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
