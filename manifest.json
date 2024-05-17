@@ -13,12 +13,12 @@
       "service_worker": "background.js"
     },
     "commands": {
-      "generate_overdue": {
+      "copyAddressFromWorldShare": {
         "suggested_key": {
-          "default": "Ctrl+Shift+3",
-          "mac": "Command+Shift+3"
+          "default": "Ctrl+Shift+Y",
+          "mac": "Command+Shift+Y"
         },
-        "description": "Generates overdue letter if open patron has any ILLs in overdue status"
+        "description": "Copies address from WorldShare"
       },
       "copyFromOCLC": {
         "suggested_key": {
@@ -34,12 +34,12 @@
         },
         "description": "Paste the request data from the clipboard to Evergreen"
       },
-      "_execute_action": {
+      "generate_overdue": {
         "suggested_key": {
-          "default": "Ctrl+Shift+Y",
-          "mac": "Command+Shift+Y"
+          "default": "Ctrl+Shift+3",
+          "mac": "Command+Shift+3"
         },
-        "description": "Copies address from WorldShare"
+        "description": "Generates overdue letter if open patron has any ILLs in overdue status"
       }
     },
     "action": {

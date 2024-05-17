@@ -31,6 +31,14 @@ chrome.commands.onCommand.addListener((command) => {
             });
         });
     } 
+    else if(command === 'copyAddressFromWorldShare') {
+        chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+            chrome.scripting.executeScript({
+                target: { tabId: activeTab.id },
+                files: ['./scripts/copyWorldShareAddress.js']
+            });
+        });
+    }
     // Parses the copied request data from the copyFromOCLC command and pastes it into the Evergreen ILL request form
     else if(command === 'pasteToEvergreen') {
         chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
@@ -43,9 +51,9 @@ chrome.commands.onCommand.addListener((command) => {
   });
 
 // Copies the WorldShare address to clipboard and formats it for pasting into Dymo
-chrome.action.onClicked.addListener(async (tab) => {
-    chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['./scripts/copyWorldShareAddress.js']
-    });
-});
+// chrome.action.onClicked.addListener(async (tab) => {
+//     chrome.scripting.executeScript({
+//         target: { tabId: tab.id },
+//         files: ['./scripts/copyWorldShareAddress.js']
+//     });
+// });
