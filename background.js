@@ -67,7 +67,6 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.contextMenus.onClicked.addListener((item) => {
-  console.log(item);
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     console.log(item);
     chrome.scripting.executeScript({
