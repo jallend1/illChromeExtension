@@ -1,5 +1,7 @@
-html {
-  border-radius: 50px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -8,7 +10,6 @@ body {
   line-height: 1.5;
   color: #333;
   min-width: 500px;
-  padding: 1rem;
 }
 
 .popup-header {
@@ -19,7 +20,6 @@ body {
   padding: 1rem;
   background: linear-gradient(90deg, #7b1fa2 0%, #4a148c 100%);
   color: white;
-  border-radius: 50px;
 }
 
 h1 {
@@ -31,6 +31,16 @@ h2 {
   font-size: 1.2em;
   font-weight: 600;
   margin: 0 0 10px;
+}
+
+h3 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+section {
+  padding: 1rem;
 }
 
 a {
