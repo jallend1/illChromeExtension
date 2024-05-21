@@ -1,0 +1,51 @@
+html{
+    border-radius: 50px;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;  
+  min-width: 400px;
+  padding: 1rem;
+}
+
+h1 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0 0 10px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+a {
+  color: #0073aa;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  list-style: none;
+  padding: 1rem;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+li {
+  margin: 0 0 5px;
+}
+
+.keyboard-shortcut{
+    font-size: 0.75rem;
+    margin: 0;
+    font-weight: bold;
+}
