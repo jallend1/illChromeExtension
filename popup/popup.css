@@ -1,21 +1,30 @@
-html{
-    border-radius: 50px;
+html {
+  border-radius: 50px;
 }
 
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: #333;  
+  color: #333;
   min-width: 400px;
   padding: 1rem;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(90deg, #7b1fa2 0%, #4a148c 100%);
+  color: white;
+  border-radius: 50px;
 }
 
 h1 {
   font-size: 1.5em;
   font-weight: 600;
-  margin: 0 0 10px;
-  text-align: center;
 }
 
 h2 {
@@ -44,8 +53,8 @@ li {
   margin: 0 0 5px;
 }
 
-.keyboard-shortcut{
-    font-size: 0.75rem;
-    margin: 0;
-    font-weight: bold;
+.keyboard-shortcut {
+  font-size: 0.75rem;
+  margin: 0;
+  font-weight: bold;
 }
