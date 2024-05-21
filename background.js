@@ -49,21 +49,19 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-chrome.runtime.onInstalled.addListener(async () => {
-  // Create a context menu for the extension
-  chrome.contextMenus.create({
-    id: "copyAddressFromWorldShare",
-    title: "Copy Address from WorldShare",
-    contexts: ["all"],
-  });
-  chrome.contextMenus.create({
-    id: "copyFromOCLC",
-    title: "Copy Request Data from WorldShare",
-    contexts: ["all"],
-  });
-  chrome.contextMenus.create({
-    id: "pasteToEvergreen",
-    title: "Paste Request Data into Evergreen",
-    contexts: ["all"],
+const currentOptions = [
+  { id: "copyAddressFromWorldShare", title: "Copy Address from WorldShare" },
+  { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
+  { id: "pasteToEvergreen", title: "Paste Request Data into Evergreen" },
+  { id: "generate_overdue", title: "Generate Overdue Notice" },
+];
+
+chrome.runtime.onInstalled.addListener(() => {
+  currentOptions.forEach((option) => {
+    chrome.contextMenus.create({
+      id: option.id,
+      title: option.title,
+      contexts: ["all"],
+    });
   });
 });
