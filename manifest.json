@@ -1,54 +1,56 @@
 {
-    "manifest_version": 3,
-    "name": "Jason's ILL Toolkit",
-    "description": "Compilation of ILL tools for Jason",
-    "version": "1.0",
-    "permissions": [
-      "activeTab",
-      "storage",
-      "scripting",
-      "tabs"
-    ],
-    "background": {
-      "service_worker": "background.js"
+  "manifest_version": 3,
+  "name": "Jason's ILL Toolkit",
+  "description": "Compilation of ILL tools for Jason",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs",
+    "clipboardWrite",
+    "clipboardRead"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "copyAddressFromWorldShare": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Copies address from WorldShare"
     },
-    "commands": {
-      "copyAddressFromWorldShare": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+Y",
-          "mac": "Command+Shift+Y"
-        },
-        "description": "Copies address from WorldShare"
+    "copyFromOCLC": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+1",
+        "mac": "Command+Shift+1"
       },
-      "copyFromOCLC": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+1",
-          "mac": "Command+Shift+1"
-        },
-        "description": "Copy the request data from WorldShare to clipboard"
-      },
-      "pasteToEvergreen": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+2",
-          "mac": "Command+Shift+2"
-        },
-        "description": "Paste the request data from the clipboard to Evergreen"
-      },
-      "generate_overdue": {
-        "suggested_key": {
-          "default": "Ctrl+Shift+3",
-          "mac": "Command+Shift+3"
-        },
-        "description": "Generates overdue letter if open patron has any ILLs in overdue status"
-      }
+      "description": "Copy the request data from WorldShare to clipboard"
     },
-    "action": {
-        "default_icon": {
-            "16": "images/jason-16.png",
-            "32": "images/jason-32.png",
-            "48": "images/jason-48.png",
-            "128": "images/jason-128.png"
-        },
-        "default_popup": "popup/popup.html"
+    "pasteToEvergreen": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+2",
+        "mac": "Command+Shift+2"
+      },
+      "description": "Paste the request data from the clipboard to Evergreen"
+    },
+    "generate_overdue": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+3",
+        "mac": "Command+Shift+3"
+      },
+      "description": "Generates overdue letter if open patron has any ILLs in overdue status"
     }
+  },
+  "action": {
+    "default_icon": {
+      "16": "images/jason-16.png",
+      "32": "images/jason-32.png",
+      "48": "images/jason-48.png",
+      "128": "images/jason-128.png"
+    },
+    "default_popup": "popup/popup.html"
+  }
 }
