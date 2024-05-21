@@ -53,7 +53,7 @@ const currentOptions = [
   { id: "copyAddressFromWorldShare", title: "Copy Address from WorldShare" },
   { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
   { id: "pasteToEvergreen", title: "Paste Request Data into Evergreen" },
-  { id: "generate_overdue", title: "Generate Overdue Notice" },
+  { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -62,6 +62,17 @@ chrome.runtime.onInstalled.addListener(() => {
       id: option.id,
       title: option.title,
       contexts: ["all"],
+    });
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((item) => {
+  console.log(item);
+  chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+    console.log(item);
+    chrome.scripting.executeScript({
+      target: { tabId: activeTab.id },
+      files: [`./scripts/${item.menuItemId}.js`],
     });
   });
 });
