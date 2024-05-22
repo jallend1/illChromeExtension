@@ -16,7 +16,7 @@
     "service_worker": "background.js"
   },
   "commands": {
-    "copyAddressFromWorldShare": {
+    "copyWorldShareAddress": {
       "suggested_key": {
         "default": "Ctrl+Shift+Y",
         "mac": "Command+Shift+Y"
@@ -37,7 +37,7 @@
       },
       "description": "Paste the request data from the clipboard to Evergreen"
     },
-    "generate_overdue": {
+    "overdueNotice": {
       "suggested_key": {
         "default": "Ctrl+Shift+3",
         "mac": "Command+Shift+3"
