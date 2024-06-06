@@ -1,10 +1,8 @@
-// We don't have this rocking yet. Aspirational!
-
-console.log("popup.js");
-const buttons = document.querySelectorAll("td");
+const buttons = document.querySelectorAll("button");
 buttons.forEach((button) => {
   button.addEventListener("click", (event) => {
     const buttonId = event.target.id;
+    alert(buttonId);
     console.log(buttonId);
   });
 });

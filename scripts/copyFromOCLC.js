@@ -172,7 +172,6 @@ function copyFromOCLC() {
       );
     if (barcode) addressField += barcode;
     return addressField;
-    // return 'WCCLS barcode: ' + prompt('Whoa there! This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)');
   };
 
   // Bundles all pertinent information into an object
@@ -200,7 +199,52 @@ function copyFromOCLC() {
   const compiledData = compileRequestData();
   const stringifiedData = convertDataToJSON(compiledData);
 
-  navigator.clipboard.writeText(stringifiedData);
+  const verifyClipboard = (clipboardRequestNum) => {
+    const allRequestNumbers = document.querySelectorAll(
+      ".accordionRequestDetailsRequestId"
+    );
+    const requestNumberFromPage =
+      allRequestNumbers[allRequestNumbers.length - 1].textContent;
+    return clipboardRequestNum === requestNumberFromPage;
+  };
+
+  const statusModal = (data, color) => {
+    const modal = document.createElement("div");
+    modal.style.position = "fixed";
+    modal.style.top = "0";
+    modal.style.left = "0";
+    modal.style.width = "100%";
+    modal.style.height = "100%";
+    modal.style.backgroundColor = color;
+    modal.style.zIndex = "1000";
+    modal.style.display = "flex";
+    modal.style.justifyContent = "center";
+    modal.style.alignItems = "center";
+    modal.style.color = "black";
+    modal.style.fontSize = "4rem";
+    color === "red"
+      ? (modal.innerText = `Failed to copy: ${data}`)
+      : (modal.innerText = `Data successfully copied for request number ${data}`);
+    document.body.appendChild(modal);
+    setTimeout(() => {
+      modal.remove();
+    }, 3000);
+  };
+
+  async function copyToClipboard(data, requestNum) {
+    console.log(verifyClipboard(requestNum));
+    try {
+      await navigator.clipboard.writeText(data);
+      console.log("Copied to clipboard: ", requestNum);
+      statusModal(requestNum, "green");
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+      statusModal(err, "red");
+    }
+  }
+
+  // navigator.clipboard.writeText(stringifiedData);
+  copyToClipboard(stringifiedData, compiledData[1].requestNumber);
 }
 
 copyFromOCLC();

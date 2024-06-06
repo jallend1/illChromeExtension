@@ -8,7 +8,7 @@
 // *6. Automatically switch tabs from request screen to Evergreen tab and auto-fill?
 // DONE *7 Add an HTML file detailing all the shortcuts
 // DONE *8 Add a context menu for right-clicking on page and revealing custom options?
-// *9 Move copy from WorldShare into command palette for consistency?
+// DONE *9 Move copy from WorldShare into command palette for consistency?
 // * 10 Move state abbreviation conversion into its own file because it's now being used by multiple sources
 
 const currentOptions = [
