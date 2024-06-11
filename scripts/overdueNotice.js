@@ -1,7 +1,6 @@
 /* Description: Scrapes the page for any overdue interlibrary loan titles and
 copies an overdue notice letter containing the relevant info to the clipboard. */
 
-// TODO: Add logic to handle LOST titles, whose divs do not have an alert class
 // TODO: Extract patron contact information from page and add to letter
 // TODO: Extract patron email address from page
 // TODO: Store content as object to allow pasting into new email form with subject and recipient filled in
@@ -13,15 +12,34 @@ function overdueNotice() {
   let overdueText = "";
 
   // Extracts ILL titles from page that are overdue (.less-intense-alert class applied to overdue titles)
-  const lessIntenseAlertDivs = document.querySelectorAll(".less-intense-alert");
-  lessIntenseAlertDivs.forEach((div) => {
-    const anchorTags = div.querySelectorAll("a");
-    anchorTags.forEach((anchor) => {
-      if (anchor.textContent.startsWith("ILL Title - ")) {
-        overdueTitles.push(anchor.textContent);
+  const checkForOverdueTitles = () => {
+    const lessIntenseAlertDivs = document.querySelectorAll(
+      ".less-intense-alert"
+    );
+    lessIntenseAlertDivs.forEach((div) => {
+      const anchorTags = div.querySelectorAll("a");
+      anchorTags.forEach((anchor) => {
+        if (anchor.textContent.startsWith("ILL Title - ")) {
+          overdueTitles.push(anchor.textContent);
+        }
+      });
+    });
+  };
+
+  const checkForLostTitles = () => {
+    const divs = document.querySelectorAll(
+      "div.eg-grid-cell.eg-grid-body-cell"
+    );
+    // If lost status, extracts title from two columns earlier and pushes it to overdueTitles
+    divs.forEach((div, index) => {
+      if (div.textContent === " Lost ") {
+        overdueTitles.push(divs[index - 2].textContent);
       }
     });
-  });
+  };
+
+  checkForOverdueTitles();
+  checkForLostTitles();
 
   const determineOverdueText = () => {
     if (overdueTitles.length === 0) {
