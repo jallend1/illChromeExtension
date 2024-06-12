@@ -18,6 +18,7 @@ const currentOptions = [
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
+// TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
   currentOptions.forEach((option) => {
@@ -49,7 +50,6 @@ chrome.runtime.onInstalled.addListener(() => {
 // Add event listener for context menu clicks
 chrome.contextMenus.onClicked.addListener((item) => {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    console.log(item);
     chrome.scripting.executeScript({
       target: { tabId: activeTab.id },
       files: [`./scripts/${item.menuItemId}.js`],
@@ -59,10 +59,31 @@ chrome.contextMenus.onClicked.addListener((item) => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    chrome.scripting.executeScript({
-      target: { tabId: activeTab.id },
-      files: [`./scripts/${request.data}.js`],
-    });
+    if (request.data === "copyFromOCLC") {
+      let imgURL = chrome.runtime.getURL("images/jason-128.png");
+      let code = `
+        let script = document.createElement('script');
+        script.textContent = 'window.imgURL = "${imgURL}";';
+        (document.head || document.documentElement).appendChild(script);
+        script.remove();
+      `;
+      chrome.scripting
+        .executeScript({
+          target: { tabId: activeTab.id },
+          code: code,
+        })
+        .then(() => {
+          chrome.scripting.executeScript({
+            target: { tabId: activeTab.id },
+            files: [`./scripts/${request.data}.js`],
+          });
+        });
+    } else {
+      chrome.scripting.executeScript({
+        target: { tabId: activeTab.id },
+        files: [`./scripts/${request.data}.js`],
+      });
+    }
     if (request.command === "myCommand") {
       console.log(request.data);
       sendResponse({ result: "Success!" });

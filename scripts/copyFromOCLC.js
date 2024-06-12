@@ -1,7 +1,7 @@
 // TODO: Add Canada provinces to convertStateNameToAbbreviation
 // TODO: Add a check for Idaho libraries that don't include constant data in the address
 
-function copyFromOCLC() {
+function copyFromOCLC(imgURL) {
   // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
   let addressObject = {
     attention: null,
@@ -199,6 +199,7 @@ function copyFromOCLC() {
   const compiledData = compileRequestData();
   const stringifiedData = convertDataToJSON(compiledData);
 
+  // Unsure how to recreate the conditions that have caused this error -- Hopefully this resolves it?
   const verifyClipboard = (clipboardRequestNum) => {
     const allRequestNumbers = document.querySelectorAll(
       ".accordionRequestDetailsRequestId"
@@ -208,23 +209,38 @@ function copyFromOCLC() {
     return clipboardRequestNum === requestNumberFromPage;
   };
 
-  const statusModal = (data, color) => {
+  const statusModal = (data, backgroundColor, textColor) => {
     const modal = document.createElement("div");
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.backgroundColor = color;
-    modal.style.zIndex = "1000";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.color = "black";
-    modal.style.fontSize = "4rem";
-    color === "red"
-      ? (modal.innerText = `Failed to copy: ${data}`)
-      : (modal.innerText = `Data successfully copied for request number ${data}`);
+    modal.setAttribute("id", "modal");
+    modal.setAttribute(
+      "style",
+      `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 1rem;
+      border-radius: 1rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: ${textColor};
+      font-size: 4rem;
+    `
+    );
+    modal.innerHTML = `
+    <div>  
+    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem;">
+    <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
+    </div>
+    <div>
+    <h2>${data}</h2>
+    </div>
+    </div>
+    `;
+
     document.body.appendChild(modal);
     setTimeout(() => {
       modal.remove();
@@ -232,18 +248,30 @@ function copyFromOCLC() {
   };
 
   async function copyToClipboard(data, requestNum) {
-    console.log(verifyClipboard(requestNum));
     try {
+      let headerColor = "#4CAF50";
+      let textColor = "#fff";
       await navigator.clipboard.writeText(data);
+      if (!verifyClipboard(requestNum)) {
+        throw new Error("Clipboard data does not match page data");
+      }
       console.log("Copied to clipboard: ", requestNum);
-      statusModal(requestNum, "green");
+      let result = `Copied! ${requestNum}`;
+      statusModal(result, headerColor, textColor);
     } catch (err) {
-      console.error("Failed to copy: ", err);
-      statusModal(err, "red");
+      let result = "";
+      let headerColor = "#e85e6a";
+      let textColor = "#fff";
+      if (err.message.includes("Document is not focused")) {
+        result = "Suggested tip: Please click on the page and try again";
+      } else {
+        result = "Failed to copy! " + err;
+      }
+      statusModal(result, headerColor, textColor);
+      console.log(err);
     }
   }
 
-  // navigator.clipboard.writeText(stringifiedData);
   copyToClipboard(stringifiedData, compiledData[1].requestNumber);
 }
 

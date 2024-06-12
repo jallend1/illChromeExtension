@@ -12,7 +12,6 @@ const initiateScript = (scriptName) => {
 buttons.forEach((button) => {
   button.addEventListener("click", (event) => {
     const buttonId = event.target.id;
-    alert(buttonId);
     initiateScript(buttonId);
   });
 });
