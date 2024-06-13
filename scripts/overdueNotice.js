@@ -6,7 +6,6 @@ copies an overdue notice letter containing the relevant info to the clipboard. *
 // TODO: Store content as object to allow pasting into new email form with subject and recipient filled in
 
 function overdueNotice() {
-  const imgURL = chrome.runtime.getURL("images/jason-128.png");
   window.focus();
   let todaysDate = new Date().toLocaleDateString();
   const overdueTitles = [];
@@ -63,7 +62,7 @@ function overdueNotice() {
 
   overdueText = determineOverdueText();
 
-  const statusModal = (data, backgroundColor) => {
+  const statusModal = (data, backgroundColor, imgURL) => {
     const modal = document.createElement("div");
     modal.setAttribute("id", "modal");
     modal.setAttribute(
@@ -102,20 +101,7 @@ function overdueNotice() {
     }, 3000);
   };
 
-  if (overdueTitles.length === 0) {
-    statusModal(
-      "<h2>Error.</h2><p>No overdue interlibrary loan titles found. A letter template was copied to your clipboard.</p>",
-      "#e85e6a"
-    );
-  } else {
-    statusModal(
-      `<h2>Success!</h2> <p style="font-size: 1.25rem;">An overdue notice letter was copied to your clipboard for ${
-        overdueTitles.length
-      } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`,
-      "#4CAF50"
-    );
-  }
-  return `
+  const overdueLetter = `
 King County Library System
 Interlibrary Loan
 960 Newport Way NW * Issaquah, WA 98027 * 425.369.3490 
@@ -129,5 +115,37 @@ ${overdueText}
 Unfortunately, we are not able to issue renewals on interlibrary loan books. If you need more time, you are able to submit a new request once your account is cleared of overdue interlibrary loan titles. This lets us get a copy from a different system, and honor the agreements we made with the libraries that share their collections with us. It also helps to avoid any non-refundable processing fees or replacement costs.
 
 Please do not hesitate to reach out to me if you have any questions. And if you have returned this book since the date above? Please accept our sincerest thanks!`;
+
+  async function copyToClipboard(data) {
+    try {
+      let imgURL = chrome.runtime.getURL("images/jason-128.png");
+      let headerColor = "#4CAF50";
+      let result = "";
+      await navigator.clipboard.writeText(data);
+      if (overdueTitles.length === 0) {
+        result =
+          "<h2>Notice!</h2><p>No overdue interlibrary loan titles found. A letter template was copied to your clipboard.</p>";
+      } else {
+        result = `<h2>Success!</h2> <p style="font-size: 1.25rem;">An overdue notice letter was copied to your clipboard for ${
+          overdueTitles.length
+        } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`;
+      }
+      statusModal(result, headerColor, imgURL);
+    } catch (err) {
+      let result = "";
+      let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
+      let headerColor = "#e85e6a";
+      if (err.message.includes("Document is not focused")) {
+        result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
+      } else {
+        result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
+      }
+      statusModal(result, headerColor, imgURL);
+      console.error(err);
+    }
+  }
+
+  copyToClipboard(overdueLetter);
 }
-navigator.clipboard.writeText(overdueNotice());
+
+overdueNotice();

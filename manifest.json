@@ -62,7 +62,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/jason-128.png"],
+      "resources": ["images/*"],
       "matches": ["<all_urls>"]
     }
   ]
