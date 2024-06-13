@@ -104,11 +104,7 @@ function copyFromOCLC() {
   // Format addressObject for mail label
   const createAddressString = () => {
     let addressString = "";
-    const lender = document.querySelector(
-      'span[data="lenderString.currentSupplier.symbol"]'
-    );
-    if (isBLP()) addressString += extractDueDate() + "\n\n";
-    if (isWCCLS()) addressString += WCCLSprompt() + "\n\n";
+    addressString += checkLender();
     Object.keys(addressObject).forEach((key) => {
       switch (key) {
         case "attention":
@@ -131,6 +127,17 @@ function copyFromOCLC() {
       }
     });
     return addressString;
+  };
+
+  const checkLender = () => {
+    const nodeList = document.querySelector(
+      'span[data="lenderString.currentSupplier.symbol"]'
+    );
+    if (nodeList && nodeList.innerText) {
+      if (nodeList.innerText === "BLP") return extractDueDate();
+      if (nodeList.innerText === "OQX") return WCCLSprompt();
+    }
+    return null;
   };
 
   // Checks lender string to see if it is BLP
