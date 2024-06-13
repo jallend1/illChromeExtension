@@ -59,5 +59,11 @@
     "32": "images/jason-32.png",
     "48": "images/jason-48.png",
     "128": "images/jason-128.png"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["images/jason-128.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

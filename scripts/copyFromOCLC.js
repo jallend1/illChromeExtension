@@ -1,7 +1,9 @@
 // TODO: Add Canada provinces to convertStateNameToAbbreviation
 // TODO: Add a check for Idaho libraries that don't include constant data in the address
 
-function copyFromOCLC(imgURL) {
+function copyFromOCLC() {
+  const imgURL = chrome.runtime.getURL("images/jason-128.png");
+  console.log(chrome.runtime.getURL("images/jason-128.png"));
   // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
   let addressObject = {
     attention: null,

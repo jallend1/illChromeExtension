@@ -59,31 +59,11 @@ chrome.contextMenus.onClicked.addListener((item) => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    if (request.data === "copyFromOCLC") {
-      let imgURL = chrome.runtime.getURL("images/jason-128.png");
-      let code = `
-        let script = document.createElement('script');
-        script.textContent = 'window.imgURL = "${imgURL}";';
-        (document.head || document.documentElement).appendChild(script);
-        script.remove();
-      `;
-      chrome.scripting
-        .executeScript({
-          target: { tabId: activeTab.id },
-          code: code,
-        })
-        .then(() => {
-          chrome.scripting.executeScript({
-            target: { tabId: activeTab.id },
-            files: [`./scripts/${request.data}.js`],
-          });
-        });
-    } else {
-      chrome.scripting.executeScript({
-        target: { tabId: activeTab.id },
-        files: [`./scripts/${request.data}.js`],
-      });
-    }
+    chrome.scripting.executeScript({
+      target: { tabId: activeTab.id },
+      files: [`./scripts/${request.data}.js`],
+    });
+
     if (request.command === "myCommand") {
       console.log(request.data);
       sendResponse({ result: "Success!" });
