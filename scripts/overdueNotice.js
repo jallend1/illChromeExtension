@@ -6,6 +6,7 @@ copies an overdue notice letter containing the relevant info to the clipboard. *
 // TODO: Store content as object to allow pasting into new email form with subject and recipient filled in
 
 function overdueNotice() {
+  const imgURL = chrome.runtime.getURL("images/jason-128.png");
   window.focus();
   let todaysDate = new Date().toLocaleDateString();
   const overdueTitles = [];
@@ -62,12 +63,58 @@ function overdueNotice() {
 
   overdueText = determineOverdueText();
 
+  const statusModal = (data, backgroundColor) => {
+    const modal = document.createElement("div");
+    modal.setAttribute("id", "modal");
+    modal.setAttribute(
+      "style",
+      `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 1rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #000;
+      font-size: 4rem;
+      border: 1px solid #000;
+      box-shadow: 0 0 10px 5px #000;
+    `
+    );
+    modal.innerHTML = `
+    <div>  
+    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
+    <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
+    </div>
+    <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+    ${data}
+    </div>
+    </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => {
+      modal.remove();
+    }, 3000);
+  };
+
   if (overdueTitles.length === 0) {
-    alert(
-      "No overdue interlibrary loan titles found. A letter template was copied to your clipboard."
+    statusModal(
+      "<h2>Error.</h2><p>No overdue interlibrary loan titles found. A letter template was copied to your clipboard.</p>",
+      "#e85e6a"
+    );
+  } else {
+    statusModal(
+      `<h2>Success!</h2> <p style="font-size: 1rem;">An overdue notice letter was copied to your clipboard for ${
+        overdueTitles.length
+      } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`,
+      "#4CAF50"
     );
   }
-
   return `
 King County Library System
 Interlibrary Loan
@@ -83,5 +130,4 @@ Unfortunately, we are not able to issue renewals on interlibrary loan books. If 
 
 Please do not hesitate to reach out to me if you have any questions. And if you have returned this book since the date above? Please accept our sincerest thanks!`;
 }
-
 navigator.clipboard.writeText(overdueNotice());
