@@ -104,7 +104,7 @@ function copyFromOCLC() {
   // Format addressObject for mail label
   const createAddressString = () => {
     let addressString = "";
-    addressString += checkLender();
+    addressString += checkLenderRequirements();
     Object.keys(addressObject).forEach((key) => {
       switch (key) {
         case "attention":
@@ -129,23 +129,18 @@ function copyFromOCLC() {
     return addressString;
   };
 
-  const checkLender = () => {
+  const checkLenderRequirements = () => {
+    const paperworkLibraries = ["DLC"];
     const nodeList = document.querySelector(
       'span[data="lenderString.currentSupplier.symbol"]'
     );
     if (nodeList && nodeList.innerText) {
       if (nodeList.innerText === "BLP") return extractDueDate();
       if (nodeList.innerText === "OQX") return WCCLSprompt();
+      if (paperworkLibraries.includes(nodeList.innerText))
+        alert("Note: This library would like us to keep the paperwork.");
     }
     return null;
-  };
-
-  // Checks lender string to see if it is BLP
-  const isBLP = () => {
-    const nodeList = document.querySelector(
-      'span[data="lenderString.currentSupplier.symbol"]'
-    );
-    return nodeList.innerText ? nodeList.innerText === "BLP" : false;
   };
 
   // Extracts OCLC Due Date
@@ -154,16 +149,6 @@ function copyFromOCLC() {
       'span[data="returning.originalDueToSupplier"]'
     );
     return nodeList.innerText ? "OCLC Due Date: " + nodeList.innerText : null;
-  };
-
-  // TODO: Combine the check lender functions for BLP and OQX into one with lender string as an argument
-
-  // Checks if lender string is associated with WCCLS
-  const isWCCLS = () => {
-    const lenderString = document.querySelector(
-      'span[data="lenderString.currentSupplier.symbol"]'
-    );
-    return lenderString.innerText ? lenderString.innerText === "OQX" : false;
   };
 
   // Prompts user for WCCLS barcode
@@ -176,7 +161,7 @@ function copyFromOCLC() {
     barcode =
       "WCCLS barcode: " +
       prompt(
-        "Whoa there! This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
+        "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
       );
     if (barcode) addressField += barcode;
     return addressField;
