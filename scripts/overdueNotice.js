@@ -109,7 +109,7 @@ function overdueNotice() {
     );
   } else {
     statusModal(
-      `<h2>Success!</h2> <p style="font-size: 1rem;">An overdue notice letter was copied to your clipboard for ${
+      `<h2>Success!</h2> <p style="font-size: 1.25rem;">An overdue notice letter was copied to your clipboard for ${
         overdueTitles.length
       } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`,
       "#4CAF50"
