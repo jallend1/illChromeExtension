@@ -3,7 +3,6 @@ copies an overdue notice letter containing the relevant info to the clipboard. *
 
 // TODO: Extract patron contact information from page and add to letter
 // TODO: Extract patron email address from page
-// TODO: Store content as object to allow pasting into new email form with subject and recipient filled in
 
 function overdueNotice() {
   window.focus();
@@ -87,7 +86,7 @@ function overdueNotice() {
     modal.innerHTML = `
     <div>  
     <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-    <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
+    <img src=${imgURL} style="border-radius: 50%;">
     </div>
     <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
     ${data}
@@ -123,8 +122,7 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
       let result = "";
       await navigator.clipboard.writeText(data);
       if (overdueTitles.length === 0) {
-        result =
-          "<h2>Notice!</h2><p>No overdue interlibrary loan titles found. A letter template was copied to your clipboard.</p>";
+        result = `<h2>Notice!</h2><p style="font-size: 1.25rem; padding: 2rem;">No overdue interlibrary loan titles found. A letter template was copied to your clipboard.</p>`;
       } else {
         result = `<h2>Success!</h2> <p style="font-size: 1.25rem;">An overdue notice letter was copied to your clipboard for ${
           overdueTitles.length
