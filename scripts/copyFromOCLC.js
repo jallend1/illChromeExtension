@@ -2,7 +2,6 @@
 // TODO: Add a check for Idaho libraries that don't include constant data in the address
 
 function copyFromOCLC() {
-  const imgURL = chrome.runtime.getURL("images/jason-128.png");
   // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
   let addressObject = {
     attention: null,
@@ -202,7 +201,7 @@ function copyFromOCLC() {
     return clipboardRequestNum === requestNumberFromPage;
   };
 
-  const statusModal = (data, backgroundColor) => {
+  const statusModal = (data, backgroundColor, imgURL) => {
     const modal = document.createElement("div");
     modal.setAttribute("id", "modal");
     modal.setAttribute(
@@ -244,22 +243,24 @@ function copyFromOCLC() {
   async function copyToClipboard(data, requestNum) {
     try {
       let headerColor = "#4CAF50";
+      let imgURL = chrome.runtime.getURL("images/jason-128.png");
       await navigator.clipboard.writeText(data);
       if (!verifyClipboard(requestNum)) {
         throw new Error("Clipboard data does not match page data");
       }
       console.log("Copied to clipboard: ", requestNum);
       let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
-      statusModal(result, headerColor);
+      statusModal(result, headerColor, imgURL);
     } catch (err) {
       let result = "";
+      let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
       let headerColor = "#e85e6a";
       if (err.message.includes("Document is not focused")) {
         result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
       } else {
         result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
       }
-      statusModal(result, headerColor);
+      statusModal(result, headerColor, imgURL);
       console.error(err);
     }
   }
