@@ -3,7 +3,6 @@
 
 function copyFromOCLC() {
   const imgURL = chrome.runtime.getURL("images/jason-128.png");
-  console.log(chrome.runtime.getURL("images/jason-128.png"));
   // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
   let addressObject = {
     attention: null,
@@ -211,7 +210,7 @@ function copyFromOCLC() {
     return clipboardRequestNum === requestNumberFromPage;
   };
 
-  const statusModal = (data, backgroundColor, textColor) => {
+  const statusModal = (data, backgroundColor) => {
     const modal = document.createElement("div");
     modal.setAttribute("id", "modal");
     modal.setAttribute(
@@ -221,24 +220,25 @@ function copyFromOCLC() {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      padding: 1rem;
       border-radius: 1rem;
       z-index: 1000;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: ${textColor};
+      color: #000;
       font-size: 4rem;
+      border: 1px solid #000;
+      box-shadow: 0 0 10px 5px #000;
     `
     );
     modal.innerHTML = `
     <div>  
-    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem;">
+    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
     <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
     </div>
-    <div>
-    <h2>${data}</h2>
+    <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+    ${data}
     </div>
     </div>
     `;
@@ -252,25 +252,23 @@ function copyFromOCLC() {
   async function copyToClipboard(data, requestNum) {
     try {
       let headerColor = "#4CAF50";
-      let textColor = "#fff";
       await navigator.clipboard.writeText(data);
       if (!verifyClipboard(requestNum)) {
         throw new Error("Clipboard data does not match page data");
       }
       console.log("Copied to clipboard: ", requestNum);
-      let result = `Copied! ${requestNum}`;
-      statusModal(result, headerColor, textColor);
+      let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
+      statusModal(result, headerColor);
     } catch (err) {
       let result = "";
       let headerColor = "#e85e6a";
-      let textColor = "#fff";
       if (err.message.includes("Document is not focused")) {
-        result = "Suggested tip: Please click on the page and try again";
+        result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
       } else {
-        result = "Failed to copy! " + err;
+        result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
       }
-      statusModal(result, headerColor, textColor);
-      console.log(err);
+      statusModal(result, headerColor);
+      console.error(err);
     }
   }
 
