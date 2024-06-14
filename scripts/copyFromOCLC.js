@@ -130,16 +130,22 @@ function copyFromOCLC() {
 
   const checkLenderRequirements = () => {
     const paperworkLibraries = ["DLC"];
-    const nodeList = document.querySelector(
+    const nodeList = document.querySelectorAll(
       'span[data="lenderString.currentSupplier.symbol"]'
     );
-    if (nodeList && nodeList.innerText) {
-      if (nodeList.innerText === "BLP") return extractDueDate();
-      if (nodeList.innerText === "OQX") return WCCLSprompt();
-      if (paperworkLibraries.includes(nodeList.innerText))
-        alert("Note: This library would like us to keep the paperwork.");
+    // OCLC seems to stack requests intermittently -- This pulls the latest
+    const currentLender = nodeList[nodeList.length - 1].innerText;
+    // BLP Needs due date extracted from page
+    if (currentLender === "BLP") return extractDueDate();
+    // Implements WCCLS unique requirements
+    if (currentLender === "OQX") return WCCLSprompt();
+    // Hayden doesn't have its name in the constant fields
+    if (currentLender === "K#T") return "Hayden Branch Library ";
+    // Checks to see if the current lender requires paperwork to be kept
+    if (paperworkLibraries.includes(currentLender)) {
+      alert("This library would like us to keep the paperwork.");
     }
-    return null;
+    return "";
   };
 
   // Extracts OCLC Due Date
@@ -243,7 +249,7 @@ function copyFromOCLC() {
   async function copyToClipboard(data, requestNum) {
     try {
       let headerColor = "#4CAF50";
-      let imgURL = chrome.runtime.getURL("images/jason-128.png");
+      let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
       await navigator.clipboard.writeText(data);
       if (!verifyClipboard(requestNum)) {
         throw new Error("Clipboard data does not match page data");
