@@ -63,10 +63,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       target: { tabId: activeTab.id },
       files: [`./scripts/${request.data}.js`],
     });
-
-    if (request.command === "myCommand") {
-      console.log(request.data);
-      sendResponse({ result: "Success!" });
-    }
   });
 });
