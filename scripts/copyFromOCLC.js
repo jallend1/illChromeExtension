@@ -168,7 +168,7 @@ function copyFromOCLC() {
       prompt(
         "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
       );
-    if (barcode) addressField += barcode;
+    if (barcode) addressField += barcode + "\n";
     return addressField;
   };
 
