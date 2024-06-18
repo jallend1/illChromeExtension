@@ -1,23 +1,28 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <title>ILL Tools</title>
+    <title>Jason's ILL Tools</title>
+    <link rel="stylesheet" href="popup.css" />
   </head>
-  <style>
-    body {
-      background-color: #f1f1f1;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-    h1 {
-      color: #333;
-    }
-    p {
-      color: #666;
-    }
-  </style>
   <body>
-    <h1>ILL Tools</h1>
-    <p>We are cookin!</p>
+    <header class="sidebar-header">
+      <img id="logo-left" src="../images/kawaii-dinosaur.png" alt="ILL Icon" />
+      <h1>Jason's ILL Tools</h1>
+      <img id="logo-right" src="../images/kawaii-book-sad.png" alt="ILL Icon" />
+    </header>
+    <section>
+      <!-- <header>
+        <h2>Keyboard Shortcuts</h2>
+        <h3>
+          Use the following keyboard shortcuts to quickly access ILL tools:
+        </h3>
+      </header> -->
+      <button id="copyFromOCLC">Copies request data for Evergreen</button>
+      <button id="pasteToEvergreen">Pastes the request data</button>
+      <button id="overdueNotice">Generates Overdue Letter</button>
+      <button id="copyWorldShareAddress">
+        Copies Library Address for Dymo Printing
+      </button>
+    </section>
+    <script src="popup.js"></script>
   </body>
 </html>

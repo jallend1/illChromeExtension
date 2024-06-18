@@ -11,7 +11,8 @@
     "clipboardWrite",
     "clipboardRead",
     "contextMenus",
-    "sidePanel"
+    "sidePanel",
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"

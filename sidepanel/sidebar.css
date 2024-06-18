@@ -1,0 +1,8 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(90deg, #7b1fa2 0%, #4a148c 100%);
+  color: white;
+}
