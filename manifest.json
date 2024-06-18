@@ -10,7 +10,8 @@
     "tabs",
     "clipboardWrite",
     "clipboardRead",
-    "contextMenus"
+    "contextMenus",
+    "sidePanel"
   ],
   "background": {
     "service_worker": "background.js"
@@ -65,5 +66,9 @@
       "resources": ["images/*"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html",
+    "open_at_install": true
+  }
 }
