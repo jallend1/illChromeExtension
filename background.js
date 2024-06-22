@@ -64,4 +64,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       files: [`./scripts/${request.data}.js`],
     });
   });
+  return true;
 });

@@ -250,13 +250,17 @@ function copyFromOCLC() {
     try {
       let headerColor = "#4CAF50";
       let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
-      await navigator.clipboard.writeText(data);
+      // await navigator.clipboard.writeText(data);
+      chrome.storage.local.set({ requestData: data }, () => {
+        console.log("Data stored");
+      });
+      console.log("Data copied to local storage! ", data);
       if (!verifyClipboard(requestNum)) {
         throw new Error("Clipboard data does not match page data");
       }
       console.log("Copied to clipboard: ", requestNum);
       let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
-      statusModal(result, headerColor, imgURL);
+      // statusModal(result, headerColor, imgURL);
     } catch (err) {
       let result = "";
       let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
@@ -266,7 +270,7 @@ function copyFromOCLC() {
       } else {
         result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
       }
-      statusModal(result, headerColor, imgURL);
+      // statusModal(result, headerColor, imgURL);
       console.error(err);
     }
   }

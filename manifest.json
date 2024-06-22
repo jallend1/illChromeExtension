@@ -11,9 +11,9 @@
     "clipboardWrite",
     "clipboardRead",
     "contextMenus",
-    "sidePanel",
-    "<all_urls>"
+    "sidePanel"
   ],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "background": {
     "service_worker": "background.js"
   },
