@@ -54,16 +54,20 @@ function pasteToEvergreen() {
 
   const extractArrayFromLocalStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
-      let array = JSON.parse(result.requestData);
-      // const array = JSON.parse(localStorage.getItem("clipboardData"));
-      console.log(array);
-      updateTitle(array[2].title);
-      updateCallNumber(array[1].requestNumber);
-      updatePatronBarcode(array[3].patronID);
-      updatePatronAddress(array[0].addressString);
-      const kclsBarcodeInput = document.querySelector("#item-barcode-input");
-      kclsBarcodeInput.focus();
-      console.log(array);
+      if (!result.requestData) {
+        console.log("No data to paste!");
+        return;
+      } else {
+        let storageData = JSON.parse(result.requestData);
+        // const array = JSON.parse(localStorage.getItem("clipboardData"));
+        console.log(storageData);
+        updateTitle(storageData[2].title);
+        updateCallNumber(storageData[1].requestNumber);
+        updatePatronBarcode(storageData[3].patronID);
+        updatePatronAddress(storageData[0].addressString);
+        const kclsBarcodeInput = document.querySelector("#item-barcode-input");
+        kclsBarcodeInput.focus();
+      }
     });
   };
 
