@@ -197,16 +197,6 @@ function copyFromOCLC() {
   const compiledData = compileRequestData();
   const stringifiedData = convertDataToJSON(compiledData);
 
-  // Unsure how to recreate the conditions that have caused this error -- Hopefully this resolves it?
-  // const verifyClipboard = (clipboardRequestNum) => {
-  //   const allRequestNumbers = document.querySelectorAll(
-  //     ".accordionRequestDetailsRequestId"
-  //   );
-  //   const requestNumberFromPage =
-  //     allRequestNumbers[allRequestNumbers.length - 1].textContent;
-  //   return clipboardRequestNum === requestNumberFromPage;
-  // };
-
   const statusModal = (data, backgroundColor, imgURL) => {
     const modal = document.createElement("div");
     modal.setAttribute("id", "modal");
@@ -250,8 +240,6 @@ function copyFromOCLC() {
     try {
       let headerColor = "#4CAF50";
       let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
-      // await navigator.clipboard.writeText(data);
-
       // Checks for requestData in local storage, and if it exists, removes it
       // TODO: Implement a check to see if the clipboard data matches the page data
       chrome.storage.local.get("requestData", (result) => {
@@ -261,13 +249,9 @@ function copyFromOCLC() {
           });
         }
         chrome.storage.local.set({ requestData: data }, () => {
-          console.log("Data stored");
           let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
           statusModal(result, headerColor, imgURL);
         });
-        // if (!verifyClipboard(requestNum)) {
-        //   throw new Error("Clipboard data does not match page data");
-        // }
       });
     } catch (err) {
       let result = "";
