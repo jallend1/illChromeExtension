@@ -1,28 +1,33 @@
 <html>
   <head>
     <title>Jason's ILL Tools</title>
-    <link rel="stylesheet" href="popup.css" />
+    <link rel="stylesheet" href="sidebar.css" />
   </head>
   <body>
     <header class="sidebar-header">
       <img id="logo-left" src="../images/kawaii-dinosaur.png" alt="ILL Icon" />
-      <h1>Jason's ILL Tools</h1>
+      <h1>Jason's ILL Toolkit</h1>
       <img id="logo-right" src="../images/kawaii-book-sad.png" alt="ILL Icon" />
     </header>
-    <section>
-      <!-- <header>
-        <h2>Keyboard Shortcuts</h2>
-        <h3>
-          Use the following keyboard shortcuts to quickly access ILL tools:
-        </h3>
-      </header> -->
-      <button id="copyFromOCLC">Copies request data for Evergreen</button>
-      <button id="pasteToEvergreen">Pastes the request data</button>
-      <button id="overdueNotice">Generates Overdue Letter</button>
-      <button id="copyWorldShareAddress">
-        Copies Library Address for Dymo Printing
-      </button>
-    </section>
+    <main>
+      <section>
+        <h2>Entering ILLs</h2>
+        <button id="copyFromOCLC">Copy request data from WorldShare</button>
+        <button id="pasteToEvergreen">
+          Paste the request data in Evergreen
+        </button>
+      </section>
+      <section>
+        <h2>Mailroom</h2>
+        <button id="copyWorldShareAddress">
+          Copy Address from WorldShare for Dymo
+        </button>
+      </section>
+      <section class="scripts">
+        <h2>Patrons</h2>
+        <button id="overdueNotice">Generate an Overdue Letter</button>
+      </section>
+    </main>
     <script src="popup.js"></script>
   </body>
 </html>

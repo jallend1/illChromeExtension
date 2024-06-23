@@ -253,6 +253,7 @@ function copyFromOCLC() {
       // await navigator.clipboard.writeText(data);
 
       // Checks for requestData in local storage, and if it exists, removes it
+      // TODO: Implement a check to see if the clipboard data matches the page data
       chrome.storage.local.get("requestData", (result) => {
         if (result.requestData) {
           chrome.storage.local.remove("requestData", () => {

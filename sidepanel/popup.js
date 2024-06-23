@@ -1,4 +1,5 @@
 const buttons = document.querySelectorAll("button");
+const refreshButton = document.getElementById("refresh");
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
