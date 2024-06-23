@@ -198,14 +198,14 @@ function copyFromOCLC() {
   const stringifiedData = convertDataToJSON(compiledData);
 
   // Unsure how to recreate the conditions that have caused this error -- Hopefully this resolves it?
-  const verifyClipboard = (clipboardRequestNum) => {
-    const allRequestNumbers = document.querySelectorAll(
-      ".accordionRequestDetailsRequestId"
-    );
-    const requestNumberFromPage =
-      allRequestNumbers[allRequestNumbers.length - 1].textContent;
-    return clipboardRequestNum === requestNumberFromPage;
-  };
+  // const verifyClipboard = (clipboardRequestNum) => {
+  //   const allRequestNumbers = document.querySelectorAll(
+  //     ".accordionRequestDetailsRequestId"
+  //   );
+  //   const requestNumberFromPage =
+  //     allRequestNumbers[allRequestNumbers.length - 1].textContent;
+  //   return clipboardRequestNum === requestNumberFromPage;
+  // };
 
   const statusModal = (data, backgroundColor, imgURL) => {
     const modal = document.createElement("div");

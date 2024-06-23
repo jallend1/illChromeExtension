@@ -70,3 +70,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error(error));
+
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.url) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      let activeTab = tabs[0];
+      if (activeTab.url.includes("kingcountylibrarysystem")) {
+        chrome.storage.local.set({ isKCLS: true });
+      } else {
+        chrome.storage.local.set({ isKCLS: false });
+      }
+    });
+  }
+});
