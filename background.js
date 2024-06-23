@@ -66,3 +66,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   });
   return true;
 });
+
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
