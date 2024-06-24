@@ -18,6 +18,10 @@ h1 {
   margin: 1rem;
 }
 
+.subtitle {
+  text-align: center;
+}
+
 .sidebar-header {
   display: flex;
   justify-content: space-between;
