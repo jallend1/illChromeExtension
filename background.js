@@ -59,12 +59,16 @@ chrome.contextMenus.onClicked.addListener((item) => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    chrome.scripting.executeScript({
-      target: { tabId: activeTab.id },
-      files: [`./scripts/${request.data}.js`],
-    });
-    // Sends a response
-    sendResponse({ response: "Message received" });
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: activeTab.id },
+        files: [`./scripts/${request.data}.js`],
+      },
+      () => {
+        // Sends response once script is fully executed
+        sendResponse({ response: "Message received" });
+      }
+    );
   });
   return true;
 });

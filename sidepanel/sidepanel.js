@@ -26,10 +26,11 @@ const initiateScript = (scriptName) => {
       // Send message to background.js to run the script
       chrome.runtime.sendMessage(
         { command: scriptName, data: scriptName },
-        function (response) {
+        async (response) => {
           // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
           if (scriptName === "copyWorldShareAddress") {
-            extractAddressFromStorage();
+            await navigator.clipboard.writeText("");
+            await extractAddressFromStorage();
           }
         }
       );
@@ -44,19 +45,18 @@ buttons.forEach((button) => {
   });
 });
 
-const extractAddressFromStorage = () => {
-  chrome.storage.local.get("addressString", (result) => {
-    if (result.addressString) {
-      navigator.clipboard
-        .writeText(result.addressString)
-        .then(() => {
-          chrome.storage.local.remove("addressString");
-        })
-        .catch((error) => {
-          console.error("Failed to copy address to clipboard", error);
-        });
+const extractAddressFromStorage = async () => {
+  const result = await new Promise((resolve) =>
+    chrome.storage.local.get("addressString", resolve)
+  );
+  if (result.addressString) {
+    try {
+      await navigator.clipboard.writeText(result.addressString);
+      chrome.storage.local.remove("addressString");
+    } catch (error) {
+      console.error("Failed to copy address to clipboard", error);
     }
-  });
+  }
 };
 
 const errorModal = (data) => {

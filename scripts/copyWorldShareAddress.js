@@ -127,7 +127,7 @@ function copyWorldShareAddress() {
 
   const addressString = createAddressString();
   chrome.storage.local.set({ addressString: addressString }, () => {
-    console.log("Address saved to chrome.storage.local" + addressString);
+    // console.log("Address saved to chrome.storage.local" + addressString);
   });
 }
 
