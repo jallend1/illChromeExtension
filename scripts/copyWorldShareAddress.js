@@ -126,15 +126,9 @@ function copyWorldShareAddress() {
   };
 
   const addressString = createAddressString();
-  window.focus();
-  navigator.clipboard
-    .writeText(addressString)
-    .then(() => {
-      console.log("Address copied to clipboard");
-    })
-    .catch((error) => {
-      console.error("Failed to copy address to clipboard", error);
-    });
+  chrome.storage.local.set({ addressString: addressString }, () => {
+    console.log("Address saved to chrome.storage.local" + addressString);
+  });
 }
 
 copyWorldShareAddress();

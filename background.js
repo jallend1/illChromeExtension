@@ -63,6 +63,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       target: { tabId: activeTab.id },
       files: [`./scripts/${request.data}.js`],
     });
+    // Sends a response
+    sendResponse({ response: "Message received" });
   });
   return true;
 });

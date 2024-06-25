@@ -23,10 +23,14 @@ const initiateScript = (scriptName) => {
       );
       return;
     } else {
+      // Send message to background.js to run the script
       chrome.runtime.sendMessage(
         { command: scriptName, data: scriptName },
         function (response) {
-          console.log(response);
+          // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
+          if (scriptName === "copyWorldShareAddress") {
+            extractAddressFromStorage();
+          }
         }
       );
     }
@@ -39,6 +43,21 @@ buttons.forEach((button) => {
     initiateScript(buttonId);
   });
 });
+
+const extractAddressFromStorage = () => {
+  chrome.storage.local.get("addressString", (result) => {
+    if (result.addressString) {
+      navigator.clipboard
+        .writeText(result.addressString)
+        .then(() => {
+          chrome.storage.local.remove("addressString");
+        })
+        .catch((error) => {
+          console.error("Failed to copy address to clipboard", error);
+        });
+    }
+  });
+};
 
 const errorModal = (data) => {
   const modal = document.createElement("div");
