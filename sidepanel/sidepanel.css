@@ -35,11 +35,11 @@ h1 {
   border-radius: 50%;
 }
 
-#logo-left {
+.logo-left-animation {
   animation: spin-left 5s linear infinite;
 }
 
-#logo-right {
+.logo-right-animation {
   animation: spin-right 5s linear infinite;
 }
 

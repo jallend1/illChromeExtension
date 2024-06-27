@@ -1,4 +1,6 @@
 const buttons = document.querySelectorAll("button");
+const logoLeft = document.querySelector("#logo-left");
+const logoRight = document.querySelector("#logo-right");
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -118,3 +120,11 @@ const errorModal = (data) => {
     modal.remove();
   }, 3000);
 };
+
+logoLeft.addEventListener("click", () => {
+  logoLeft.classList.toggle("logo-left-animation");
+});
+
+logoRight.addEventListener("click", () => {
+  logoRight.classList.toggle("logo-right-animation");
+});
