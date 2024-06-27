@@ -1,4 +1,6 @@
 function pasteToEvergreen() {
+  // TODO: Consolidate all this duplicative work into a single function
+
   const updateTitle = (title) => {
     const titleInput = document.querySelector("#title-input");
     titleInput.value = "ILL Title - " + title;
@@ -39,19 +41,6 @@ function pasteToEvergreen() {
     addressInput.dispatchEvent(event);
   };
 
-  // const extractArrayFromClipboard = () => {
-  //   navigator.clipboard.readText().then((text) => {
-  //     const array = JSON.parse(text);
-  //     updateTitle(array[2].title);
-  //     updateCallNumber(array[1].requestNumber);
-  //     updatePatronBarcode(array[3].patronID);
-  //     updatePatronAddress(array[0].addressString);
-  //     const kclsBarcodeInput = document.querySelector('#item-barcode-input');
-  //     kclsBarcodeInput.focus();
-  //     console.log(array);
-  //   });
-  // };
-
   const extractArrayFromLocalStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
       if (!result.requestData) {
@@ -59,19 +48,17 @@ function pasteToEvergreen() {
         return;
       } else {
         let storageData = JSON.parse(result.requestData);
-        // const array = JSON.parse(localStorage.getItem("clipboardData"));
-        console.log(storageData);
         updateTitle(storageData[2].title);
         updateCallNumber(storageData[1].requestNumber);
         updatePatronBarcode(storageData[3].patronID);
         updatePatronAddress(storageData[0].addressString);
+        // TODO: Seems impossible to focus on the item barcode input field when activated from the sidebar
         const kclsBarcodeInput = document.querySelector("#item-barcode-input");
         kclsBarcodeInput.focus();
       }
     });
   };
 
-  // extractArrayFromClipboard();
   extractArrayFromLocalStorage();
 }
 pasteToEvergreen();
