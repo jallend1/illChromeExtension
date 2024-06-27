@@ -7,6 +7,7 @@ sectionHeaders.forEach((header) => {
   header.addEventListener("click", () => {
     const mainSection = header.parentElement.nextElementSibling;
     mainSection.classList.toggle("hidden");
+    // TODO: Add an arrow to indicate that the section is collapsible
   });
 });
 
