@@ -31,6 +31,9 @@ const initiateScript = (scriptName) => {
           if (scriptName === "copyWorldShareAddress") {
             await navigator.clipboard.writeText("");
             await extractAddressFromStorage();
+          } else if (scriptName === "overdueNotice") {
+            await navigator.clipboard.writeText("");
+            await extractOverdueFromStorage();
           }
         }
       );
@@ -45,6 +48,7 @@ buttons.forEach((button) => {
   });
 });
 
+// TODO: Obviously combine these two functions into one
 const extractAddressFromStorage = async () => {
   const result = await new Promise((resolve) =>
     chrome.storage.local.get("addressString", resolve)
@@ -55,6 +59,20 @@ const extractAddressFromStorage = async () => {
       chrome.storage.local.remove("addressString");
     } catch (error) {
       console.error("Failed to copy address to clipboard", error);
+    }
+  }
+};
+
+const extractOverdueFromStorage = async () => {
+  const result = await new Promise((resolve) =>
+    chrome.storage.local.get("overdueNotice", resolve)
+  );
+  if (result.overdueNotice) {
+    try {
+      await navigator.clipboard.writeText(result.overdueNotice);
+      chrome.storage.local.remove("overdueNotice");
+    } catch (error) {
+      console.error("Failed to copy overdue notice to clipboard", error);
     }
   }
 };
