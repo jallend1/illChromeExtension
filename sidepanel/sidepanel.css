@@ -111,7 +111,7 @@ button:hover {
 
 .collapsible {
   overflow: hidden;
-  transition: max-height 500ms ease-out, opacity 500ms ease-out;
+  transition: max-height 300ms ease-out, opacity 300ms ease-out;
   opacity: 1;
   max-height: 1000px;
   display: flex;
@@ -120,7 +120,7 @@ button:hover {
 .collapsible.collapsed {
   max-height: 0;
   opacity: 0;
-  transition: max-height 500ms ease-out, opacity 500ms ease-out;
+  transition: max-height 300ms ease-out, opacity 300ms ease-out;
 }
 
 .hidden {

@@ -1,15 +1,6 @@
 const buttons = document.querySelectorAll("button");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
-const sectionHeaders = document.querySelectorAll("section > header > h2");
-
-sectionHeaders.forEach((header) => {
-  header.addEventListener("click", () => {
-    const mainSection = header.parentElement.nextElementSibling;
-    mainSection.classList.toggle("hidden");
-    // TODO: Add an arrow to indicate that the section is collapsible
-  });
-});
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -153,7 +144,7 @@ collapseToggle.forEach((toggle) => {
       toggle.textContent = "Expand";
       setTimeout(() => {
         mainSection.classList.add("hidden");
-      }, 500);
+      }, 300);
     }
     if (toggle.src.includes("collapse")) {
       toggle.src = chrome.runtime.getURL("images/expand.svg");
