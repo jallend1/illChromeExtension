@@ -70,6 +70,11 @@ section {
   border-top: solid 1px #fff;
 }
 
+img {
+  height: 15px;
+  padding: 1rem;
+}
+
 section header {
   display: flex;
   justify-content: space-between;

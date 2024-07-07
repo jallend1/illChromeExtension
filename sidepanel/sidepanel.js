@@ -138,14 +138,13 @@ logoRight.addEventListener("click", () => {
   logoRight.classList.toggle("logo-right-animation");
 });
 
-const collapseToggle = document.querySelectorAll(".collapsible");
+const collapseToggle = document.querySelectorAll("img.collapsible");
 
 collapseToggle.forEach((toggle) => {
   toggle.addEventListener("click", () => {
     const mainSection = toggle.parentElement.nextElementSibling;
     if (mainSection.classList.contains("collapsed")) {
       mainSection.classList.remove("hidden");
-      toggle.textContent = "Collapse";
       requestAnimationFrame(() => {
         mainSection.classList.remove("collapsed");
       });
@@ -155,6 +154,13 @@ collapseToggle.forEach((toggle) => {
       setTimeout(() => {
         mainSection.classList.add("hidden");
       }, 500);
+    }
+    if (toggle.src.includes("collapse")) {
+      console.log(toggle.src);
+      toggle.src = chrome.runtime.getURL("images/expand.svg");
+    } else {
+      console.log(toggle.src);
+      toggle.src = chrome.runtime.getURL("images/collapse.svg");
     }
   });
 });
