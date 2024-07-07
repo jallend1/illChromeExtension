@@ -137,3 +137,24 @@ logoLeft.addEventListener("click", () => {
 logoRight.addEventListener("click", () => {
   logoRight.classList.toggle("logo-right-animation");
 });
+
+const collapseToggle = document.querySelectorAll(".collapsible");
+
+collapseToggle.forEach((toggle) => {
+  toggle.addEventListener("click", () => {
+    const mainSection = toggle.parentElement.nextElementSibling;
+    if (mainSection.classList.contains("collapsed")) {
+      mainSection.classList.remove("hidden");
+      toggle.textContent = "Collapse";
+      requestAnimationFrame(() => {
+        mainSection.classList.remove("collapsed");
+      });
+    } else {
+      mainSection.classList.add("collapsed");
+      toggle.textContent = "Expand";
+      setTimeout(() => {
+        mainSection.classList.add("hidden");
+      }, 500);
+    }
+  });
+});
