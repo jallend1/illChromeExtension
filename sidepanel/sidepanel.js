@@ -156,10 +156,8 @@ collapseToggle.forEach((toggle) => {
       }, 500);
     }
     if (toggle.src.includes("collapse")) {
-      console.log(toggle.src);
       toggle.src = chrome.runtime.getURL("images/expand.svg");
     } else {
-      console.log(toggle.src);
       toggle.src = chrome.runtime.getURL("images/collapse.svg");
     }
   });
