@@ -75,6 +75,13 @@ section h2 {
   margin-bottom: 1rem;
 }
 
+section main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 button {
   font-size: 1.15rem;
   background-color: transparent;
