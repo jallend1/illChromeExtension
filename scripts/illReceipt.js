@@ -1,3 +1,5 @@
+// TODO: Set up error modal handling
+
 function illReceipt() {
   const requestDataInput = document.getElementById("requestData");
   const submitButton = document.getElementById("submit");

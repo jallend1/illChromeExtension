@@ -129,7 +129,7 @@ function copyFromOCLC() {
   };
 
   const checkLenderRequirements = () => {
-    const paperworkLibraries = ["DLC"];
+    const paperworkLibraries = ["COW", "DLC", "YEP"];
     const nodeList = document.querySelectorAll(
       'span[data="lenderString.currentSupplier.symbol"]'
     );
