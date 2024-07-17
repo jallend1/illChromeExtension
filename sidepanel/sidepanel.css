@@ -13,7 +13,7 @@ body {
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   text-align: center;
   margin: 1rem;
 }
@@ -30,8 +30,8 @@ h1 {
 }
 
 .sidebar-header img {
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
 }
 
@@ -82,7 +82,7 @@ section header {
 }
 
 section h2 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   margin-bottom: 1rem;
 }
 
@@ -94,7 +94,7 @@ section main {
 }
 
 button {
-  font-size: 1.15rem;
+  font-size: 1rem;
   background-color: transparent;
   border: solid 3px #ffa260;
   color: white;

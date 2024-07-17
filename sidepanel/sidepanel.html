@@ -23,7 +23,7 @@
       />
     </header>
     <main>
-      <section>
+      <section class="scripts">
         <header>
           <h2>Entering ILLs</h2>
           <img
@@ -39,7 +39,7 @@
           </button>
         </main>
       </section>
-      <section>
+      <section class="scripts">
         <header>
           <h2>Mailroom</h2>
           <img
@@ -50,33 +50,25 @@
         </header>
         <main class="collapsible">
           <button id="copyWorldShareAddress">
-            Copy Address from WorldShare for Dymo
+            Copy WorldShare Address for Dymo
           </button>
         </main>
       </section>
       <section class="scripts">
         <header>
           <h2>Patrons</h2>
-          <img
-            class="collapsible"
-            src="../images/collapse.svg"
-            alt="Collapse"
-          />
+          <img class="collapsible" src="../images/expand.svg" alt="Collapse" />
         </header>
-        <main>
+        <main class="collapsible hidden collapsed">
           <button id="overdueNotice">Generate an Overdue Letter</button>
         </main>
       </section>
       <section class="scripts">
         <header>
           <h2>Emergency Operations</h2>
-          <img
-            class="collapsible"
-            src="../images/collapse.svg"
-            alt="Collapse"
-          />
+          <img class="collapsible" src="../images/expand.svg" alt="Collapse" />
         </header>
-        <main>
+        <main class="hidden collapsed collapsible">
           <button id="illReceipt">Generate an ILL receipt</button>
         </main>
       </section>
