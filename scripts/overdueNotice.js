@@ -32,7 +32,11 @@ function overdueNotice() {
     // If lost status, extracts title from two columns earlier and pushes it to overdueTitles
     divs.forEach((div, index) => {
       if (div.textContent === " Lost ") {
-        overdueTitles.push(divs[index - 2].textContent);
+        const bookTitle = divs[index - 2].textContent;
+        // If bookTitle starts with "ILL Title - ", push it to overdueTitles
+        if (bookTitle.startsWith("ILL Title - ")) {
+          overdueTitles.push(bookTitle);
+        }
       }
     });
   };
