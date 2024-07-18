@@ -124,7 +124,6 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
       let imgURL = chrome.runtime.getURL("images/jason-128.png");
       let headerColor = "#4CAF50";
       let result = "";
-      // await navigator.clipboard.writeText(data);
       // Stores overdue notice in local storage for sidepanel to access
       chrome.storage.local.set({ overdueNotice: data });
       if (overdueTitles.length === 0) {
