@@ -15,9 +15,14 @@ const updateAddress = () => {
     familyNameInput.dispatchEvent(event);
   };
 
-  const waitForOptionsAndSelect = async (optionText, selector, inputField) => {
-    // const selector = '#ngb-typeahead-1 button[role="option"]';
-    inputField.click();
+  const waitForOptionsAndSelect = async (
+    optionText,
+    selector,
+    inputSelector
+  ) => {
+    const inputField = document.querySelector(inputSelector);
+    inputField.click(); // Opens the dropdown
+    // Options are loaded only after clicking the dropdown, so wait for them to populate
     let attempts = 0;
 
     const selectOption = () => {
@@ -27,7 +32,7 @@ const updateAddress = () => {
       );
 
       if (targetOption) {
-        targetOption.click(); // This simulates selecting the option
+        targetOption.click();
         console.log(
           `Option "${optionText}" selected after ${attempts} attempts.`
         );
@@ -43,32 +48,31 @@ const updateAddress = () => {
     selectOption();
   };
 
-  // Step 3: Call the function with the desired option text
-  const internetAccessOptionSelector = "#au-net_access_level-input-101";
-  const permissionGroupOptionSelector =
-    '#ngb-typeahead-1 button[role="option"]';
-  const districtofResidenceOptionSelector = "#asc-12-input-210182";
-  const districtOfResidenceInput = document.querySelector("#asc-12-input");
-  const permissionGroupInput = document.querySelector("#eg-combobox-0");
-  const internetAccessInput = document.querySelector(
-    "#au-net_access_level-input"
-  );
+  //   Data to navigate the dropdowns and fill in the fields
+  const selections = [
+    {
+      field: "Patron Permission Type",
+      optionText: "ILL",
+      optionSelector: '#ngb-typeahead-1 button[role="option"]',
+      inputSelector: "#eg-combobox-0",
+    },
+    {
+      field: "Internet Access Level",
+      optionText: "No Access",
+      optionSelector: "#au-net_access_level-input-101",
+      inputSelector: "#au-net_access_level-input",
+    },
+    {
+      field: "Library District of Residence",
+      optionText: "Unset",
+      optionSelector: "#asc-12-input-210182",
+      inputSelector: "#asc-12-input",
+    },
+  ];
 
-  waitForOptionsAndSelect(
-    "ILL",
-    permissionGroupOptionSelector,
-    permissionGroupInput
-  );
-  waitForOptionsAndSelect(
-    "No Access",
-    internetAccessOptionSelector,
-    internetAccessInput
-  );
-  waitForOptionsAndSelect(
-    "Unset",
-    districtofResidenceOptionSelector,
-    districtOfResidenceInput
-  );
+  selections.forEach(({ optionText, optionSelector, inputSelector }) => {
+    waitForOptionsAndSelect(optionText, optionSelector, inputSelector);
+  });
 
   fillUniversalSettings();
 };
