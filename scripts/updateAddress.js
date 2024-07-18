@@ -13,7 +13,6 @@ const updateAddress = () => {
 
     dobInput.dispatchEvent(event);
     familyNameInput.dispatchEvent(event);
-    permissionGroupInput.dispatchEvent(event);
   };
 
   const waitForOptionsAndSelect = async (optionText, selector, inputField) => {
@@ -45,10 +44,11 @@ const updateAddress = () => {
   };
 
   // Step 3: Call the function with the desired option text
-  const internetAccessOptionSelector =
-    '#ngb-typeahead-2-0 button[role="option"]';
+  const internetAccessOptionSelector = "#au-net_access_level-input-101";
   const permissionGroupOptionSelector =
     '#ngb-typeahead-1 button[role="option"]';
+  const districtofResidenceOptionSelector = "#asc-12-input-210182";
+  const districtOfResidenceInput = document.querySelector("#asc-12-input");
   const permissionGroupInput = document.querySelector("#eg-combobox-0");
   const internetAccessInput = document.querySelector(
     "#au-net_access_level-input"
@@ -63,6 +63,11 @@ const updateAddress = () => {
     "No Access",
     internetAccessOptionSelector,
     internetAccessInput
+  );
+  waitForOptionsAndSelect(
+    "Unset",
+    districtofResidenceOptionSelector,
+    districtOfResidenceInput
   );
 
   fillUniversalSettings();
