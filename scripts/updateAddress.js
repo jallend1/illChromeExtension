@@ -1,18 +1,21 @@
-console.log("Here we go!");
 const updateAddress = () => {
   const fillUniversalSettings = () => {
-    const dobInput = document.querySelector("#au-dob-input");
-    const familyNameInput = document.querySelector("#au-family_name-input");
-    dobInput.value = "1980-07-16";
-    familyNameInput.value = "ILL DEPT";
+    const inputs = {
+      "#au-dob-input": "1980-07-16",
+      "#au-family_name-input": "ILL DEPT",
+    };
 
-    const event = new Event("input", {
-      bubbles: true,
-      cancelable: true,
+    Object.entries(inputs).forEach(([selector, value]) => {
+      const input = document.querySelector(selector);
+      if (input) {
+        input.value = value;
+        const event = new Event("input", {
+          bubbles: true,
+          cancelable: true,
+        });
+        input.dispatchEvent(event);
+      }
     });
-
-    dobInput.dispatchEvent(event);
-    familyNameInput.dispatchEvent(event);
   };
 
   const waitForOptionsAndSelect = async (
@@ -76,3 +79,5 @@ const updateAddress = () => {
 
   fillUniversalSettings();
 };
+
+updateAddress();
