@@ -128,6 +128,14 @@ function copyFromOCLC() {
     return addressString;
   };
 
+  const checkLendingFee = () => {
+    const maxCostField = document.querySelector(
+      'input[name="billing.maxCost.amountAsString"]'
+    );
+    if (maxCostField.value === "0.00") alert("This request is free of charge.");
+    else alert("This request has a lending fee.");
+  };
+
   const checkLenderRequirements = () => {
     const paperworkLibraries = ["COW", "DLC", "YEP"];
     const nodeList = document.querySelectorAll(
