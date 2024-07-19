@@ -132,8 +132,8 @@ function copyFromOCLC() {
     const maxCostField = document.querySelector(
       'input[name="billing.maxCost.amountAsString"]'
     );
-    if (maxCostField.value === "0.00") alert("This request is free of charge.");
-    else alert("This request has a lending fee.");
+    // Returns false if the max cost field is anything other than $0.00
+    return maxCostField.value !== "0.00";
   };
 
   const checkLenderRequirements = () => {
@@ -194,6 +194,8 @@ function copyFromOCLC() {
       'input[data="requester.patron.userId"]'
     );
     const patronID = allPatronIDs[allPatronIDs.length - 1].value;
+    const isLendingFee = checkLendingFee();
+    console.log(isLendingFee);
 
     return [{ addressString }, { requestNumber }, { title }, { patronID }];
   };
