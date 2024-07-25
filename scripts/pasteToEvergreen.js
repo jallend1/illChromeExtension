@@ -52,7 +52,8 @@ function pasteToEvergreen() {
         updateCallNumber(storageData[1].requestNumber);
         updatePatronBarcode(storageData[3].patronID);
         updatePatronAddress(storageData[0].addressString);
-        // TODO: Seems impossible to focus on the item barcode input field when activated from the sidebar
+        // TODO: Seems impossible to focus on the item barcode from sidebar
+        // But functions as expected with keyboard shortcut?
         const kclsBarcodeInput = document.querySelector("#item-barcode-input");
         kclsBarcodeInput.focus();
       }

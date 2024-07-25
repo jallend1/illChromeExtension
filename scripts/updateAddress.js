@@ -9,11 +9,17 @@ const updateAddress = () => {
       const input = document.querySelector(selector);
       if (input) {
         input.value = value;
-        const event = new Event("input", {
+        const inputEvent = new Event("input", {
           bubbles: true,
           cancelable: true,
         });
-        input.dispatchEvent(event);
+        input.dispatchEvent(inputEvent);
+        // Change event required in order to get the DOB to save
+        const changeEvent = new Event("change", {
+          bubbles: true,
+          cancelable: true,
+        });
+        input.dispatchEvent(changeEvent);
       }
     });
   };
@@ -24,6 +30,7 @@ const updateAddress = () => {
     inputSelector
   ) => {
     const inputField = document.querySelector(inputSelector);
+    console.log(inputField, inputSelector);
     inputField.click(); // Opens the dropdown
     // Options are loaded only after clicking the dropdown, so wait for them to populate
     let attempts = 0;
