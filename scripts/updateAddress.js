@@ -1,4 +1,4 @@
-const updateAddress = () => {
+function updateAddress() {
   const fillUniversalSettings = () => {
     const inputs = {
       "#au-dob-input": "1980-07-16",
@@ -30,7 +30,7 @@ const updateAddress = () => {
     inputSelector
   ) => {
     const inputField = document.querySelector(inputSelector);
-    console.log(inputField, inputSelector);
+
     inputField.click(); // Opens the dropdown
     // Options are loaded only after clicking the dropdown, so wait for them to populate
     let attempts = 0;
@@ -52,6 +52,7 @@ const updateAddress = () => {
         attempts++;
       } else {
         console.log(`Option "${optionText}" not found.`);
+        console.log(inputField, options);
       }
     };
 
@@ -63,8 +64,9 @@ const updateAddress = () => {
     {
       field: "Patron Permission Type",
       optionText: "ILL",
-      optionSelector: '#ngb-typeahead-1 button[role="option"]',
-      inputSelector: "#eg-combobox-0",
+      optionSelector:
+        '[role="listbox"].dropdown-menu.show button[role="option"]',
+      inputSelector: 'eg-combobox[placeholder="Profile Group"] input',
     },
     {
       field: "Internet Access Level",
@@ -85,6 +87,6 @@ const updateAddress = () => {
   });
 
   fillUniversalSettings();
-};
+}
 
 updateAddress();
