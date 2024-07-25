@@ -43,16 +43,12 @@ function updateAddress() {
 
       if (targetOption) {
         targetOption.click();
-        console.log(
-          `Option "${optionText}" selected after ${attempts} attempts.`
-        );
       } else if (attempts < 10) {
         // Retry up to 10 times
         setTimeout(selectOption, 100); // Wait 100ms before retrying
         attempts++;
       } else {
         console.log(`Option "${optionText}" not found.`);
-        console.log(inputField, options);
       }
     };
 

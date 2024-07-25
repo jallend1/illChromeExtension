@@ -195,9 +195,14 @@ function copyFromOCLC() {
     );
     const patronID = allPatronIDs[allPatronIDs.length - 1].value;
     const isLendingFee = checkLendingFee();
-    console.log(isLendingFee);
 
-    return [{ addressString }, { requestNumber }, { title }, { patronID }];
+    return [
+      { addressString },
+      { requestNumber },
+      { title },
+      { patronID },
+      { isLendingFee },
+    ];
   };
 
   const convertDataToJSON = (data) => {
