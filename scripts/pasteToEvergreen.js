@@ -45,7 +45,7 @@ function pasteToEvergreen() {
     const lendingFeeAlert = document.createElement("div");
     lendingFeeAlert.id = "lending-fee-alert";
     lendingFeeAlert.innerHTML = `
-      <div id="lending-fee" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <div id="lending-fee" class="alert alert-danger" role="alert">
         <strong>Warning:</strong> This request may have a lending fee. If so, don't forget to add it to the patron record.
         <button type="button" class="btn-close" aria-label="Close">x</button>
       </div>
@@ -53,6 +53,10 @@ function pasteToEvergreen() {
     document.body.appendChild(lendingFeeAlert);
     const closeButton = document.querySelector(".btn-close");
     closeButton.addEventListener("click", closeAlert);
+    // Automatically close the alert after 10 seconds
+    setTimeout(() => {
+      closeAlert();
+    }, 10000);
   };
 
   const closeAlert = () => {
