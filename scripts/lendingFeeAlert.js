@@ -1,9 +1,10 @@
-const statusModal = (data, backgroundColor, imgURL) => {
-  const modal = document.createElement("div");
-  modal.setAttribute("id", "modal");
-  modal.setAttribute(
-    "style",
-    `
+function lendingFeeAlert() {
+  const statusModal = (data, backgroundColor, imgURL) => {
+    const modal = document.createElement("div");
+    modal.setAttribute("id", "modal");
+    modal.setAttribute(
+      "style",
+      `
       position: fixed;
       top: 50%;
       left: 50%;
@@ -19,8 +20,8 @@ const statusModal = (data, backgroundColor, imgURL) => {
       border: 1px solid #000;
       box-shadow: 0 0 10px 5px #000;
     `
-  );
-  modal.innerHTML = `
+    );
+    modal.innerHTML = `
     <div>  
     <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
     <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
@@ -31,20 +32,23 @@ const statusModal = (data, backgroundColor, imgURL) => {
     </div>
     `;
 
-  document.body.appendChild(modal);
-  setTimeout(() => {
-    modal.remove();
-  }, 4000);
-};
+    document.body.appendChild(modal);
+    setTimeout(() => {
+      modal.remove();
+    }, 4000);
+  };
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.data === "lendingFeeAlert") {
-    let imgURL = chrome.runtime.getURL("images/fee.png");
-    statusModal(
-      `<strong>Warning:</strong> This request may have a lending fee of ${request.lendingFee}. If so, don't forget to add it to the patron record.`,
-      "#e85e6a",
-      imgURL
-    );
-    sendResponse({ response: "Modal displayed" }); // Send response back to background script to eliminate error message
-  }
-});
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.data === "lendingFeeAlert") {
+      let imgURL = chrome.runtime.getURL("images/fee.png");
+      statusModal(
+        `<strong>Warning:</strong> This request may have a lending fee of ${request.lendingFee}. If so, don't forget to add it to the patron record.`,
+        "#e85e6a",
+        imgURL
+      );
+      sendResponse({ response: "Modal displayed" }); // Send response back to background script to eliminate error message
+    }
+  });
+}
+
+lendingFeeAlert();
