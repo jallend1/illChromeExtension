@@ -82,7 +82,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
       console.log(result);
-      if (result.lendingFee) {
+      if (result.lendingFee && result.lendingFee !== "0.00") {
         // Send message to content script to display lending fee alert
         // chrome.tabs.sendMessage(tabId, { data: "lendingFeeAlert" });
         chrome.scripting.executeScript(
