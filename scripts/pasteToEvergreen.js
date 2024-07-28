@@ -41,68 +41,6 @@ function pasteToEvergreen() {
     addressInput.dispatchEvent(event);
   };
 
-  // const lendingFeeAlertModal = () => {
-  //   const lendingFeeAlert = document.createElement("div");
-  //   lendingFeeAlert.id = "lending-fee-alert";
-  //   lendingFeeAlert.innerHTML = `
-  //     <div id="lending-fee" class="alert alert-danger" role="alert">
-  //       <strong>Warning:</strong> This request may have a lending fee. If so, don't forget to add it to the patron record.
-  //       <button type="button" class="btn-close" aria-label="Close">x</button>
-  //     </div>
-  //   `;
-  //   document.body.appendChild(lendingFeeAlert);
-  //   const closeButton = document.querySelector(".btn-close");
-  //   closeButton.addEventListener("click", closeAlert);
-  //   // Automatically close the alert after 10 seconds
-  //   setTimeout(() => {
-  //     closeAlert();
-  //   }, 10000);
-  // };
-
-  // const closeAlert = () => {
-  //   const alert = document.querySelector("#lending-fee");
-  //   alert.remove();
-  // };
-
-  const statusModal = (data, backgroundColor, imgURL) => {
-    const modal = document.createElement("div");
-    modal.setAttribute("id", "modal");
-    modal.setAttribute(
-      "style",
-      `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 1rem;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #000;
-      
-      border: 1px solid #000;
-      box-shadow: 0 0 10px 5px #000;
-    `
-    );
-    modal.innerHTML = `
-    <div>  
-    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-    <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
-    </div>
-    <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-    <p>${data}<p>
-    </div>
-    </div>
-    `;
-
-    document.body.appendChild(modal);
-    setTimeout(() => {
-      modal.remove();
-    }, 4000);
-  };
-
   const extractArrayFromLocalStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
       if (!result.requestData) {
@@ -116,16 +54,6 @@ function pasteToEvergreen() {
         updatePatronAddress(storageData[0].addressString);
         // TODO: Seems impossible to focus on the item barcode from sidebar
         // But functions as expected with keyboard shortcut?
-        console.log(storageData[4].isLendingFee);
-        if (storageData[4].isLendingFee === false) {
-          let imgURL = chrome.runtime.getURL("images/fee.png");
-          // lendingFeeAlertModal();
-          statusModal(
-            "<strong>Warning:</strong> This request may have a lending fee. If so, don't forget to add it to the patron record.",
-            "#e85e6a",
-            imgURL
-          );
-        }
         const kclsBarcodeInput = document.querySelector("#item-barcode-input");
         kclsBarcodeInput.focus();
       }

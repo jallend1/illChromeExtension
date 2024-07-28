@@ -38,15 +38,53 @@ function lendingFeeAlert() {
     }, 4000);
   };
 
+  const checkILLTitle = (attempts = 0) => {
+    return new Promise((resolve, reject) => {
+      const attemptCheck = (currentAttempt) => {
+        const titleAnchor = document.querySelector(
+          "a[href*='/catalog/record/']"
+        );
+        if (titleAnchor && titleAnchor.textContent.startsWith("ILL Title - ")) {
+          console.log("Attempts: ", attempts, "ILL Title found");
+          resolve(true);
+        } else if (titleAnchor) {
+          console.log(
+            "Attempts",
+            attempts,
+            "Not an ILL title: ",
+            titleAnchor.textContent
+          );
+          resolve(false);
+        } else if (currentAttempt < 15) {
+          setTimeout(() => attemptCheck(currentAttempt + 1), 100);
+        } else {
+          console.log("Title not found after 15 attempts");
+          resolve(false);
+        }
+      };
+      attemptCheck(attempts);
+    });
+  };
+
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.data === "lendingFeeAlert") {
-      let imgURL = chrome.runtime.getURL("images/fee.png");
-      statusModal(
-        `<strong>Warning:</strong> This request may have a lending fee of ${request.lendingFee}. If so, don't forget to add it to the patron record.`,
-        "#e85e6a",
-        imgURL
-      );
-      sendResponse({ response: "Modal displayed" }); // Send response back to background script to eliminate error message
+      checkILLTitle()
+        .then((isILLTitle) => {
+          if (isILLTitle) {
+            let imgURL = chrome.runtime.getURL("images/fee.png");
+            statusModal(
+              `<strong>Warning:</strong> This request may have a lending fee of ${request.lendingFee}. If so, don't forget to add it to the patron record.`,
+              "#e85e6a",
+              imgURL
+            );
+          }
+          sendResponse({ response: "Modal displayed" });
+        })
+        .catch((error) => {
+          console.error(error);
+          sendResponse({ response: "Error occurred" });
+        });
+      return true; // Indicate that the response will be sent asynchronously and prevents console errors
     }
   });
 }

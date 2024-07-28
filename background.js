@@ -81,10 +81,7 @@ chrome.sidePanel
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
-      console.log(result);
-      if (result.lendingFee && result.lendingFee !== "0.00") {
-        // Send message to content script to display lending fee alert
-        // chrome.tabs.sendMessage(tabId, { data: "lendingFeeAlert" });
+      if (result.lendingFee && result.lendingFee === "0.00") {
         chrome.scripting.executeScript(
           {
             target: { tabId: tabId },
@@ -96,14 +93,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
               tabId,
               { data: "lendingFeeAlert", lendingFee: result.lendingFee },
               (response) => {
-                if (chrome.runtime.lastError) {
-                  console.error(
-                    "Error sending message:",
-                    chrome.runtime.lastError
-                  );
-                } else {
-                  console.log("Message sent successfully:", response);
-                }
+                chrome.runtime.lastError
+                  ? console.error(
+                      "Error sending message:",
+                      chrome.runtime.lastError
+                    )
+                  : console.log("Message sent successfully:", response);
               }
             );
           }
