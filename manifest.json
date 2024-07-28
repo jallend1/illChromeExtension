@@ -70,5 +70,11 @@
   "side_panel": {
     "default_path": "sidepanel/sidepanel.html",
     "open_at_install": true
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*hold/*"],
+      "js": ["scripts/lendingFeeAlert.js"]
+    }
+  ]
 }

@@ -132,6 +132,7 @@ function copyFromOCLC() {
     const maxCostField = document.querySelector(
       'input[name="billing.maxCost.amountAsString"]'
     );
+    return maxCostField.value;
     // Returns false if the max cost field is anything other than $0.00
     return maxCostField.value !== "0.00";
   };
@@ -251,22 +252,33 @@ function copyFromOCLC() {
     }, 3000);
   };
 
-  async function copyToClipboard(data, requestNum) {
+  async function copyToClipboard(data, requestNum, lendingFee) {
     try {
       let headerColor = "#4CAF50";
       let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
       // Checks for requestData in local storage, and if it exists, removes it
       // TODO: Implement a check to see if the clipboard data matches the page data
-      chrome.storage.local.get("requestData", (result) => {
+      chrome.storage.local.get(["requestData", "lendingFee"], (result) => {
         if (result.requestData) {
           chrome.storage.local.remove("requestData", () => {
             console.log("Previous Request Data removed");
           });
         }
-        chrome.storage.local.set({ requestData: data }, () => {
-          let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
-          statusModal(result, headerColor, imgURL);
-        });
+        if (result.lendingFee) {
+          chrome.storage.local.remove("lendingFee", () => {
+            console.log("Previous Lending Fee removed");
+          });
+        }
+        chrome.storage.local.set(
+          {
+            requestData: data,
+            lendingFee: lendingFee,
+          },
+          () => {
+            let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
+            statusModal(result, headerColor, imgURL);
+          }
+        );
       });
     } catch (err) {
       let result = "";
@@ -282,7 +294,9 @@ function copyFromOCLC() {
     }
   }
 
-  copyToClipboard(stringifiedData, compiledData[1].requestNumber);
+  const lendingFee = checkLendingFee();
+
+  copyToClipboard(stringifiedData, compiledData[1].requestNumber, lendingFee);
 }
 
 copyFromOCLC();

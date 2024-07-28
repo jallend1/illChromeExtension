@@ -76,3 +76,39 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error(error));
+
+// If the tab is updated and the URL includes /hold/, check for lending fee
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
+    chrome.storage.local.get("lendingFee", (result) => {
+      console.log(result);
+      if (result.lendingFee) {
+        // Send message to content script to display lending fee alert
+        // chrome.tabs.sendMessage(tabId, { data: "lendingFeeAlert" });
+        chrome.scripting.executeScript(
+          {
+            target: { tabId: tabId },
+            files: ["./scripts/lendingFeeAlert.js"],
+          },
+          () => {
+            // Send message to content script to display lending fee alert
+            chrome.tabs.sendMessage(
+              tabId,
+              { data: "lendingFeeAlert", lendingFee: result.lendingFee },
+              (response) => {
+                if (chrome.runtime.lastError) {
+                  console.error(
+                    "Error sending message:",
+                    chrome.runtime.lastError
+                  );
+                } else {
+                  console.log("Message sent successfully:", response);
+                }
+              }
+            );
+          }
+        );
+      }
+    });
+  }
+});
