@@ -1,44 +1,28 @@
 function pasteToEvergreen() {
-  // TODO: Consolidate all this duplicative work into a single function
-
-  const updateTitle = (title) => {
-    const titleInput = document.querySelector("#title-input");
-    titleInput.value = "ILL Title - " + title;
+  const updateInputField = (selector, value, prefix = "") => {
+    const inputField = document.querySelector(selector);
+    inputField.value = prefix + value;
     const event = new Event("input", {
       bubbles: true,
       cancelable: true,
     });
-    titleInput.dispatchEvent(event);
+    inputField.dispatchEvent(event);
+  };
+
+  const updateTitle = (title) => {
+    updateInputField("#title-input", title, "ILL Title - ");
   };
 
   const updateCallNumber = (requestNumber) => {
-    const callNumberInput = document.querySelector("#callnumber-input");
-    callNumberInput.value = "IL" + requestNumber;
-    const event = new Event("input", {
-      bubbles: true,
-      cancelable: true,
-    });
-    callNumberInput.dispatchEvent(event);
+    updateInputField("#callnumber-input", requestNumber, "IL");
   };
 
   const updatePatronBarcode = (patronID) => {
-    const patronBarcodeInput = document.querySelector("#patron-barcode-input");
-    patronBarcodeInput.value = patronID;
-    const event = new Event("input", {
-      bubbles: true,
-      cancelable: true,
-    });
-    patronBarcodeInput.dispatchEvent(event);
+    updateInputField("#patron-barcode-input", patronID);
   };
 
   const updatePatronAddress = (addressString) => {
-    const addressInput = document.querySelector("textarea");
-    addressInput.value = addressString;
-    const event = new Event("input", {
-      bubbles: true,
-      cancelable: true,
-    });
-    addressInput.dispatchEvent(event);
+    updateInputField("textarea", addressString);
   };
 
   const extractArrayFromLocalStorage = () => {
