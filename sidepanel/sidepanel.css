@@ -101,7 +101,7 @@ button {
   padding: 0.5rem 1rem;
   border-radius: 5px;
   cursor: pointer;
-  margin: 1rem;
+  margin-top: 1rem;
 }
 
 button:hover {
@@ -125,4 +125,10 @@ button:hover {
 
 .hidden {
   display: none;
+}
+
+.subtitle {
+  font-size: 0.65rem;
+  padding: 0;
+  margin-bottom: 1rem;
 }
