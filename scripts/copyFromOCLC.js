@@ -112,6 +112,7 @@ function copyFromOCLC() {
   // Format addressObject for mail label
   const createAddressString = () => {
     let addressString = "";
+    // Adds Courier to the top of the string if the current lender is on the courier list
     if (checkIfCourierLibrary(extractLenderSymbol()))
       addressString += "Courier\n";
     addressString += checkLenderRequirements();
@@ -149,12 +150,9 @@ function copyFromOCLC() {
   };
 
   const checkLenderRequirements = () => {
-    const paperworkLibraries = ["COW", "DLC", "YEP"];
-    const nodeList = document.querySelectorAll(
-      'span[data="lenderString.currentSupplier.symbol"]'
-    );
-    // OCLC seems to stack requests intermittently -- This pulls the latest
-    const currentLender = nodeList[nodeList.length - 1].innerText;
+    const currentLender = extractLenderSymbol();
+    // List of libraries that would like us to keep their paperwork
+    const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
     // BLP Needs due date extracted from page
     if (currentLender === "BLP") return extractDueDate();
     // Implements WCCLS unique requirements
