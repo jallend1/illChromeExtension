@@ -13,6 +13,8 @@ function copyFromOCLC() {
   };
 
   const convertStateNameToAbbreviation = (stateName) => {
+    // If the stateName is undefined return an empty string
+    if (!stateName) return "";
     const states = {
       Alabama: "AL",
       Alaska: "AK",
@@ -82,7 +84,7 @@ function copyFromOCLC() {
       let nodeList = document.querySelectorAll(
         'span[data="returning.address.region"]'
       );
-      nodeList.length > 0
+      nodeList && nodeList.length > 0
         ? (addressObject[key] = convertStateNameToAbbreviation(
             nodeList[nodeList.length - 1].innerText
           ))
@@ -91,7 +93,7 @@ function copyFromOCLC() {
       let nodeList = document.querySelectorAll(
         `input[data="returning.address.${key}"]`
       );
-      nodeList.length > 0
+      nodeList && nodeList.length > 0
         ? (addressObject[key] = nodeList[nodeList.length - 1].value)
         : (addressObject[key] = null);
     }
