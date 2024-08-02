@@ -454,7 +454,7 @@ function copyFromOCLC() {
     }, 3000);
   };
 
-  async function copyToClipboard(data, requestNum, lendingFee) {
+  async function copyToStorage(data, requestNum, lendingFee) {
     try {
       let headerColor = "#4CAF50";
       let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
@@ -498,7 +498,7 @@ function copyFromOCLC() {
 
   const lendingFee = checkLendingFee();
 
-  copyToClipboard(stringifiedData, compiledData[1].requestNumber, lendingFee);
+  copyToStorage(stringifiedData, compiledData[1].requestNumber, lendingFee);
 }
 
 copyFromOCLC();
