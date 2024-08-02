@@ -151,6 +151,30 @@ function copyFromOCLC() {
     return maxCostField.value !== "0.00";
   };
 
+  // Prompts user for WCCLS barcode
+  const WCCLSprompt = () => {
+    let addressField = "";
+    let barcode = "";
+    let title = "";
+    title = document.querySelector('span[data="resource.title"]').innerText;
+    if (title) addressField = "Title: " + title + "\n";
+    barcode =
+      "WCCLS barcode: " +
+      prompt(
+        "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
+      );
+    if (barcode) addressField += barcode + "\n";
+    return addressField;
+  };
+
+  // Extracts OCLC Due Date
+  const extractDueDate = () => {
+    const nodeList = document.querySelector(
+      'span[data="returning.originalDueToSupplier"]'
+    );
+    return nodeList.innerText ? "OCLC Due Date: " + nodeList.innerText : null;
+  };
+
   const checkLenderRequirements = () => {
     const currentLender = extractLenderSymbol();
     // List of libraries that would like us to keep their paperwork
@@ -357,30 +381,6 @@ function copyFromOCLC() {
       "ZY4",
     ];
     return orbisLibraries.includes(oclcSymbol);
-  };
-
-  // Extracts OCLC Due Date
-  const extractDueDate = () => {
-    const nodeList = document.querySelector(
-      'span[data="returning.originalDueToSupplier"]'
-    );
-    return nodeList.innerText ? "OCLC Due Date: " + nodeList.innerText : null;
-  };
-
-  // Prompts user for WCCLS barcode
-  const WCCLSprompt = () => {
-    let addressField = "";
-    let barcode = "";
-    let title = "";
-    title = document.querySelector('span[data="resource.title"]').innerText;
-    if (title) addressField = "Title: " + title + "\n";
-    barcode =
-      "WCCLS barcode: " +
-      prompt(
-        "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
-      );
-    if (barcode) addressField += barcode + "\n";
-    return addressField;
   };
 
   // Bundles all pertinent information into an object
