@@ -1,5 +1,3 @@
-// TODO: Store address to chrome.storage.local in order to workaround clipboard sidebar issues?
-
 function copyWorldShareAddress() {
   let addressObject = {
     attention: null,
@@ -11,6 +9,9 @@ function copyWorldShareAddress() {
   };
 
   const convertStateNameToAbbreviation = (stateName) => {
+    if (!stateName) {
+      return "NOT LISTED";
+    }
     const states = {
       Alabama: "AL",
       Alaska: "AK",
@@ -71,7 +72,23 @@ function copyWorldShareAddress() {
       "West Virginia": "WV",
       Wisconsin: "WI",
       Wyoming: "WY",
+      Quebec: "QC",
+      "British Columbia": "BC",
+      Alberta: "AB",
+      Manitoba: "MB",
+      Saskatchewan: "SK",
+      "Nova Scotia": "NS",
+      "New Brunswick": "NB",
+      "Newfoundland and Labrador": "NL",
+      "Prince Edward Island": "PE",
+      "Northwest Territories": "NT",
+      "Yukon Territory": "YT",
+      Nunavut: "NU",
+      Ontario: "ON",
     };
+    if (!states[stateName]) {
+      return "NOT FOUND";
+    }
     return states[stateName];
   };
 
@@ -84,7 +101,7 @@ function copyWorldShareAddress() {
         ? (addressObject[key] = convertStateNameToAbbreviation(
             nodeList[nodeList.length - 1].innerText
           ))
-        : (addressObject[key] = "NONE");
+        : (addressObject[key] = "NOT LISTED");
     } else {
       let nodeList = document.querySelectorAll(
         `input[data="returning.address.${key}"]`
@@ -126,9 +143,7 @@ function copyWorldShareAddress() {
   };
 
   const addressString = createAddressString();
-  chrome.storage.local.set({ addressString: addressString }, () => {
-    // console.log("Address saved to chrome.storage.local" + addressString);
-  });
+  chrome.storage.local.set({ addressString: addressString }, () => {});
 }
 
 copyWorldShareAddress();
