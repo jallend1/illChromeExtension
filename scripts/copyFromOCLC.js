@@ -142,7 +142,7 @@ function copyFromOCLC() {
     let addressString = "";
     const currentLender = extractLenderSymbol();
     // Adds Courier to the top of the string if the current lender is on the courier list
-    if (checkIfCourierLibrary(currentLender)) addressString += "Courier\n";
+    if (isCourier(currentLender)) addressString += "Courier\n";
     addressString += checkLenderRequirements(currentLender);
     addressString += formatLenderAddress();
     return addressString;
@@ -197,7 +197,7 @@ function copyFromOCLC() {
     return "";
   };
 
-  const checkIfCourierLibrary = (oclcSymbol) => {
+  const isCourier = (oclcSymbol) => {
     const orbisLibraries = [
       "AHP",
       "ALOHA",
