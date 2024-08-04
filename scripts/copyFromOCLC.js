@@ -111,13 +111,8 @@ function copyFromOCLC() {
     return currentLender;
   };
 
-  // Format addressObject for mail label
-  const createAddressString = () => {
+  const formatLenderAddress = () => {
     let addressString = "";
-    // Adds Courier to the top of the string if the current lender is on the courier list
-    if (checkIfCourierLibrary(extractLenderSymbol()))
-      addressString += "Courier\n";
-    addressString += checkLenderRequirements();
     Object.keys(addressObject).forEach((key) => {
       switch (key) {
         case "attention":
@@ -139,6 +134,17 @@ function copyFromOCLC() {
           break;
       }
     });
+    return addressString;
+  };
+
+  // Format lender address and notes
+  const generateLenderAddressNotes = () => {
+    let addressString = "";
+    const currentLender = extractLenderSymbol();
+    // Adds Courier to the top of the string if the current lender is on the courier list
+    if (checkIfCourierLibrary(currentLender)) addressString += "Courier\n";
+    addressString += checkLenderRequirements(currentLender);
+    addressString += formatLenderAddress();
     return addressString;
   };
 
@@ -175,8 +181,7 @@ function copyFromOCLC() {
     return nodeList.innerText ? "OCLC Due Date: " + nodeList.innerText : null;
   };
 
-  const checkLenderRequirements = () => {
-    const currentLender = extractLenderSymbol();
+  const checkLenderRequirements = (currentLender) => {
     // List of libraries that would like us to keep their paperwork
     const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
     // BLP Needs due date extracted from page
@@ -385,7 +390,7 @@ function copyFromOCLC() {
 
   // Bundles all pertinent information into an object
   const compileRequestData = () => {
-    const addressString = createAddressString();
+    const addressString = generateLenderAddressNotes();
     const allRequestNumbers = document.querySelectorAll(
       ".accordionRequestDetailsRequestId"
     );
