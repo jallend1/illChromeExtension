@@ -102,15 +102,6 @@ function copyFromOCLC() {
   // Iterate through addressObject keys and extract values from page
   Object.keys(addressObject).forEach(assignAddressObjectValues);
 
-  const extractLenderSymbol = () => {
-    const nodeList = document.querySelectorAll(
-      'span[data="lenderString.currentSupplier.symbol"]'
-    );
-    // OCLC seems to stack requests intermittently -- This pulls the latest
-    const currentLender = nodeList[nodeList.length - 1].innerText;
-    return currentLender;
-  };
-
   const formatLenderAddress = () => {
     let addressString = "";
     Object.keys(addressObject).forEach((key) => {
@@ -140,7 +131,9 @@ function copyFromOCLC() {
   // Format lender address and notes
   const generateLenderAddressNotes = () => {
     let addressString = "";
-    const currentLender = extractLenderSymbol();
+    const currentLender = extractValueFromField(
+      'span[data="lenderString.currentSupplier.symbol"]'
+    );
     // Adds Courier to the top of the string if the current lender is on the courier list
     if (isCourier(currentLender)) addressString += "Courier\n";
     addressString += checkLenderRequirements(currentLender);
@@ -153,45 +146,40 @@ function copyFromOCLC() {
       'input[name="billing.maxCost.amountAsString"]'
     );
     return maxCostField.value;
-    // Returns false if the max cost field is anything other than $0.00
-    return maxCostField.value !== "0.00";
   };
 
   // Prompts user for WCCLS barcode
   const WCCLSprompt = () => {
-    let addressField = "";
     let barcode;
-    let title = "";
-    title = document.querySelector('span[data="resource.title"]').innerText;
-    if (title) addressField = "Title: " + title + "\n";
-    // barcode = prompt(
-    //   "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
-    // );
+    let addressField = "";
+    const title =
+      "Title: " + extractValueFromField('span[data="resource.title"]') + "\n";
+    addressField += title;
     while (!barcode) {
       barcode = prompt(
         "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
       );
       if (barcode) addressField += "WCCLS barcode: " + barcode + "\n";
     }
-    if (barcode) addressField += "WCCLS barcode: " + barcode + "\n";
-    //  If the prompt is empty, prompt again until it's not
-
     return addressField;
   };
 
-  // Extracts OCLC Due Date
-  const extractDueDate = () => {
-    const nodeList = document.querySelector(
-      'span[data="returning.originalDueToSupplier"]'
-    );
-    return nodeList.innerText ? "OCLC Due Date: " + nodeList.innerText : null;
+  const extractValueFromField = (selector) => {
+    const allMatches = document.querySelectorAll(selector);
+    const currentMatch = allMatches[allMatches.length - 1];
+    return currentMatch?.textContent;
   };
 
   const checkLenderRequirements = (currentLender) => {
     // List of libraries that would like us to keep their paperwork
     const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
     // BLP Needs due date extracted from page
-    if (currentLender === "BLP") return extractDueDate();
+    if (currentLender === "BLP") {
+      const dueDate = extractValueFromField(
+        'span[data="returning.originalDueToSupplier"]'
+      );
+      return "OCLC Due Date: " + dueDate + "\n";
+    }
     // Implements WCCLS unique requirements
     if (currentLender === "OQX") return WCCLSprompt();
     // Hayden doesn't have its name in the constant fields
@@ -402,8 +390,8 @@ function copyFromOCLC() {
     );
     const requestNumber =
       allRequestNumbers[allRequestNumbers.length - 1].textContent;
-    const allTitles = document.querySelectorAll('span[data="resource.title"]');
-    const title = allTitles[allTitles.length - 1].textContent;
+    // const title = extractTitle();
+    const title = extractValueFromField('span[data="resource.title"]');
     const allPatronIDs = document.querySelectorAll(
       'input[data="requester.patron.userId"]'
     );
