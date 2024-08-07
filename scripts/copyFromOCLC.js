@@ -385,12 +385,9 @@ function copyFromOCLC() {
   // Bundles all pertinent information into an object
   const compileRequestData = () => {
     const addressString = generateLenderAddressNotes();
-    const allRequestNumbers = document.querySelectorAll(
+    const requestNumber = extractValueFromField(
       ".accordionRequestDetailsRequestId"
     );
-    const requestNumber =
-      allRequestNumbers[allRequestNumbers.length - 1].textContent;
-    // const title = extractTitle();
     const title = extractValueFromField('span[data="resource.title"]');
     const allPatronIDs = document.querySelectorAll(
       'input[data="requester.patron.userId"]'
