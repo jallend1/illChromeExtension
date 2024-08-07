@@ -157,11 +157,12 @@ function copyFromOCLC() {
     return maxCostField.value !== "0.00";
   };
 
-  const modal = document.createElement("div");
-  modal.setAttribute("id", "wccls-modal");
-  modal.setAttribute(
-    "style",
-    `
+  const wcclsModal = () => {
+    const modal = document.createElement("div");
+    modal.setAttribute("id", "wccls-modal");
+    modal.setAttribute(
+      "style",
+      `
   position: fixed;
   top: 50%;
   left: 50%;
@@ -177,8 +178,8 @@ function copyFromOCLC() {
   border: 1px solid #000;
   box-shadow: 0 0 10px 5px #000;
 `
-  );
-  modal.innerHTML = `
+    );
+    modal.innerHTML = `
 <div>  
 <div style="padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
 </div>
@@ -191,13 +192,13 @@ function copyFromOCLC() {
 </div>
 `;
 
-  document.body.appendChild(modal);
+    document.body.appendChild(modal);
 
-  const inputField = modal.querySelector("#wccls-input");
-  inputField.focus();
+    const inputField = modal.querySelector("#wccls-input");
+    inputField.focus();
 
-  const form = modal.querySelector("form");
-}
+    const form = modal.querySelector("form");
+  };
 
   // Prompts user for WCCLS barcode
   const WCCLSprompt = () => {
