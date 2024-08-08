@@ -1,5 +1,6 @@
 // TODO: Add Canada provinces to convertStateNameToAbbreviation
 // TODO: Add a check for Idaho libraries that don't include constant data in the address
+// TODO: Add an object containing OCLC element selectors to make it easier to update in the future
 
 function copyFromOCLC() {
   // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
@@ -10,6 +11,15 @@ function copyFromOCLC() {
     locality: null,
     region: null,
     postal: null,
+  };
+
+  const elementSelectors = {
+    title: 'span[data="resource.title"]',
+    requestNumber: ".accordionRequestDetailsRequestId",
+    patronID: 'input[data="requester.patron.userId"]',
+    lendingFee: 'input[name="billing.maxCost.amountAsString"]',
+    dueDate: 'span[data="returning.originalDueToSupplier"]',
+    currentLender: 'span[data="lenderString.currentSupplier.symbol"]',
   };
 
   const convertStateNameToAbbreviation = (stateName) => {
@@ -131,9 +141,7 @@ function copyFromOCLC() {
   // Format lender address and notes
   const generateLenderAddressNotes = () => {
     let addressString = "";
-    const currentLender = extractValueFromField(
-      'span[data="lenderString.currentSupplier.symbol"]'
-    );
+    const currentLender = extractValueFromField(elementSelectors.currentLender);
     // Adds Courier to the top of the string if the current lender is on the courier list
     if (isCourier(currentLender)) addressString += "Courier\n";
     addressString += checkLenderRequirements(currentLender);
@@ -142,9 +150,7 @@ function copyFromOCLC() {
   };
 
   const checkLendingFee = () => {
-    const maxCostField = document.querySelector(
-      'input[name="billing.maxCost.amountAsString"]'
-    );
+    const maxCostField = document.querySelector(elementSelectors.lendingFee);
     return maxCostField.value;
   };
 
@@ -153,7 +159,7 @@ function copyFromOCLC() {
     let barcode;
     let addressField = "";
     const title =
-      "Title: " + extractValueFromField('span[data="resource.title"]') + "\n";
+      "Title: " + extractValueFromField(elementSelectors.title) + "\n";
     addressField += title;
     while (!barcode) {
       barcode = prompt(
@@ -175,9 +181,7 @@ function copyFromOCLC() {
     const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
     // BLP Needs due date extracted from page
     if (currentLender === "BLP") {
-      const dueDate = extractValueFromField(
-        'span[data="returning.originalDueToSupplier"]'
-      );
+      const dueDate = extractValueFromField(elementSelectors.dueDate);
       return "OCLC Due Date: " + dueDate + "\n";
     }
     // Implements WCCLS unique requirements
@@ -385,10 +389,8 @@ function copyFromOCLC() {
   // Bundles all pertinent information into an object
   const compileRequestData = () => {
     const addressString = generateLenderAddressNotes();
-    const requestNumber = extractValueFromField(
-      ".accordionRequestDetailsRequestId"
-    );
-    const title = extractValueFromField('span[data="resource.title"]');
+    const requestNumber = extractValueFromField(elementSelectors.requestNumber);
+    const title = extractValueFromField(elementSelectors.title);
     const allPatronIDs = document.querySelectorAll(
       'input[data="requester.patron.userId"]'
     );
