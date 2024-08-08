@@ -147,6 +147,18 @@ function pasteToEvergreen() {
     });
   };
 
+  // TODO: Pressing enter seems to submit the form, which I don't think is the demonstrated behavior on local client
+  // document.addEventListener("keydown", (e) => {
+  //   if (e.key === "Enter") {
+  //     const buttons = document.querySelectorAll("button");
+  //     buttons.forEach((button) => {
+  //       if (button.textContent === "Create Item") {
+  //         button.focus();
+  //       }
+  //     });
+  //   }
+  // });
+
   checkForExistingCheckboxDiv();
   extractArrayFromLocalStorage();
 }
