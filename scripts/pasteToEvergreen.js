@@ -25,64 +25,45 @@ function pasteToEvergreen() {
     updateInputField("textarea", addressString);
   };
 
-  const addCheckbox = () => {
-    const formValidated = document.querySelector("#checkbox-container");
-
-    // Create a div with flex style
-    const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.alignItems = "center"; // Align items vertically in the center
-
-    // Create the checkbox input
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.id = "ill-bag-checkbox";
-    checkbox.style.marginLeft = "10px";
-    checkbox.style.marginRight = "5px";
-
-    // Create the label
-    const label = document.createElement("label");
-    label.style.fontSize = "1.5em";
-    label.htmlFor = "ill-bag-checkbox";
-    label.appendChild(document.createTextNode("ILL came with a bag"));
-
-    // Append checkbox and label to the div
-    div.appendChild(checkbox);
-    div.appendChild(label);
-
-    // Append the div to the form
-    formValidated.appendChild(div);
+  const applyStyles = (element, styles) => {
+    for (const property in styles) {
+      element.style[property] = styles[property];
+    }
   };
 
-  const returnInBox = () => {
-    const formValidated = document.querySelector("#checkbox-container");
+  const addCheckboxWithLabel = (checkboxId, labelText) => {
+    const checkboxContainer = document.querySelector("#checkbox-container");
 
     // Create a div with flex style
     const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.alignItems = "center"; // Align items vertically in the center
+    const divStyles = {
+      display: "flex",
+      alignItems: "center",
+    };
+    applyStyles(div, divStyles);
 
     // Create the checkbox input
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.id = "ill-box-checkbox";
-    checkbox.style.marginLeft = "10px";
-    checkbox.style.marginRight = "5px";
+    checkbox.id = checkboxId;
+    const checkboxStyles = {
+      marginLeft: "10px",
+      marginRight: "5px",
+    };
+    applyStyles(checkbox, checkboxStyles);
 
     // Create the label
     const label = document.createElement("label");
     label.style.fontSize = "1.5em";
-    label.htmlFor = "ill-box-checkbox";
-    label.appendChild(
-      document.createTextNode("ILL should be returned in a box")
-    );
+    label.htmlFor = checkboxId;
+    label.appendChild(document.createTextNode(labelText));
 
     // Append checkbox and label to the div
     div.appendChild(checkbox);
     div.appendChild(label);
 
     // Append the div to the form
-    formValidated.appendChild(div);
+    checkboxContainer.appendChild(div);
   };
 
   // Creates a highlighted box to contain the two new checkboxes
@@ -90,16 +71,20 @@ function pasteToEvergreen() {
     const formValidated = document.querySelector(".form-validated");
     const checkboxContainer = document.createElement("div");
     checkboxContainer.id = "checkbox-container";
-    checkboxContainer.style.backgroundColor = "#f0f0f0";
-    checkboxContainer.style.padding = "10px";
-    checkboxContainer.style.borderRadius = "5px";
-    checkboxContainer.style.display = "flex";
-    checkboxContainer.style.justifyContent = "center";
-    checkboxContainer.style.alignItems = "center";
-    checkboxContainer.style.flexDirection = "column";
+    const styles = {
+      backgroundColor: "#f0f0f0",
+      padding: "10px",
+      borderRadius: "5px",
+      border: "1px solid #701d9d",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+    };
+    applyStyles(checkboxContainer, styles);
     formValidated.appendChild(checkboxContainer);
-    addCheckbox();
-    returnInBox();
+    addCheckboxWithLabel("ill-bag-checkbox", "ILL came with a bag");
+    addCheckboxWithLabel("ill-box-checkbox", "ILL should be returned in a box");
   };
 
   // If the checkbox is clicked, add 'BAG' to the start of the patron's address field
