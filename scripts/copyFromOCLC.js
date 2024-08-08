@@ -452,11 +452,9 @@ function copyFromOCLC() {
       // Checks for requestData in local storage, and if it exists, removes it
       chrome.storage.local.get(["requestData", "lendingFee"], (result) => {
         if (result.requestData) chrome.storage.local.remove("requestData");
-        if (result.lendingFee) chrome.storage.local.remove("lendingFee");
         chrome.storage.local.set(
           {
             requestData: data,
-            lendingFee: lendingFee,
           },
           () => {
             statusModal(success.result, success.headerColor, success.imgURL);
@@ -477,9 +475,7 @@ function copyFromOCLC() {
     }
   }
 
-  const lendingFee = extractValueFromField(elementSelectors.lendingFee);
-
-  copyToStorage(stringifiedData, compiledData.requestNumber, lendingFee);
+  copyToStorage(stringifiedData, compiledData.requestNumber);
 }
 
 copyFromOCLC();
