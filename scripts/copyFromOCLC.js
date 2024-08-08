@@ -168,8 +168,8 @@ function copyFromOCLC() {
   };
 
   const checkLenderRequirements = (currentLender) => {
-    // BLP Needs due date extracted from page
-    if (currentLender === "BLP") {
+    if (currentLender === "BLP" || currentLender === "ZWR") {
+      // BLP requires due date on their paperwork, and I'm guessing that is also why ZWR also wants their paperwork kept because it looks the same
       const dueDate = extractValueFromField(elementSelectors.dueDate);
       return "OCLC Due Date: " + dueDate + "\n";
     }
