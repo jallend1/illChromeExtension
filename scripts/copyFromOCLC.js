@@ -386,13 +386,13 @@ function copyFromOCLC() {
     const patronID = extractValueFromField(elementSelectors.patronID);
     const isLendingFee = extractValueFromField(elementSelectors.lendingFee);
 
-    return [
-      { addressString },
-      { requestNumber },
-      { title },
-      { patronID },
-      { isLendingFee },
-    ];
+    return {
+      addressString,
+      requestNumber,
+      title,
+      patronID,
+      isLendingFee,
+    };
   };
 
   const convertDataToJSON = (data) => {
@@ -443,29 +443,23 @@ function copyFromOCLC() {
 
   async function copyToStorage(data, requestNum, lendingFee) {
     try {
-      let headerColor = "#4CAF50";
-      let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
+      const success = {
+        headerColor: "#4CAF50",
+        imgURL: chrome.runtime.getURL("images/kawaii-dinosaur.png"),
+        result: `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`,
+      };
+
       // Checks for requestData in local storage, and if it exists, removes it
-      // TODO: Implement a check to see if the clipboard data matches the page data
       chrome.storage.local.get(["requestData", "lendingFee"], (result) => {
-        if (result.requestData) {
-          chrome.storage.local.remove("requestData", () => {
-            console.log("Previous Request Data removed");
-          });
-        }
-        if (result.lendingFee) {
-          chrome.storage.local.remove("lendingFee", () => {
-            console.log("Previous Lending Fee removed");
-          });
-        }
+        if (result.requestData) chrome.storage.local.remove("requestData");
+        if (result.lendingFee) chrome.storage.local.remove("lendingFee");
         chrome.storage.local.set(
           {
             requestData: data,
             lendingFee: lendingFee,
           },
           () => {
-            let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`;
-            statusModal(result, headerColor, imgURL);
+            statusModal(success.result, success.headerColor, success.imgURL);
           }
         );
       });
@@ -485,7 +479,7 @@ function copyFromOCLC() {
 
   const lendingFee = extractValueFromField(elementSelectors.lendingFee);
 
-  copyToStorage(stringifiedData, compiledData[1].requestNumber, lendingFee);
+  copyToStorage(stringifiedData, compiledData.requestNumber, lendingFee);
 }
 
 copyFromOCLC();
