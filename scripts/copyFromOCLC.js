@@ -145,17 +145,10 @@ function copyFromOCLC() {
   const generateLenderAddressNotes = () => {
     let addressString = "";
     const currentLender = extractValueFromField(elementSelectors.currentLender);
-    // Adds Courier to the top of the string if the current lender is on the courier list
     if (isCourier(currentLender)) addressString += "Courier\n";
     addressString += checkLenderRequirements(currentLender);
     addressString += formatLenderAddress();
     return addressString;
-  };
-
-  const checkLendingFee = () => {
-    const maxCostField = extractValueFromField(elementSelectors.lendingFee);
-    console.log(maxCostField);
-    return maxCostField;
   };
 
   // Prompts user for WCCLS barcode
@@ -175,8 +168,6 @@ function copyFromOCLC() {
   };
 
   const checkLenderRequirements = (currentLender) => {
-    // List of libraries that would like us to keep their paperwork
-    const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
     // BLP Needs due date extracted from page
     if (currentLender === "BLP") {
       const dueDate = extractValueFromField(elementSelectors.dueDate);
@@ -184,13 +175,16 @@ function copyFromOCLC() {
     }
     // Implements WCCLS unique requirements
     if (currentLender === "OQX") return WCCLSprompt();
-    // Hayden doesn't have its name in the constant fields
-    if (currentLender === "K#T") return "Hayden Branch Library ";
     // Checks to see if the current lender requires paperwork to be kept
-    if (paperworkLibraries.includes(currentLender)) {
+    requiresPaperwork(currentLender);
+    return "";
+  };
+
+  const requiresPaperwork = (oclcSymbol) => {
+    const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
+    if (paperworkLibraries.includes(oclcSymbol)) {
       alert("This library would like us to keep the paperwork.");
     }
-    return "";
   };
 
   const isCourier = (oclcSymbol) => {
