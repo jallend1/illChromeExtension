@@ -31,7 +31,16 @@ function pasteToEvergreen() {
     }
   };
 
-  const addCheckboxWithLabel = (checkboxId, labelText) => {
+  const checkForExistingCheckboxDiv = () => {
+    const existingCheckboxContainer = document.querySelector(
+      "#checkbox-container"
+    );
+    if (existingCheckboxContainer) {
+      existingCheckboxContainer.remove();
+    }
+  };
+
+  const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
     const checkboxContainer = document.querySelector("#checkbox-container");
 
     // Create a div with flex style
@@ -52,6 +61,21 @@ function pasteToEvergreen() {
     };
     applyStyles(checkbox, checkboxStyles);
 
+    // Adds listener to the checkbox to prepend the text to the address field
+    checkbox.addEventListener("click", (e) => {
+      const addressField = document.querySelector("textarea");
+      if (e.target.checked) {
+        addressField.value = textToPrepend + addressField.value;
+      } else {
+        addressField.value = addressField.value.replace(textToPrepend, "");
+      }
+      const inputEvent = new Event("input", {
+        bubbles: true,
+        cancelable: true,
+      });
+      addressField.dispatchEvent(inputEvent);
+    });
+
     // Create the label
     const label = document.createElement("label");
     label.style.fontSize = "1.5em";
@@ -62,63 +86,41 @@ function pasteToEvergreen() {
     div.appendChild(checkbox);
     div.appendChild(label);
 
-    // Append the div to the form
+    // Adds the checkbox div to the form
     checkboxContainer.appendChild(div);
   };
 
   // Creates a highlighted box to contain the two new checkboxes
   const createCheckboxContainer = () => {
-    const formValidated = document.querySelector(".form-validated");
+    const parentILLForm = document.querySelector(".form-validated");
     const checkboxContainer = document.createElement("div");
     checkboxContainer.id = "checkbox-container";
+
+    // Styles for the checkbox container
     const styles = {
-      backgroundColor: "#f0f0f0",
-      padding: "10px",
+      backgroundColor: "#fff",
+      padding: "1rem",
       borderRadius: "5px",
       border: "1px solid #701d9d",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "column",
+      marginTop: "1rem",
     };
-    applyStyles(checkboxContainer, styles);
-    formValidated.appendChild(checkboxContainer);
-    addCheckboxWithLabel("ill-bag-checkbox", "ILL came with a bag");
-    addCheckboxWithLabel("ill-box-checkbox", "ILL should be returned in a box");
-  };
 
-  // If the checkbox is clicked, add 'BAG' to the start of the patron's address field
-  document.addEventListener("click", (event) => {
-    if (event.target.id === "ill-box-checkbox") {
-      const addressField = document.querySelector("textarea");
-      if (event.target.checked) {
-        addressField.value = "**RETURN IN BOX**\n" + addressField.value;
-      } else {
-        addressField.value = addressField.value.replace(
-          "**RETURN IN BOX**\n",
-          ""
-        );
-      }
-      const inputEvent = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      addressField.dispatchEvent(inputEvent);
-    }
-    if (event.target.id === "ill-bag-checkbox") {
-      const addressField = document.querySelector("textarea");
-      if (event.target.checked) {
-        addressField.value = "**BAG**\n" + addressField.value;
-      } else {
-        addressField.value = addressField.value.replace("**BAG**\n", "");
-      }
-      const inputEvent = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      addressField.dispatchEvent(inputEvent);
-    }
-  });
+    applyStyles(checkboxContainer, styles);
+
+    parentILLForm.appendChild(checkboxContainer);
+
+    // Add checkboxes to the container
+    addILLCheckboxes("ill-bag-checkbox", "ILL came with a bag", "**BAG**\n");
+    addILLCheckboxes(
+      "ill-box-checkbox",
+      "ILL should be returned in a box",
+      "**RETURN IN BOX**\n"
+    );
+  };
 
   const extractArrayFromLocalStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
@@ -145,6 +147,7 @@ function pasteToEvergreen() {
     });
   };
 
+  checkForExistingCheckboxDiv();
   extractArrayFromLocalStorage();
 }
 pasteToEvergreen();
