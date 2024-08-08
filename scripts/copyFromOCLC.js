@@ -1,6 +1,5 @@
 // TODO: Add Canada provinces to convertStateNameToAbbreviation
 // TODO: Add a check for Idaho libraries that don't include constant data in the address
-// TODO: Add an object containing OCLC element selectors to make it easier to update in the future
 
 function copyFromOCLC() {
   // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
@@ -20,6 +19,16 @@ function copyFromOCLC() {
     lendingFee: 'input[name="billing.maxCost.amountAsString"]',
     dueDate: 'span[data="returning.originalDueToSupplier"]',
     currentLender: 'span[data="lenderString.currentSupplier.symbol"]',
+    region: 'span[data="returning.address.region"]',
+  };
+
+  const extractValueFromField = (selector) => {
+    const allMatches = document.querySelectorAll(selector);
+    const currentMatch = allMatches[allMatches.length - 1];
+    // If selector includes 'input' return the value, otherwise return the textContent
+    return selector.includes("input")
+      ? currentMatch?.value
+      : currentMatch?.textContent;
   };
 
   const convertStateNameToAbbreviation = (stateName) => {
@@ -91,21 +100,15 @@ function copyFromOCLC() {
 
   const assignAddressObjectValues = (key) => {
     if (key === "region") {
-      let nodeList = document.querySelectorAll(
-        'span[data="returning.address.region"]'
-      );
-      nodeList && nodeList.length > 0
-        ? (addressObject[key] = convertStateNameToAbbreviation(
-            nodeList[nodeList.length - 1].innerText
-          ))
+      let region = extractValueFromField(elementSelectors.region);
+      region
+        ? (addressObject[key] = convertStateNameToAbbreviation(region))
         : (addressObject[key] = "NONE");
     } else {
-      let nodeList = document.querySelectorAll(
+      let element = extractValueFromField(
         `input[data="returning.address.${key}"]`
       );
-      nodeList && nodeList.length > 0
-        ? (addressObject[key] = nodeList[nodeList.length - 1].value)
-        : (addressObject[key] = null);
+      element ? (addressObject[key] = element) : (addressObject[key] = "");
     }
   };
 
@@ -150,8 +153,9 @@ function copyFromOCLC() {
   };
 
   const checkLendingFee = () => {
-    const maxCostField = document.querySelector(elementSelectors.lendingFee);
-    return maxCostField.value;
+    const maxCostField = extractValueFromField(elementSelectors.lendingFee);
+    console.log(maxCostField);
+    return maxCostField;
   };
 
   // Prompts user for WCCLS barcode
@@ -168,12 +172,6 @@ function copyFromOCLC() {
       if (barcode) addressField += "WCCLS barcode: " + barcode + "\n";
     }
     return addressField;
-  };
-
-  const extractValueFromField = (selector) => {
-    const allMatches = document.querySelectorAll(selector);
-    const currentMatch = allMatches[allMatches.length - 1];
-    return currentMatch?.textContent;
   };
 
   const checkLenderRequirements = (currentLender) => {
@@ -391,11 +389,8 @@ function copyFromOCLC() {
     const addressString = generateLenderAddressNotes();
     const requestNumber = extractValueFromField(elementSelectors.requestNumber);
     const title = extractValueFromField(elementSelectors.title);
-    const allPatronIDs = document.querySelectorAll(
-      'input[data="requester.patron.userId"]'
-    );
-    const patronID = allPatronIDs[allPatronIDs.length - 1].value;
-    const isLendingFee = checkLendingFee();
+    const patronID = extractValueFromField(elementSelectors.patronID);
+    const isLendingFee = extractValueFromField(elementSelectors.lendingFee);
 
     return [
       { addressString },
@@ -494,7 +489,7 @@ function copyFromOCLC() {
     }
   }
 
-  const lendingFee = checkLendingFee();
+  const lendingFee = extractValueFromField(elementSelectors.lendingFee);
 
   copyToStorage(stringifiedData, compiledData[1].requestNumber, lendingFee);
 }
