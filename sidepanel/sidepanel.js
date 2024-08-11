@@ -1,6 +1,9 @@
 const buttons = document.querySelectorAll("button");
+const images = document.querySelectorAll("img");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
+const modeToggle = document.querySelector("#mode");
+const currentMode = document.querySelector("#current-mode");
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -153,3 +156,20 @@ collapseToggle.forEach((toggle) => {
     }
   });
 });
+
+modeToggle.addEventListener("click", () => {
+  const body = document.querySelector("body");
+  if (currentMode.textContent === "Evergreen Dreary") {
+    body.classList.remove("fun-mode");
+    body.classList.add("dreary-mode");
+    currentMode.textContent = "Fun";
+  } else {
+    body.classList.add("fun-mode");
+    body.classList.remove("dreary-mode");
+    currentMode.textContent = "Evergreen Dreary";
+  }
+});
+
+// Queryselector to get images inside .sidebar .header
+const headerImages = document.querySelectorAll(".sidebar-header img");
+console.log(headerImages);

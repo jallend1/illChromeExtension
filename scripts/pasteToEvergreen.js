@@ -90,7 +90,7 @@ function pasteToEvergreen() {
     checkboxContainer.appendChild(div);
   };
 
-  // Creates a highlighted box to contain the two new checkboxes
+  // Creates a parent div for the ILL custom checkboxes
   const createCheckboxContainer = () => {
     const parentILLForm = document.querySelector(".form-validated");
     const checkboxContainer = document.createElement("div");

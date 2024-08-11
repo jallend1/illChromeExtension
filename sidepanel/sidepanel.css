@@ -7,26 +7,87 @@ body {
 
 body {
   height: 100%;
-  background: linear-gradient(90deg, #7b1fa2 0%, #4a148c 100%);
-  color: white;
   font-family: "Roboto", sans-serif;
 }
 
-h1 {
+.fun-mode {
+  background: linear-gradient(90deg, #7b1fa2 0%, #4a148c 100%);
+  color: white;
+
+  & h1 {
+    font-size: 1.75rem;
+    text-align: center;
+    margin: 1rem;
+  }
+
+  & .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
+}
+
+.dreary-mode {
+  background: #fff;
+  color: #000;
+
+  & .sidebar-header {
+    background-color: rgb(0, 122, 84);
+    color: #fff;
+  }
+
+  & h1 {
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  & img {
+    display: none;
+  }
+
+  & .sidebar-header {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  & p.subtitle:first-of-type {
+    display: none;
+  }
+
+  & section {
+    & header {
+      width: 100%;
+      background-color: rgb(223, 240, 216);
+      justify-content: center;
+
+      & h2 {
+        color: rgb(13, 119, 100);
+      }
+    }
+
+    & main {
+      background-color: #fff;
+
+      & button {
+        color: rgb(33, 37, 41);
+        border: solid 1px rgb(33, 37, 41);
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+/* .fun-mode h1 {
   font-size: 1.75rem;
   text-align: center;
   margin: 1rem;
-}
+} */
 
 .subtitle {
   text-align: center;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
 }
 
 .sidebar-header img {
