@@ -26,6 +26,19 @@ body {
     align-items: center;
     padding: 1rem;
   }
+
+  button {
+    font-size: 1rem;
+    background-color: transparent;
+    border: solid 3px #ffa260;
+    color: white;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
+    transform: translateY(-0.35em);
+  }
 }
 
 .dreary-mode {
@@ -35,25 +48,22 @@ body {
   & .sidebar-header {
     background-color: rgb(0, 122, 84);
     color: #fff;
-  }
-
-  & h1 {
-    font-size: 0.8rem;
-    text-align: center;
-  }
-
-  & img {
-    display: none;
-  }
-
-  & .sidebar-header {
     padding: 0;
     display: flex;
     justify-content: center;
-  }
 
-  & p.subtitle:first-of-type {
-    display: none;
+    & h1 {
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    & img {
+      display: none;
+    }
+
+    & p.subtitle:first-of-type {
+      display: none;
+    }
   }
 
   & section {
@@ -64,6 +74,10 @@ body {
 
       & h2 {
         color: rgb(13, 119, 100);
+      }
+
+      & img {
+        filter: invert(1);
       }
     }
 
@@ -76,15 +90,14 @@ body {
         border-radius: 4px;
         font-size: 0.8rem;
       }
+
+      & button:hover {
+        background-color: rgb(33, 37, 41);
+        color: #fff;
+      }
     }
   }
 }
-
-/* .fun-mode h1 {
-  font-size: 1.75rem;
-  text-align: center;
-  margin: 1rem;
-} */
 
 .subtitle {
   text-align: center;
@@ -155,19 +168,9 @@ section main {
 }
 
 button {
-  font-size: 1rem;
-  background-color: transparent;
-  border: solid 3px #ffa260;
-  color: white;
   padding: 0.5rem 1rem;
-  border-radius: 5px;
   cursor: pointer;
   margin-top: 1rem;
-}
-
-button:hover {
-  box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
-  transform: translateY(-0.35em);
 }
 
 .collapsible {

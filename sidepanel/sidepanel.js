@@ -1,5 +1,4 @@
 const buttons = document.querySelectorAll("button");
-const images = document.querySelectorAll("img");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
@@ -169,7 +168,3 @@ modeToggle.addEventListener("click", () => {
     currentMode.textContent = "Evergreen Dreary";
   }
 });
-
-// Queryselector to get images inside .sidebar .header
-const headerImages = document.querySelectorAll(".sidebar-header img");
-console.log(headerImages);
