@@ -38,13 +38,19 @@
         <main class="collapsible">
           <div>
             <button id="copyFromOCLC">Copy request data from WorldShare</button>
-            <p class="subtitle">Ctrl+Shift+1</p>
+            <div class="details">
+              <p class="subtitle">Ctrl+Shift+1</p>
+              <p class="more-info" id="copy-help">Details...</button>
+            </div>
           </div>
           <div>
             <button id="pasteToEvergreen">
               Paste the request data in Evergreen
             </button>
-            <p class="subtitle">Ctrl+Shift+2</p>
+            <div class="details">
+              <p class="subtitle">Ctrl+Shift+2</p>
+              <p class="more-info" id="paste-help">Details...</button>
+            </div>
           </div>
         </main>
       </section>
@@ -62,7 +68,10 @@
             <button id="copyWorldShareAddress">
               Copy WorldShare Address for Dymo
             </button>
-            <p class="subtitle">Ctrl+Shift+Y</p>
+            <div class="details">
+              <p class="subtitle">Ctrl+Shift+Y</p>
+              <p class="more-info" id="address-help">Details...</button>
+            </div>
           </div>
         </main>
       </section>
@@ -74,10 +83,16 @@
         <main class="collapsible hidden collapsed">
           <div>
             <button id="overdueNotice">Generate an Overdue Letter</button>
-            <p class="subtitle">Ctrl+Shift+3</p>
+            <div class="details">
+              <p class="subtitle">Ctrl+Shift+3</p>
+              <p class="more-info" id="overdue-help">Details...</p>
+            </div>
           </div>
           <div>
             <button id="updateAddress">Update ILL Account Address</button>
+            <div>
+              <p class="subtitle"></p>
+              <p class="more-info" id="update-account-help">Details...</p>
           </div>
         </main>
       </section>
@@ -88,6 +103,10 @@
         </header>
         <main class="hidden collapsed collapsible">
           <button id="illReceipt">Generate an ILL receipt</button>
+          <div class="details">
+            <p class="subtitle"></p>
+            <p class="more-info" id="receipt-help">Details...</p>
+          </div>
         </main>
       </section>
       <section class="scripts">
