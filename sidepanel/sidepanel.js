@@ -195,7 +195,6 @@ const moreInfoModal = (buttonId) => {
     justify-content: center;
     align-items: center;
     color: #000;
-    font-size: 4rem;
     border: 1px solid #000;
     box-shadow: 0 0 10px 5px #000;
   `
@@ -221,21 +220,20 @@ const moreInfoModal = (buttonId) => {
 };
 
 const moreInfoModalData = (data) => {
-  const copyFromOCLCInfo = `
+  const copyHelp = `
   <h2>Copy from OCLC</h2>
-  <p>This script will copy the OCLC number from the WorldShare ILL page to your clipboard.</p>
+  <p>This copies all the important WorldShare information from the request so it can be entered into Evergreen.</p>
   <h3>Steps:</h3>
   <ol>
-    <li>Click the "Copy from OCLC" button.</li>
-    <li>Go to the Evergreen ILL page.</li>
-    <li>Click in the OCLC number field.</li>
-    <li>Press Ctrl + V to paste the OCLC number.</li>
+    <li>Go to the requests's page in WorldShare.</li>
+    <li>Click the 'Copy Request Data from WorldShare' button.</li>
+    <li>The request data is now saved in your browser! To unleash it, see the 'Paste the Request Data in Evergreen' button details for next steps.</li>
   </ol>
   `;
 
   switch (data) {
     case "copy-help":
-      return copyFromOCLCInfo;
+      return copyHelp;
     case "copyWorldShareAddress":
       return copyWorldShareAddressInfo;
     case "paste-help":
