@@ -3,6 +3,7 @@ const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const currentMode = document.querySelector("#current-mode");
+const moreInfoButtons = document.querySelectorAll(".more-info");
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -168,3 +169,80 @@ modeToggle.addEventListener("click", () => {
     currentMode.textContent = "Evergreen Dreary";
   }
 });
+
+moreInfoButtons.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const buttonId = event.target.id;
+    moreInfoModal(buttonId);
+  });
+});
+
+const moreInfoModal = (buttonId) => {
+  const data = moreInfoModalData(buttonId);
+  const modal = document.createElement("div");
+  modal.setAttribute("id", "modal");
+  modal.setAttribute(
+    "style",
+    `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 1rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    font-size: 4rem;
+    border: 1px solid #000;
+    box-shadow: 0 0 10px 5px #000;
+  `
+  );
+
+  modal.innerHTML = `
+  <div>  
+  <div style="background-color: #f44336; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
+  <img src=${chrome.runtime.getURL(
+    "images/kawaii-book-happy.png"
+  )} style="width: 100px; height: 100px; border-radius: 50%;">
+  </div>
+  <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+  ${data}
+  </div>
+  </div>
+  `;
+
+  document.body.appendChild(modal);
+  setTimeout(() => {
+    modal.remove();
+  }, 3000);
+};
+
+const moreInfoModalData = (data) => {
+  const copyFromOCLCInfo = `
+  <h2>Copy from OCLC</h2>
+  <p>This script will copy the OCLC number from the WorldShare ILL page to your clipboard.</p>
+  <h3>Steps:</h3>
+  <ol>
+    <li>Click the "Copy from OCLC" button.</li>
+    <li>Go to the Evergreen ILL page.</li>
+    <li>Click in the OCLC number field.</li>
+    <li>Press Ctrl + V to paste the OCLC number.</li>
+  </ol>
+  `;
+
+  switch (data) {
+    case "copy-help":
+      return copyFromOCLCInfo;
+    case "copyWorldShareAddress":
+      return copyWorldShareAddressInfo;
+    case "paste-help":
+      return pasteToEvergreenInfo;
+    case "overdue-help":
+      return overdueNoticeInfo;
+    default:
+      return "No information available.";
+  }
+};
