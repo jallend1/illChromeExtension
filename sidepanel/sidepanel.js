@@ -62,109 +62,6 @@ const extractFromStorage = async (key) => {
   }
 };
 
-const errorModal = (data) => {
-  const modal = document.createElement("div");
-  modal.setAttribute("id", "modal");
-  modal.setAttribute(
-    "style",
-    `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 1rem;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #000;
-    font-size: 4rem;
-    border: 1px solid #000;
-    box-shadow: 0 0 10px 5px #000;
-  `
-  );
-
-  modal.innerHTML = `
-  <div>  
-  <div style="background-color: #f44336; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-  <img src=${chrome.runtime.getURL(
-    "images/kawaii-book-sad.png"
-  )} style="width: 100px; height: 100px; border-radius: 50%;">
-  </div>
-  <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-  <p style="font-size: 1rem;">${data}</p>
-  </div>
-  </div>
-  `;
-
-  document.body.appendChild(modal);
-  setTimeout(() => {
-    modal.remove();
-  }, 3000);
-};
-
-const moreInfoModal = (buttonId) => {
-  const data = moreInfoModalData(buttonId);
-  const modal = document.createElement("div");
-  modal.setAttribute("id", "modal");
-  modal.setAttribute(
-    "style",
-    `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 1rem;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #000;
-    border: 1px solid #000;
-    box-shadow: 0 0 10px 5px #000;
-    width: 95%;
-    font-size: 1rem;
-    background-color: #f9f9f9;
-  `
-  );
-
-  const content = document.createElement("div");
-  content.setAttribute(
-    "style",
-    `
-    background-color: #f9f9f9;
-    text-align: center;
-    border-radius: 0 0 1rem 1rem;
-    padding: 1rem;
-  `
-  );
-  content.innerHTML = data;
-  modal.appendChild(content);
-
-  const footer = document.createElement("footer");
-  footer.setAttribute(
-    "style",
-    `
-    padding: 1rem;
-    border-radius: 1rem 1rem 0 0;
-    text-align: right;
-    height: 50px;
-    position: relative;
-  `
-  );
-  footer.innerHTML = `
-  <button style="font-size: 1rem; background-color: #f44336; color: #fff; border: none; border-radius: 0.25rem; padding: 0.5rem 1rem; cursor: pointer;">Close</button>
-  `;
-  footer.querySelector("button").addEventListener("click", () => {
-    document.getElementById("modal").remove();
-  });
-  modal.appendChild(footer);
-
-  document.body.appendChild(modal);
-};
-
 const moreInfoModalData = (data) => {
   const generateHelpContent = (title, description, steps) => `
     <h2>${title}</h2>
@@ -226,6 +123,58 @@ const moreInfoModalData = (data) => {
   };
 
   return helpContent[data] || "Details not yet available.";
+};
+
+const showModal = (title, content, isError = false) => {
+  const modal = document.createElement("div");
+  modal.setAttribute("id", "modal");
+  modal.setAttribute(
+    "style",
+    `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 1rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: ${isError ? "#fff" : "#000"};
+    border: 1px solid ${isError ? "#f00" : "#000"};
+    box-shadow: 0 0 10px 5px ${isError ? "#f00" : "#000"};
+    width: 95%;
+    font-size: 1rem;
+    background-color: ${isError ? "#f00" : "#f9f9f9"};
+  `
+  );
+
+  const modalTitle = document.createElement("h2");
+  modalTitle.textContent = title;
+  modal.appendChild(modalTitle);
+
+  const modalContent = document.createElement("div");
+  modalContent.innerHTML = content;
+  modal.appendChild(modalContent);
+
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "Close";
+  closeButton.addEventListener("click", () => {
+    document.body.removeChild(modal);
+  });
+  modal.appendChild(closeButton);
+
+  document.body.appendChild(modal);
+};
+
+const moreInfoModal = (buttonId) => {
+  const data = moreInfoModalData(buttonId);
+  showModal("More Information", data);
+};
+
+const errorModal = (errorMessage) => {
+  showModal("Error", errorMessage, true);
 };
 
 const addEventListeners = () => {
