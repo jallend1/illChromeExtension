@@ -1,3 +1,4 @@
+const collapseToggle = document.querySelectorAll("img.collapsible");
 const illActions = document.querySelectorAll(".ill-actions");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
@@ -46,13 +47,6 @@ const initiateScript = (scriptName) => {
     }
   });
 };
-
-illActions.forEach((button) => {
-  button.addEventListener("click", (event) => {
-    const buttonId = event.target.id;
-    initiateScript(buttonId);
-  });
-});
 
 const extractFromStorage = async (key) => {
   const result = await new Promise((resolve) =>
@@ -110,59 +104,6 @@ const errorModal = (data) => {
   }, 3000);
 };
 
-logoLeft.addEventListener("click", () => {
-  logoLeft.classList.toggle("logo-left-animation");
-});
-
-logoRight.addEventListener("click", () => {
-  logoRight.classList.toggle("logo-right-animation");
-});
-
-const collapseToggle = document.querySelectorAll("img.collapsible");
-
-collapseToggle.forEach((toggle) => {
-  toggle.addEventListener("click", () => {
-    const mainSection = toggle.parentElement.nextElementSibling;
-    if (mainSection.classList.contains("collapsed")) {
-      mainSection.classList.remove("hidden");
-      requestAnimationFrame(() => {
-        mainSection.classList.remove("collapsed");
-      });
-    } else {
-      mainSection.classList.add("collapsed");
-      toggle.textContent = "Expand";
-      setTimeout(() => {
-        mainSection.classList.add("hidden");
-      }, 300);
-    }
-    if (toggle.src.includes("collapse")) {
-      toggle.src = chrome.runtime.getURL("images/expand.svg");
-    } else {
-      toggle.src = chrome.runtime.getURL("images/collapse.svg");
-    }
-  });
-});
-
-modeToggle.addEventListener("click", () => {
-  const body = document.querySelector("body");
-  if (modeToggle.textContent === "Vibrant Mode") {
-    body.classList.add("fun-mode");
-    body.classList.remove("dreary-mode");
-    modeToggle.textContent = "Evergreen Mode";
-  } else {
-    body.classList.remove("fun-mode");
-    body.classList.add("dreary-mode");
-    modeToggle.textContent = "Vibrant Mode";
-  }
-});
-
-moreInfoButtons.forEach((button) => {
-  button.addEventListener("click", (event) => {
-    const buttonId = event.target.id;
-    moreInfoModal(buttonId);
-  });
-});
-
 const moreInfoModal = (buttonId) => {
   const data = moreInfoModalData(buttonId);
   const modal = document.createElement("div");
@@ -206,7 +147,6 @@ const moreInfoModal = (buttonId) => {
   footer.setAttribute(
     "style",
     `
-    
     padding: 1rem;
     border-radius: 1rem 1rem 0 0;
     text-align: right;
@@ -287,3 +227,60 @@ const moreInfoModalData = (data) => {
 
   return helpContent[data] || "Details not yet available.";
 };
+
+const addEventListeners = () => {
+  illActions.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const buttonId = event.target.id;
+      initiateScript(buttonId);
+    });
+  });
+
+  logoLeft.addEventListener("click", () => {
+    logoLeft.classList.toggle("logo-left-animation");
+  });
+
+  logoRight.addEventListener("click", () => {
+    logoRight.classList.toggle("logo-right-animation");
+  });
+
+  collapseToggle.forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      const mainSection = toggle.parentElement.nextElementSibling;
+      if (mainSection.classList.contains("collapsed")) {
+        mainSection.classList.remove("hidden");
+        requestAnimationFrame(() => {
+          mainSection.classList.remove("collapsed");
+        });
+      } else {
+        mainSection.classList.add("collapsed");
+        toggle.textContent = "Expand";
+        setTimeout(() => {
+          mainSection.classList.add("hidden");
+        }, 300);
+      }
+      if (toggle.src.includes("collapse")) {
+        toggle.src = chrome.runtime.getURL("images/expand.svg");
+      } else {
+        toggle.src = chrome.runtime.getURL("images/collapse.svg");
+      }
+    });
+  });
+
+  modeToggle.addEventListener("click", () => {
+    const body = document.querySelector("body");
+    const isVibrantMode = modeToggle.textContent === "Vibrant Mode";
+    body.classList.toggle("fun-mode", isVibrantMode);
+    body.classList.toggle("dreary-mode", !isVibrantMode);
+    modeToggle.textContent = isVibrantMode ? "Evergreen Mode" : "Vibrant Mode";
+  });
+
+  moreInfoButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const buttonId = event.target.id;
+      moreInfoModal(buttonId);
+    });
+  });
+};
+
+addEventListeners();
