@@ -46,7 +46,7 @@ body {
   color: #000;
 
   & .sidebar-header {
-    background-color: rgb(0, 122, 84);
+    background: -webkit-linear-gradient(#00593d, #007a54);
     color: #fff;
     padding: 0;
     display: flex;
@@ -86,6 +86,7 @@ body {
         border-radius: 4px;
         font-size: 0.8rem;
         background-color: #fff;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
       }
 
       button.more-info {
@@ -95,6 +96,10 @@ body {
       & button:hover {
         background-color: rgb(33, 37, 41);
         color: #fff;
+      }
+
+      & button:active {
+        transform: translateY(1px);
       }
     }
   }
