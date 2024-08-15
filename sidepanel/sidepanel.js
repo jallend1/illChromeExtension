@@ -132,21 +132,9 @@ const showModal = (title, content, isError = false) => {
   modal.setAttribute(
     "style",
     `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 1rem;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     color: ${isError ? "#fff" : "#000"};
     border: 1px solid ${isError ? "#f00" : "#000"};
     box-shadow: 0 0 10px 5px ${isError ? "#f00" : "#000"};
-    width: 95%;
-    font-size: 1rem;
     background-color: ${isError ? "#f00" : "#f9f9f9"};
   `
   );
