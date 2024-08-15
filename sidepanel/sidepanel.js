@@ -4,6 +4,7 @@ const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const moreInfoButtons = document.querySelectorAll(".more-info");
+const aboutButton = document.querySelector("#about");
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -229,6 +230,18 @@ const addEventListeners = () => {
       const buttonId = event.target.id;
       moreInfoModal(buttonId);
     });
+  });
+
+  aboutButton.addEventListener("click", () => {
+    showModal(
+      "About",
+      `
+      <h2>Jason's ILL Extension</h2>
+      <p>Version: 2.2</p>
+      <p>Author: Jason Allen </p>
+      <p>An assortment of tools to soften some of those rough edges in the ILL process.</p>
+      `
+    );
   });
 };
 
