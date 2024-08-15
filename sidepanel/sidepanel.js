@@ -226,80 +226,68 @@ const moreInfoModal = (buttonId) => {
 };
 
 const moreInfoModalData = (data) => {
-  const copyHelp = `
-  <h2>Copy from OCLC</h2>
-  <section class="steps">
-  <p>This copies all the important WorldShare information from the request so it can be entered into Evergreen.</p>
-  <h3>Steps:</h3>
-  <ol class="steps">
-    <li>Go to the requests's page in WorldShare.</li>
-    <li>Click the 'Copy Request Data from WorldShare' button.</li>
-    <li>The request data is now saved in your browser! To unleash it, see the 'Paste the Request Data in Evergreen' button details for next steps.</li>
-  </ol>
-  </section>
-  `;
-  const pasteHelp = `  
-  <h2>Paste to Evergreen</h2>
-  <section class="steps">
-  <p>This pastes all the information that was extracted from the 'Copy Request Data' button into 'Create ILL' screen in Evergreen.</p>
-  <h3>Steps:</h3>
-  <ol>
-    <li>Copy the request data from WorldShare using the 'Copy Request Data from WorldShare' button.</li>
-    <li>Navigate to the 'Create ILL' screen in Evergreen. (Alt+I)</li>
-    <li>Click the button and verify the information matches the request.</li>
-  </ol>
-  </section>
-  `;
-  const addressHelp = `
-  <h2>Copy WorldShare Address</h2>
-  <section class="steps">
-  <p>The WorldShare address field isn't formatted for easy cut and pasting. This resolves that!</p>
-  <h3>Steps:</h3>
-  <ol>
-    <li>Have the WorldShare request open.</li>
-    <li>Click the Copy WorldShare Address button.</li>
-    <li>Navigate to the Dymo program and hit Ctrl+V to paste the address.</li>
-  </ol>
-  </section>
-  `;
+  const helpContent = {
+    "copy-help": `
+      <h2>Copy from OCLC</h2>
+      <section class="steps">
+      <p>This copies all the important WorldShare information from the request so it can be entered into Evergreen.</p>
+      <h3>Steps:</h3>
+      <ol class="steps">
+        <li>Go to the requests's page in WorldShare.</li>
+        <li>Click the 'Copy Request Data from WorldShare' button.</li>
+        <li>The request data is now saved in your browser! To unleash it, see the 'Paste the Request Data in Evergreen' button details for next steps.</li>
+      </ol>
+      </section>
+    `,
+    "paste-help": `
+      <h2>Paste to Evergreen</h2>
+      <section class="steps">
+      <p>This pastes all the information that was extracted from the 'Copy Request Data' button into 'Create ILL' screen in Evergreen.</p>
+      <h3>Steps:</h3>
+      <ol>
+        <li>Copy the request data from WorldShare using the 'Copy Request Data from WorldShare' button.</li>
+        <li>Navigate to the 'Create ILL' screen in Evergreen. (Alt+I)</li>
+        <li>Click the button and verify the information matches the request.</li>
+      </ol>
+      </section>
+    `,
+    "address-help": `
+      <h2>Copy WorldShare Address</h2>
+      <section class="steps">
+      <p>The WorldShare address field isn't formatted for easy cut and pasting. This resolves that!</p>
+      <h3>Steps:</h3>
+      <ol>
+        <li>Have the WorldShare request open.</li>
+        <li>Click the Copy WorldShare Address button.</li>
+        <li>Navigate to the Dymo program and hit Ctrl+V to paste the address.</li>
+      </ol>
+      </section>
+    `,
+    "overdue-help": `
+      <h2>Generate Overdue Letter</h2>
+      <section class="steps">
+      <p>Pulls title and due date information from a patron's record and inserts it into a letter.</p>
+      <h3>Steps:</h3>
+      <ol>
+        <li>Open the patron's record to the 'Items Out' screen.</li>
+        <li>Click the Generate Overdue Letter button.</li>
+        <li>Navigate to a new email and hit Ctrl+V to paste the letter.</li>
+      </ol>
+      </section>
+    `,
+    "update-account-help": `
+      <h2>Update ILL Account Address</h2>
+      <section class="steps">
+      <p>Library accounts expire and need updating on the regular. This button takes care of the defaults.</p>
+      <h3>Steps:</h3>
+      <ol>
+        <li>Navigate to the Edit Account screen in Evergreen for the desired account.</li>
+        <li>Click the Update ILL Account Address button.</li>
+        <li>Button will automatically fill in an adult birthday, correct patron type, and district of residence.</li>
+      </ol>
+      </section>
+    `,
+  };
 
-  const overdueHelp = `
-  <h2>Generate Overdue Letter</h2>
-  <section class="steps">
-  <p>Pulls title and due date information from a patron's record and inserts it into a letter.</p>
-  <h3>Steps:</h3>
-  <ol>
-    <li>Open the patron's record to the 'Items Out' screen.</li>
-    <li>Click the Generate Overdue Letter button.</li>
-    <li>Navigate to a new email and hit Ctrl+V to paste the letter.</li>
-  </ol>
-  </section>
-  `;
-
-  const updateHelp = `
-  <h2>Update ILL Account Address</h2>
-  <section class="steps">
-  <p>Library accounts expire and need updating on the regular. This button takes care of the defaults.</p>
-  <h3>Steps:</h3>
-  <ol>
-    <li>Navigate to the Edit Account screen in Evergreen for the desired account.</li>
-    <li>Click the Update ILL Account Address button.</li>
-    <li>Button will automatically fill in an adult birthday, correct patron type, and district of residence.</li>
-  </ol>
-  </section>`;
-
-  switch (data) {
-    case "copy-help":
-      return copyHelp;
-    case "address-help":
-      return addressHelp;
-    case "paste-help":
-      return pasteHelp;
-    case "overdue-help":
-      return overdueHelp;
-    case "update-account-help":
-      return updateHelp;
-    default:
-      return "Details not yet available.";
-  }
+  return helpContent[data] || "Details not yet available.";
 };
