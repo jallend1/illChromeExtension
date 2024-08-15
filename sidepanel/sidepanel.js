@@ -1,4 +1,4 @@
-const buttons = document.querySelectorAll("button");
+const illActions = document.querySelectorAll(".ill-actions");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
@@ -47,7 +47,7 @@ const initiateScript = (scriptName) => {
   });
 };
 
-buttons.forEach((button) => {
+illActions.forEach((button) => {
   button.addEventListener("click", (event) => {
     const buttonId = event.target.id;
     initiateScript(buttonId);
