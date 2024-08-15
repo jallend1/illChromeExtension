@@ -264,17 +264,56 @@ const moreInfoModalData = (data) => {
   </ol>
   </section>
   `;
+  const addressHelp = `
+  <h2>Copy WorldShare Address</h2>
+  <section class="steps">
+  <p>The WorldShare address field isn't formatted for easy cut and pasting. This resolves that!</p>
+  <h3>Steps:</h3>
+  <ol>
+    <li>Have the WorldShare request open.</li>
+    <li>Click the Copy WorldShare Address button.</li>
+    <li>Navigate to the Dymo program and hit Ctrl+V to paste the address.</li>
+  </ol>
+  </section>
+  `;
+
+  const overdueHelp = `
+  <h2>Generate Overdue Letter</h2>
+  <section class="steps">
+  <p>Pulls title and due date information from a patron's record and inserts it into a letter.</p>
+  <h3>Steps:</h3>
+  <ol>
+    <li>Open the patron's record to the 'Items Out' screen.</li>
+    <li>Click the Generate Overdue Letter button.</li>
+    <li>Navigate to a new email and hit Ctrl+V to paste the letter.</li>
+  </ol>
+  </section>
+  `;
+
+  const updateHelp = `
+  <h2>Update ILL Account Address</h2>
+  <section class="steps">
+  <p>Library accounts expire and need updating on the regular. This button takes care of the defaults.</p>
+  <h3>Steps:</h3>
+  <ol>
+    <li>Navigate to the Edit Account screen in Evergreen for the desired account.</li>
+    <li>Click the Update ILL Account Address button.</li>
+    <li>Button will automatically fill in an adult birthday, correct patron type, and district of residence.</li>
+  </ol>
+  </section>`;
 
   switch (data) {
     case "copy-help":
       return copyHelp;
-    case "copyWorldShareAddress":
-      return copyWorldShareAddressInfo;
+    case "address-help":
+      return addressHelp;
     case "paste-help":
       return pasteHelp;
     case "overdue-help":
-      return overdueNoticeInfo;
+      return overdueHelp;
+    case "update-account-help":
+      return updateHelp;
     default:
-      return "No information available.";
+      return "Details not yet available.";
   }
 };
