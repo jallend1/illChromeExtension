@@ -199,37 +199,70 @@ const moreInfoModal = (buttonId) => {
     box-shadow: 0 0 10px 5px #000;
     width: 95%;
     font-size: 1rem;
+    background-color: #f9f9f9;
   `
   );
 
-  modal.innerHTML = `
-  <div>  
-   
-    <div style="background-color: #f9f9f9; text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-      ${data}
-    </div>
-  </div>
-`;
+  const content = document.createElement("div");
+  content.setAttribute(
+    "style",
+    `
+    background-color: #f9f9f9;
+    text-align: center;
+    border-radius: 0 0 1rem 1rem;
+    padding: 1rem;
+  `
+  );
+  content.innerHTML = data;
+  modal.appendChild(content);
+
+  const footer = document.createElement("footer");
+  footer.setAttribute(
+    "style",
+    `
+    
+    padding: 1rem;
+    border-radius: 1rem 1rem 0 0;
+    text-align: right;
+    height: 50px;
+    position: relative;
+  `
+  );
+  footer.innerHTML = `
+  <button style="font-size: 1rem; background-color: #f44336; color: #fff; border: none; border-radius: 0.25rem; padding: 0.5rem 1rem; cursor: pointer;">Close</button>
+  `;
+  footer.querySelector("button").addEventListener("click", () => {
+    document.getElementById("modal").remove();
+  });
+  modal.appendChild(footer);
 
   document.body.appendChild(modal);
-  setTimeout(() => {
-    modal.remove();
-  }, 3000);
 };
 
 const moreInfoModalData = (data) => {
   const copyHelp = `
-  <header>
-  <button style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1rem; background-color: #f44336; color: #fff; border: none; border-radius: 0 1rem 0 0; padding: 0.5rem; cursor: pointer;" onclick="document.getElementById('modal').remove();">X</button>
   <h2>Copy from OCLC</h2>
-  </header>
+  <section class="steps">
   <p>This copies all the important WorldShare information from the request so it can be entered into Evergreen.</p>
   <h3>Steps:</h3>
-  <ol>
+  <ol class="steps">
     <li>Go to the requests's page in WorldShare.</li>
     <li>Click the 'Copy Request Data from WorldShare' button.</li>
     <li>The request data is now saved in your browser! To unleash it, see the 'Paste the Request Data in Evergreen' button details for next steps.</li>
   </ol>
+  </section>
+  `;
+  const pasteHelp = `  
+  <h2>Paste to Evergreen</h2>
+  <section class="steps">
+  <p>This pastes all the information that was extracted from the 'Copy Request Data' button into 'Create ILL' screen in Evergreen.</p>
+  <h3>Steps:</h3>
+  <ol>
+    <li>Copy the request data from WorldShare using the 'Copy Request Data from WorldShare' button.</li>
+    <li>Navigate to the 'Create ILL' screen in Evergreen. (Alt+I)</li>
+    <li>Click the button and verify the information matches the request.</li>
+  </ol>
+  </section>
   `;
 
   switch (data) {
@@ -238,7 +271,7 @@ const moreInfoModalData = (data) => {
     case "copyWorldShareAddress":
       return copyWorldShareAddressInfo;
     case "paste-help":
-      return pasteToEvergreenInfo;
+      return pasteHelp;
     case "overdue-help":
       return overdueNoticeInfo;
     default:

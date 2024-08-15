@@ -207,3 +207,17 @@ button {
   padding: 0;
   margin-bottom: 1rem;
 }
+
+.steps {
+  text-align: left;
+
+  & ol {
+    margin: 0;
+  }
+
+  & li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5rem;
+    font-size: 1.15rem;
+  }
+}
