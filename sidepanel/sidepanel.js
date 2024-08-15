@@ -197,21 +197,19 @@ const moreInfoModal = (buttonId) => {
     color: #000;
     border: 1px solid #000;
     box-shadow: 0 0 10px 5px #000;
+    width: 95%;
+    font-size: 1rem;
   `
   );
 
   modal.innerHTML = `
   <div>  
-  <div style="background-color: #f44336; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-  <img src=${chrome.runtime.getURL(
-    "images/kawaii-book-happy.png"
-  )} style="width: 100px; height: 100px; border-radius: 50%;">
+   
+    <div style="background-color: #f9f9f9; text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+      ${data}
+    </div>
   </div>
-  <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-  ${data}
-  </div>
-  </div>
-  `;
+`;
 
   document.body.appendChild(modal);
   setTimeout(() => {
@@ -221,7 +219,10 @@ const moreInfoModal = (buttonId) => {
 
 const moreInfoModalData = (data) => {
   const copyHelp = `
+  <header>
+  <button style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1rem; background-color: #f44336; color: #fff; border: none; border-radius: 0 1rem 0 0; padding: 0.5rem; cursor: pointer;" onclick="document.getElementById('modal').remove();">X</button>
   <h2>Copy from OCLC</h2>
+  </header>
   <p>This copies all the important WorldShare information from the request so it can be entered into Evergreen.</p>
   <h3>Steps:</h3>
   <ol>
