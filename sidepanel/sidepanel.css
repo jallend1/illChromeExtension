@@ -60,10 +60,6 @@ body {
     & img {
       display: none;
     }
-
-    & p.subtitle:first-of-type {
-      display: none;
-    }
   }
 
   & section {
@@ -219,5 +215,24 @@ button {
     margin-bottom: 0.5rem;
     line-height: 1.5rem;
     font-size: 1.15rem;
+  }
+}
+
+.sidebar-footer {
+  color: white;
+  text-align: right;
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+
+  & button {
+    font-size: 0.7rem;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: none;
+  }
+
+  & button:active {
+    transform: translateY(1px);
   }
 }

@@ -2,7 +2,6 @@ const buttons = document.querySelectorAll("button");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
-const currentMode = document.querySelector("#current-mode");
 const moreInfoButtons = document.querySelectorAll(".more-info");
 
 const initiateScript = (scriptName) => {
@@ -159,14 +158,14 @@ collapseToggle.forEach((toggle) => {
 
 modeToggle.addEventListener("click", () => {
   const body = document.querySelector("body");
-  if (currentMode.textContent === "Evergreen Dreary") {
-    body.classList.remove("fun-mode");
-    body.classList.add("dreary-mode");
-    currentMode.textContent = "Fun";
-  } else {
+  if (modeToggle.textContent === "Vibrant Mode") {
     body.classList.add("fun-mode");
     body.classList.remove("dreary-mode");
-    currentMode.textContent = "Evergreen Dreary";
+    modeToggle.textContent = "Evergreen Mode";
+  } else {
+    body.classList.remove("fun-mode");
+    body.classList.add("dreary-mode");
+    modeToggle.textContent = "Vibrant Mode";
   }
 });
 
