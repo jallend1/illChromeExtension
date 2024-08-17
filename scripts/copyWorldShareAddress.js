@@ -92,6 +92,23 @@ function copyWorldShareAddress() {
     return states[stateName];
   };
 
+  const lendingAddressFields = () => {
+    const selectors = {
+      attention: 'span[data="delivery.address.attention"]',
+      line1: 'span[data="delivery.address.line1"]',
+      line2: 'span[data="delivery.address.line2"]',
+      locality: 'span[data="delivery.address.locality"]',
+      region: 'span[data="delivery.address.region"]',
+      postal: 'span[data="delivery.address.postal"]',
+    };
+    Object.keys(selectors).forEach((key) => {
+      let nodeList = document.querySelectorAll(selectors[key]);
+      nodeList.length > 0
+        ? (addressObject[key] = nodeList[nodeList.length - 1].innerText)
+        : (addressObject[key] = null);
+    });
+  };
+
   const isLendingRequest = () => {
     // WorldShare stacks requests, so ignore all hidden requests
     const lender = document.querySelector(
@@ -100,8 +117,6 @@ function copyWorldShareAddress() {
     // No lender means no lending request
     return lender !== null;
   };
-
-  console.log(isLendingRequest());
 
   const assignAddressObjectValues = (key) => {
     if (key === "region") {
