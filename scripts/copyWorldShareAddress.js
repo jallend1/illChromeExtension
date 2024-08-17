@@ -111,11 +111,9 @@ function copyWorldShareAddress() {
   };
 
   const isLendingRequest = () => {
-    // WorldShare stacks requests, so ignore all hidden requests
     const lender = document.querySelector(
       "#requests > div:not([class*='hidden']) span.borrowingInformationExtra"
     );
-    // No lender means no lending request
     return lender !== null;
   };
 
@@ -124,20 +122,10 @@ function copyWorldShareAddress() {
       let nodeList = document.querySelectorAll(
         "#requests > div:not([class*='hidden']) " + selectors[key]
       );
-      if (key === "region") {
-        nodeList.length > 0
-          ? (addressObject[key] = convertStateNameToAbbreviation(
-              nodeList[nodeList.length - 1].innerText
-            ))
-          : (addressObject[key] = "NOT LISTED");
-      } else {
-        if (nodeList.length > 0) {
-          if (selectors[key].includes("input")) {
-            addressObject[key] = nodeList[nodeList.length - 1].value;
-          } else {
-            addressObject[key] = nodeList[nodeList.length - 1].innerText;
-          }
-        }
+      if (nodeList.length > 0) {
+        selectors[key].includes("input")
+          ? (addressObject[key] = nodeList[nodeList.length - 1].value)
+          : (addressObject[key] = nodeList[nodeList.length - 1].innerText);
       }
     });
   };
@@ -162,7 +150,10 @@ function copyWorldShareAddress() {
           addressString += addressObject[key] + ", ";
           break;
         case "region":
-          addressString += addressObject[key] + " ";
+          addressObject[key] === null
+            ? (addressString += "NOT LISTED ")
+            : (addressString +=
+                convertStateNameToAbbreviation(addressObject[key]) + " ");
           break;
         case "postal":
           addressString += addressObject[key];
