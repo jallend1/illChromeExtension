@@ -16,7 +16,7 @@ function copyFromOCLC() {
     title: 'span[data="resource.title"]',
     requestNumber: ".accordionRequestDetailsRequestId",
     patronID: 'input[data="requester.patron.userId"]',
-    lendingFee: 'input[name="billing.maxCost.amountAsString"]',
+    lendingFee: 'span[data="billing.charges.amountAsString"]',
     dueDate: 'span[data="returning.originalDueToSupplier"]',
     currentLender: 'span[data="lenderString.currentSupplier.symbol"]',
     region: 'span[data="returning.address.region"]',
