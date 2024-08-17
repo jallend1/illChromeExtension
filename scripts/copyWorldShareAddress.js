@@ -92,6 +92,17 @@ function copyWorldShareAddress() {
     return states[stateName];
   };
 
+  const isLendingRequest = () => {
+    // WorldShare stacks requests, so ignore all hidden requests
+    const lender = document.querySelector(
+      "#requests > div:not([class*='hidden']) span.borrowingInformationExtra"
+    );
+    // No lender means no lending request
+    return lender !== null;
+  };
+
+  console.log(isLendingRequest());
+
   const assignAddressObjectValues = (key) => {
     if (key === "region") {
       let nodeList = document.querySelectorAll(
