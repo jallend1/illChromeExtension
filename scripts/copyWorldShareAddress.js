@@ -121,7 +121,9 @@ function copyWorldShareAddress() {
 
   const addressFields = (selectors) => {
     Object.keys(selectors).forEach((key) => {
-      let nodeList = document.querySelectorAll(selectors[key]);
+      let nodeList = document.querySelectorAll(
+        "#requests > div:not([class*='hidden']) " + selectors[key]
+      );
       if (key === "region") {
         nodeList.length > 0
           ? (addressObject[key] = convertStateNameToAbbreviation(
