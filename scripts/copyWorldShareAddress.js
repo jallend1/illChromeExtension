@@ -92,15 +92,25 @@ function copyWorldShareAddress() {
     return states[stateName];
   };
 
-  const lendingAddressFields = () => {
-    const selectors = {
-      attention: 'span[data="delivery.address.attention"]',
-      line1: 'span[data="delivery.address.line1"]',
-      line2: 'span[data="delivery.address.line2"]',
-      locality: 'span[data="delivery.address.locality"]',
-      region: 'span[data="delivery.address.region"]',
-      postal: 'span[data="delivery.address.postal"]',
-    };
+  const lendingSelectors = {
+    attention: 'span[data="delivery.address.attention"]',
+    line1: 'span[data="delivery.address.line1"]',
+    line2: 'span[data="delivery.address.line2"]',
+    locality: 'span[data="delivery.address.locality"]',
+    region: 'span[data="delivery.address.region"]',
+    postal: 'span[data="delivery.address.postal"]',
+  };
+
+  const borrowingSelectors = {
+    attention: 'input[data="returning.address.attention"]',
+    line1: 'input[data="returning.address.line1"]',
+    line2: 'input[data="returning.address.line2"]',
+    locality: 'input[data="returning.address.locality"]',
+    region: 'span[data="returning.address.region"]',
+    postal: 'input[data="returning.address.postal"]',
+  };
+
+  const lendingAddressFields = (selectors) => {
     Object.keys(selectors).forEach((key) => {
       let nodeList = document.querySelectorAll(selectors[key]);
       nodeList.length > 0
@@ -139,7 +149,9 @@ function copyWorldShareAddress() {
   };
 
   // Iterate through addressObject keys and extract values from page
-  Object.keys(addressObject).forEach(assignAddressObjectValues);
+  isLendingRequest()
+    ? lendingAddressFields(lendingSelectors)
+    : Object.keys(addressObject).forEach(assignAddressObjectValues);
 
   // Format addressObject for mail label
   const createAddressString = () => {
