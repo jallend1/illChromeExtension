@@ -110,15 +110,6 @@ function copyWorldShareAddress() {
     postal: 'input[data="returning.address.postal"]',
   };
 
-  const lendingAddressFields = (selectors) => {
-    Object.keys(selectors).forEach((key) => {
-      let nodeList = document.querySelectorAll(selectors[key]);
-      nodeList.length > 0
-        ? (addressObject[key] = nodeList[nodeList.length - 1].innerText)
-        : (addressObject[key] = null);
-    });
-  };
-
   const isLendingRequest = () => {
     // WorldShare stacks requests, so ignore all hidden requests
     const lender = document.querySelector(
@@ -128,30 +119,31 @@ function copyWorldShareAddress() {
     return lender !== null;
   };
 
-  const assignAddressObjectValues = (key) => {
-    if (key === "region") {
-      let nodeList = document.querySelectorAll(
-        'span[data="returning.address.region"]'
-      );
-      nodeList.length > 0
-        ? (addressObject[key] = convertStateNameToAbbreviation(
-            nodeList[nodeList.length - 1].innerText
-          ))
-        : (addressObject[key] = "NOT LISTED");
-    } else {
-      let nodeList = document.querySelectorAll(
-        `input[data="returning.address.${key}"]`
-      );
-      nodeList.length > 0
-        ? (addressObject[key] = nodeList[nodeList.length - 1].value)
-        : (addressObject[key] = null);
-    }
+  const addressFields = (selectors) => {
+    Object.keys(selectors).forEach((key) => {
+      let nodeList = document.querySelectorAll(selectors[key]);
+      if (key === "region") {
+        nodeList.length > 0
+          ? (addressObject[key] = convertStateNameToAbbreviation(
+              nodeList[nodeList.length - 1].innerText
+            ))
+          : (addressObject[key] = "NOT LISTED");
+      } else {
+        if (nodeList.length > 0) {
+          if (selectors[key].includes("input")) {
+            addressObject[key] = nodeList[nodeList.length - 1].value;
+          } else {
+            addressObject[key] = nodeList[nodeList.length - 1].innerText;
+          }
+        }
+      }
+    });
   };
 
   // Iterate through addressObject keys and extract values from page
   isLendingRequest()
-    ? lendingAddressFields(lendingSelectors)
-    : Object.keys(addressObject).forEach(assignAddressObjectValues);
+    ? addressFields(lendingSelectors)
+    : addressFields(borrowingSelectors);
 
   // Format addressObject for mail label
   const createAddressString = () => {
