@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "2.2",
+  "version": "2.3",
   "permissions": [
     "activeTab",
     "storage",
@@ -75,6 +75,10 @@
     {
       "matches": ["*://*/*hold/*"],
       "js": ["scripts/lendingFeeAlert.js"]
+    },
+    {
+      "matches": ["*://*/*circ/patron/*"],
+      "js": ["scripts/courierHighlight.js"]
     }
   ]
 }

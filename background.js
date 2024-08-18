@@ -96,5 +96,30 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         );
       }
     });
+  } else if (
+    changeInfo.status === "complete" &&
+    tab.url.includes("/circ/patron/")
+  ) {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tabId },
+        files: ["./scripts/courierHighlight.js"],
+      },
+      () => {
+        // Send message to content script to display patron status
+        chrome.tabs.sendMessage(
+          tabId,
+          { data: "courierHighlight" },
+          (response) => {
+            chrome.runtime.lastError
+              ? console.error(
+                  "Error sending message:",
+                  chrome.runtime.lastError
+                )
+              : console.log("Message sent successfully:", response);
+          }
+        );
+      }
+    );
   }
 });
