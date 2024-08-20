@@ -79,7 +79,7 @@ function courierHighlight() {
     "Harney County Library",
     "Harney ESD Resource Center",
     "Harrison Branch Library",
-    "Hayden",
+    "Hayden Library",
     "Helix Public Library",
     "Hermiston High School Library",
     "Hermiston Public Library",
@@ -265,29 +265,39 @@ function courierHighlight() {
     "Woodburn Public Library",
   ];
 
-  const checkIfCourierLibrary = (patronName) => {
-    const splitName = patronName.split(", ");
-    const patronLibraryName = splitName[1].trim();
-    const patronLastName = splitName[0].trim();
-    if (patronLastName === "ILL DEPT" || patronLastName === "LIBRARY") {
-      const courierLibrary = courierLibraries.find((library) =>
-        library.toUpperCase().includes(patronLibraryName)
-      );
-      return courierLibrary && isCourierState();
-    }
-    return false;
+  // Checks if patron name matches ILL name formatting
+  const isLibrary = (patronLastName) => {
+    return patronLastName === "ILL DEPT" || patronLastName === "LIBRARY";
   };
 
+  // Checks if library state is a courier state to avoid false positives
   const isCourierState = () => {
-    //   Checks if library's address includes one of the courier states
+    const courierStates = [", WA ", ", OR ", ", ID "];
     const addressField = document.querySelector(
       "textarea[id*='patron-address-copy']"
     );
-    return (
-      addressField.textContent.includes(", WA ") ||
-      addressField.textContent.includes(", OR ") ||
-      addressField.textContent.includes(", ID ")
+    return courierStates.some((state) =>
+      addressField.textContent.includes(state)
     );
+  };
+
+  // Checks if library name is in courierLibraries array
+  const isCourierLibrary = (libraryName) => {
+    const courierLibrary = courierLibraries.find((library) =>
+      library.toUpperCase().includes(libraryName)
+    );
+    return courierLibrary;
+  };
+
+  // Initiates processing of library to determine if it is a courier library
+  const processName = (patronName) => {
+    const [patronLastName, patronLibraryName] = patronName
+      .split(", ")
+      .map((name) => name.trim());
+    if (!isLibrary(patronLastName)) return false;
+    if (!isCourierState()) return false;
+    if (!isCourierLibrary(patronLibraryName)) return false;
+    return true;
   };
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -299,9 +309,9 @@ function courierHighlight() {
           patronNameElement = document.querySelector(".patron-status-color h4");
           if (patronNameElement) {
             clearInterval(interval); // Stop checking once patronName has a value
-            checkIfCourierLibrary(patronNameElement.textContent);
-            checkIfCourierLibrary(patronNameElement.textContent)
-              ? insertAdjacentHTML()
+            // processName(patronNameElement.textContent);
+            processName(patronNameElement.textContent)
+              ? insertCourierAlert()
               : null;
           }
         }, 100);
@@ -323,7 +333,8 @@ function courierHighlight() {
     }
   });
 
-  const insertAdjacentHTML = () => {
+  // Inserts courier alert into patron page
+  const insertCourierAlert = () => {
     const lead = document.querySelector(".lead");
     const courierHighlightExists = document.querySelector(".courier-highlight");
     if (!courierHighlightExists) {
