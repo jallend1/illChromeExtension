@@ -96,6 +96,27 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         );
       }
     });
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tabId },
+        files: ["./scripts/frequentLending.js"],
+      },
+      () => {
+        // Send message to content script to display lending fee alert
+        chrome.tabs.sendMessage(
+          tabId,
+          { data: "frequentLending" },
+          (response) => {
+            chrome.runtime.lastError
+              ? console.error(
+                  "Error sending message:",
+                  chrome.runtime.lastError
+                )
+              : console.log("Message sent successfully:", response);
+          }
+        );
+      }
+    );
   } else if (
     changeInfo.status === "complete" &&
     tab.url.includes("/circ/patron/")
