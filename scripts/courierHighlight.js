@@ -268,10 +268,14 @@ function courierHighlight() {
   const checkIfCourierLibrary = (patronName) => {
     const splitName = patronName.split(", ");
     const patronLibraryName = splitName[1].trim();
-    const courierLibrary = courierLibraries.find((library) =>
-      library.toUpperCase().includes(patronLibraryName)
-    );
-    return courierLibrary && isCourierState();
+    const patronLastName = splitName[0].trim();
+    if (patronLastName === "ILL DEPT" || patronLastName === "LIBRARY") {
+      const courierLibrary = courierLibraries.find((library) =>
+        library.toUpperCase().includes(patronLibraryName)
+      );
+      return courierLibrary && isCourierState();
+    }
+    return false;
   };
 
   const isCourierState = () => {
