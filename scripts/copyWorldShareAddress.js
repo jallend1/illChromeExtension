@@ -119,9 +119,16 @@ function copyWorldShareAddress() {
 
   const addressFields = (selectors) => {
     Object.keys(selectors).forEach((key) => {
+      // If request brought up from borrowing/lending queue, under a #requests div
       let nodeList = document.querySelectorAll(
         "#requests > div:not([class*='hidden']) " + selectors[key]
       );
+      // If request brought up from search bar, under a #requestSearchResults div
+      if (nodeList.length === 0) {
+        nodeList = document.querySelectorAll(
+          "#requestSearchResults > div:not([class*='hidden']) " + selectors[key]
+        );
+      }
       if (nodeList.length > 0) {
         selectors[key].includes("input")
           ? (addressObject[key] = nodeList[nodeList.length - 1].value)
