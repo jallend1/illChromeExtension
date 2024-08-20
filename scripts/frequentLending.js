@@ -1,21 +1,21 @@
 function frequentLending() {
   const frequentLibraries = {
+    "Coeur d'Alene": "101010101",
+    Kitsap: "666666666",
+    "North Central": "999999999",
     Pierce: "000000000",
     SPL: "111111111",
-    Whatcom: "222222222",
-    Timberland: "333333333",
     "Spokane County": "444444444",
     "Spokane Public": "555555555",
-    Kitsap: "666666666",
     "Sno-Isle": "777777777",
+    Timberland: "333333333",
     "Walla Walla County": "888888888",
-    "North Central": "999999999",
-    "Coeur d'Alene": "101010101",
+    Whatcom: "222222222",
   };
 
-  const applyStyles = (element, styles) => {
+  const applyStyles = (el, styles) => {
     for (const style in styles) {
-      element.style[style] = styles[style];
+      el.style[style] = styles[style];
     }
   };
 
