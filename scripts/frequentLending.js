@@ -32,7 +32,7 @@ function frequentLending() {
     barcodeInput.focus();
   };
 
-  const generateButtons = (containerEl, library) => {
+  const generateButton = (containerEl, library) => {
     const libraryButton = document.createElement("button");
     libraryButton.textContent = library;
     libraryButton.value = frequentLibraries[library];
@@ -64,7 +64,6 @@ function frequentLending() {
       copyValuetoInput(e.target.value);
     });
     libraryButton.addEventListener("mouseover", () => {
-      //   libraryButton.style = hoverStyle;
       applyStyles(libraryButton, hoverStyles);
     });
     libraryButton.addEventListener("mouseout", () => {
@@ -83,12 +82,16 @@ function frequentLending() {
       justifyContent: "center",
       alignItems: "center",
       marginBottom: "1em",
+      border: "1px solid #ccc",
+      backgroundColor: "#f9f9f9",
+      padding: "1em",
+      borderRadius: "5px",
     };
 
     applyStyles(frequentLibrariesDiv, divStyles);
 
     for (const library in frequentLibraries) {
-      generateButtons(frequentLibrariesDiv, library);
+      generateButton(frequentLibrariesDiv, library);
     }
     searchForm.append(frequentLibrariesDiv);
   };
@@ -103,5 +106,6 @@ function frequentLending() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.data === "frequentLending") {
     frequentLending();
+    sendResponse({ status: "success" });
   }
 });

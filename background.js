@@ -70,6 +70,10 @@ chrome.sidePanel
 
 // If the tab is updated and the URL includes /hold/, check for lending fee
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (tab.url.startsWith("chrome://")) {
+    return; // Do not execute scripts on chrome:// URLs
+  }
+
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
       if (result.lendingFee && result.lendingFee === "0.00") {
@@ -102,21 +106,30 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         files: ["./scripts/frequentLending.js"],
       },
       () => {
-        // Send message to content script to display lending fee alert
         chrome.tabs.sendMessage(
           tabId,
           { data: "frequentLending" },
           (response) => {
-            chrome.runtime.lastError
-              ? console.error(
-                  "Error sending message:",
-                  chrome.runtime.lastError
-                )
-              : console.log("Message sent successfully:", response);
+            if (chrome.runtime.lastError) {
+              console.error("Error sending message:", chrome.runtime.lastError);
+              console.dir(chrome.runtime.lastError);
+            } else {
+              console.log("Message sent successfully:", response);
+            }
           }
         );
       }
     );
+  } else if (changeInfo.status === "complete" && !tab.url.includes("/hold/")) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      func: () => {
+        const frequentLibraries = document.querySelector("#frequentLibraries");
+        if (frequentLibraries) {
+          frequentLibraries.remove();
+        }
+      },
+    });
   } else if (
     changeInfo.status === "complete" &&
     tab.url.includes("/circ/patron/")
