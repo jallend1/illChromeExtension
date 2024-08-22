@@ -50,7 +50,6 @@ chrome.contextMenus.onClicked.addListener((item) => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    console.log("request", request);
     chrome.scripting.executeScript(
       {
         target: { tabId: activeTab.id },
