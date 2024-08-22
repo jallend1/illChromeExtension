@@ -56,7 +56,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         files: [`./scripts/${request.data}.js`],
       },
       () => {
-        // Sends response once script is fully executed
         sendResponse({ response: "Message received" });
       }
     );

@@ -5,6 +5,7 @@ const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const moreInfoButtons = document.querySelectorAll(".more-info");
 const aboutButton = document.querySelector("#about");
+const lendingMode = document.querySelector("#lending-mode");
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -29,18 +30,16 @@ const initiateScript = (scriptName) => {
       );
       return;
     } else {
-      // Send message to background.js to run the script
+      // Sends message to background.js to run the script
       chrome.runtime.sendMessage(
         { command: scriptName, data: scriptName },
         async (response) => {
           // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
           if (scriptName === "copyWorldShareAddress") {
             await navigator.clipboard.writeText("");
-            // await extractAddressFromStorage();
             await extractFromStorage("addressString");
           } else if (scriptName === "overdueNotice") {
             await navigator.clipboard.writeText("");
-            // await extractOverdueFromStorage();
             await extractFromStorage("overdueNotice");
           }
         }
@@ -229,6 +228,15 @@ const addEventListeners = () => {
       <p>Author: Jason Allen </p>
       <p>An assortment of tools to soften some of those rough edges in the ILL process.</p>
       `
+    );
+  });
+
+  lendingMode.addEventListener("click", () => {
+    chrome.runtime.sendMessage(
+      { command: "frequentLending", data: "frequentLending" },
+      (response) => {
+        console.log(response);
+      }
     );
   });
 };
