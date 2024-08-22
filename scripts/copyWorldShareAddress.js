@@ -111,10 +111,18 @@ function copyWorldShareAddress() {
   };
 
   const isLendingRequest = () => {
-    const lender = document.querySelector(
-      "#requests > div:not([class*='hidden']) span.borrowingInformationExtra"
+    let lender;
+    // Returns lending request if request pulled up through requests
+    lender = document.querySelector(
+      "#requests > div:not([class*='hidden']) span.nd-mainPanelTitle + span.borrowingInformationExtra"
     );
-    return lender !== null;
+    // If nothing is found under requests, returns lending request if request pulled up through search bar
+    if (lender === null) {
+      lender = document.querySelector(
+        "#requestSearchResults > div:not([class*='hidden']) span.nd-mainPanelTitle + span.borrowingInformationExtra"
+      );
+      return lender !== null;
+    }
   };
 
   const addressFields = (selectors) => {
@@ -123,6 +131,7 @@ function copyWorldShareAddress() {
       let nodeList = document.querySelectorAll(
         "#requests > div:not([class*='hidden']) " + selectors[key]
       );
+      console.log(nodeList);
       // If request brought up from search bar, under a #requestSearchResults div
       if (nodeList.length === 0) {
         nodeList = document.querySelectorAll(
