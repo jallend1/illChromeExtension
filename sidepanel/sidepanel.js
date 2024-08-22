@@ -232,12 +232,7 @@ const addEventListeners = () => {
   });
 
   lendingMode.addEventListener("click", () => {
-    chrome.runtime.sendMessage(
-      { command: "frequentLending", data: "frequentLending" },
-      (response) => {
-        console.log(response);
-      }
-    );
+    initiateScript("frequentLending");
   });
 };
 

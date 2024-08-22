@@ -106,9 +106,19 @@ function frequentLending() {
   }
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.data === "frequentLending") {
-    frequentLending();
-    sendResponse({ status: "success" });
-  }
-});
+// Automatically loads script on Place Hold Screen
+// DISABLED: This script is now loaded by the background script -- Considering workflow
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.data === "frequentLending") {
+//     frequentLending();
+//     sendResponse({ status: "success" });
+//   }
+// });
+
+// If already displayed, removes it -- Otherwise adds it
+function isDisplayed() {
+  const frequentLibraries = document.querySelector("#frequentLibraries");
+  frequentLibraries ? frequentLibraries.remove() : frequentLending();
+}
+
+isDisplayed();
