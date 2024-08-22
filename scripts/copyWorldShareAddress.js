@@ -131,7 +131,6 @@ function copyWorldShareAddress() {
       let nodeList = document.querySelectorAll(
         "#requests > div:not([class*='hidden']) " + selectors[key]
       );
-      console.log(nodeList);
       // If request brought up from search bar, under a #requestSearchResults div
       if (nodeList.length === 0) {
         nodeList = document.querySelectorAll(
