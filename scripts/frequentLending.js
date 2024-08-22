@@ -19,7 +19,7 @@ function frequentLending() {
     }
   };
 
-  const searchForm = document.querySelector("eg-catalog-search-form");
+  const navBar = document.querySelector("eg-staff-nav-bar");
 
   const copyValuetoInput = (value) => {
     const barcodeInput = document.querySelector("#patron-barcode");
@@ -86,6 +86,8 @@ function frequentLending() {
       backgroundColor: "#f9f9f9",
       padding: "1em",
       borderRadius: "5px",
+      marginTop: "40px",
+      paddingTop: "15px",
     };
 
     applyStyles(frequentLibrariesDiv, divStyles);
@@ -93,10 +95,11 @@ function frequentLending() {
     for (const library in frequentLibraries) {
       generateButton(frequentLibrariesDiv, library);
     }
-    searchForm.append(frequentLibrariesDiv);
+
+    navBar.insertAdjacentElement("afterend", frequentLibrariesDiv);
   };
 
-  if (searchForm) {
+  if (navBar) {
     if (!document.querySelector("#frequentLibraries")) {
       generateLendingContainer();
     }
