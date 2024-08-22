@@ -130,10 +130,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         }
       },
     });
-  } else if (
-    changeInfo.status === "complete" &&
-    tab.url.includes("/circ/patron/")
-  ) {
+  }
+
+  if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
     chrome.scripting.executeScript(
       {
         target: { tabId: tabId },

@@ -329,7 +329,7 @@ function courierHighlight() {
         }, 100);
       }
 
-      return true; // Indicate that the response will be sent asynchronously and prevents console errors
+      sendResponse({ response: "Message received" });
     }
   });
 
