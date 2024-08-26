@@ -139,8 +139,10 @@ function copyWorldShareAddress() {
       }
       if (nodeList.length > 0) {
         selectors[key].includes("input")
-          ? (addressObject[key] = nodeList[nodeList.length - 1].value)
-          : (addressObject[key] = nodeList[nodeList.length - 1].innerText);
+          ? (addressObject[key] =
+              nodeList[nodeList.length - 1].value.toUpperCase())
+          : (addressObject[key] =
+              nodeList[nodeList.length - 1].innerText.toUpperCase());
       }
     });
   };
