@@ -134,7 +134,7 @@ function pasteToEvergreen() {
         updateCallNumber(requestNumber);
         updatePatronBarcode(patronID);
         updatePatronAddress(addressString);
-        if (isLendingFee !== "0.00") {
+        if (isLendingFee !== "0.00" && isLendingFee !== "") {
           alert(
             `This request might have a lending fee of $${isLendingFee}. Please verify and add it to the patron's record.`
           );

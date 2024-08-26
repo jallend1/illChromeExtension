@@ -68,6 +68,7 @@ function lendingFeeAlert() {
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.data === "lendingFeeAlert") {
+      console.log(request.lendingFee);
       checkILLTitle()
         .then((isILLTitle) => {
           if (isILLTitle) {
