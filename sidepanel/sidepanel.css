@@ -300,33 +300,29 @@ button {
   justify-content: center;
   align-items: center;
 
-  & #back-button {
-    padding: 0.5rem 1rem;
-    margin: 1rem;
-    font-size: 0.8rem;
-    text-align: center;
-    border: solid 1px #fff;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  & a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem;
 
-    & a {
-      color: #fff;
-      text-decoration: none;
+    & #back-button {
+      margin: 0 0.5rem;
+      font-size: 0.8rem;
+      text-align: center;
+      border: solid 1px #fff;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
     }
-  }
 
-  & #back-button:hover {
-    background-color: #fff;
-    color: rgb(33, 37, 41);
-
-    & a {
+    & #back-button:hover {
+      background-color: #fff;
       color: rgb(33, 37, 41);
     }
-  }
 
-  & #back-button:active {
-    transform: translateY(1px);
+    & #back-button:active {
+      transform: translateY(1px);
+    }
   }
 
   & main {
@@ -345,8 +341,9 @@ button {
 }
 
 #about-details {
-  padding: 1rem;
+  padding: 0 1rem;
   font-size: 1rem;
   text-align: center;
   line-height: 1.8rem;
+  margin: 0 0 1rem 0;
 }
