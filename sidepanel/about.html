@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>About PowILL Tools</h1>
+    <p>
+      PowILL Tools is a browser extension to help manage processing ILL
+      requests. It's filled with a hodgepodge of tools that made Jason's life
+      easier, and may have mixed results for others.
+    </p>
+    <h2>Key Features</h2>
+    <div class="feature">
+      <h3>Processing Arriving Books</h3>
+      <ul>
+        <li>
+          Copies the title, patron barcode, lending library address, and
+          WorldShare Request number at the click of a button
+        </li>
+        <li>
+          Insert all request data into the Evergreen 'Create ILL Item' screen
+          formatted properly and without unnecessary typos
+        </li>
+        <li>
+          Adds buttons for items that arrived in bags or that need to be
+          returned in a box and inserts the appropriate note into the lender
+          address field
+        </li>
+        <li>
+          Automatic alert when a WorldShare request came with a borrowing fee as
+          a reminder to pass the cost onto the patron
+        </li>
+        <li>
+          Adds a popup when an item is coming from one of the libraries that
+          requires us to hold onto their paperwork
+        </li>
+      </ul>
+    </div>
+    <div class="feature">
+      <h3>Mailroom Support</h3>
+      <ul>
+        <li>
+          Copies the address from the WorldShare request into the clipboard for
+          pasting into Dymo
+        </li>
+        <li>
+          Coming Soon: Alert when checking out or returning an item to a
+          frequently used library to facilitate bundling
+        </li>
+      </ul>
+    </div>
+    <div class="feature">
+      <h3>User Accounts</h3>
+      <ul>
+        <li>
+          When on a user's "Items Out" tab, generates an overdue ILL notice
+          containing the title of lost or overdue ILL items currently checked
+          out to the patron, and copies a letter to the patron to the clipboard
+          that can be pasted into any email or word processing client.
+        </li>
+        <li>
+          Automatically populate the Evergreen accounts of our external partners
+          with the default set of criteria shared among all ILL accounts
+          including:
+          <ul>
+            <li>Permission Group</li>
+            <li>Last name of ILL DEPT</li>
+            <li>District of residence set to unset</li>
+            <li>Adult date of birth</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="feature">
+      <h3>Lending Side Support</h3>
+      <ul>
+        <li>
+          Adds buttons to the Place Hold screen of the libraries that do most of
+          the borrowing from us
+        </li>
+        <li>
+          Examines a library's name and address to determine if they are likely
+          on the Orbis Courier system
+        </li>
+      </ul>
+    </div>
+    <div class="feature">
+      <h3>Optional Keyboard Shortcuts</h3>
+      <p>
+        These are the default keyboard shortcuts for the extension. They can be
+        changed in the extension settings.
+      </p>
+      <ul>
+        <li>Ctrl+Shift+1: Copy request data from WorldShare</li>
+        <li>Ctrl+Shift+2: Paste the request data in Evergreen</li>
+        <li>Ctrl+Shift+3: Generate an Overdue Letter</li>
+        <li>Ctrl+Shift+Y: Copy WorldShare Address for Dymo</li>
+      </ul>
+    </div>
+  </body>
+</html>

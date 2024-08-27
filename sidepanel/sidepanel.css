@@ -226,6 +226,7 @@ button {
 .sidebar-footer {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   color: white;
   text-align: right;
   position: fixed;
@@ -240,6 +241,19 @@ button {
   }
 
   & button:active {
+    transform: translateY(1px);
+  }
+
+  & a {
+    font-size: 0.7rem;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: none;
+    text-decoration: none;
+    color: rgb(33, 37, 41);
+  }
+
+  & a:active {
     transform: translateY(1px);
   }
 }
