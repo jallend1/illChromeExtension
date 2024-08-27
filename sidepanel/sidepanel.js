@@ -4,7 +4,7 @@ const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const moreInfoButtons = document.querySelectorAll(".more-info");
-const aboutButton = document.querySelector("#about");
+const aboutButton = document.querySelector("#about-link");
 const lendingMode = document.querySelector("#lending-mode");
 
 const initiateScript = (scriptName) => {
