@@ -68,40 +68,42 @@ function overdueNotice() {
   const statusModal = (data, backgroundColor, imgURL) => {
     const modal = document.createElement("div");
     modal.setAttribute("id", "modal");
-    modal.setAttribute(
-      "style",
-      `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 1rem;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #000;
-      font-size: 4rem;
-      border: 1px solid #000;
-      box-shadow: 0 0 10px 5px #000;
-    `
-    );
+    const modalStyles = {
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      borderRadius: "1rem",
+      zIndex: "1000",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      color: "#000",
+      fontSize: "1.2rem",
+      border: "1px solid #000",
+      boxShadow: "0 0 10px 5px #000",
+    };
+
+    for (const key in modalStyles) {
+      modal.style[key] = modalStyles[key];
+    }
+
     modal.innerHTML = `
     <div>  
-    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-    <img src=${imgURL} style="border-radius: 50%;">
-    </div>
-    <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-    ${data}
-    </div>
+      <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
+        <img src=${imgURL} style="border-radius: 50%; max-height:100px;">
+      </div>
+      <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+        ${data}
+      </div>
     </div>
     `;
 
     document.body.appendChild(modal);
     setTimeout(() => {
       modal.remove();
-    }, 3000);
+    }, 4000);
   };
 
   const overdueLetter = `
@@ -121,15 +123,15 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
 
   async function copyToClipboard(data) {
     try {
-      let imgURL = chrome.runtime.getURL("images/jason-128.png");
+      let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
       let headerColor = "#4CAF50";
       let result = "";
       // Stores overdue notice in local storage for sidepanel to access
       chrome.storage.local.set({ overdueNotice: data });
       if (overdueTitles.length === 0) {
-        result = `<h2>Notice!</h2><p style="font-size: 1.25rem; padding: 2rem;">No overdue interlibrary loan titles found. A letter template was copied to your clipboard.</p>`;
+        result = `<h2>Heads up!</h2><p style="padding: 2rem;">No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.</p>`;
       } else {
-        result = `<h2>Success!</h2> <p style="font-size: 1.25rem;">An overdue notice letter was copied to your clipboard for ${
+        result = `<h2>Success!</h2> <p style="">An overdue notice letter was copied to your clipboard for ${
           overdueTitles.length
         } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`;
       }
