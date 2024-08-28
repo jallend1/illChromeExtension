@@ -137,13 +137,13 @@ function copyWorldShareAddress() {
           "#requestSearchResults > div:not([class*='hidden']) " + selectors[key]
         );
       }
+
       if (nodeList.length > 0) {
         selectors[key].includes("input")
-          ? (addressObject[key] =
-              nodeList[nodeList.length - 1].value.toUpperCase())
-          : (addressObject[key] =
-              nodeList[nodeList.length - 1].innerText.toUpperCase());
+          ? (addressObject[key] = nodeList[nodeList.length - 1].value)
+          : (addressObject[key] = nodeList[nodeList.length - 1].innerText);
       }
+      console.log(key, nodeList, addressObject[key]);
     });
   };
 
@@ -170,7 +170,9 @@ function copyWorldShareAddress() {
           addressObject[key] === null
             ? (addressString += "NOT LISTED ")
             : (addressString +=
-                convertStateNameToAbbreviation(addressObject[key]) + " ");
+                convertStateNameToAbbreviation(
+                  addressObject[key]
+                ).toUpperCase() + " ");
           break;
         case "postal":
           addressString += addressObject[key];
