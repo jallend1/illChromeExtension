@@ -143,7 +143,6 @@ function copyWorldShareAddress() {
           ? (addressObject[key] = nodeList[nodeList.length - 1].value)
           : (addressObject[key] = nodeList[nodeList.length - 1].innerText);
       }
-      console.log(key, nodeList, addressObject[key]);
     });
   };
 
