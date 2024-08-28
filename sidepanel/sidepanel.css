@@ -52,6 +52,7 @@ body {
     display: flex;
     justify-content: center;
     text-align: center;
+    width: 100%;
 
     & h1 {
       /* font-size: 0.8rem; */
@@ -303,7 +304,6 @@ button {
   & a {
     color: #fff;
     text-decoration: none;
-    padding: 0.5rem;
 
     & #back-button {
       margin: 0 0.5rem;
