@@ -110,8 +110,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           { data: "frequentLending" },
           (response) => {
             if (chrome.runtime.lastError) {
-              console.error("Error sending message:", chrome.runtime.lastError);
-              console.dir(chrome.runtime.lastError);
+              console.error(
+                "Error sending message:",
+                JSON.stringify(chrome.runtime.lastError, null, 2)
+              );
             } else {
               console.log("Message sent successfully:", response);
             }
