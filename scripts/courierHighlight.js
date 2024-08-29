@@ -320,6 +320,8 @@ function courierHighlight() {
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.data === "courierHighlight") {
+      // Doesn't run it if on the search page
+      if (window.location.href.includes("search")) return;
       let patronNameElement;
       patronNameElement = document.querySelector(".patron-status-color h4");
       if (!patronNameElement) {
