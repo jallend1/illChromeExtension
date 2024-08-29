@@ -110,7 +110,7 @@ function courierHighlight() {
     "Latah County Library",
     "Ledding Library of Milwaukie",
     "Lewis & Clark - Northwestern School of Law",
-    "Lewis & Clark College (OR)",
+    "Lewis & Clark College",
     "Lewis-Clark State College",
     "Lewiston City Library",
     "LINCC",
@@ -283,10 +283,28 @@ function courierHighlight() {
 
   // Checks if library name is in courierLibraries array
   const isCourierLibrary = (libraryName) => {
-    const courierLibrary = courierLibraries.find((library) =>
+    // Courier list uses UNIV instead of Evergreen's UNIVERSITY
+    let isCourier;
+    if (libraryName.includes("UNIVERSITY")) {
+      libraryName = libraryName.replace("UNIVERSITY", "UNIV");
+    }
+    isCourier = courierLibraries.find((library) =>
       library.toUpperCase().includes(libraryName)
     );
-    return courierLibrary;
+
+    // Evergreen often stores the university name in the the address field, so if not found in the name, check there
+    if (!isCourier) {
+      const addressField = document.querySelector(
+        "textarea[id*='patron-address-copy']"
+      );
+
+      courierLibraries.forEach((library) => {
+        if (addressField.textContent.includes(library.toUpperCase())) {
+          isCourier = true;
+        }
+      });
+    }
+    return isCourier;
   };
 
   // Initiates processing of library to determine if it is a courier library
@@ -309,7 +327,6 @@ function courierHighlight() {
           patronNameElement = document.querySelector(".patron-status-color h4");
           if (patronNameElement) {
             clearInterval(interval); // Stop checking once patronName has a value
-            // processName(patronNameElement.textContent);
             processName(patronNameElement.textContent)
               ? insertCourierAlert()
               : null;
@@ -341,7 +358,7 @@ function courierHighlight() {
       const courierHighlight = document.createElement("div");
       courierHighlight.innerHTML = `
             <div class="courier-highlight">
-            <p style="color: green; font-size: smaller;">This is likely a courier library.</p>
+            <p style="color: green; font-size: smaller;">This is likely a courier library. Verify on the courier list.</p>
             </div>
         `;
       lead.appendChild(courierHighlight);
