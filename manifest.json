@@ -83,6 +83,10 @@
     {
       "matches": ["*://*/*circ/patron/*"],
       "js": ["scripts/courierHighlight.js"]
+    },
+    {
+      "matches": ["*://*/*/cat/ill/track"],
+      "js": ["scripts/createILLPageMods.js"]
     }
   ]
 }
