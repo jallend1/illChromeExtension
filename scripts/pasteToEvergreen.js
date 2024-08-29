@@ -22,6 +22,15 @@ function pasteToEvergreen() {
   };
 
   const updatePatronAddress = (addressString) => {
+    const inputField = document.querySelector("textarea");
+    const bagText = "**BAG**\n";
+    const boxText = "**RETURN IN BOX**\n";
+    if (inputField.value.includes(bagText)) {
+      addressString = bagText + addressString;
+    }
+    if (inputField.value.includes(boxText)) {
+      addressString = boxText + addressString;
+    }
     updateInputField("textarea", addressString);
   };
 
