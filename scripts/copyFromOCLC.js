@@ -442,6 +442,15 @@ function copyFromOCLC() {
   };
 
   async function copyToStorage(data, requestNum, lendingFee) {
+    // If the request number isn't defined, display an error and remove the previous data from storage just in case
+    if (!requestNum) {
+      const result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.</p>`;
+      const imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
+      const headerColor = "#e85e6a";
+      chrome.storage.local.remove("requestData");
+      statusModal(result, headerColor, imgURL);
+      return;
+    }
     try {
       const success = {
         headerColor: "#4CAF50",
@@ -470,6 +479,7 @@ function copyFromOCLC() {
       } else {
         result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
       }
+      chrome.storage.local.remove("requestData");
       statusModal(result, headerColor, imgURL);
       console.error(err);
     }
