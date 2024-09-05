@@ -282,24 +282,27 @@ function courierHighlight() {
   };
 
   // Checks if library name is in courierLibraries array
-  const isCourierLibrary = (libraryName) => {
+  const isCourierLibrary = (rawLibraryName) => {
     // Courier list uses UNIV instead of Evergreen's UNIVERSITY
     let isCourier;
-    if (libraryName.includes("UNIVERSITY")) {
-      libraryName = libraryName.replace("UNIVERSITY", "UNIV");
+    let modifiedLibraryName;
+    if (rawLibraryName.includes("UNIVERSITY")) {
+      modifiedLibraryname = rawLibraryName.replace("UNIVERSITY", "UNIV");
     }
     isCourier = courierLibraries.find((library) =>
-      library.toUpperCase().includes(libraryName)
+      library.toUpperCase().includes(modifiedLibraryName)
     );
 
     // Evergreen often stores the university name in the the address field, so if not found in the name, check there
     if (!isCourier) {
       const addressField = document.querySelector(
         "textarea[id*='patron-address-copy']"
-      );
+      ).textContent;
+
+      const modifiedAddressField = addressField.replace("UNIVERSITY", "UNIV");
 
       courierLibraries.forEach((library) => {
-        if (addressField.textContent.includes(library.toUpperCase())) {
+        if (modifiedAddressField.includes(library.toUpperCase())) {
           isCourier = true;
         }
       });
