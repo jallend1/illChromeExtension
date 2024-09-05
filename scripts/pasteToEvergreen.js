@@ -37,7 +37,9 @@ function pasteToEvergreen() {
   const extractArrayFromLocalStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
       if (!result.requestData) {
-        console.log("No data to paste!");
+        statusModal(
+          "Couldn't find any data to paste! Try copying from the WorldShare request again. If the error persists, please contact Jason."
+        );
         return;
       } else {
         const { addressString, requestNumber, title, patronID, isLendingFee } =
@@ -60,39 +62,40 @@ function pasteToEvergreen() {
 
   // TODO: Finish implementing an error modal for when the data is not found in local storage
 
-  const statusModal = (data, backgroundColor, imgURL) => {
+  const statusModal = (err) => {
     let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
     let headerColor = "#e85e6a";
-    let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
+    let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error</h2> <p style="font-size: 1rem;">${err}</p>`;
     const modal = document.createElement("div");
     modal.setAttribute("id", "modal");
-    modal.setAttribute(
-      "style",
-      `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 1rem;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #000;
-      font-size: 4rem;
-      border: 1px solid #000;
-      box-shadow: 0 0 10px 5px #000;
-    `
-    );
+    const modalStyle = {
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      borderRadius: "1rem",
+      zIndex: "1000",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      color: "#000",
+      fontSize: "4rem",
+      border: "1px solid #000",
+      boxShadow: "0 0 10px 5px #000",
+    };
+    for (const [key, value] of Object.entries(modalStyle)) {
+      modal.style[key] = value;
+    }
+
     modal.innerHTML = `
     <div>  
-    <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-    <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
-    </div>
-    <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-    ${data}
-    </div>
+      <div style="background-color: ${headerColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
+        <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
+      </div>
+      <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+        ${result}
+      </div>
     </div>
     `;
 
