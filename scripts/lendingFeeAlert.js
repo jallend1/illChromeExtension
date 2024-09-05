@@ -96,7 +96,11 @@ lendingFeeAlert();
 
 function emphasizeErrors() {
   const form = document.querySelector("form");
+  const placeHoldButton = document.querySelector(
+    "button[keydesc='Place Hold(s)']"
+  );
   form.addEventListener("submit", checkAndEmphasizeHoldStatus);
+  placeHoldButton.addEventListener("click", checkAndEmphasizeHoldStatus);
 }
 
 function checkAndEmphasizeHoldStatus() {
