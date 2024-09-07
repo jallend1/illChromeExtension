@@ -220,6 +220,11 @@ const addEventListeners = () => {
 
   lendingMode.addEventListener("click", () => {
     initiateScript("frequentLending");
+    chrome.storage.local.get("lendingMode", (result) => {
+      chrome.storage.local.set({
+        lendingMode: !result.lendingMode,
+      });
+    });
   });
 };
 

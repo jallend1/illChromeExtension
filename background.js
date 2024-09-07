@@ -9,6 +9,56 @@ const currentOptions = [
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
+// Check if lendingMode in storage is true
+chrome.storage.local.get("lendingMode", (result) => {
+  if (result.lendingMode) {
+    // Execute frequentLending script
+    chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+      if (activeTab.url.startsWith("chrome://")) {
+        return;
+      }
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: activeTab.id },
+          files: ["./scripts/frequentLending.js"],
+        },
+        () => {
+          chrome.tabs.sendMessage(
+            activeTab.id,
+            { data: "frequentLending" },
+            (response) => {
+              if (chrome.runtime.lastError) {
+                console.error(
+                  "Error sending message:",
+                  JSON.stringify(chrome.runtime.lastError, null, 2)
+                );
+              } else {
+                console.log("Message sent successfully:", response);
+              }
+            }
+          );
+        }
+      );
+    });
+  }
+});
+
+// Send a message to frequentLending script to update when page is updated
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete") {
+    chrome.tabs.sendMessage(tabId, { data: "pageUpdated" }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "Error sending message:",
+          JSON.stringify(chrome.runtime.lastError, null, 2)
+        );
+      } else {
+        console.log("Message sent successfully:", response);
+      }
+    });
+  }
+});
+
 // TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {

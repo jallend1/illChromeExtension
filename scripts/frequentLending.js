@@ -13,13 +13,35 @@ function frequentLending() {
     Whatcom: "222222222",
   };
 
+  const checkNavBar = () => {
+    let navBar = document.querySelector("eg-staff-nav-bar");
+    if (navBar) {
+      if (!document.querySelector("#frequentLibraries")) {
+        generateLendingContainer(navBar);
+      }
+    } else {
+      // If no navBar yet, keep trying for 15 seconds
+      let attempts = 0;
+      const interval = setInterval(() => {
+        navBar = document.querySelector("eg-staff-nav-bar");
+        if (navBar) {
+          clearInterval(interval);
+          generateLendingContainer(navBar);
+        }
+        attempts++;
+        if (attempts > 30) {
+          console.log("No navBar found");
+          clearInterval(interval);
+        }
+      }, 500);
+    }
+  };
+
   const applyStyles = (el, styles) => {
     for (const style in styles) {
       el.style[style] = styles[style];
     }
   };
-
-  const navBar = document.querySelector("eg-staff-nav-bar");
 
   const copyValuetoInput = (value) => {
     const barcodeInput = document.querySelector("#patron-barcode");
@@ -77,7 +99,10 @@ function frequentLending() {
     containerEl.appendChild(libraryButton);
   };
 
-  const generateLendingContainer = () => {
+  const generateLendingContainer = (navBar) => {
+    if (document.querySelector("#frequentLibraries")) {
+      return;
+    }
     const frequentLibrariesDiv = document.createElement("div");
     frequentLibrariesDiv.id = "frequentLibraries";
 
@@ -100,15 +125,10 @@ function frequentLending() {
     for (const library in frequentLibraries) {
       generateButton(frequentLibrariesDiv, library);
     }
-
     navBar.insertAdjacentElement("afterend", frequentLibrariesDiv);
   };
 
-  if (navBar) {
-    if (!document.querySelector("#frequentLibraries")) {
-      generateLendingContainer();
-    }
-  }
+  checkNavBar();
 }
 
 // Automatically loads script on Place Hold Screen
@@ -119,10 +139,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// If already displayed, removes it -- Otherwise adds it
-function isDisplayed() {
-  const frequentLibraries = document.querySelector("#frequentLibraries");
-  frequentLibraries ? frequentLibraries.remove() : frequentLending();
-}
+chrome.storage.local.get("lendingMode", (result) => {
+  if (result.lendingMode) {
+    frequentLending();
+  } else {
+    const frequentLibraries = document.querySelector("#frequentLibraries");
+    frequentLibraries ? frequentLibraries.remove() : null;
+  }
+});
 
-isDisplayed();
+// Check if page has been updated
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.data === "pageUpdated") {
+    chrome.storage.local.get("lendingMode", (result) => {
+      if (result.lendingMode) {
+        frequentLending();
+      }
+      sendResponse({ status: "success" });
+    });
+  }
+});
+
+// If already displayed, removes it -- Otherwise adds it
+// function isDisplayed() {
+//   const frequentLibraries = document.querySelector("#frequentLibraries");
+//   frequentLibraries ? frequentLibraries.remove() : frequentLending();
+// }
+
+// isDisplayed();
