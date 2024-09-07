@@ -44,7 +44,12 @@ function frequentLending() {
   };
 
   const copyValuetoInput = (value) => {
-    const barcodeInput = document.querySelector("#patron-barcode");
+    let barcodeInput;
+    // #patron-barcode is ID on place hold screen, #barcode-search-input is ID on patron search screen
+    barcodeInput =
+      document.querySelector("#patron-barcode") ||
+      document.querySelector("#barcode-search-input");
+
     // If no barcode input, copy the value to the clipboard
     if (!barcodeInput) {
       navigator.clipboard.writeText(value);
