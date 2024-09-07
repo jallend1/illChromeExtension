@@ -152,3 +152,22 @@ function checkAndEmphasizeHoldStatus() {
 }
 
 setTimeout(emphasizeErrors, 2000);
+
+// TODO: Break out into its own content script if behavior is needed on other pages
+// TODO: In progress - Verify patron name against WorldShare; Auto-update pickup location to request info
+const extractArrayFromLocalStorage = () => {
+  console.log("Extracting data from local storage");
+  chrome.storage.local.get("requestData", (result) => {
+    if (!result.requestData) {
+      statusModal(
+        "Couldn't find any data to paste! Try copying from the WorldShare request again. If the error persists, please contact Jason."
+      );
+      return;
+    } else {
+      const { requestNumber, patronName } = JSON.parse(result.requestData);
+      console.log(patronName);
+    }
+  });
+};
+
+extractArrayFromLocalStorage();

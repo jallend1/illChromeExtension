@@ -20,6 +20,7 @@ function copyFromOCLC() {
     dueDate: 'span[data="returning.originalDueToSupplier"]',
     currentLender: 'span[data="lenderString.currentSupplier.symbol"]',
     region: 'span[data="returning.address.region"]',
+    patronName: 'input[data="requester.patron.name"]',
   };
 
   const extractValueFromField = (selector) => {
@@ -385,13 +386,14 @@ function copyFromOCLC() {
     const title = extractValueFromField(elementSelectors.title);
     const patronID = extractValueFromField(elementSelectors.patronID);
     const isLendingFee = extractValueFromField(elementSelectors.lendingFee);
-
+    const patronName = extractValueFromField(elementSelectors.patronName);
     return {
       addressString,
       requestNumber,
       title,
       patronID,
       isLendingFee,
+      patronName,
     };
   };
 
