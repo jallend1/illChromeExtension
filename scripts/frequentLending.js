@@ -160,7 +160,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   } else {
     // TODO: Commonly logging "illPageMods" here -- Unify message handling
-    console.log(request.data);
+    // console.log(request.data);
     sendResponse({ status: "Unknown Message" });
   }
 });

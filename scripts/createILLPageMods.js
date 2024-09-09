@@ -1,4 +1,4 @@
-const createILLPageMods = () => {
+function createILLPageMods() {
   const applyStyles = (element, styles) => {
     for (const property in styles) {
       element.style[property] = styles[property];
@@ -121,7 +121,7 @@ const createILLPageMods = () => {
         : (boxCheckbox.checked = false);
     });
   };
-};
+}
 
 // createILLPageMods();
 
