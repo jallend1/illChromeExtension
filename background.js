@@ -45,6 +45,11 @@ chrome.storage.local.get("lendingMode", (result) => {
 
 // Send a message to frequentLending script to update when page is updated
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (tab.url.startsWith("chrome://")) {
+    // Don't be sending messages if you're on a chrome:// URL, you silly goose
+    return;
+  }
+
   if (changeInfo.status === "complete") {
     chrome.tabs.sendMessage(tabId, { data: "pageUpdated" }, (response) => {
       if (chrome.runtime.lastError) {
