@@ -136,14 +136,6 @@ function frequentLending() {
   checkNavBar();
 }
 
-// Automatically loads script on Place Hold Screen
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.data === "frequentLending") {
-    frequentLending();
-    sendResponse({ status: "success" });
-  }
-});
-
 chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
     frequentLending();
@@ -155,20 +147,20 @@ chrome.storage.local.get("lendingMode", (result) => {
 
 // Check if page has been updated
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.data === "pageUpdated") {
+  if (request.data === "frequentLending") {
+    frequentLending();
+    sendResponse({ status: "success" });
+  } else if (request.data === "pageUpdated") {
     chrome.storage.local.get("lendingMode", (result) => {
       if (result.lendingMode) {
         frequentLending();
       }
       sendResponse({ status: "success" });
     });
+    return true;
+  } else {
+    // TODO: Commonly logging "illPageMods" here -- Unify message handling
+    console.log(request.data);
+    sendResponse({ status: "Unknown Message" });
   }
 });
-
-// If already displayed, removes it -- Otherwise adds it
-// function isDisplayed() {
-//   const frequentLibraries = document.querySelector("#frequentLibraries");
-//   frequentLibraries ? frequentLibraries.remove() : frequentLending();
-// }
-
-// isDisplayed();
