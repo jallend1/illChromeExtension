@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "2.4.84",
+  "version": "2.4.85",
   "permissions": [
     "activeTab",
     "storage",
@@ -11,7 +11,8 @@
     "clipboardWrite",
     "clipboardRead",
     "contextMenus",
-    "sidePanel"
+    "sidePanel",
+    "webNavigation"
   ],
   "host_permissions": ["http://*/*", "https://*/*"],
   "background": {
@@ -79,10 +80,6 @@
     {
       "matches": ["*://*/*"],
       "js": ["scripts/frequentLending.js"]
-    },
-    {
-      "matches": ["*://*/*/cat/ill/track"],
-      "js": ["scripts/createILLPageMods.js"]
     }
   ]
 }

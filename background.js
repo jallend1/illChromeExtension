@@ -207,3 +207,25 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     );
   }
 });
+
+// If the tab is updated and the URL includes /cat/ill/track, add ILL page mods
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  let tabId = details.tabId;
+  let currentUrl = details.url;
+  if (currentUrl.includes("/cat/ill/track")) {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tabId },
+        files: ["./scripts/createILLPageMods.js"],
+      },
+      () => {
+        // Send message to content script to display ILL page mods
+        chrome.tabs.sendMessage(tabId, { data: "illPageMods" }, (response) => {
+          chrome.runtime.lastError
+            ? console.error("Error sending message:", chrome.runtime.lastError)
+            : console.log("Message sent successfully:", response);
+        });
+      }
+    );
+  }
+});

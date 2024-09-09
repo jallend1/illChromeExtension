@@ -123,4 +123,12 @@ const createILLPageMods = () => {
   };
 };
 
-createILLPageMods();
+// createILLPageMods();
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.data === "illPageMods") {
+    createILLPageMods();
+    sendResponse({ response: "Message received" });
+  }
+  return true;
+});
