@@ -2,7 +2,6 @@
   const { states } = await import(chrome.runtime.getURL("modules/states.js"));
 
   function copyWorldShareAddress() {
-    console.log("Copying WorldShare Address");
     let addressObject = {
       attention: null,
       line1: null,
