@@ -65,7 +65,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/*", "scripts/courierLibraries.js"],
+      "resources": ["images/*", "modules/*"],
       "matches": ["<all_urls>"]
     }
   ],

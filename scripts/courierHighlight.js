@@ -1,6 +1,6 @@
 (async () => {
   const { courierLibraries } = await import(
-    chrome.runtime.getURL("scripts/courierLibraries.js")
+    chrome.runtime.getURL("modules/courierLibraries.js")
   );
 
   function courierHighlight(courierLibraries) {
@@ -66,6 +66,7 @@
         if (window.location.href.includes("search")) return;
         let patronNameElement;
         patronNameElement = document.querySelector(".patron-status-color h4");
+
         if (!patronNameElement) {
           const interval = setInterval(() => {
             patronNameElement = document.querySelector(
@@ -90,6 +91,10 @@
               clearInterval(checkInterval);
             }
           }, 100);
+        } else {
+          processName(patronNameElement.textContent)
+            ? insertCourierAlert()
+            : null;
         }
 
         sendResponse({ response: "Message received" });
