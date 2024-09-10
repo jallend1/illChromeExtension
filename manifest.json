@@ -14,10 +14,10 @@
     "sidePanel",
     "webNavigation"
   ],
-
-  "host_permissions": ["https://evgmobile.kcls.org/eg2/en-US/*"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "commands": {
     "copyWorldShareAddress": {
@@ -65,7 +65,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/*"],
+      "resources": ["images/*", "scripts/courierLibraries.js"],
       "matches": ["<all_urls>"]
     }
   ],
