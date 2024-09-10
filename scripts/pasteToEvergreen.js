@@ -1,6 +1,12 @@
 function pasteToEvergreen() {
   const updateInputField = (selector, value, prefix = "") => {
     const inputField = document.querySelector(selector);
+    if (!inputField) {
+      statusModal(
+        "Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason."
+      );
+      return;
+    }
     inputField.value = prefix + value;
     const event = new Event("input", {
       bubbles: true,
@@ -23,6 +29,12 @@ function pasteToEvergreen() {
 
   const updatePatronAddress = (addressString) => {
     const inputField = document.querySelector("textarea");
+    if (!inputField) {
+      statusModal(
+        "Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason."
+      );
+      return;
+    }
     const bagText = "**BAG**\n";
     const boxText = "**RETURN IN BOX**\n";
     if (inputField.value.includes(bagText)) {
@@ -54,13 +66,11 @@ function pasteToEvergreen() {
           );
         }
         // TODO: Seems impossible to focus on the item barcode from sidebar but functions as expected with keyboard shortcut?
-        const kclsBarcodeInput = document.querySelector("#item-barcode-input");
-        kclsBarcodeInput.focus();
+        // const kclsBarcodeInput = document.querySelector("#item-barcode-input");
+        // kclsBarcodeInput.focus();
       }
     });
   };
-
-  // TODO: Finish implementing an error modal for when the data is not found in local storage
 
   const statusModal = (err) => {
     let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
@@ -102,7 +112,7 @@ function pasteToEvergreen() {
     document.body.appendChild(modal);
     setTimeout(() => {
       modal.remove();
-    }, 3000);
+    }, 4000);
   };
 
   // TODO: Pressing enter seems to submit the form, which I don't think is the demonstrated behavior on local client
