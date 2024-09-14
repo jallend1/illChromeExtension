@@ -4,7 +4,14 @@ const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const moreInfoButtons = document.querySelectorAll(".more-info");
+
 const lendingMode = document.querySelector("#lending-mode");
+// Sets lendingMode text to match current state
+let lendingModeStatus = chrome.storage.local.get("lendingMode", () => {
+  lendingMode.textContent = lendingModeStatus
+    ? "Disable Lending Mode"
+    : "Enable Lending Mode";
+});
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -221,9 +228,17 @@ const addEventListeners = () => {
   lendingMode.addEventListener("click", () => {
     initiateScript("frequentLending");
     chrome.storage.local.get("lendingMode", (result) => {
-      chrome.storage.local.set({
-        lendingMode: !result.lendingMode,
-      });
+      chrome.storage.local.set(
+        {
+          lendingMode: !result.lendingMode,
+        },
+        () => {
+          lendingModeStatus = !result.lendingMode;
+          lendingMode.textContent = lendingModeStatus
+            ? "Disable Lending Mode"
+            : "Enable Lending Mode";
+        }
+      );
     });
   });
 };
