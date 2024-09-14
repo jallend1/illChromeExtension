@@ -1,5 +1,8 @@
 (async () => {
   const { states } = await import(chrome.runtime.getURL("modules/states.js"));
+  const { statusModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
+  );
 
   function copyWorldShareAddress() {
     let addressObject = {
@@ -119,8 +122,14 @@
     if (document.hasFocus()) navigator.clipboard.writeText(addressString);
     // If sidePanel click is used, the address is stored and extracted in sidepanel.js
     else {
-      chrome.storage.local.set({ addressString: addressString }, () => {});
+      chrome.storage.local.set({ addressString: addressString });
     }
+
+    statusModal(
+      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
+      "#4CAF50",
+      chrome.runtime.getURL("images/kawaii-dinosaur.png")
+    );
   }
 
   copyWorldShareAddress();
