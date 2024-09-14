@@ -2,6 +2,9 @@ async function loadFrequentLending() {
   const { frequentLibraries } = await import(
     chrome.runtime.getURL("../modules/frequentLibraries.js")
   );
+  const { statusModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
+  );
 
   function frequentLending() {
     const checkNavBar = () => {
@@ -45,6 +48,11 @@ async function loadFrequentLending() {
       // If no barcode input, copy the value to the clipboard
       if (!barcodeInput) {
         navigator.clipboard.writeText(value);
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Copied to clipboard!</h2> <p style="font-size: 1rem;">We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.</p>`,
+          "#4CAF50",
+          chrome.runtime.getURL("images/kawaii-dinosaur.png")
+        );
         return;
       }
       barcodeInput.value = value;
