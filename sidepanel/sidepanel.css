@@ -65,13 +65,16 @@ body {
   }
 
   & section {
+    padding: 0;
     & header {
       width: 100%;
       background-color: rgb(223, 240, 216);
       justify-content: center;
+      padding: 0;
 
       & h2 {
         color: rgb(13, 119, 100);
+        font-size: 1rem;
       }
 
       & img {
@@ -80,13 +83,14 @@ body {
     }
 
     & main {
+      padding: 0 0 1rem 0;
       background-color: #fff;
 
       & button {
         color: rgb(33, 37, 41);
         border: solid 1px rgb(33, 37, 41);
         border-radius: 4px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         background-color: #fff;
         transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
       }
