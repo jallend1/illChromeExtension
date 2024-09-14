@@ -37,7 +37,7 @@
       const inputField = document.querySelector(inputSelector);
       if (!inputField) {
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things!</p>`,
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`,
           "#e85e6a",
           chrome.runtime.getURL("images/kawaii-book-sad.png")
         );
@@ -61,7 +61,11 @@
           setTimeout(selectOption, 100); // Wait 100ms before retrying
           attempts++;
         } else {
-          console.log(`Option "${optionText}" not found.`);
+          statusModal(
+            `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">The expected options didn't present themselves for reasons that are mysterious to us all.</p>`,
+            "#e85e6a",
+            chrome.runtime.getURL("images/kawaii-book-sad.png")
+          );
         }
       };
 
