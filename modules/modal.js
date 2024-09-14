@@ -22,15 +22,23 @@ export const statusModal = (data, backgroundColor, imgURL) => {
     modal.style[key] = value;
   }
   modal.innerHTML = `
-    <div>  
+  <div>  
     <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-    <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
+      <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
     </div>
-    <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-    ${data}
+    <div style="background-color: #f9f9f9; text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
+      ${data}
+      <button id="close-button" style="margin-top: 1rem; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; background-color: ${backgroundColor}; color: #fff; font-size: 1.5rem; cursor: pointer;">
+        Close
+      </button>
     </div>
-    </div>
-    `;
+  </div>
+`;
+
+  const closeButton = modal.querySelector("#close-button");
+  closeButton.addEventListener("click", () => {
+    modal.remove();
+  });
 
   document.body.appendChild(modal);
   setTimeout(() => {
