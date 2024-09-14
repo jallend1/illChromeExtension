@@ -114,10 +114,13 @@
     };
 
     const addressString = createAddressString();
-    // Sets in storage (for sidePanel click) and copies to clipboard (for direct keyboard shortcut)
-    chrome.storage.local.set({ addressString: addressString }, () => {
-      navigator.clipboard.writeText(addressString);
-    });
+
+    // If keyboard shortcut is used, the address is copied to clipboard
+    if (document.hasFocus()) navigator.clipboard.writeText(addressString);
+    // If sidePanel click is used, the address is stored and extracted in sidepanel.js
+    else {
+      chrome.storage.local.set({ addressString: addressString }, () => {});
+    }
   }
 
   copyWorldShareAddress();
