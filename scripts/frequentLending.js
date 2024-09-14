@@ -2,7 +2,6 @@ async function loadFrequentLending() {
   const { frequentLibraries } = await import(
     chrome.runtime.getURL("../modules/frequentLibraries.js")
   );
-  console.log(frequentLibraries);
 
   function frequentLending() {
     const checkNavBar = () => {
@@ -37,6 +36,7 @@ async function loadFrequentLending() {
 
     const copyValuetoInput = (value) => {
       let barcodeInput;
+      let isSearchScreen = document.querySelector("#barcode-search-input");
       // #patron-barcode is ID on place hold screen, #barcode-search-input is ID on patron search screen
       barcodeInput =
         document.querySelector("#patron-barcode") ||
@@ -54,6 +54,14 @@ async function loadFrequentLending() {
       });
       barcodeInput.dispatchEvent(event);
       barcodeInput.focus();
+
+      // If on search screen, automatically click the search button
+      if (isSearchScreen) {
+        const searchButton = document.querySelector(
+          ".input-group > .input-group-text > button"
+        );
+        searchButton.click();
+      }
     };
 
     const generateButton = (containerEl, library) => {
