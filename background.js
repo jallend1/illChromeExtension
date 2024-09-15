@@ -1,7 +1,3 @@
-// *5. Generate an invoice for external partners (Evergreen - Contextual with patron type or name?)
-// *6. Automatically switch tabs from request screen to Evergreen tab and auto-fill?
-// * 10 Move state abbreviation conversion into its own file because it's now being used by multiple sources
-
 const currentOptions = [
   { id: "copyWorldShareAddress", title: "Copy Address from WorldShare" },
   { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
