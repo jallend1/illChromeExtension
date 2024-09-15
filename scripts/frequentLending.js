@@ -86,6 +86,7 @@ async function loadFrequentLending() {
         color: "black",
         cursor: "pointer",
         fontSize: "0.9em",
+        minWidth: "75px",
       };
 
       const hoverStyles = {
@@ -124,13 +125,11 @@ async function loadFrequentLending() {
         flexWrap: "wrap",
         justifyContent: "center",
         alignItems: "center",
-        marginBottom: "1em",
         border: "1px solid #ccc",
-        backgroundColor: "#f9f9f9",
-        padding: "1em",
+        backgroundColor: "#dff0d8",
         borderRadius: "5px",
-        marginTop: "40px",
-        paddingTop: "15px",
+        marginTop: "35px",
+        paddingTop: "10px",
       };
 
       applyStyles(frequentLibrariesDiv, divStyles);

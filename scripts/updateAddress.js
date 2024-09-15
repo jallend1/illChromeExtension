@@ -19,6 +19,7 @@
             cancelable: true,
           });
           input.dispatchEvent(inputEvent);
+          // TODO: Limit this to just DOB if that's the only one that needs it?
           // Change event required in order to get the DOB to save
           const changeEvent = new Event("change", {
             bubbles: true,
