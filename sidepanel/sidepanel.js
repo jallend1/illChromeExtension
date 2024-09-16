@@ -7,8 +7,8 @@ const moreInfoButtons = document.querySelectorAll(".more-info");
 
 const lendingMode = document.querySelector("#lending-mode");
 // Sets lendingMode text to match current state
-let lendingModeStatus = chrome.storage.local.get("lendingMode", () => {
-  lendingMode.textContent = lendingModeStatus
+let lendingModeStatus = chrome.storage.local.get("lendingMode", (result) => {
+  lendingMode.textContent = result.lendingMode
     ? "Disable Lending Mode"
     : "Enable Lending Mode";
 });
