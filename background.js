@@ -5,14 +5,20 @@ const currentOptions = [
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
+const isAllowedHost = (url) => {
+  const manifest = chrome.runtime.getManifest();
+  const allowedHosts = manifest.host_permissions || [];
+  const urlObject = new URL(url);
+  const host = urlObject.host;
+  return allowedHosts.includes(host);
+};
+
 // Check if lendingMode in storage is true
 chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
     // Execute frequentLending script
     chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-      if (activeTab.url.startsWith("chrome://")) {
-        return;
-      }
+      if (!isAllowedHost(activeTab.url)) return;
       chrome.scripting.executeScript(
         {
           target: { tabId: activeTab.id },
@@ -41,11 +47,7 @@ chrome.storage.local.get("lendingMode", (result) => {
 
 // Send a message to frequentLending script to update when page is updated
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (tab.url.startsWith("chrome://")) {
-    // Don't be sending messages if you're on a chrome:// URL, you silly goose
-    return;
-  }
-
+  if (!isAllowedHost(tab.url)) return;
   if (changeInfo.status === "complete") {
     chrome.tabs.sendMessage(tabId, { data: "pageUpdated" }, (response) => {
       if (chrome.runtime.lastError) {
@@ -91,6 +93,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Add event listener for context menu clicks
 chrome.contextMenus.onClicked.addListener((item) => {
+  if (!isAllowedHost(item.pageUrl)) return;
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     chrome.scripting.executeScript({
       target: { tabId: activeTab.id },
@@ -101,6 +104,7 @@ chrome.contextMenus.onClicked.addListener((item) => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+    if (!isAllowedHost(activeTab.url)) return;
     chrome.scripting.executeScript(
       {
         target: { tabId: activeTab.id },
@@ -120,10 +124,8 @@ chrome.sidePanel
 
 // If the tab is updated and the URL includes /hold/, check for lending fee
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (tab.url.startsWith("chrome://")) {
-    return; // Do not execute scripts on chrome:// URLs
-  }
-
+  if (!isAllowedHost(tab.url)) return;
+  // TODO: Feels like overkill and incredibly over complicated -- Simply this
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
       if (result.lendingFee && result.lendingFee === "0.00") {

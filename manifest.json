@@ -14,7 +14,11 @@
     "sidePanel",
     "webNavigation"
   ],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "host_permissions": [
+    "https://evgmobile.kcls.org/*",
+    "https://evgclient.kcls.org/*",
+    "https://kingcountylibrarysystem.share.worldcat.org/*"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
