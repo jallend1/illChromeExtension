@@ -17,6 +17,7 @@ const isAllowedHost = (url) => {
 
 // TODO: Basic executeScript function to clean things up a bit
 const executeScript = (tabId, script) => {
+  console.log("here we are! ");
   chrome.scripting.executeScript(
     {
       target: { tabId: tabId },
@@ -42,7 +43,6 @@ chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
     // Execute frequentLending script
     chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-      console.log(isAllowedHost(activeTab.url));
       if (!isAllowedHost(activeTab.url)) return;
       chrome.scripting.executeScript(
         {
@@ -130,6 +130,7 @@ chrome.contextMenus.onClicked.addListener((item) => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     if (!isAllowedHost(activeTab.url)) return;
+    // executeScript(activeTab.id, request.data);
     chrome.scripting.executeScript(
       {
         target: { tabId: activeTab.id },
@@ -212,27 +213,28 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 
   if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tabId },
-        files: ["./scripts/courierHighlight.js"],
-      },
-      () => {
-        // Send message to content script to display patron status
-        chrome.tabs.sendMessage(
-          tabId,
-          { data: "courierHighlight" },
-          (response) => {
-            chrome.runtime.lastError
-              ? console.error(
-                  "Error sending message:",
-                  chrome.runtime.lastError
-                )
-              : console.log("Message sent successfully:", response);
-          }
-        );
-      }
-    );
+    executeScript(tabId, "courierHighlight");
+    // chrome.scripting.executeScript(
+    //   {
+    //     target: { tabId: tabId },
+    //     files: ["./scripts/courierHighlight.js"],
+    //   },
+    //   () => {
+    //     // Send message to content script to display patron status
+    //     chrome.tabs.sendMessage(
+    //       tabId,
+    //       { data: "courierHighlight" },
+    //       (response) => {
+    //         chrome.runtime.lastError
+    //           ? console.error(
+    //               "Error sending message:",
+    //               chrome.runtime.lastError
+    //             )
+    //           : console.log("Message sent successfully:", response);
+    //       }
+    //     );
+    //   }
+    // );
   }
 });
 
