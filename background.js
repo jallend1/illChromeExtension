@@ -8,9 +8,11 @@ const currentOptions = [
 const isAllowedHost = (url) => {
   const manifest = chrome.runtime.getManifest();
   const allowedHosts = manifest.host_permissions || [];
-  const urlObject = new URL(url);
-  const host = urlObject.host;
-  return allowedHosts.includes(host);
+  return allowedHosts.some((pattern) => {
+    const urlPattern = new URLPattern(pattern);
+    return urlPattern.test(url);
+  });
+  // return allowedHosts.includes(host);
 };
 
 // Check if lendingMode in storage is true
@@ -18,6 +20,7 @@ chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
     // Execute frequentLending script
     chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+      console.log(isAllowedHost(activeTab.url));
       if (!isAllowedHost(activeTab.url)) return;
       chrome.scripting.executeScript(
         {
@@ -124,6 +127,7 @@ chrome.sidePanel
 
 // If the tab is updated and the URL includes /hold/, check for lending fee
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  console.log(isAllowedHost(tab.url));
   if (!isAllowedHost(tab.url)) return;
   // TODO: Feels like overkill and incredibly over complicated -- Simply this
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
@@ -175,6 +179,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       }
     );
   } else if (changeInfo.status === "complete" && !tab.url.includes("/hold/")) {
+    console.log("Are we here?");
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       func: () => {
