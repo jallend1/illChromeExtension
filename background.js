@@ -15,6 +15,28 @@ const isAllowedHost = (url) => {
   // return allowedHosts.includes(host);
 };
 
+// TODO: Basic executeScript function to clean things up a bit
+const executeScript = (tabId, script) => {
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: tabId },
+      files: [`./scripts/${script}.js`],
+    },
+    () => {
+      chrome.tabs.sendMessage(tabId, { data: script }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "Error sending message:",
+            JSON.stringify(chrome.runtime.lastError, null, 2)
+          );
+        } else {
+          console.log("Message sent successfully:", response);
+        }
+      });
+    }
+  );
+};
+
 // Check if lendingMode in storage is true
 chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
@@ -127,7 +149,6 @@ chrome.sidePanel
 
 // If the tab is updated and the URL includes /hold/, check for lending fee
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log(isAllowedHost(tab.url));
   if (!isAllowedHost(tab.url)) return;
   // TODO: Feels like overkill and incredibly over complicated -- Simply this
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
@@ -179,7 +200,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       }
     );
   } else if (changeInfo.status === "complete" && !tab.url.includes("/hold/")) {
-    console.log("Are we here?");
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       func: () => {
