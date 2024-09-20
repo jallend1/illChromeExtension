@@ -17,7 +17,7 @@ const isAllowedHost = (url) => {
 
 // TODO: Basic executeScript function to clean things up a bit
 const executeScript = (tabId, script) => {
-  console.log("here we are! ");
+  console.log("Here we are: " + script);
   chrome.scripting.executeScript(
     {
       target: { tabId: tabId },
@@ -41,35 +41,14 @@ const executeScript = (tabId, script) => {
 // Check if lendingMode in storage is true
 chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
-    // Execute frequentLending script
     chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
       if (!isAllowedHost(activeTab.url)) return;
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: activeTab.id },
-          files: ["./scripts/frequentLending.js"],
-        },
-        () => {
-          chrome.tabs.sendMessage(
-            activeTab.id,
-            { data: "frequentLending" },
-            (response) => {
-              if (chrome.runtime.lastError) {
-                console.error(
-                  "Error sending message:",
-                  JSON.stringify(chrome.runtime.lastError, null, 2)
-                );
-              } else {
-                console.log("Message sent successfully:", response);
-              }
-            }
-          );
-        }
-      );
+      executeScript(activeTab.id, "frequentLending");
     });
   }
 });
 
+// TODO: Modify to use basic executeScript function
 // Send a message to frequentLending script to update when page is updated
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
@@ -178,67 +157,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         );
       }
     });
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tabId },
-        files: ["./scripts/frequentLending.js"],
-      },
-      () => {
-        chrome.tabs.sendMessage(
-          tabId,
-          { data: "frequentLending" },
-          (response) => {
-            if (chrome.runtime.lastError) {
-              console.error(
-                "Error sending message:",
-                JSON.stringify(chrome.runtime.lastError, null, 2)
-              );
-            } else {
-              console.log("Message sent successfully:", response);
-            }
-          }
-        );
-      }
-    );
-  } else if (changeInfo.status === "complete" && !tab.url.includes("/hold/")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      func: () => {
-        const frequentLibraries = document.querySelector("#frequentLibraries");
-        if (frequentLibraries) {
-          frequentLibraries.remove();
-        }
-      },
-    });
   }
-
   if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
     executeScript(tabId, "courierHighlight");
-    // chrome.scripting.executeScript(
-    //   {
-    //     target: { tabId: tabId },
-    //     files: ["./scripts/courierHighlight.js"],
-    //   },
-    //   () => {
-    //     // Send message to content script to display patron status
-    //     chrome.tabs.sendMessage(
-    //       tabId,
-    //       { data: "courierHighlight" },
-    //       (response) => {
-    //         chrome.runtime.lastError
-    //           ? console.error(
-    //               "Error sending message:",
-    //               chrome.runtime.lastError
-    //             )
-    //           : console.log("Message sent successfully:", response);
-    //       }
-    //     );
-    //   }
-    // );
   }
 });
 
 // If the tab is updated and the URL includes /cat/ill/track, add ILL page mods
+// TODO: Modify pageMods to take advantage of basic executeScript function
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   let tabId = details.tabId;
   let currentUrl = details.url;
