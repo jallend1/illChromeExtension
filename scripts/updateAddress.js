@@ -4,6 +4,7 @@
   );
 
   function updateAddress() {
+    let errorCount = 0;
     const generateEvent = (type) => {
       const event = new Event(type, {
         bubbles: true,
@@ -38,6 +39,7 @@
     ) => {
       const inputField = document.querySelector(inputSelector);
       if (!inputField) {
+        errorCount++;
         statusModal(
           `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`,
           "#e85e6a",
@@ -63,6 +65,7 @@
           setTimeout(selectOption, 100); // Wait 100ms before retrying
           attempts++;
         } else {
+          errorCount++;
           statusModal(
             `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">The expected options didn't present themselves for reasons that are mysterious to us all.</p>`,
             "#e85e6a",
@@ -102,6 +105,14 @@
     });
 
     fillUniversalSettings();
+
+    if (errorCount === 0) {
+      statusModal(
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`,
+        "#4CAF50",
+        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      );
+    }
   }
 
   updateAddress();
