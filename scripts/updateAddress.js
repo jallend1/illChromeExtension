@@ -4,6 +4,14 @@
   );
 
   function updateAddress() {
+    const generateEvent = (type) => {
+      const event = new Event(type, {
+        bubbles: true,
+        cancelable: true,
+      });
+      return event;
+    };
+
     const fillUniversalSettings = () => {
       const inputs = {
         "#au-dob-input": "1980-07-16",
@@ -14,19 +22,11 @@
         const input = document.querySelector(selector);
         if (input) {
           input.value = value;
-          const inputEvent = new Event("input", {
-            bubbles: true,
-            cancelable: true,
-          });
-          input.dispatchEvent(inputEvent);
+          input.dispatchEvent(generateEvent("input"));
+
           // Change event required in order to get the DOB to save
-          if (selector === "#au-dob-input") {
-            const changeEvent = new Event("change", {
-              bubbles: true,
-              cancelable: true,
-            });
-            input.dispatchEvent(changeEvent);
-          }
+          if (selector === "#au-dob-input")
+            input.dispatchEvent(generateEvent("change"));
         }
       });
     };
