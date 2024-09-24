@@ -30,12 +30,12 @@
 }
 
 /* Styles for the 'Override' button column */
-div:has(.alert.alert-danger) + div {
+.col-lg-2:has(.alert.alert-danger) + div {
   display: flex;
   justify-content: center;
 }
 
-div:has(.alert.alert-danger) + div > button {
+.col-lg-2:has(.alert.alert-danger) + div > button {
   background-color: #28a745 !important;
   padding: 1rem !important;
   margin: 1rem 0 !important;
