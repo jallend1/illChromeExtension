@@ -1,0 +1,39 @@
+.alert.alert-danger {
+  background-color: #d61f2c !important;
+  border-color: #d61f2c !important;
+  color: #fff !important;
+  padding: 2rem;
+  margin: 1rem 0;
+  border-radius: 1rem;
+  font-size: 1.5rem;
+  text-wrap: break-word;
+  text-align: center;
+}
+
+.alert.alert-danger::before {
+  content: "Warning: ";
+  font-weight: bold;
+  color: #fff;
+  background-color: #d61f2c;
+  padding: 0.5rem;
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.alert.alert-danger::after {
+  content: "Hold not yet placed!";
+  font-weight: bold;
+  color: #fff;
+  background-color: #d61f2c;
+  padding: 0.5rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+div:has(.alert.alert-danger) + div > button {
+  background-color: #28a745 !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 1rem !important;
+  font-size: 1.5rem !important;
+  text-wrap: break-word !important;
+  text-align: center !important;
+}
