@@ -28,6 +28,11 @@
   border-radius: 0 0.25rem 0.25rem 0;
 }
 
+div:has(.alert.alert-danger) + div {
+  display: flex;
+  justify-content: center;
+}
+
 div:has(.alert.alert-danger) + div > button {
   background-color: #28a745 !important;
   padding: 1rem !important;
