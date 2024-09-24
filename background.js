@@ -50,20 +50,17 @@ chrome.storage.local.get("lendingMode", (result) => {
 
 // TODO: Modify to use basic executeScript function
 // Send a message to frequentLending script to update when page is updated
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (!isAllowedHost(tab.url)) return;
-  if (changeInfo.status === "complete") {
-    chrome.tabs.sendMessage(tabId, { data: "pageUpdated" }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Error sending message:",
-          JSON.stringify(chrome.runtime.lastError, null, 2)
-        );
-      } else {
-        console.log("Message sent successfully:", response);
-      }
-    });
-  }
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  const { tabId, url } = details;
+  if (!isAllowedHost(url)) return;
+  chrome.tabs.sendMessage(tabId, { data: "pageUpdated" }, (response) => {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "Error sending message:",
+        JSON.stringify(chrome.runtime.lastError, null, 2)
+      );
+    }
+  });
 });
 
 // TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?

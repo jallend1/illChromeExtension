@@ -1,3 +1,4 @@
+/* Styles for the hold error button */
 .alert.alert-danger {
   background-color: #d61f2c !important;
   border-color: #d61f2c !important;
@@ -28,6 +29,7 @@
   border-radius: 0 0.25rem 0.25rem 0;
 }
 
+/* Styles for the 'Override' button column */
 div:has(.alert.alert-danger) + div {
   display: flex;
   justify-content: center;
