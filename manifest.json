@@ -83,15 +83,9 @@
       "js": ["scripts/lendingFeeAlert.js"]
     },
     {
-      "matches": ["*://*/*hold/*"],
-      "css": ["styles/warning.css"]
-    },
-    {
-      "matches": [
-        "https://evgmobile.kcls.org/*",
-        "https://evgclient.kcls.org/*"
-      ],
-      "js": ["scripts/frequentLending.js"]
+      "matches": ["https://evgmobile.kcls.org/*/*hold/*"],
+      "css": ["styles/warning.css"],
+      "js": ["scripts/test.js"]
     }
   ]
 }

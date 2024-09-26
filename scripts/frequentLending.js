@@ -154,23 +154,3 @@ chrome.storage.local.get("lendingMode", (result) => {
     frequentLibraries ? frequentLibraries.remove() : null;
   }
 });
-
-// Check if page has been updated
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.data === "frequentLending") {
-    loadFrequentLending();
-    sendResponse({ status: "success" });
-  } else if (request.data === "pageUpdated") {
-    chrome.storage.local.get("lendingMode", (result) => {
-      if (result.lendingMode) {
-        loadFrequentLending();
-      }
-      sendResponse({ status: "success" });
-    });
-    return true;
-  } else {
-    // TODO: Commonly logging "illPageMods" here -- Unify message handling
-    // console.log(request.data);
-    sendResponse({ status: "Unknown Message" });
-  }
-});

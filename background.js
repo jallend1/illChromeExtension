@@ -12,12 +12,9 @@ const isAllowedHost = (url) => {
     const urlPattern = new URLPattern(pattern);
     return urlPattern.test(url);
   });
-  // return allowedHosts.includes(host);
 };
 
-// TODO: Basic executeScript function to clean things up a bit
 const executeScript = (tabId, script) => {
-  console.log("Here we are: " + script);
   chrome.scripting.executeScript(
     {
       target: { tabId: tabId },
@@ -53,14 +50,7 @@ chrome.storage.local.get("lendingMode", (result) => {
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const { tabId, url } = details;
   if (!isAllowedHost(url)) return;
-  chrome.tabs.sendMessage(tabId, { data: "pageUpdated" }, (response) => {
-    if (chrome.runtime.lastError) {
-      console.error(
-        "Error sending message:",
-        JSON.stringify(chrome.runtime.lastError, null, 2)
-      );
-    }
-  });
+  executeScript(tabId, "frequentLending");
 });
 
 // TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
