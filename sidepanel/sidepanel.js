@@ -4,6 +4,7 @@ const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const moreInfoButtons = document.querySelectorAll(".more-info");
+const darkModeToggle = document.querySelector("#dark-mode");
 
 const lendingMode = document.querySelector("#lending-mode");
 // Sets lendingMode text to match current state
@@ -111,6 +112,11 @@ const addEventListeners = () => {
         }
       );
     });
+  });
+
+  darkModeToggle.addEventListener("click", () => {
+    console.log("Dark mode clicked");
+    initiateScript("darkMode");
   });
 };
 

@@ -192,18 +192,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// If the tab is updated and the URL includes /cat/ill/track, add ILL page mods
-// TODO: Modify pageMods to take advantage of basic executeScript function
+// SPA navigation handling
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   let tabId = details.tabId;
   let currentUrl = details.url;
+  // TODO: This is a work in progress -- Mostly just playing right now
+  chrome.scripting.insertCSS({
+    target: { tabId: tabId },
+    files: ["./styles/darkmode.css"],
+  });
+  // Injects 'Box' and 'Bag' checkboxes on the Create ILL form
   if (currentUrl.includes("/cat/ill/track")) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/createILLPageMods.js"],
     });
   } else if (currentUrl.includes("catalog/hold/")) {
-    // Inject a CSS file to style the warning
+    // Inject a CSS file to style the warning when placing a hold is unsuccessful
     chrome.scripting.insertCSS({
       target: { tabId: tabId },
       files: ["./styles/warning.css"],

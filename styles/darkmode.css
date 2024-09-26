@@ -1,0 +1,25 @@
+/* Not the actual intended approach, but ensuring basic functionality */
+
+html.dark-mode {
+  height: 100vh;
+  background: #1e1e1e !important;
+
+  ng-component > * {
+    background: #1e1e1e !important;
+    color: #fff !important;
+  }
+
+  #staffcat-search-form {
+    background: #1e1e1e !important;
+    color: #fff !important;
+  }
+
+  main {
+    background: #1e1e1e !important;
+    color: #fff !important;
+  }
+
+  button.btn {
+    filter: invert(1);
+  }
+}
