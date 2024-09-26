@@ -14,17 +14,60 @@ const isAllowedHost = (url) => {
   });
 };
 
+const sessionLog = () => {
+  const logToConsole = () => {
+    console.log(`
+  ⊂_ヽ    
+  　 ＼＼
+  　　 ＼( ͡ ° ͜ʖ ͡° )    Jason Allen
+  　　　 >　⌒ヽ       
+  　　　/ 　 へ＼       (Probably)  
+  　　 /　　/　＼＼
+  　　 ﾚ　ノ   　 ヽ_つ  Didn't break   
+  　　/　/
+  　 /　/|      anything here.
+  　(　( \\
+  　|　 |、＼     But if he did?
+    | 丿 ＼ ⌒)
+  　| |   ) /    jallend1@gmail.com
+   ノ )   Lﾉ
+  (_／
+   `);
+  };
+  chrome.storage.session.get(["logged"], (result) => {
+    if (!result.logged) {
+      chrome.tabs.query(
+        { active: true, currentWindow: true },
+        ([activeTab]) => {
+          if (activeTab) {
+            chrome.scripting.executeScript({
+              target: { tabId: activeTab.id },
+              func: logToConsole,
+            });
+          }
+        }
+      );
+      chrome.storage.session.set({ logged: true });
+    }
+  });
+};
+
 const executeScript = (tabId, script) => {
+  // Logs something to the console on first run
+  // TODO: Maybe check if session log is set here before calling function?
+  sessionLog();
   chrome.scripting.executeScript(
     {
       target: { tabId: tabId },
       files: [`./scripts/${script}.js`],
     },
     () => {
+      // No message handling needed for frequentLending script
+      if (script === "frequentLending") return;
       chrome.tabs.sendMessage(tabId, { data: script }, (response) => {
         if (chrome.runtime.lastError) {
           console.error(
-            "Error sending message:",
+            "Error sending message: " + script,
             JSON.stringify(chrome.runtime.lastError, null, 2)
           );
         } else {
