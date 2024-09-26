@@ -8,6 +8,7 @@
   border-radius: 1rem;
   text-wrap: break-word;
   text-align: center;
+  display: block;
 }
 
 .hold-records-list .col-lg-2 > .alert.alert-danger::before {
@@ -21,6 +22,7 @@
 .hold-records-list .col-lg-2 > .alert.alert-danger::after {
   font-size: 1.5rem;
   content: "Hold not yet placed!";
+  white-space: pre;
   font-weight: bold;
   color: #fff;
   background-color: #d61f2c;
