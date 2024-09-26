@@ -160,15 +160,16 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       {
         target: { tabId: tabId },
         files: ["./scripts/createILLPageMods.js"],
-      },
-      () => {
-        // Send message to content script to display ILL page mods
-        chrome.tabs.sendMessage(tabId, { data: "illPageMods" }, (response) => {
-          chrome.runtime.lastError
-            ? console.error("Error sending message:", chrome.runtime.lastError)
-            : console.log("Message sent successfully:", response);
-        });
       }
+      // ,
+      // () => {
+      //   // Send message to content script to display ILL page mods
+      //   chrome.tabs.sendMessage(tabId, { data: "illPageMods" }, (response) => {
+      //     chrome.runtime.lastError
+      //       ? console.error("Error sending message:", chrome.runtime.lastError)
+      //       : console.log("Message sent successfully:", response);
+      //   });
+      // }
     );
   }
 });

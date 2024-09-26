@@ -1,41 +1,38 @@
 /* Styles for the hold error button */
-.col-lg-2 > .alert.alert-danger {
+.hold-records-list .col-lg-2 > .alert.alert-danger {
   background-color: #d61f2c !important;
   border-color: #d61f2c !important;
   color: #fff !important;
   padding: 2rem;
   margin: 1rem 0;
   border-radius: 1rem;
-  font-size: 1.5rem;
   text-wrap: break-word;
   text-align: center;
 }
 
-.col-lg-2 > .alert.alert-danger::before {
+.hold-records-list .col-lg-2 > .alert.alert-danger::before {
+  font-size: 1.5rem;
   content: "Warning: ";
   font-weight: bold;
   color: #fff;
   background-color: #d61f2c;
-  padding: 0.5rem;
-  border-radius: 0.25rem 0 0 0.25rem;
 }
 
-.col-lg-2 > .alert.alert-danger::after {
+.hold-records-list .col-lg-2 > .alert.alert-danger::after {
+  font-size: 1.5rem;
   content: "Hold not yet placed!";
   font-weight: bold;
   color: #fff;
   background-color: #d61f2c;
-  padding: 0.5rem;
-  border-radius: 0 0.25rem 0.25rem 0;
 }
 
 /* Styles for the 'Override' button column */
-.col-lg-2:has(.alert.alert-danger) + div {
+.hold-records-list .col-lg-2:has(.alert.alert-danger) + div {
   display: flex;
   justify-content: center;
 }
 
-.col-lg-2:has(.alert.alert-danger) + div > button {
+.hold-records-list .col-lg-2:has(.alert.alert-danger) + div > button {
   background-color: #28a745 !important;
   padding: 1rem !important;
   margin: 1rem 0 !important;
