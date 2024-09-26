@@ -78,8 +78,10 @@
             );
           }
           // TODO: Seems impossible to focus on the item barcode from sidebar but functions as expected with keyboard shortcut?
-          // const kclsBarcodeInput = document.querySelector("#item-barcode-input");
-          // kclsBarcodeInput.focus();
+          const kclsBarcodeInput = document.querySelector(
+            "#item-barcode-input"
+          );
+          kclsBarcodeInput.focus();
         }
       });
     };
