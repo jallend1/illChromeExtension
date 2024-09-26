@@ -45,8 +45,7 @@ chrome.storage.local.get("lendingMode", (result) => {
   }
 });
 
-// TODO: Modify to use basic executeScript function
-// Send a message to frequentLending script to update when page is updated
+// Fire frequentLending script to update when page is updated to ensure persistence of lending bar
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const { tabId, url } = details;
   if (!isAllowedHost(url)) return;
@@ -156,20 +155,15 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   let tabId = details.tabId;
   let currentUrl = details.url;
   if (currentUrl.includes("/cat/ill/track")) {
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tabId },
-        files: ["./scripts/createILLPageMods.js"],
-      }
-      // ,
-      // () => {
-      //   // Send message to content script to display ILL page mods
-      //   chrome.tabs.sendMessage(tabId, { data: "illPageMods" }, (response) => {
-      //     chrome.runtime.lastError
-      //       ? console.error("Error sending message:", chrome.runtime.lastError)
-      //       : console.log("Message sent successfully:", response);
-      //   });
-      // }
-    );
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/createILLPageMods.js"],
+    });
+  } else if (currentUrl.includes("catalog/hold/")) {
+    // Inject a CSS file to style the warning
+    chrome.scripting.insertCSS({
+      target: { tabId: tabId },
+      files: ["./styles/warning.css"],
+    });
   }
 });
