@@ -5,7 +5,7 @@ function createILLPageMods() {
     }
   };
 
-  const checkForExistingCheckboxDiv = () => {
+  const removeExistingCheckboxContainer = () => {
     const existingCheckboxContainer = document.querySelector(
       "#checkbox-container"
     );
@@ -17,7 +17,7 @@ function createILLPageMods() {
   const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
     const checkboxContainer = document.querySelector("#checkbox-container");
 
-    // Create a div with flex style
+    // Create container div for the checkbox and label
     const div = document.createElement("div");
     const divStyles = {
       display: "flex",
@@ -25,7 +25,7 @@ function createILLPageMods() {
     };
     applyStyles(div, divStyles);
 
-    // Create the checkbox input
+    // Create the checkbox element
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.id = checkboxId;
@@ -66,6 +66,7 @@ function createILLPageMods() {
 
   // Creates a parent div for the ILL custom checkboxes
   const createCheckboxContainer = () => {
+    removeExistingCheckboxContainer();
     const parentILLForm = document.querySelector(".form-validated");
     const checkboxContainer = document.createElement("div");
     checkboxContainer.id = "checkbox-container";
@@ -96,9 +97,8 @@ function createILLPageMods() {
     );
   };
 
-  if (checkForExistingCheckboxDiv()) {
-    createCheckboxContainer();
-  }
+  removeExistingCheckboxContainer();
+  createCheckboxContainer();
 
   const checkForForm = setInterval(() => {
     if (document.querySelector(".form-validated")) {
