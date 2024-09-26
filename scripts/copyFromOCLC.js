@@ -216,5 +216,14 @@
     copyToStorage(stringifiedData, compiledData.requestNumber);
   }
 
-  copyFromOCLC(statusModal);
+  const currentURL = window.location.href;
+  if (currentURL.includes("worldcat.org")) {
+    copyFromOCLC(statusModal);
+  } else {
+    statusModal(
+      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">This function only be used on a WorldShare page.</p>`,
+      "#e85e6a",
+      chrome.runtime.getURL("images/kawaii-book-sad.png")
+    );
+  }
 })();

@@ -19,38 +19,38 @@ const initiateScript = (scriptName) => {
     var currentTab = tabs[0];
     chrome.tabs.update(currentTab.id, { active: true });
     // Displays error message if user is not on a WorldShare page and runs a WorldShare Script
-    if (
-      !currentTab.url.includes("kingcountylibrarysystem") &&
-      (scriptName === "copyFromOCLC" || scriptName === "copyWorldShareAddress")
-    ) {
-      errorModal("This only works from a WorldShare page.");
-      return;
-    }
-    // Displays error if running an Evergreen script outside Evergreen
-    else if (
-      !currentTab.url.includes("kcls.org") &&
-      scriptName === "pasteToEvergreen"
-    ) {
-      errorModal(
-        "Please run this from the 'Create New ILL' screen in Evergreen."
-      );
-      return;
-    } else {
-      // Sends message to background.js to run the script
-      chrome.runtime.sendMessage(
-        { command: scriptName, data: scriptName },
-        async (response) => {
-          // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
-          if (scriptName === "copyWorldShareAddress") {
-            await navigator.clipboard.writeText("");
-            await extractFromStorage("addressString");
-          } else if (scriptName === "overdueNotice") {
-            await navigator.clipboard.writeText("");
-            await extractFromStorage("overdueNotice");
-          }
+    // if (
+    //   !currentTab.url.includes("kingcountylibrarysystem") &&
+    //   (scriptName === "copyFromOCLC" || scriptName === "copyWorldShareAddress")
+    // ) {
+    //   errorModal("This only works from a WorldShare page.");
+    //   return;
+    // }
+    // // Displays error if running an Evergreen script outside Evergreen
+    // else if (
+    //   !currentTab.url.includes("kcls.org") &&
+    //   scriptName === "pasteToEvergreen"
+    // ) {
+    //   errorModal(
+    //     "Please run this from the 'Create New ILL' screen in Evergreen."
+    //   );
+    //   return;
+    // } else {
+    // Sends message to background.js to run the script
+    chrome.runtime.sendMessage(
+      { command: scriptName, data: scriptName },
+      async (response) => {
+        // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
+        if (scriptName === "copyWorldShareAddress") {
+          await navigator.clipboard.writeText("");
+          await extractFromStorage("addressString");
+        } else if (scriptName === "overdueNotice") {
+          await navigator.clipboard.writeText("");
+          await extractFromStorage("overdueNotice");
         }
-      );
-    }
+      }
+    );
+    // }
   });
 };
 
