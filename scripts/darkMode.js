@@ -3,7 +3,11 @@ function darkMode() {
 
   html.classList.toggle("dark-mode");
 
-  console.log("darkening!");
+  if (html.classList.contains("dark-mode")) {
+    html.setAttribute("data-bs-theme", "dark");
+  } else {
+    html.removeAttribute("data-bs-theme");
+  }
 }
 
 darkMode();

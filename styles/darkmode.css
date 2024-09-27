@@ -1,25 +1,74 @@
-/* Not the actual intended approach, but ensuring basic functionality */
+[data-bs-theme="dark"] {
+  --bs-body-bg: #1e1e1e !important;
+  --bs-body-color: #ffffff !important;
+  --jda-primary: #333 !important;
+  --jda-secondary: #555 !important;
+  --jda-text: #fff !important;
 
-html.dark-mode {
-  height: 100vh;
-  background: #1e1e1e !important;
-
-  ng-component > * {
-    background: #1e1e1e !important;
-    color: #fff !important;
+  a {
+    color: var(--jda-text);
   }
 
-  #staffcat-search-form {
-    background: #1e1e1e !important;
-    color: #fff !important;
+  input,
+  textarea {
+    background-color: var(--jda-primary);
+    color: var(--jda-text);
+    border: 1px solid #555555;
+    padding: 10px;
+    border-radius: 4px;
   }
 
-  main {
-    background: #1e1e1e !important;
-    color: #fff !important;
+  input::placeholder,
+  textarea::placeholder {
+    color: #aaaaaa;
   }
 
-  button.btn {
-    filter: invert(1);
+  input:focus,
+  textarea:focus {
+    border-color: #1e90ff;
+    background-color: var(--jda-primary);
+    color: var(--jda-text);
+  }
+
+  .input-group-text,
+  button {
+    background-color: #1e90ff;
+    color: var(--jda-text);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #1c86ee;
+  }
+
+  button:active {
+    background-color: #187bcd;
+  }
+
+  .patron-summary-container {
+    background-color: var(--jda-primary);
+    color: var(--jda-text);
+  }
+
+  .patron-summary-container > div:nth-child(odd) {
+    background-color: var(--jda-secondary) !important;
+  }
+
+  .card {
+    background-color: #1e1e1e !important;
+    color: var(--jda-text);
+  }
+
+  .card-header {
+    background-color: var(--bs-body-bg);
+    color: var(--jda-text);
+  }
+
+  .list-group-item {
+    background-color: var(--bs-body-bg);
+    color: var(--jda-text);
   }
 }
