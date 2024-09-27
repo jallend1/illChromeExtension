@@ -1,74 +1,121 @@
+/* TODO: Organize them blues! */
+
 [data-bs-theme="dark"] {
   --bs-body-bg: #1e1e1e !important;
   --bs-body-color: #ffffff !important;
-  --jda-primary: #333 !important;
-  --jda-secondary: #555 !important;
-  --jda-text: #fff !important;
+  --jda-primary: #333;
+  --jda-secondary: #555;
+  --jda-text: #fff;
 
   a {
-    color: var(--jda-text);
+    color: var(--jda-text) !important;
   }
 
   input,
   textarea {
-    background-color: var(--jda-primary);
-    color: var(--jda-text);
-    border: 1px solid #555555;
-    padding: 10px;
-    border-radius: 4px;
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
+    border: 1px solid #555555 !important;
   }
 
   input::placeholder,
   textarea::placeholder {
-    color: #aaaaaa;
+    color: #aaaaaa !important;
   }
 
   input:focus,
   textarea:focus {
-    border-color: #1e90ff;
-    background-color: var(--jda-primary);
-    color: var(--jda-text);
+    border-color: #1e90ff !important;
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
   }
 
   .input-group-text,
   button {
-    background-color: #1e90ff;
-    color: var(--jda-text);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
+    background-color: #1e90ff !important;
+    color: var(--jda-text) !important;
   }
 
   button:hover {
-    background-color: #1c86ee;
+    background-color: #1c86ee !important;
   }
 
   button:active {
-    background-color: #187bcd;
+    background-color: #187bcd !important;
   }
 
+  /* ******************* */
+  /* *  Patron Details * */
+  /* ******************* */
+
   .patron-summary-container {
-    background-color: var(--jda-primary);
-    color: var(--jda-text);
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
   }
 
   .patron-summary-container > div:nth-child(odd) {
     background-color: var(--jda-secondary) !important;
+    margin: 0;
+
+    a {
+      background-color: var(--jda-secondary) !important;
+    }
   }
+
+  div.sticky-top-with-nav {
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
+
+    a {
+      color: var(--jda-text) !important;
+      background-color: var(--jda-primary) !important;
+    }
+
+    button {
+      background-color: #1e90ff !important;
+      color: var(--jda-text) !important;
+    }
+  }
+
+  .eg-grid {
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
+
+    .eg-grid-header-row {
+      background-color: var(--jda-secondary) !important;
+      color: var(--jda-text) !important;
+    }
+  }
+
+  /* ******************* */
+  /* *  Search Form    * */
+  /* ******************* */
+
+  #staffcat-search-form {
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
+  }
+
+  .nav-item > .nav-link-active {
+    color: var(--jda-text) !important;
+  }
+
+  /* ********************* */
+  /* *    Home Page      * */
+  /* ********************* */
 
   .card {
     background-color: #1e1e1e !important;
-    color: var(--jda-text);
+    color: var(--jda-text) !important;
   }
 
   .card-header {
-    background-color: var(--bs-body-bg);
-    color: var(--jda-text);
+    background-color: var(--bs-body-bg) !important;
+    color: var(--jda-text) !important;
   }
 
   .list-group-item {
-    background-color: var(--bs-body-bg);
-    color: var(--jda-text);
+    background-color: var(--bs-body-bg) !important;
+    color: var(--jda-text) !important;
   }
 }
