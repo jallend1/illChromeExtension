@@ -3,8 +3,9 @@ const illActions = document.querySelectorAll(".ill-actions");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
-const moreInfoButtons = document.querySelectorAll(".more-info");
 const darkModeToggle = document.querySelector("#dark-mode");
+// const moreInfoButtons = document.querySelectorAll(".more-info");
+const isbnSearch = document.querySelector("#isbn-search");
 
 const lendingMode = document.querySelector("#lending-mode");
 // Sets lendingMode text to match current state
