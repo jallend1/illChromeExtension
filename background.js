@@ -138,7 +138,25 @@ chrome.contextMenus.onClicked.addListener((item) => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     if (!isAllowedHost(activeTab.url)) return;
-    // executeScript(activeTab.id, request.data);
+    // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
+    if (request.action === "isbnSearch") {
+      chrome.tabs.query({}, function (tabs) {
+        const url = request.url;
+        let evgClientTab = null;
+        for (let tab of tabs) {
+          if (tab.url.includes("evgmobile")) {
+            evgClientTab = tab;
+          }
+        }
+        if (evgClientTab) {
+          chrome.tabs.update(evgClientTab.id, { url: url });
+        } else {
+          chrome.tabs.create({ url: url });
+        }
+      });
+      return;
+    }
+
     chrome.scripting.executeScript(
       {
         target: { tabId: activeTab.id },

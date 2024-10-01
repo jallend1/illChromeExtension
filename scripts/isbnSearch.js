@@ -1,21 +1,15 @@
 function isbnSearch() {
   const isbnField = document.querySelector(".yui-field-isbn");
-  const selectedText = isbnField.textContent; // const selectedText = window.getSelection().toString();    const url = `https://evgclient.kcls.org/eg2/en-US/staff/catalog/search?org=1&limit=10&query=${selectedText}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;        // window.open(url, '_blank');
+  const selectedText = isbnField.textContent;
+  const url = `https://evgmobile.kcls.org/eg2/en-US/staff/catalog/search?org=1&limit=10&query=${selectedText}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
+  // const url = `https://evgclient.kcls.org/eg2/en-US/staff/catalog/search?org=1&limit=10&query=${selectedText}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
 
-  //   TODO: Sample code for how this should probably work? -- for Background.js
-
-  chrome.tabs.query({ currentWindow: true }, function (tabs) {
-    let evgclientTab = null;
-    for (let tab of tabs) {
-      if (tab.url.includes("evgclient")) {
-        evgclientTab = tab;
-      }
+  console.log("isbnSearch.js", selectedText);
+  chrome.runtime.sendMessage(
+    { action: "isbnSearch", url: url },
+    function (response) {
+      console.log(response);
     }
-    if (evgclientTab) {
-      chrome.tabs.update(evgclientTab.id, { url: url });
-    } else {
-      chrome.tabs.create({ url: url });
-    }
-  });
+  );
 }
 isbnSearch();
