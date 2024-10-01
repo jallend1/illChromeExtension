@@ -141,13 +141,24 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
     if (request.action === "isbnSearch") {
       chrome.tabs.query({}, function (tabs) {
-        const url = request.url;
+        const urlSuffix = request.url;
+        let mobile = false;
+        let mobilePrefix =
+          "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/";
+        let clientPrefix =
+          "https://evgclient.kcls.org/eg2/en-US/staff/catalog/";
         let evgClientTab = null;
         for (let tab of tabs) {
           if (tab.url.includes("evgmobile")) {
+            mobile = true;
+            evgClientTab = tab;
+          } else if (tab.url.includes("evgclient")) {
             evgClientTab = tab;
           }
         }
+        const url = mobile
+          ? mobilePrefix + urlSuffix
+          : clientPrefix + urlSuffix;
         if (evgClientTab) {
           chrome.tabs.update(evgClientTab.id, { url: url });
         } else {
