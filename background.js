@@ -161,9 +161,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           ? mobilePrefix + urlSuffix
           : clientPrefix + urlSuffix;
         if (evgClientTab) {
-          chrome.tabs.update(evgClientTab.id, { url: url });
+          chrome.tabs.update(evgClientTab.id, { url: url, active: true });
         } else {
-          chrome.tabs.create({ url: url });
+          chrome.tabs.create({ url: url, active: true });
         }
       });
       return;
