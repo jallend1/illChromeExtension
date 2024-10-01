@@ -7,6 +7,11 @@ async function loadFrequentLending() {
   );
 
   function frequentLending() {
+    const isEvergreen =
+      window.location.href.includes("evgclient") ||
+      window.location.href.includes("evgmobile");
+
+    if (!isEvergreen) return;
     const checkNavBar = () => {
       let navBar = document.querySelector("eg-staff-nav-bar");
       if (navBar) {

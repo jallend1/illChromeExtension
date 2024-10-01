@@ -56,6 +56,7 @@ const executeScript = (tabId, script) => {
   // Logs something to the console on first run
   // TODO: Maybe check if session log is set here before calling function?
   sessionLog();
+
   chrome.scripting.executeScript(
     {
       target: { tabId: tabId },
