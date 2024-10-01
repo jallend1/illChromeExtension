@@ -1,6 +1,4 @@
 function isbnSearch() {
-  // TODO: Adapt for copy requests
-
   const extractFields = (selector) => {
     const fields = document.querySelectorAll(selector);
     // Title field has an extra node for some reason
