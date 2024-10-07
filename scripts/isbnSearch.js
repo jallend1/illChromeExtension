@@ -16,6 +16,8 @@ function isbnSearch() {
   if (isbn) {
     // Takes only the first ISBN if multiple are present
     searchQuery = isbn.split(" ")[0];
+    // Removes any "-" from the ISBN
+    searchQuery = searchQuery.replace(/-/g, "");
   } else if (title && author) {
     searchQuery = `${title} ${author.split(";", 0)}`;
   } else if (title) {
