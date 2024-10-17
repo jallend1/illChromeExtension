@@ -19,7 +19,8 @@ function isbnSearch() {
     // Removes any "-" from the ISBN
     searchQuery = searchQuery.replace(/-/g, "");
   } else if (title && author) {
-    searchQuery = `${title} ${author.split(";", 0)}`;
+    let firstAuthor = author.split(";")[0];
+    searchQuery = `${title} ${firstAuthor}`;
   } else if (title) {
     searchQuery = title;
   } else {

@@ -6,6 +6,7 @@
   --jda-primary: #333;
   --jda-secondary: #555;
   --jda-text: #fff;
+  --jda-button: #00bcd4;
 
   a {
     color: var(--jda-text) !important;
@@ -14,7 +15,7 @@
   input,
   textarea {
     background-color: var(--jda-primary) !important;
-    color: var(--jda-text) !important;
+    color: var(--jda-button) !important;
     border: 1px solid #555555 !important;
   }
 
@@ -32,8 +33,10 @@
 
   .input-group-text,
   button {
-    background-color: #1e90ff !important;
-    color: var(--jda-text) !important;
+    /* background-color: #757575 !important; */
+    background-color: var(--jda-button) !important;
+    /* color: var(--jda-text) !important; */
+    color: var(--jda-primary) !important;
   }
 
   button:hover {
@@ -117,5 +120,19 @@
   .list-group-item {
     background-color: var(--bs-body-bg) !important;
     color: var(--jda-text) !important;
+  }
+
+  /* ****************************** */
+  /* *    Frequent Libraries      * */
+  /* ****************************** */
+  #frequentLibraries {
+    background-color: var(--jda-secondary) !important;
+    color: var(--jda-text) !important;
+  }
+}
+
+#staff-navbar {
+  button {
+    background-color: transparent !important;
   }
 }
