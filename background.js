@@ -243,6 +243,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       target: { tabId: tabId },
       files: ["./styles/warning.css"],
     });
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/holdScreenMods.js"],
+    });
   } else if (currentUrl.includes("/catalog/search?")) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
