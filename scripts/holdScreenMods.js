@@ -37,4 +37,9 @@ function holdScreenMods() {
   searchButtonDiv.parentElement.appendChild(createContainerDiv());
 }
 
+function sendMessageToBackground() {
+  const urlSuffix = `search?org=1&limit=10&query=${searchQuery}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
+  chrome.runtime.sendMessage({ action: "holdScreenMods", url: urlSuffix });
+}
+
 holdScreenMods();
