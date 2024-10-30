@@ -226,6 +226,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   let tabId = details.tabId;
   let currentUrl = details.url;
+  if (!isAllowedHost(currentUrl)) {
+    return;
+  }
   // TODO: This is a work in progress -- Mostly just playing right now
   chrome.scripting.insertCSS({
     target: { tabId: tabId },
