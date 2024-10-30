@@ -9,13 +9,17 @@ function searchResults() {
         clearInterval(interval);
         if (copyLocations.length > 0) {
           highlightReadyReads(copyLocations);
+          highlightNoHoldsLibraries();
         }
       }
       tries++;
     }, 100);
-  } else {
-    highlightReadyReads(copyLocations);
   }
+  // TODO: Why would I have this. If there are no copy locations, what am I even doing with my life.
+  // else {
+  //   highlightReadyReads(copyLocations);
+  //   highlightNoHoldsLibraries();
+  // }
 }
 
 // Emphasizes shelving locations whose available items are not holdable
