@@ -6,6 +6,15 @@ const modeToggle = document.querySelector("#mode");
 const darkModeToggle = document.querySelector("#dark-mode");
 // const moreInfoButtons = document.querySelectorAll(".more-info");
 const isbnSearch = document.querySelector("#isbn-search");
+const extensionStatusButton = document.querySelector("#extension-status");
+let arePassiveToolsActive = chrome.storage.local.get(
+  "arePassiveToolsActive",
+  (result) => {
+    extensionStatusButton.textContent = result.arePassiveToolsActive
+      ? "Disable Passive Tools"
+      : "Enable Passive Tools";
+  }
+);
 
 const lendingMode = document.querySelector("#lending-mode");
 // Sets lendingMode text to match current state
@@ -52,6 +61,26 @@ const extractFromStorage = async (key) => {
 };
 
 const addEventListeners = () => {
+  extensionStatusButton.addEventListener("click", () => {
+    chrome.storage.local.get("arePassiveToolsActive", (result) => {
+      // Send message to background.js to toggle extension status
+      chrome.storage.local.set(
+        {
+          arePassiveToolsActive: !result.arePassiveToolsActive,
+        },
+        () => {
+          arePassiveToolsActive = !result.arePassiveToolsActive;
+          extensionStatusButton.textContent = arePassiveToolsActive
+            ? "Disable Tools"
+            : "Enable Tools";
+          chrome.runtime.sendMessage({
+            command: "toggleExtension",
+          });
+        }
+      );
+    });
+  });
+
   illActions.forEach((button) => {
     button.addEventListener("click", (event) => {
       const buttonId = event.target.id;

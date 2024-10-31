@@ -5,6 +5,13 @@ const currentOptions = [
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
+let arePassiveToolsActive;
+
+chrome.storage.local.get("arePassiveToolsActive", (result) => {
+  console.log("Extension status:", result.arePassiveToolsActive);
+  arePassiveToolsActive = result.arePassiveToolsActive;
+});
+
 const isAllowedHost = (url) => {
   const manifest = chrome.runtime.getManifest();
   const allowedHosts = manifest.host_permissions || [];
@@ -53,8 +60,7 @@ const sessionLog = () => {
 };
 
 const executeScript = (tabId, script) => {
-  // Logs something to the console on first run
-  // TODO: Maybe check if session log is set here before calling function?
+  // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
 
   chrome.scripting.executeScript(
@@ -139,6 +145,13 @@ chrome.contextMenus.onClicked.addListener((item) => {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     if (!isAllowedHost(activeTab.url)) return;
+    if (request.command === "toggleExtension") {
+      chrome.storage.local.get("arePassiveToolsActive", (result) => {
+        arePassiveToolsActive = result.arePassiveToolsActive;
+        console.log("Extension status:", arePassiveToolsActive);
+      });
+      return;
+    }
     // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
     if (request.action === "isbnSearch") {
       chrome.tabs.query({}, function (tabs) {
@@ -189,6 +202,7 @@ chrome.sidePanel
 // If the tab is updated and the URL includes /hold/, check for lending fee
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
+  if (arePassiveToolsActive === false) return;
   // TODO: Feels like overkill and incredibly over complicated -- Simply this
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
@@ -224,6 +238,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // SPA navigation handling
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  if (arePassiveToolsActive === false) return;
   let tabId = details.tabId;
   let currentUrl = details.url;
   if (!isAllowedHost(currentUrl)) {
