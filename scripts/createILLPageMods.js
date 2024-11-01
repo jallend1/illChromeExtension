@@ -21,25 +21,23 @@
       }
     };
 
-    // const createClearFormButton = () => {
-    //   const clearFormButton = document.createElement("button");
-    //   clearFormButton.textContent = "Clear Form";
-    //   clearFormButton.style.marginTop = "1rem";
-    //   clearFormButton.style.padding = "0.5rem 1rem";
-    //   clearFormButton.style.border = "none";
-    //   clearFormButton.style.borderRadius = "0.5rem";
-    //   clearFormButton.style.backgroundColor = "#701d9d";
-    //   clearFormButton.style.color = "#fff";
-    //   clearFormButton.style.fontSize = "1.5em";
+    const createClearFormButton = () => {
+      const clearFormButton = document.createElement("button");
+      clearFormButton.textContent = "Clear Form";
+      clearFormButton.style.marginTop = "1rem";
+      clearFormButton.style.padding = "0.5rem 1rem";
+      clearFormButton.style.border = "none";
+      clearFormButton.style.borderRadius = "0.5rem";
+      clearFormButton.style.backgroundColor = "#701d9d";
+      clearFormButton.style.color = "#fff";
+      clearFormButton.style.fontSize = "1.5em";
 
-    //   clearFormButton.addEventListener("click", () => {
-    //     document.querySelector("textarea").value = "";
-    //     document.querySelector("#ill-bag-checkbox").checked = false;
-    //     document.querySelector("#ill-box-checkbox").checked = false;
-    //   });
+      clearFormButton.addEventListener("click", () => {
+        clearForm();
+      });
 
-    //   document.querySelector(".form-validated").appendChild(clearFormButton);
-    // };
+      document.querySelector(".form-validated").appendChild(clearFormButton);
+    };
 
     const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
       const checkboxContainer = document.querySelector("#checkbox-container");
@@ -130,7 +128,7 @@
     const checkForForm = setInterval(() => {
       if (document.querySelector(".form-validated")) {
         createCheckboxContainer();
-        // createClearFormButton();
+        createClearFormButton();
         monitorTextarea();
         clearInterval(checkForForm);
       }
@@ -150,6 +148,31 @@
       });
     };
   }
+
+  const clearForm = () => {
+    // TODO: Taken from insertRequestToEvergreen, so...refactor is due at some point
+    const updateInputField = (selector) => {
+      const inputField = document.querySelector(selector);
+      if (!inputField) {
+        statusModal(result, headerColor, imgURL);
+        return;
+      }
+      inputField.value = "";
+      const event = new Event("input", {
+        bubbles: true,
+        cancelable: true,
+      });
+      inputField.dispatchEvent(event);
+    };
+
+    updateInputField("#title-input");
+    updateInputField("#callnumber-input");
+    updateInputField("#patron-barcode-input");
+    updateInputField("textarea");
+    document.querySelector("#ill-bag-checkbox").checked = false;
+    document.querySelector("#ill-box-checkbox").checked = false;
+    document.querySelector("#title-input").focus();
+  };
 
   createILLPageMods();
 })();
