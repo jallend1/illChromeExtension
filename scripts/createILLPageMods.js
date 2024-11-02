@@ -23,20 +23,21 @@
 
     const createClearFormButton = () => {
       const clearFormButton = document.createElement("button");
-      clearFormButton.textContent = "Clear Form";
+      clearFormButton.textContent = "Clear Request Data";
       clearFormButton.style.marginTop = "1rem";
       clearFormButton.style.padding = "0.5rem 1rem";
       clearFormButton.style.border = "none";
       clearFormButton.style.borderRadius = "0.5rem";
       clearFormButton.style.backgroundColor = "#701d9d";
       clearFormButton.style.color = "#fff";
-      clearFormButton.style.fontSize = "1.5em";
 
       clearFormButton.addEventListener("click", () => {
         clearForm();
       });
 
-      document.querySelector(".form-validated").appendChild(clearFormButton);
+      document
+        .querySelector("#checkbox-container")
+        .appendChild(clearFormButton);
     };
 
     const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
@@ -120,6 +121,7 @@
         "ILL should be returned in a box",
         "**RETURN IN BOX**\n"
       );
+      createClearFormButton();
     };
 
     removeExistingCheckboxContainer();
@@ -128,7 +130,7 @@
     const checkForForm = setInterval(() => {
       if (document.querySelector(".form-validated")) {
         createCheckboxContainer();
-        createClearFormButton();
+        // createClearFormButton();
         monitorTextarea();
         clearInterval(checkForForm);
       }
@@ -165,6 +167,7 @@
       inputField.dispatchEvent(event);
     };
 
+    chrome.storage.local.remove("requestData");
     updateInputField("#title-input");
     updateInputField("#callnumber-input");
     updateInputField("#patron-barcode-input");

@@ -60,8 +60,8 @@ export async function insertRequestToEvergreen() {
         if (!result.requestData) {
           // TODO: Something less obtrusive than the statusModal?
           // TODO: Default behavior shouldn't be met with annoyances, even though I'm not sure when it would ever need to occur
-          result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">No stored request data found.</h2> <p style="font-size: 1rem;">Couldn't find any data to insert onto the page.</p>`;
-          statusModal(result, headerColor, imgURL);
+          // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">No stored request data found.</h2> <p style="font-size: 1rem;">Couldn't find any data to insert onto the page.</p>`;
+          // statusModal(result, headerColor, imgURL);
           return;
         } else {
           const {
