@@ -11,6 +11,7 @@ const openCreateILLStatus = chrome.storage.local.get(
   "openCreateILL",
   (result) => {
     openCreateILL.checked = result.openCreateILL;
+    console.log("Open Create ILL status:", result.openCreateILL);
   }
 );
 const extensionStatusButton = document.querySelector("#extension-status");
@@ -160,6 +161,7 @@ const addEventListeners = () => {
     openCreateILL.checked
       ? chrome.storage.local.set({ openCreateILL: true })
       : chrome.storage.local.set({ openCreateILL: false });
+    console.log("Open Create ILL status:", openCreateILL.checked);
   });
 };
 

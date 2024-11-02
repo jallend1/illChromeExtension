@@ -7,11 +7,6 @@
     chrome.runtime.getURL("modules/orbisLibrarySymbols.js")
   );
 
-  // Checks localStorage for openCreateILL status
-  chrome.storage.local.get("openCreateILL", (result) => {
-    console.log(result);
-  });
-
   function copyFromOCLC(statusModal) {
     // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
     let addressObject = {
@@ -219,6 +214,12 @@
     }
 
     copyToStorage(stringifiedData, compiledData.requestNumber);
+    // If autoOpenCreateILL is true, send a message to the background script to open the tab
+    chrome.storage.local.get("openCreateILL", (result) => {
+      if (result.openCreateILL) {
+        chrome.runtime.sendMessage({ command: "openCreateILL" });
+      }
+    });
   }
 
   const currentURL = window.location.href;

@@ -141,6 +141,7 @@ chrome.contextMenus.onClicked.addListener((item) => {
   });
 });
 
+// TODO: Using command and actions here is a bit confusing -- Maybe combine? Or at least have a justification for it
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
     if (!isAllowedHost(activeTab.url)) return;
@@ -148,6 +149,33 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       chrome.storage.local.get("arePassiveToolsActive", (result) => {
         arePassiveToolsActive = result.arePassiveToolsActive;
         console.log("Extension status:", arePassiveToolsActive);
+      });
+      return;
+    }
+    if (request.command === "openCreateILL") {
+      console.log("Here we are!");
+      // Checks if the tab is already open
+      chrome.tabs.query({}, function (tabs) {
+        let mobile = false;
+        let evgClientTab = null;
+        let mobileURL =
+          "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
+        let clientURL =
+          "https://evgclient.kcls.org/eg2/en-US/staff/cat/ill/track";
+        for (let tab of tabs) {
+          if (tab.url.includes("evgmobile")) {
+            mobile = true;
+            evgClientTab = tab;
+          } else if (tab.url.includes("evgclient")) {
+            evgClientTab = tab;
+          }
+        }
+        let url = mobile ? mobileURL : clientURL;
+        if (evgClientTab) {
+          chrome.tabs.update(evgClientTab.id, { url: url, active: true });
+        } else {
+          chrome.tabs.create({ url: url, active: true });
+        }
       });
       return;
     }
