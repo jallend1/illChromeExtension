@@ -8,7 +8,6 @@ const currentOptions = [
 let arePassiveToolsActive;
 
 chrome.storage.local.get("arePassiveToolsActive", (result) => {
-  console.log("Extension status:", result.arePassiveToolsActive);
   arePassiveToolsActive = result.arePassiveToolsActive;
 });
 

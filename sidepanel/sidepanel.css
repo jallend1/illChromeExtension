@@ -351,3 +351,10 @@ button {
   line-height: 1.8rem;
   margin: 0 0 1rem 0;
 }
+
+.toggles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}

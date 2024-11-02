@@ -4,8 +4,15 @@ const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const darkModeToggle = document.querySelector("#dark-mode");
-// const moreInfoButtons = document.querySelectorAll(".more-info");
 const isbnSearch = document.querySelector("#isbn-search");
+// Sets openCreateILL checkbox to match current state
+const openCreateILL = document.querySelector("#open-create-ill");
+const openCreateILLStatus = chrome.storage.local.get(
+  "openCreateILL",
+  (result) => {
+    openCreateILL.checked = result.openCreateILL;
+  }
+);
 const extensionStatusButton = document.querySelector("#extension-status");
 let arePassiveToolsActive = chrome.storage.local.get(
   "arePassiveToolsActive",
@@ -16,8 +23,8 @@ let arePassiveToolsActive = chrome.storage.local.get(
   }
 );
 
-const lendingMode = document.querySelector("#lending-mode");
 // Sets lendingMode text to match current state
+const lendingMode = document.querySelector("#lending-mode");
 let lendingModeStatus = chrome.storage.local.get("lendingMode", (result) => {
   lendingMode.textContent = result.lendingMode
     ? "Disable Lending Mode"
@@ -147,6 +154,12 @@ const addEventListeners = () => {
   darkModeToggle.addEventListener("click", () => {
     console.log("Dark mode clicked");
     initiateScript("darkMode");
+  });
+
+  openCreateILL.addEventListener("click", () => {
+    openCreateILL.checked
+      ? chrome.storage.local.set({ openCreateILL: true })
+      : chrome.storage.local.set({ openCreateILL: false });
   });
 };
 
