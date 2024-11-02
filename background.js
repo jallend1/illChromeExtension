@@ -148,12 +148,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.command === "toggleExtension") {
       chrome.storage.local.get("arePassiveToolsActive", (result) => {
         arePassiveToolsActive = result.arePassiveToolsActive;
-        console.log("Extension status:", arePassiveToolsActive);
       });
       return;
     }
     if (request.command === "openCreateILL") {
-      console.log("Here we are!");
+      // TODO: Lot of the same functionality as in ISBN Search; Refactor opportunity
       // Checks if the tab is already open
       chrome.tabs.query({}, function (tabs) {
         let mobile = false;
