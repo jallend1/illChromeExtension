@@ -3,10 +3,12 @@
 [data-bs-theme="dark"] {
   --bs-body-bg: #1e1e1e !important;
   --bs-body-color: #ffffff !important;
-  --jda-primary: #333;
+  --jda-primary: #000;
+  /* --jda-primary: #333; */
   --jda-secondary: #555;
   --jda-text: #fff;
-  --jda-button: #00bcd4;
+  /* --jda-button: #00bcd4; */
+  --jda-button: #c38fff;
 
   a {
     color: var(--jda-text) !important;
@@ -47,6 +49,25 @@
     background-color: #187bcd !important;
   }
 
+  .nav-tabs .nav-link.active {
+    background-color: var(--jda-secondary) !important;
+    color: var(--jda-text) !important;
+  }
+
+  /* ********** */
+  /* * NavBar * */
+  /* ********** */
+  #staff-navbar {
+    .dropdown-menu {
+      background-color: var(--jda-primary) !important;
+      color: var(--jda-text) !important;
+    }
+
+    button {
+      color: var(--jda-text) !important;
+    }
+  }
+
   /* ******************* */
   /* *  Patron Details * */
   /* ******************* */
@@ -59,9 +80,14 @@
   .patron-summary-container > div:nth-child(odd) {
     background-color: var(--jda-secondary) !important;
     margin: 0;
+    padding: 0;
 
     a {
       background-color: var(--jda-secondary) !important;
+    }
+
+    > div:first-child {
+      padding: 0;
     }
   }
 
@@ -75,7 +101,7 @@
     }
 
     button {
-      background-color: #1e90ff !important;
+      background-color: var(--jda-button) !important;
       color: var(--jda-text) !important;
     }
   }
