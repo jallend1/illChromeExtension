@@ -9,6 +9,7 @@
   --jda-text: #fff;
   /* --jda-button: #00bcd4; */
   --jda-button: #c38fff;
+  --evg-dark: #006142;
 
   a {
     color: var(--jda-text) !important;
@@ -36,8 +37,8 @@
   .input-group-text,
   button {
     /* background-color: #757575 !important; */
-    background-color: var(--jda-button) !important;
     /* color: var(--jda-text) !important; */
+    background-color: var(--jda-button) !important;
     color: var(--jda-primary) !important;
   }
 
@@ -54,15 +55,43 @@
     color: var(--jda-text) !important;
   }
 
+  .dropdown-menu {
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
+
+    button.dropdown-item {
+      background-color: var(--jda-primary) !important;
+      color: var(--jda-text) !important;
+    }
+  }
+
+  .alert-info,
+  .alert-primary,
+  .alert-success {
+    background-color: var(--evg-dark) !important;
+    color: var(--jda-text) !important;
+
+    h1 {
+      color: var(--jda-text) !important;
+    }
+  }
+
+  #staff-catalog-results-container {
+    h2 {
+      color: var(--jda-text) !important;
+    }
+
+    table,
+    table > caption {
+      background-color: var(--jda-primary) !important;
+      color: var(--jda-text) !important;
+    }
+  }
+
   /* ********** */
   /* * NavBar * */
   /* ********** */
   #staff-navbar {
-    .dropdown-menu {
-      background-color: var(--jda-primary) !important;
-      color: var(--jda-text) !important;
-    }
-
     button {
       color: var(--jda-text) !important;
     }
@@ -114,6 +143,11 @@
       background-color: var(--jda-secondary) !important;
       color: var(--jda-text) !important;
     }
+  }
+
+  .bg-light {
+    background-color: var(--jda-secondary) !important;
+    color: var(--jda-text) !important;
   }
 
   /* ******************* */
