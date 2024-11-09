@@ -11,6 +11,7 @@ function holdScreenMods() {
     const newButton = document.createElement("button");
     newButton.type = "button";
     newButton.classList.add("btn", "btn-outline-dark", "btn-sm");
+    newButton.style.height = "100%";
     const newSpan = createSpanText();
     newButton.appendChild(newSpan);
     newButton.addEventListener("click", () => {
