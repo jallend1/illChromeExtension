@@ -119,15 +119,18 @@
     };
 
     const checkLenderRequirements = (currentLender) => {
-      if (currentLender === "BLP" || currentLender === "ZWR") {
-        // BLP requires due date on their paperwork, and I'm guessing that is also why ZWR also wants their paperwork kept because it looks the same
+      // Checks to see if the current lender requires paperwork to be kept
+      requiresPaperwork(currentLender);
+      const dueDateLibraries = ["BLP", "ZWR", "COW"];
+      if (dueDateLibraries.includes(currentLender)) {
+        // BLP requires due date on their paperwork, and
+        // I'm guessing that is also why ZWR and COW also wants
+        // their paperwork kept because it looks the same
         const dueDate = extractValueFromField(elementSelectors.dueDate);
         return "OCLC Due Date: " + dueDate + "\n";
       }
       // Implements WCCLS unique requirements
       if (currentLender === "OQX") return WCCLSprompt();
-      // Checks to see if the current lender requires paperwork to be kept
-      requiresPaperwork(currentLender);
       return "";
     };
 
