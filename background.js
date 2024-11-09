@@ -151,6 +151,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       });
       return;
     }
+    if (request.command === "disableButton") {
+      chrome.management.getSelf((extensionInfo) => {
+        chrome.tabs.reload(activeTab.id);
+        chrome.management.setEnabled(extensionInfo.id, false, () => {
+          console.log("Extension disabled.");
+        });
+      });
+      return;
+    }
     if (request.command === "openCreateILL") {
       // TODO: Lot of the same functionality as in ISBN Search; Refactor opportunity
       // Checks if the tab is already open

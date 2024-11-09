@@ -12,7 +12,8 @@
     "clipboardRead",
     "contextMenus",
     "sidePanel",
-    "webNavigation"
+    "webNavigation",
+    "management"
   ],
   "host_permissions": [
     "https://evgmobile.kcls.org/*",

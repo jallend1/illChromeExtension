@@ -5,6 +5,7 @@ const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const darkModeToggle = document.querySelector("#dark-mode");
 const isbnSearch = document.querySelector("#isbn-search");
+const disableButton = document.querySelector("#disable-button");
 // Sets openCreateILL checkbox to match current state
 const openCreateILL = document.querySelector("#open-create-ill");
 const openCreateILLStatus = chrome.storage.local.get(
@@ -124,6 +125,10 @@ const addEventListeners = () => {
         toggle.src = chrome.runtime.getURL("images/collapse.svg");
       }
     });
+  });
+
+  disableButton.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ command: "disableButton" });
   });
 
   modeToggle.addEventListener("click", () => {
