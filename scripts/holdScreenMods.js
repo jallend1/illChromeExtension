@@ -1,16 +1,16 @@
 function holdScreenMods() {
   const mainSection = document.querySelector("main");
 
+  const removeTooltip = () => {
+    const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
+    tooltip.remove();
+  };
+
   const checkExistingTooltip = () => {
     const existingTooltip = document.querySelector("#keyboard-cowboy-tooltip");
     if (existingTooltip) {
       removeTooltip();
     }
-  };
-
-  const removeTooltip = () => {
-    const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
-    tooltip.remove();
   };
 
   const addTooltip = () => {
