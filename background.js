@@ -273,6 +273,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // SPA navigation handling
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  console.log(details);
   if (arePassiveToolsActive === false) return;
   let tabId = details.tabId;
   let currentUrl = details.url;
@@ -304,6 +305,15 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/searchResults.js"],
+    });
+  } else {
+    // Remove the tooltip if the user navigates away from the Create ILL page
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      func: () => {
+        const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
+        if (tooltip) tooltip.remove();
+      },
     });
   }
 });
