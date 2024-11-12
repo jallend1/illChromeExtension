@@ -42,7 +42,7 @@ function holdScreenMods() {
     img.style.marginRight = "10px";
 
     const p = document.createElement("p");
-    p.innerHTML = `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold.`;
+    p.innerHTML = `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`;
     main.appendChild(img);
     main.appendChild(p);
 
