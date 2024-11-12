@@ -238,7 +238,7 @@ chrome.sidePanel
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
-  // TODO: Feels like overkill and incredibly over complicated -- Simply this
+  // TODO: Feels like overkill and incredibly over complicated -- Simplify this
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
       if (result.lendingFee && result.lendingFee === "0.00") {
@@ -273,7 +273,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // SPA navigation handling
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  console.log(details);
+  // TODO: This if/else situation is absurd and nobody should ever lay eyes on it but me
   if (arePassiveToolsActive === false) return;
   let tabId = details.tabId;
   let currentUrl = details.url;
@@ -306,8 +306,9 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       target: { tabId: tabId },
       files: ["./scripts/searchResults.js"],
     });
-  } else {
-    // Remove the tooltip if the user navigates away from the Create ILL page
+  }
+  if (!currentUrl.includes("catalog/hold/")) {
+    // Remove the tooltip if the user navigates away from the hold page
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       func: () => {
