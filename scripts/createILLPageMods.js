@@ -130,7 +130,6 @@
     const checkForForm = setInterval(() => {
       if (document.querySelector(".form-validated")) {
         createCheckboxContainer();
-        // createClearFormButton();
         monitorTextarea();
         clearInterval(checkForForm);
       }
@@ -138,6 +137,7 @@
 
     const monitorTextarea = () => {
       const addressField = document.querySelector("textarea");
+      if (!addressField) return;
       addressField.addEventListener("input", () => {
         const bagCheckbox = document.querySelector("#ill-bag-checkbox");
         const boxCheckbox = document.querySelector("#ill-box-checkbox");
