@@ -216,7 +216,21 @@
       }
     }
 
+    const markReceived = () => {
+      const receiveButton = document.querySelector(".receive-button");
+      if (receiveButton) {
+        receiveButton.click();
+      } else {
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Couldn't mark it received :(</p>`,
+          "#e85e6a",
+          chrome.runtime.getURL("images/kawaii-book-sad.png")
+        );
+      }
+    };
+
     copyToStorage(stringifiedData, compiledData.requestNumber);
+    markReceived();
     // If autoOpenCreateILL is true, send a message to the background script to open the tab
     chrome.storage.local.get("openCreateILL", (result) => {
       if (result.openCreateILL) {
