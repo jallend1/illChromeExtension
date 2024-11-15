@@ -14,6 +14,17 @@ const openCreateILLStatus = chrome.storage.local.get(
     openCreateILL.checked = result.openCreateILL;
   }
 );
+
+const autoReceiveRequestButton = document.querySelector(
+  "#auto-receive-request"
+);
+const autoReceiveRequestStatus = chrome.storage.local.get(
+  "autoReceiveRequest",
+  (result) => {
+    autoReceiveRequestButton.checked = result.autoReceiveRequest;
+  }
+);
+
 const extensionStatusButton = document.querySelector("#extension-status");
 let arePassiveToolsActive = chrome.storage.local.get(
   "arePassiveToolsActive",
@@ -165,6 +176,12 @@ const addEventListeners = () => {
     openCreateILL.checked
       ? chrome.storage.local.set({ openCreateILL: true })
       : chrome.storage.local.set({ openCreateILL: false });
+  });
+
+  autoReceiveRequestButton.addEventListener("click", () => {
+    autoReceiveRequestButton.checked
+      ? chrome.storage.local.set({ autoReceiveRequest: true })
+      : chrome.storage.local.set({ autoReceiveRequest: false });
   });
 };
 
