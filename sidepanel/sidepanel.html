@@ -26,7 +26,7 @@
     <main>
       <section class="scripts">
         <header>
-          <h2>Entering ILLs</h2>
+          <h2>Borrowing</h2>
           <img
             class="collapsible"
             src="../images/collapse.svg"
@@ -39,18 +39,32 @@
               Send Request to Evergreen
             </button>
           </div>
-          <div>
-            <button id="pasteToEvergreen" class="ill-actions">
-              Insert Request Data into Evergreen
-            </button>
-          </div>
           <div class="toggles">
-            <input
-              type="checkbox"
-              id="open-create-ill"
-              name="open-create-ill"
-            />
-            <label for="open-create-ill">Auto-open Evergreen</label>
+            <div class="toggle-container">
+              <input
+                type="checkbox"
+                id="open-create-ill"
+                name="open-create-ill"
+                class="toggle-switch"
+              />
+              <label for="open-create-ill" class="toggle-label"></label>
+              <label for="open-create-ill" class="toggle-text">
+                Auto-open Evergreen
+              </label>
+            </div>
+
+            <div class="toggle-container">
+              <input
+                type="checkbox"
+                id="auto-receive-request"
+                name="auto-receive-request"
+                class="toggle-switch"
+              />
+              <label for="auto-receive-request" class="toggle-label"></label>
+              <label for="auto-receive-request" class="toggle-text"
+                >Auto-Receive Request</label
+              >
+            </div>
           </div>
         </main>
       </section>
@@ -115,7 +129,7 @@
       </section>
       <section class="scripts">
         <header>
-          <h2>Toggles</h2>
+          <h2>Settings</h2>
           <img class="collapsible" src="../images/expand.svg" alt="Collapse" />
         </header>
         <main class="hidden collapsed collapsible">
@@ -139,6 +153,11 @@
           <div>
             <button id="dark-mode">Toggle Dark Mode</button>
             <!-- <p>Nothing to see here at the moment!</p> -->
+          </div>
+          <div>
+            <button id="pasteToEvergreen" class="ill-actions">
+              Insert Request Data into Evergreen (Legacy)
+            </button>
           </div>
         </main>
       </section>
