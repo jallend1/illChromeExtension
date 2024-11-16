@@ -375,8 +375,8 @@ button {
 
 .toggle-label {
   display: inline-block;
-  width: 60px;
-  height: 26px;
+  width: 30px;
+  height: 14px;
   background-color: #ccc;
   border-radius: 30px;
   position: relative;
@@ -386,8 +386,8 @@ button {
 .toggle-label:after {
   content: "";
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 12px;
+  height: 12px;
   background-color: #fff;
   border-radius: 50%;
   position: absolute;
@@ -401,7 +401,7 @@ button {
 }
 
 .toggle-switch:checked + .toggle-label:after {
-  transform: translateX(27px);
+  transform: translateX(12px);
 }
 
 .toggle-label:active {
@@ -412,4 +412,6 @@ button {
   font-size: 0.8rem;
   margin-left: 0.5rem;
   margin-top: 0.5rem;
+  max-width: 100px;
+  text-align: center;
 }
