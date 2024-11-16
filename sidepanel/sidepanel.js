@@ -5,8 +5,8 @@ const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const darkModeToggle = document.querySelector("#dark-mode");
 const isbnSearch = document.querySelector("#isbn-search");
-const disableButton = document.querySelector("#disable-button");
-// Sets openCreateILL checkbox to match current state
+const disableButton = document.querySelector("#disable-extension");
+
 const openCreateILL = document.querySelector("#open-create-ill");
 const openCreateILLStatus = chrome.storage.local.get(
   "openCreateILL",
@@ -25,23 +25,18 @@ const autoReceiveRequestStatus = chrome.storage.local.get(
   }
 );
 
-const extensionStatusButton = document.querySelector("#extension-status");
+const lendingMode = document.querySelector("#lending-tools");
+let lendingModeStatus = chrome.storage.local.get("lendingMode", (result) => {
+  lendingMode.checked = result.lendingMode;
+});
+
+const passiveTools = document.querySelector("#passive-tools");
 let arePassiveToolsActive = chrome.storage.local.get(
   "arePassiveToolsActive",
   (result) => {
-    extensionStatusButton.textContent = result.arePassiveToolsActive
-      ? "Disable Passive Tools"
-      : "Enable Passive Tools";
+    passiveTools.checked = result.arePassiveToolsActive;
   }
 );
-
-// Sets lendingMode text to match current state
-const lendingMode = document.querySelector("#lending-mode");
-let lendingModeStatus = chrome.storage.local.get("lendingMode", (result) => {
-  lendingMode.textContent = result.lendingMode
-    ? "Disable Lending Mode"
-    : "Enable Lending Mode";
-});
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -80,7 +75,7 @@ const extractFromStorage = async (key) => {
 };
 
 const addEventListeners = () => {
-  extensionStatusButton.addEventListener("click", () => {
+  passiveTools.addEventListener("click", () => {
     chrome.storage.local.get("arePassiveToolsActive", (result) => {
       // Send message to background.js to toggle extension status
       chrome.storage.local.set(
@@ -89,9 +84,7 @@ const addEventListeners = () => {
         },
         () => {
           arePassiveToolsActive = !result.arePassiveToolsActive;
-          extensionStatusButton.textContent = arePassiveToolsActive
-            ? "Disable Tools"
-            : "Enable Tools";
+          passiveTools.checked = arePassiveToolsActive;
           chrome.runtime.sendMessage({
             command: "toggleExtension",
           });

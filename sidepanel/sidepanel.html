@@ -88,7 +88,11 @@
       <section class="scripts">
         <header>
           <h2>Lending</h2>
-          <img class="collapsible" src="../images/expand.svg" alt="Collapse" />
+          <img
+            class="collapsible"
+            src="../images/collapse.svg"
+            alt="Collapse"
+          />
         </header>
         <main class="collapsible">
           <div>
@@ -133,14 +137,44 @@
           <img class="collapsible" src="../images/expand.svg" alt="Collapse" />
         </header>
         <main class="hidden collapsed collapsible">
-          <div>
-            <button id="disable-button">Disable PowILL Tools</button>
-          </div>
-          <div>
-            <button id="lending-mode">Toggle Lending Mode</button>
-          </div>
-          <div>
-            <button id="extension-status">Disable Passive Tools</button>
+          <div class="toggles">
+            <div class="toggle-container">
+              <input
+                type="checkbox"
+                id="lending-tools"
+                name="lending-tools"
+                class="toggle-switch"
+              />
+              <label for="lending-tools" class="toggle-label"></label>
+              <label for="lending-tools" class="toggle-text">
+                Lending Mode
+              </label>
+            </div>
+            <div class="toggle-container">
+              <input
+                type="checkbox"
+                id="passive-tools"
+                name="passive-tools"
+                class="toggle-switch"
+              />
+              <label for="passive-tools" class="toggle-label"></label>
+              <label for="passive-tools" class="toggle-text">
+                Passive Tools
+              </label>
+            </div>
+            <div class="toggle-container" id="disable-extension">
+              <input
+                type="checkbox"
+                id="disable-button"
+                name="disable-button"
+                class="toggle-switch"
+                checked
+              />
+              <label for="disable-button" class="toggle-label"></label>
+              <label for="disable-button" class="toggle-text">
+                PowILL Tools
+              </label>
+            </div>
           </div>
         </main>
       </section>
