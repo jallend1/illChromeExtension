@@ -5,38 +5,32 @@ const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
 const darkModeToggle = document.querySelector("#dark-mode");
 const isbnSearch = document.querySelector("#isbn-search");
+
+// Toggle Switch Elements
 const disableButton = document.querySelector("#disable-extension");
-
 const openCreateILL = document.querySelector("#open-create-ill");
-const openCreateILLStatus = chrome.storage.local.get(
-  "openCreateILL",
-  (result) => {
-    openCreateILL.checked = result.openCreateILL;
-  }
-);
-
 const autoReceiveRequestButton = document.querySelector(
   "#auto-receive-request"
 );
-const autoReceiveRequestStatus = chrome.storage.local.get(
-  "autoReceiveRequest",
-  (result) => {
-    autoReceiveRequestButton.checked = result.autoReceiveRequest;
-  }
-);
-
 const lendingMode = document.querySelector("#lending-tools");
-let lendingModeStatus = chrome.storage.local.get("lendingMode", (result) => {
-  lendingMode.checked = result.lendingMode;
-});
-
 const passiveTools = document.querySelector("#passive-tools");
-let arePassiveToolsActive = chrome.storage.local.get(
-  "arePassiveToolsActive",
-  (result) => {
-    passiveTools.checked = result.arePassiveToolsActive;
-  }
-);
+
+const storageKeys = [
+  { key: "openCreateILL", element: openCreateILL },
+  { key: "autoReceiveRequest", element: autoReceiveRequestButton },
+  { key: "lendingMode", element: lendingMode },
+  { key: "arePassiveToolsActive", element: passiveTools },
+];
+
+const getStorageValue = (key, element) => {
+  chrome.storage.local.get(key, (result) => {
+    element.checked = result[key];
+  });
+};
+
+storageKeys.forEach((storageKey) => {
+  getStorageValue(storageKey.key, storageKey.element);
+});
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
@@ -145,23 +139,12 @@ const addEventListeners = () => {
 
   lendingMode.addEventListener("click", () => {
     initiateScript("frequentLending");
-    chrome.storage.local.get("lendingMode", (result) => {
-      chrome.storage.local.set(
-        {
-          lendingMode: !result.lendingMode,
-        },
-        () => {
-          lendingModeStatus = !result.lendingMode;
-          lendingMode.textContent = lendingModeStatus
-            ? "Disable Lending Mode"
-            : "Enable Lending Mode";
-        }
-      );
-    });
+    lendingMode.checked
+      ? chrome.storage.local.set({ lendingMode: true })
+      : chrome.storage.local.set({ lendingMode: false });
   });
 
   darkModeToggle.addEventListener("click", () => {
-    console.log("Dark mode clicked");
     initiateScript("darkMode");
   });
 
