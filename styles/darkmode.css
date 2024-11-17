@@ -8,7 +8,7 @@
   --jda-secondary: #555;
   --jda-text: #fff;
   /* --jda-button: #00bcd4; */
-  --jda-button: #c38fff;
+  --jda-button: #35a69b;
   --evg-dark: #006142;
 
   a {
@@ -17,9 +17,12 @@
 
   input,
   textarea {
-    background-color: var(--jda-primary) !important;
+    /* background-color: var(--jda-primary) !important;
     color: var(--jda-button) !important;
-    border: 1px solid #555555 !important;
+    border: 1px solid #555555 !important; */
+    background-color: var(--bs-body-bg) !important;
+    color: var(--jda-text) !important;
+    border: var(--jda-button) 1px solid !important;
   }
 
   input::placeholder,
@@ -36,14 +39,16 @@
 
   .input-group-text,
   button {
-    /* background-color: #757575 !important; */
-    /* color: var(--jda-text) !important; */
-    background-color: var(--jda-button) !important;
-    color: var(--jda-primary) !important;
+    /* background-color: var(--jda-button) !important;
+    color: var(--jda-primary) !important; */
+    background-color: transparent !important;
+    color: var(--jda-text) !important;
+    /* border: var(--jda-button) 2px solid !important; */
   }
 
   button:hover {
-    background-color: #1c86ee !important;
+    /* background-color: #1c86ee !important; */
+    background-color: var(--jda-button) !important;
   }
 
   button:active {

@@ -281,10 +281,14 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     return;
   }
   // TODO: This is a work in progress -- Mostly just playing right now
-  chrome.scripting.insertCSS({
-    target: { tabId: tabId },
-    files: ["./styles/darkmode.css"],
-  });
+  if (currentUrl.includes("/staff/")) {
+    console.log(currentUrl.includes("/staff/"));
+    console.log(currentUrl);
+    chrome.scripting.insertCSS({
+      target: { tabId: tabId },
+      files: ["./styles/darkmode.css"],
+    });
+  }
   // Injects 'Box' and 'Bag' checkboxes on the Create ILL form
   if (currentUrl.includes("/cat/ill/track")) {
     chrome.scripting.executeScript({
