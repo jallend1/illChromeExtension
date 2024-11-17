@@ -3,10 +3,10 @@ const illActions = document.querySelectorAll(".ill-actions");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const modeToggle = document.querySelector("#mode");
-const darkModeToggle = document.querySelector("#dark-mode");
 const isbnSearch = document.querySelector("#isbn-search");
 
 // Toggle Switch Elements
+const darkModeToggle = document.querySelector("#dark-mode");
 const disableButton = document.querySelector("#disable-extension");
 const openCreateILL = document.querySelector("#open-create-ill");
 const autoReceiveRequestButton = document.querySelector(
@@ -20,6 +20,7 @@ const storageKeys = [
   { key: "autoReceiveRequest", element: autoReceiveRequestButton },
   { key: "lendingMode", element: lendingMode },
   { key: "arePassiveToolsActive", element: passiveTools },
+  { key: "darkMode", element: darkModeToggle },
 ];
 
 const getStorageValue = (key, element) => {
@@ -146,6 +147,9 @@ const addEventListeners = () => {
 
   darkModeToggle.addEventListener("click", () => {
     initiateScript("darkMode");
+    darkModeToggle.checked
+      ? chrome.storage.local.set({ darkMode: true })
+      : chrome.storage.local.set({ darkMode: false });
   });
 
   openCreateILL.addEventListener("click", () => {

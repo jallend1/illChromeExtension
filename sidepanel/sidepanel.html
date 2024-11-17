@@ -192,8 +192,19 @@
         </header>
         <main class="hidden collapsed collapsible">
           <div>
-            <button id="dark-mode">Toggle Evergreen Dark Mode</button>
+            <!-- <button id="dark-mode">Toggle Evergreen Dark Mode</button> -->
             <!-- <p>Nothing to see here at the moment!</p> -->
+            <div class="toggle-container">
+              <input
+                type="checkbox"
+                id="dark-mode"
+                name="dark-mode"
+                class="toggle-switch"
+                checked
+              />
+              <label for="dark-mode" class="toggle-label"></label>
+              <label for="dark-mode" class="toggle-text"> Dark Mode </label>
+            </div>
           </div>
         </main>
       </section>

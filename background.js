@@ -282,8 +282,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   }
   // TODO: This is a work in progress -- Mostly just playing right now
   if (currentUrl.includes("/staff/")) {
-    console.log(currentUrl.includes("/staff/"));
-    console.log(currentUrl);
     chrome.scripting.insertCSS({
       target: { tabId: tabId },
       files: ["./styles/darkmode.css"],
