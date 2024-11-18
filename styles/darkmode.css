@@ -4,10 +4,8 @@
   --bs-body-bg: #1e1e1e !important;
   --bs-body-color: #ffffff !important;
   --jda-primary: #000;
-  /* --jda-primary: #333; */
   --jda-secondary: #555;
   --jda-text: #fff;
-  /* --jda-button: #00bcd4; */
   --jda-button: #35a69b;
   --evg-dark: #006142;
 
@@ -17,9 +15,6 @@
 
   input,
   textarea {
-    /* background-color: var(--jda-primary) !important;
-    color: var(--jda-button) !important;
-    border: 1px solid #555555 !important; */
     background-color: var(--bs-body-bg) !important;
     color: var(--jda-text) !important;
     border: var(--jda-button) 1px solid !important;
@@ -39,15 +34,11 @@
 
   .input-group-text,
   button {
-    /* background-color: var(--jda-button) !important;
-    color: var(--jda-primary) !important; */
     background-color: transparent !important;
     color: var(--jda-text) !important;
-    /* border: var(--jda-button) 2px solid !important; */
   }
 
   button:hover {
-    /* background-color: #1c86ee !important; */
     background-color: var(--jda-button) !important;
   }
 
@@ -168,6 +159,11 @@
     color: var(--jda-text) !important;
   }
 
+  .form-select {
+    background-color: var(--jda-primary) !important;
+    color: var(--jda-text) !important;
+  }
+
   /* ********************* */
   /* *    Home Page      * */
   /* ********************* */
@@ -185,6 +181,15 @@
   .list-group-item {
     background-color: var(--bs-body-bg) !important;
     color: var(--jda-text) !important;
+    border-color: var(--jda-button) !important;
+  }
+
+  .card {
+    border-color: var(--jda-button) !important;
+  }
+
+  .eg-grid-row {
+    border-color: var(--jda-button) !important;
   }
 
   /* ****************************** */

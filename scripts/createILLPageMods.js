@@ -26,7 +26,7 @@
       clearFormButton.textContent = "Clear Request Data";
       clearFormButton.style.marginTop = "1rem";
       clearFormButton.style.padding = "0.5rem 1rem";
-      clearFormButton.style.border = "none";
+      clearFormButton.style.border = "solid 1px #701d9d";
       clearFormButton.style.borderRadius = "0.5rem";
       clearFormButton.style.backgroundColor = "#701d9d";
       clearFormButton.style.color = "#fff";
@@ -99,7 +99,6 @@
 
       // Styles for the checkbox container
       const styles = {
-        backgroundColor: "#fff",
         padding: "1rem",
         borderRadius: "5px",
         border: "1px solid #701d9d",
