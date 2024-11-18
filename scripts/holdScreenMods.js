@@ -16,7 +16,7 @@ function holdScreenMods() {
   const addTooltip = () => {
     const tooltip = document.createElement("div");
     tooltip.id = "keyboard-cowboy-tooltip";
-    tooltip.style.margin = "1rem auto 0 auto";
+    tooltip.style.margin = "1rem 1rem 0 auto";
     tooltip.style.padding = "1rem";
 
     tooltip.style.textAlign = "center";
@@ -42,6 +42,7 @@ function holdScreenMods() {
     img.style.marginRight = "10px";
 
     const p = document.createElement("p");
+    p.style.color = "#000";
     p.innerHTML = `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`;
     main.appendChild(img);
     main.appendChild(p);
