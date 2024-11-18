@@ -6,7 +6,6 @@ const currentOptions = [
 ];
 
 let arePassiveToolsActive;
-
 chrome.storage.local.get("arePassiveToolsActive", (result) => {
   arePassiveToolsActive = result.arePassiveToolsActive;
 });
@@ -234,11 +233,18 @@ chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error(error));
 
-// If the tab is updated and the URL includes /hold/, check for lending fee
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
+  if (tab.url.includes("/staff/")) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/darkMode.js"],
+    });
+  }
+
   // TODO: Feels like overkill and incredibly over complicated -- Simplify this
+  // If the tab is updated and the URL includes /hold/, check for lending fee
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
     chrome.storage.local.get("lendingFee", (result) => {
       if (result.lendingFee && result.lendingFee === "0.00") {
@@ -285,6 +291,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     chrome.scripting.insertCSS({
       target: { tabId: tabId },
       files: ["./styles/darkmode.css"],
+    });
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/darkMode.js"],
     });
   }
   // Injects 'Box' and 'Bag' checkboxes on the Create ILL form
