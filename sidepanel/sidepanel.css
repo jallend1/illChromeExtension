@@ -10,37 +10,6 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-.fun-mode {
-  background: linear-gradient(90deg, #7b1fa2 0%, #4a148c 100%);
-  color: white;
-
-  & h1 {
-    font-size: 1.75rem;
-    text-align: center;
-    margin: 1rem;
-  }
-
-  & .sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-  }
-
-  button {
-    font-size: 1rem;
-    background-color: transparent;
-    border: solid 3px #ffa260;
-    color: white;
-    border-radius: 5px;
-  }
-
-  button:hover {
-    box-shadow: 0 0.5em 0.5em -0.4em #ffa260;
-    transform: translateY(-0.35em);
-  }
-}
-
 .dreary-mode {
   background: #fff;
   color: #000;
@@ -55,7 +24,6 @@ body {
     width: 100%;
 
     & h1 {
-      /* font-size: 0.8rem; */
       text-align: center;
     }
 
@@ -119,38 +87,6 @@ body {
 
 .subtitle {
   text-align: center;
-}
-
-.sidebar-header img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-}
-
-.logo-left-animation {
-  animation: spin-left 5s linear infinite;
-}
-
-.logo-right-animation {
-  animation: spin-right 5s linear infinite;
-}
-
-@keyframes spin-left {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes spin-right {
-  0% {
-    transform: rotate(360deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
 }
 
 section {

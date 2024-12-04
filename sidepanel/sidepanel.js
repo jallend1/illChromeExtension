@@ -2,7 +2,6 @@ const collapseToggle = document.querySelectorAll("img.collapsible");
 const illActions = document.querySelectorAll(".ill-actions");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
-const modeToggle = document.querySelector("#mode");
 const isbnSearch = document.querySelector("#isbn-search");
 
 // Toggle Switch Elements
@@ -128,14 +127,6 @@ const addEventListeners = () => {
 
   disableButton.addEventListener("click", () => {
     chrome.runtime.sendMessage({ command: "disableButton" });
-  });
-
-  modeToggle.addEventListener("click", () => {
-    const body = document.querySelector("body");
-    const isVibrantMode = modeToggle.textContent === "Vibrant Mode";
-    body.classList.toggle("fun-mode", isVibrantMode);
-    body.classList.toggle("dreary-mode", !isVibrantMode);
-    modeToggle.textContent = isVibrantMode ? "Evergreen Mode" : "Vibrant Mode";
   });
 
   lendingMode.addEventListener("click", () => {
