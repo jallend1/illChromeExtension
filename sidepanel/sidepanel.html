@@ -2,38 +2,52 @@
   <head>
     <title>PowILL Tools</title>
     <link rel="stylesheet" href="sidepanel.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
   </head>
   <body class="dreary-mode">
     <header class="sidebar-header">
-      <img
+      <!-- <img
         id="logo-left"
         class="logo-left-animation"
         src="../images/kawaii-dinosaur.png"
         alt="ILL Icon"
-      />
+      /> -->
       <div>
         <h1>PowILL Tools</h1>
         <p class="subtitle">Like POWER Tools, you see.</p>
         <p class="subtitle" id="version"></p>
       </div>
-      <img
+      <!-- <img
         id="logo-right"
         class="logo-right-animation"
         src="../images/kawaii-book-sad.png"
         alt="ILL Icon"
-      />
+      /> -->
     </header>
     <main>
       <section class="scripts">
         <header>
           <h2>Borrowing</h2>
-          <img
-            class="collapsible"
-            src="../images/collapse.svg"
-            alt="Collapse"
-          />
+          <a
+            class="btn"
+            data-bs-toggle="collapse"
+            data-bs-target="#borrowing"
+            role="button"
+          >
+            Expand
+            <!-- <img
+              class="img-thumbnail"
+              src="../images/collapse.svg"
+              alt="Collapse"
+            /> -->
+          </a>
         </header>
-        <main class="collapsible">
+        <main class="collapse" id="borrowing">
           <div>
             <button id="copyFromOCLC" class="ill-actions">
               Export Request
@@ -216,5 +230,6 @@
     </footer>
     <script src="sidepanel.js"></script>
     <script src="sharedFunctions.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
   </body>
 </html>
