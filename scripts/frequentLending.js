@@ -12,6 +12,20 @@ async function loadFrequentLending() {
       window.location.href.includes("evgmobile");
 
     if (!isEvergreen) return;
+
+    const doNotPrintNavBar = () => {
+      // Nobody needs to see the frequent lending buttons when printing. That's madness.
+      const style = document.createElement("style");
+      style.textContent = `
+        @media print {
+          #frequentLibraries {
+            display: none !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    };
+
     const checkNavBar = () => {
       let navBar = document.querySelector("eg-staff-nav-bar");
       if (navBar) {
@@ -122,6 +136,7 @@ async function loadFrequentLending() {
       if (document.querySelector("#frequentLibraries")) {
         return;
       }
+      doNotPrintNavBar();
       const frequentLibrariesDiv = document.createElement("div");
       frequentLibrariesDiv.id = "frequentLibraries";
 
