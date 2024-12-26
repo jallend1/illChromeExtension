@@ -12,14 +12,14 @@
       }
     };
 
-    const removeExistingCheckboxContainer = () => {
-      const existingCheckboxContainer = document.querySelector(
-        "#checkbox-container"
-      );
-      if (existingCheckboxContainer) {
-        existingCheckboxContainer.remove();
-      }
-    };
+    // const removeExistingCheckboxContainer = () => {
+    //   const existingCheckboxContainer = document.querySelector(
+    //     "#checkbox-container"
+    //   );
+    //   if (existingCheckboxContainer) {
+    //     existingCheckboxContainer.remove();
+    //   }
+    // };
 
     const createClearFormButton = () => {
       const clearFormButton = document.createElement("button");
@@ -35,9 +35,8 @@
         clearForm();
       });
 
-      document
-        .querySelector("#checkbox-container")
-        .appendChild(clearFormButton);
+      const element = document.querySelector("#checkbox-container");
+      element.insertAdjacentElement("afterend", clearFormButton);
     };
 
     const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
@@ -92,7 +91,9 @@
 
     // Creates a parent div for the ILL custom checkboxes
     const createCheckboxContainer = () => {
-      removeExistingCheckboxContainer();
+      // removeExistingCheckboxContainer();
+      if (document.querySelector("#checkbox-container")) return;
+
       const parentILLForm = document.querySelector(".form-validated");
       const checkboxContainer = document.createElement("div");
       checkboxContainer.id = "checkbox-container";
@@ -123,16 +124,13 @@
       createClearFormButton();
     };
 
-    removeExistingCheckboxContainer();
-    createCheckboxContainer();
-
     const checkForForm = setInterval(() => {
       if (document.querySelector(".form-validated")) {
         createCheckboxContainer();
         monitorTextarea();
         clearInterval(checkForForm);
       }
-    }, 1000);
+    }, 100);
 
     const monitorTextarea = () => {
       const addressField = document.querySelector("textarea");
