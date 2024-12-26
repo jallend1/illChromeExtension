@@ -24,12 +24,15 @@
     const createClearFormButton = () => {
       const clearFormButton = document.createElement("button");
       clearFormButton.textContent = "Clear Request Data";
-      clearFormButton.style.marginTop = "1rem";
-      clearFormButton.style.padding = "0.5rem 1rem";
-      clearFormButton.style.border = "solid 1px #701d9d";
-      clearFormButton.style.borderRadius = "0.5rem";
-      clearFormButton.style.backgroundColor = "#701d9d";
-      clearFormButton.style.color = "#fff";
+      const clearFormButtonStyles = {
+        marginTop: "1rem",
+        padding: "0.5rem 1rem",
+        border: "solid 1px #701d9d",
+        borderRadius: "0.5rem",
+        backgroundColor: "#701d9d",
+        color: "#fff",
+      };
+      applyStyles(clearFormButton, clearFormButtonStyles);
 
       clearFormButton.addEventListener("click", () => {
         clearForm();
