@@ -1,5 +1,5 @@
 // Description: Inserts request data copied from WorldShare into Evergreen ILL form if it's detected in local storage
-// TODO: Almost an exact copy of pasteToEvergreen.js -- If successful, refactor to use a single function
+
 export const updateInputField = (selector, value, prefix = "") => {
   const inputField = document.querySelector(selector);
   if (!inputField) {
