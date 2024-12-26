@@ -233,7 +233,7 @@
     chrome.storage.local.get("autoReceiveRequest", (result) => {
       if (result.autoReceiveRequest) markReceived();
     });
-    // markReceived();
+
     // If autoOpenCreateILL is true, send a message to the background script to open the tab
     chrome.storage.local.get("openCreateILL", (result) => {
       if (result.openCreateILL) {

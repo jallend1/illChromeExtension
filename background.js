@@ -1,7 +1,6 @@
 const currentOptions = [
   { id: "copyWorldShareAddress", title: "Copy Address from WorldShare" },
   { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
-  { id: "pasteToEvergreen", title: "Paste Request Data into Evergreen" },
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
