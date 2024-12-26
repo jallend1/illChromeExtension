@@ -74,6 +74,7 @@ export async function insertRequestToEvergreen() {
             "#item-barcode-input"
           );
           kclsBarcodeInput.focus();
+          chrome.storage.local.remove("requestData");
         }
       });
     };
