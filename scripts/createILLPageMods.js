@@ -1,5 +1,5 @@
 (async () => {
-  const { insertRequestToEvergreen } = await import(
+  const { insertRequestToEvergreen, updateInputField } = await import(
     chrome.runtime.getURL("modules/insertRequestToEvergreen.js")
   );
 
@@ -11,15 +11,6 @@
         element.style[property] = styles[property];
       }
     };
-
-    // const removeExistingCheckboxContainer = () => {
-    //   const existingCheckboxContainer = document.querySelector(
-    //     "#checkbox-container"
-    //   );
-    //   if (existingCheckboxContainer) {
-    //     existingCheckboxContainer.remove();
-    //   }
-    // };
 
     const createClearFormButton = () => {
       const clearFormButton = document.createElement("button");
@@ -94,7 +85,6 @@
 
     // Creates a parent div for the ILL custom checkboxes
     const createCheckboxContainer = () => {
-      // removeExistingCheckboxContainer();
       if (document.querySelector("#checkbox-container")) return;
 
       const parentILLForm = document.querySelector(".form-validated");
@@ -152,26 +142,11 @@
   }
 
   const clearForm = () => {
-    // TODO: Taken from insertRequestToEvergreen, so...refactor is due at some point
-    const updateInputField = (selector) => {
-      const inputField = document.querySelector(selector);
-      if (!inputField) {
-        statusModal(result, headerColor, imgURL);
-        return;
-      }
-      inputField.value = "";
-      const event = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      inputField.dispatchEvent(event);
-    };
-
     chrome.storage.local.remove("requestData");
-    updateInputField("#title-input");
-    updateInputField("#callnumber-input");
-    updateInputField("#patron-barcode-input");
-    updateInputField("textarea");
+    updateInputField("#title-input", "ILL Title - ");
+    updateInputField("#callnumber-input", "IL");
+    updateInputField("#patron-barcode-input", "");
+    updateInputField("textarea", "");
     document.querySelector("#ill-bag-checkbox").checked = false;
     document.querySelector("#ill-box-checkbox").checked = false;
     document.querySelector("#title-input").focus();
