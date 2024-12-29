@@ -102,6 +102,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 // TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
+  console.log(command);
   currentOptions.forEach((option) => {
     if (command === option.id) {
       chrome.tabs.query(

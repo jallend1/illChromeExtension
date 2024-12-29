@@ -27,22 +27,19 @@
   "commands": {
     "copyWorldShareAddress": {
       "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "mac": "Command+Shift+Y"
+        "default": "Ctrl+Shift+Y"
       },
       "description": "Copies address from WorldShare"
     },
     "copyFromOCLC": {
       "suggested_key": {
-        "default": "Ctrl+Shift+1",
-        "mac": "Command+Shift+1"
+        "default": "Ctrl+Shift+1"
       },
       "description": "Copy the request data from WorldShare to clipboard"
     },
     "overdueNotice": {
       "suggested_key": {
-        "default": "Ctrl+Shift+3",
-        "mac": "Command+Shift+3"
+        "default": "Ctrl+Shift+3"
       },
       "description": "Generates overdue letter if open patron has any ILLs in overdue status"
     }
