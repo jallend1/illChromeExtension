@@ -39,13 +39,6 @@
       },
       "description": "Copy the request data from WorldShare to clipboard"
     },
-    "pasteToEvergreen": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+2",
-        "mac": "Command+Shift+2"
-      },
-      "description": "Paste the request data from the clipboard to Evergreen"
-    },
     "overdueNotice": {
       "suggested_key": {
         "default": "Ctrl+Shift+3",
