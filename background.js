@@ -102,7 +102,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 // TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
-  console.log(command);
   currentOptions.forEach((option) => {
     if (command === option.id) {
       chrome.tabs.query(
@@ -119,26 +118,26 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 // Add context menu items for each option
-chrome.runtime.onInstalled.addListener(() => {
-  currentOptions.forEach((option) => {
-    chrome.contextMenus.create({
-      id: option.id,
-      title: option.title,
-      contexts: ["all"],
-    });
-  });
-});
+// chrome.runtime.onInstalled.addListener(() => {
+//   currentOptions.forEach((option) => {
+//     chrome.contextMenus.create({
+//       id: option.id,
+//       title: option.title,
+//       contexts: ["all"],
+//     });
+//   });
+// });
 
-// Add event listener for context menu clicks
-chrome.contextMenus.onClicked.addListener((item) => {
-  if (!isAllowedHost(item.pageUrl)) return;
-  chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    chrome.scripting.executeScript({
-      target: { tabId: activeTab.id },
-      files: [`./scripts/${item.menuItemId}.js`],
-    });
-  });
-});
+// // Add event listener for context menu clicks
+// chrome.contextMenus.onClicked.addListener((item) => {
+//   if (!isAllowedHost(item.pageUrl)) return;
+//   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+//     chrome.scripting.executeScript({
+//       target: { tabId: activeTab.id },
+//       files: [`./scripts/${item.menuItemId}.js`],
+//     });
+//   });
+// });
 
 // TODO: Using command and actions here is a bit confusing -- Maybe combine? Or at least have a justification for it
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
