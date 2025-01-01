@@ -55,6 +55,55 @@ function holdScreenMods() {
 
   checkExistingTooltip();
   addTooltip();
+
+  const addMutationObserver = () => {
+    // Select the node that will be observed for mutations
+    // const targetNode = document.querySelector(".alert.alert-info.p-1.ms-2");
+    const targetNode = document.querySelector(
+      ".hold-records-list.common-form.striped-even"
+    );
+    if (!targetNode) {
+      // If the target node is not found, try again every 1 second for up to 15 seconds
+      let counter = 0;
+      const interval = setInterval(() => {
+        counter++;
+        console.log("Target node not found. Trying again...");
+        const newTargetNode = document.querySelector(
+          ".alert.alert-info.p-1.ms-2"
+        );
+        if (newTargetNode) {
+          clearInterval(interval);
+          addMutationObserver();
+        }
+        if (counter >= 15) {
+          clearInterval(interval);
+          console.log("Target node not found after 15 seconds. Exiting...");
+        }
+      }, 1000);
+      return;
+    }
+
+    const parentNode = targetNode.parentElement;
+
+    const config = { attributes: true, childList: true, subtree: true };
+    const callback = (mutationList, observer) => {
+      console.log("Mutation observed");
+      for (const mutation of mutationList) {
+        if (mutation.type === "childList") {
+          console.log("A child node has been added or removed.");
+        } else if (mutation.type === "attributes") {
+          console.log(`The ${mutation.attributeName} attribute was modified.`);
+        }
+      }
+    };
+
+    const observer = new MutationObserver(callback);
+    console.log(parentNode);
+    if (parentNode) observer.observe(targetNode, config);
+    else console.log("Target node not found");
+  };
+
+  addMutationObserver();
 }
 
 holdScreenMods();
