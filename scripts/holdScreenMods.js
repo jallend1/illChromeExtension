@@ -57,18 +57,18 @@ function holdScreenMods() {
   addTooltip();
 
   const addMutationObserver = () => {
-    // Select the node that will be observed for mutations
-    // const targetNode = document.querySelector(".alert.alert-info.p-1.ms-2");
+    // Selects parent div of item record section
     let targetNode = document.querySelector(
       ".hold-records-list.common-form.striped-even"
     );
     if (!targetNode) {
-      // If the target node is not found, try again every 1 second for up to 15 seconds
+      // If the target node is not found, try again for up to 15 seconds
       let counter = 0;
       const interval = setInterval(() => {
         counter++;
-        console.log("Target node not found. Trying again...");
-        targetNode = document.querySelector(".alert.alert-info.p-1.ms-2");
+        targetNode = document.querySelector(
+          ".hold-records-list.common-form.striped-even"
+        );
         if (targetNode) {
           clearInterval(interval);
           addMutationObserver();
@@ -87,7 +87,7 @@ function holdScreenMods() {
         if (mutation.type === "childList") {
           if (mutation.addedNodes.length > 0) {
             for (const node of mutation.addedNodes) {
-              // Iterates through added nodes to isolate hold status
+              // Iterates through added nodes to isolate hold status message
               if (
                 node.classList &&
                 node.classList.contains("alert") &&
