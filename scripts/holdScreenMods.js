@@ -59,7 +59,7 @@ function holdScreenMods() {
   const addMutationObserver = () => {
     // Select the node that will be observed for mutations
     // const targetNode = document.querySelector(".alert.alert-info.p-1.ms-2");
-    const targetNode = document.querySelector(
+    let targetNode = document.querySelector(
       ".hold-records-list.common-form.striped-even"
     );
     if (!targetNode) {
@@ -68,10 +68,8 @@ function holdScreenMods() {
       const interval = setInterval(() => {
         counter++;
         console.log("Target node not found. Trying again...");
-        const newTargetNode = document.querySelector(
-          ".alert.alert-info.p-1.ms-2"
-        );
-        if (newTargetNode) {
+        targetNode = document.querySelector(".alert.alert-info.p-1.ms-2");
+        if (targetNode) {
           clearInterval(interval);
           addMutationObserver();
         }
@@ -83,24 +81,30 @@ function holdScreenMods() {
       return;
     }
 
-    const parentNode = targetNode.parentElement;
-
-    const config = { attributes: true, childList: true, subtree: true };
+    const config = { childList: true, subtree: true };
     const callback = (mutationList, observer) => {
-      console.log("Mutation observed");
       for (const mutation of mutationList) {
         if (mutation.type === "childList") {
-          console.log("A child node has been added or removed.");
-        } else if (mutation.type === "attributes") {
-          console.log(`The ${mutation.attributeName} attribute was modified.`);
+          if (mutation.addedNodes.length > 0) {
+            for (const node of mutation.addedNodes) {
+              // Iterates through added nodes to isolate hold status
+              if (
+                node.classList &&
+                node.classList.contains("alert") &&
+                node.classList.contains("p-1") &&
+                node.classList.contains("ms-2")
+              ) {
+                console.log(node.textContent);
+              }
+            }
+          }
         }
       }
     };
 
     const observer = new MutationObserver(callback);
-    console.log(parentNode);
-    if (parentNode) observer.observe(targetNode, config);
-    else console.log("Target node not found");
+
+    observer.observe(targetNode, config);
   };
 
   addMutationObserver();
