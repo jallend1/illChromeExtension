@@ -56,6 +56,18 @@ function holdScreenMods() {
   checkExistingTooltip();
   addTooltip();
 
+  // If item has a second patron, automatically populate departmental card barcode
+  const placeHoldOnKCLSCard = () => {
+    const barcodeField = document.querySelector("#patron-barcode");
+    barcodeField.value = "0040746158";
+    const event = new Event("input", {
+      bubbles: true,
+      cancelable: true,
+    });
+    barcodeField.dispatchEvent(event);
+    barcodeField.focus();
+  };
+
   const addMutationObserver = () => {
     // Selects parent div of item record section
     let targetNode = document.querySelector(
@@ -95,6 +107,11 @@ function holdScreenMods() {
                 node.classList.contains("ms-2")
               ) {
                 console.log(node.textContent);
+                // TODO: Add logic to display solution for 'No available copies' message here
+                // // TODO: Uncomment this when request with 2nd patron is available for reference
+                // if (node.textContent.includes("Hold Succeeded")) {
+                //   placeHoldOnKCLSCard();
+                // }
               }
             }
           }
