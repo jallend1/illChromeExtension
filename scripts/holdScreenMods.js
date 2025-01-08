@@ -108,7 +108,7 @@ function holdScreenMods() {
               ) {
                 console.log(node.textContent);
                 // TODO: Add logic to display solution for 'No available copies' message here
-                // // TODO: Uncomment this when request with 2nd patron is available for reference
+                // TODO: Uncomment this when 2nd patron is tracked
                 // if (node.textContent.includes("Hold Succeeded")) {
                 //   placeHoldOnKCLSCard();
                 // }

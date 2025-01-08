@@ -96,6 +96,7 @@ chrome.storage.local.get("lendingMode", (result) => {
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const { tabId, url } = details;
   if (!isAllowedHost(url)) return;
+  // TODO: Is this bad boy firing on WorldSshare pages? -- If so, I need to add a check
   executeScript(tabId, "frequentLending");
 });
 
@@ -328,4 +329,11 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       },
     });
   }
+  // TODO: Work in progress to implement due date recommendation dates
+  // if (currentUrl.includes("share.worldcat.org")) {
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/requestDueDate.js"],
+  //   });
+  // }
 });
