@@ -330,10 +330,14 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     });
   }
   // TODO: Work in progress to implement due date recommendation dates
-  // if (currentUrl.includes("share.worldcat.org")) {
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/requestDueDate.js"],
-  //   });
-  // }
+  if (currentUrl.includes("share.worldcat.org")) {
+    // TODO: Add some kind of flag to check if the script has already been run? Regex seems like a good potential solution?
+    const regex = /\/requests\/(\d+)/;
+    const match = currentUrl.match(regex);
+    console.log(match[1]);
+    // chrome.scripting.executeScript({
+    //   target: { tabId: tabId },
+    //   files: ["./scripts/requestDueDate.js"],
+    // });
+  }
 });
