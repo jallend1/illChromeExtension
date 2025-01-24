@@ -210,6 +210,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         if (evgClientTab) {
           chrome.tabs.update(evgClientTab.id, { url: url, active: true });
         } else {
+          // TODO: If url is not found, assign a default URL! evgclient? evgmobile?
           chrome.tabs.create({ url: url, active: true });
         }
       });
