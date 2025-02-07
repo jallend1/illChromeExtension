@@ -118,27 +118,28 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
-// Add context menu items for each option
-// chrome.runtime.onInstalled.addListener(() => {
-//   currentOptions.forEach((option) => {
-//     chrome.contextMenus.create({
-//       id: option.id,
-//       title: option.title,
-//       contexts: ["all"],
-//     });
-//   });
-// });
-
-// // Add event listener for context menu clicks
-// chrome.contextMenus.onClicked.addListener((item) => {
-//   if (!isAllowedHost(item.pageUrl)) return;
-//   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-//     chrome.scripting.executeScript({
-//       target: { tabId: activeTab.id },
-//       files: [`./scripts/${item.menuItemId}.js`],
-//     });
-//   });
-// });
+const calculateURL = (mobileURL, clientURL) => {
+  chrome.tabs.query({}, function (tabs) {
+    let mobile = false;
+    let evgClientTab = null;
+    for (let tab of tabs) {
+      if (tab.url.includes("evgmobile")) {
+        mobile = true;
+        evgClientTab = tab;
+        break;
+      } else if (tab.url.includes("evgclient")) {
+        evgClientTab = tab;
+        break;
+      }
+    }
+    let url = mobile ? mobileURL : clientURL;
+    if (evgClientTab) {
+      chrome.tabs.update(evgClientTab.id, { url: url, active: true });
+    } else {
+      chrome.tabs.create({ url: url, active: true });
+    }
+  });
+};
 
 // TODO: Using command and actions here is a bit confusing -- Maybe combine? Or at least have a justification for it
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -161,59 +162,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.command === "openCreateILL") {
       // TODO: Lot of the same functionality as in ISBN Search; Refactor opportunity
-      // Checks if the tab is already open
-      chrome.tabs.query({}, function (tabs) {
-        let mobile = false;
-        let evgClientTab = null;
-        let mobileURL =
-          "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
-        let clientURL =
-          "https://evgclient.kcls.org/eg2/en-US/staff/cat/ill/track";
-        for (let tab of tabs) {
-          if (tab.url.includes("evgmobile")) {
-            mobile = true;
-            evgClientTab = tab;
-          } else if (tab.url.includes("evgclient")) {
-            evgClientTab = tab;
-          }
-        }
-        let url = mobile ? mobileURL : clientURL;
-        if (evgClientTab) {
-          chrome.tabs.update(evgClientTab.id, { url: url, active: true });
-        } else {
-          chrome.tabs.create({ url: url, active: true });
-        }
-      });
+      let mobileURL =
+        "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
+      let clientURL =
+        "https://evgclient.kcls.org/eg2/en-US/staff/cat/ill/track";
+      calculateURL(mobileURL, clientURL);
       return;
     }
     // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
     if (request.action === "isbnSearch") {
-      chrome.tabs.query({}, function (tabs) {
-        const urlSuffix = request.url;
-        let mobile = false;
-        let mobilePrefix =
-          "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/";
-        let clientPrefix =
-          "https://evgclient.kcls.org/eg2/en-US/staff/catalog/";
-        let evgClientTab = null;
-        for (let tab of tabs) {
-          if (tab.url.includes("evgmobile")) {
-            mobile = true;
-            evgClientTab = tab;
-          } else if (tab.url.includes("evgclient")) {
-            evgClientTab = tab;
-          }
-        }
-        const url = mobile
-          ? mobilePrefix + urlSuffix
-          : clientPrefix + urlSuffix;
-        if (evgClientTab) {
-          chrome.tabs.update(evgClientTab.id, { url: url, active: true });
-        } else {
-          // TODO: If url is not found, assign a default URL! evgclient? evgmobile?
-          chrome.tabs.create({ url: url, active: true });
-        }
-      });
+      const urlSuffix = request.url;
+      let mobilePrefix =
+        "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
+      let clientPrefix =
+        "https://evgclient.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
+      calculateURL(mobilePrefix, clientPrefix);
+      // chrome.tabs.query({}, function (tabs) {
+      // });
       return;
     }
 
@@ -330,12 +295,12 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       },
     });
   }
-  // TODO: Work in progress to implement due date recommendation dates
+  // TODO: Work in progress to implement recommendations for return dates
   if (currentUrl.includes("share.worldcat.org")) {
     // TODO: Add some kind of flag to check if the script has already been run? Regex seems like a good potential solution?
-    const regex = /\/requests\/(\d+)/;
-    const match = currentUrl.match(regex);
-    console.log(match[1]);
+    // const regex = /\/requests\/(\d+)/;
+    // const match = currentUrl.match(regex);
+    // console.log(match[1]);
     // chrome.scripting.executeScript({
     //   target: { tabId: tabId },
     //   files: ["./scripts/requestDueDate.js"],
