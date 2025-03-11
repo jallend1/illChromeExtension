@@ -161,7 +161,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       return;
     }
     if (request.command === "openCreateILL") {
-      // TODO: Lot of the same functionality as in ISBN Search; Refactor opportunity
       let mobileURL =
         "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
       let clientURL =
@@ -177,8 +176,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       let clientPrefix =
         "https://evgclient.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
       calculateURL(mobilePrefix, clientPrefix);
-      // chrome.tabs.query({}, function (tabs) {
-      // });
       return;
     }
 
@@ -206,6 +203,16 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/darkMode.js"],
+    });
+  }
+
+  // TODO: Add a modal informing user that transit was clicked
+  // Dismisses 'Open Transit on item' modal when checking out items
+  if (tab.url.includes("/checkout")) {
+    console.log("Checkout page loaded");
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/dismissOpenTransit.js"],
     });
   }
 
