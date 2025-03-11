@@ -209,7 +209,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // TODO: Add a modal informing user that transit was clicked
   // Dismisses 'Open Transit on item' modal when checking out items
   if (tab.url.includes("/checkout")) {
-    console.log("Checkout page loaded");
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/dismissOpenTransit.js"],
