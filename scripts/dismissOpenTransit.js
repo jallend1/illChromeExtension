@@ -1,7 +1,15 @@
 function dismissOpenTransit() {
-  const modalText = document.querySelector(".modal-body").textContent;
+  const modal = document.querySelector(".modal-body");
+
+  if (!modal) {
+    return;
+  }
+
+  const modalText = modal.textContent;
+
   if (modalText.includes("open transit on item")) {
-    document.querySelector(".modal-footer button").click();
+    const modalFooterButton = document.querySelector(".modal-footer button");
+    if (modalFooterButton) modalFooterButton.click();
   }
 }
 
