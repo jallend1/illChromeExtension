@@ -93,8 +93,7 @@ function holdScreenMods() {
       return;
     }
 
-    const config = { childList: true, subtree: true };
-    const callback = (mutationList, observer) => {
+    const handleMutationObserver = (mutationList, observer) => {
       for (const mutation of mutationList) {
         if (mutation.type === "childList") {
           if (mutation.addedNodes.length > 0) {
@@ -106,7 +105,34 @@ function holdScreenMods() {
                 node.classList.contains("p-1") &&
                 node.classList.contains("ms-2")
               ) {
-                console.log(node.textContent);
+                // console.log(node.textContent);
+
+                // TODO: Need example of maximum holds...I *THINK* it is "MAX_HOLDS" but who knows
+                // If maximum number of holds, focus on Override button for user convenience
+                if (node.textContent.includes("MAX_HOLDS")) {
+                  let infoButtons = document.querySelectorAll(".btn.btn-info");
+                  // If infoButtons is only one in length, try again for up to 15 seconds
+                  if (infoButtons.length === 1) {
+                    let counter = 0;
+                    const interval = setInterval(() => {
+                      counter++;
+                      infoButtons = document.querySelectorAll(".btn.btn-info");
+                      if (infoButtons.length > 1) {
+                        clearInterval(interval);
+                        for (const button of infoButtons) {
+                          if (button.textContent.includes("Override")) {
+                            button.focus();
+                          }
+                        }
+                      }
+                      if (counter >= 15) {
+                        clearInterval(interval);
+                      }
+                    }, 1000);
+                    return;
+                  }
+                }
+
                 // TODO: Add logic to display solution for 'No available copies' message here
                 // TODO: Uncomment this when 2nd patron is tracked
                 // if (node.textContent.includes("Hold Succeeded")) {
@@ -119,8 +145,8 @@ function holdScreenMods() {
       }
     };
 
-    const observer = new MutationObserver(callback);
-
+    const observer = new MutationObserver(handleMutationObserver);
+    const config = { childList: true, subtree: true };
     observer.observe(targetNode, config);
   };
 
