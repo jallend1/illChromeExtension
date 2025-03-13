@@ -74,9 +74,11 @@ const executeScript = (tabId, script) => {
             "Error sending message: " + script,
             JSON.stringify(chrome.runtime.lastError, null, 2)
           );
-        } else {
-          console.log("Message sent successfully:", response);
         }
+        // I don't think I need this message anymore -- Prove me wrong!!
+        // else {
+        //   console.log("Message sent successfully:", response);
+        // }
       });
     }
   );
@@ -231,12 +233,16 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
               tabId,
               { data: "lendingFeeAlert", lendingFee: result.lendingFee },
               (response) => {
-                chrome.runtime.lastError
-                  ? console.error(
-                      "Error sending message:",
-                      chrome.runtime.lastError
-                    )
-                  : console.log("Message sent successfully:", response);
+                if (chrome.runtime.lastError) {
+                  console.error(
+                    "Error sending message:",
+                    chrome.runtime.lastError
+                  );
+                }
+                // Any reason for me to display this message? I think no for now. PROVE ME WRONG.
+                // else {
+                //   console.log("Message sent successfully:", response);
+                // }
               }
             );
           }
