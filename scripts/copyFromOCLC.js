@@ -32,9 +32,9 @@
     const extractValueFromField = (selector) => {
       const allMatches = document.querySelectorAll(selector);
       const currentMatch = allMatches[allMatches.length - 1];
-      // If selector includes 'input' return the value, otherwise return the textContent
       if (selector.includes("patron.userId"))
         return currentMatch?.value.replace(/[^0-9]/g, "");
+      // If selector includes 'input' return the value, otherwise return the textContent
       return selector.includes("input")
         ? currentMatch?.value
         : currentMatch?.textContent;
