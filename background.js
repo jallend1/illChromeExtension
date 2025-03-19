@@ -93,14 +93,11 @@ chrome.storage.local.get("lendingMode", (result) => {
 // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const { tabId, url } = details;
-  if (!isAllowedHost(url)) return;
   if (url.includes("/eg2/en-US/staff/")) {
     executeScript(tabId, "frequentLending");
-    console.log("Frequent lending script executed.");
   }
 });
 
-// TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
   currentOptions.forEach((option) => {
@@ -237,10 +234,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                     chrome.runtime.lastError
                   );
                 }
-                // Any reason for me to display this message? I think no for now. PROVE ME WRONG.
-                // else {
-                //   console.log("Message sent successfully:", response);
-                // }
               }
             );
           }
