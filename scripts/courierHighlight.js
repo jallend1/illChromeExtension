@@ -3,15 +3,15 @@
     chrome.runtime.getURL("modules/courierLibraries.js")
   );
 
+  const courierStates = [", WA ", ", OR ", ", ID "];
+
   function courierHighlight(courierLibraries) {
     // Checks if patron name matches ILL name formatting
-    const isLibrary = (patronLastName) => {
-      return patronLastName === "ILL DEPT" || patronLastName === "LIBRARY";
-    };
+    const isLibrary = (patronLastName) =>
+      ["ILL DEPT", "LIBRARY"].includes(patronLastName);
 
     // Checks if library state is a courier state to avoid false positives
     const isCourierState = () => {
-      const courierStates = [", WA ", ", OR ", ", ID "];
       const addressField = document.querySelector(
         "textarea[id*='patron-address-copy']"
       );
