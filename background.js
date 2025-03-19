@@ -75,16 +75,12 @@ const executeScript = (tabId, script) => {
             JSON.stringify(chrome.runtime.lastError, null, 2)
           );
         }
-        // I don't think I need this message anymore -- Prove me wrong!!
-        // else {
-        //   console.log("Message sent successfully:", response);
-        // }
       });
     }
   );
 };
 
-// Check if lendingMode in storage is true
+// If lendingMode is true, turn on the frequent lenders bar
 chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
     chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
@@ -98,8 +94,10 @@ chrome.storage.local.get("lendingMode", (result) => {
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const { tabId, url } = details;
   if (!isAllowedHost(url)) return;
-  // TODO: Is this bad boy firing on WorldSshare pages? -- If so, I need to add a check
-  executeScript(tabId, "frequentLending");
+  if (url.includes("/eg2/en-US/staff/")) {
+    executeScript(tabId, "frequentLending");
+    console.log("Frequent lending script executed.");
+  }
 });
 
 // TODO No longer working by default in latest version of Chrome -- Requires manual setup once installed?
