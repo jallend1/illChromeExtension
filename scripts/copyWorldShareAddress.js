@@ -162,7 +162,17 @@
       chrome.storage.local.set({ addressString: addressString });
     }
     console.log("Printing dymo!");
-    printDymoLabel(addressString);
+
+    const dymoToggle = chrome.storage.local.get("printLabel");
+    dymoToggle.then((result) => {
+      if (result.printLabel) {
+        printDymoLabel(addressString);
+      } else {
+        console.log("Dymo printing is disabled.");
+      }
+    });
+
+    // printDymoLabel(addressString);
 
     statusModal(
       `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,

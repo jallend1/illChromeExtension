@@ -13,6 +13,7 @@ const autoReceiveRequestButton = document.querySelector(
 );
 const lendingMode = document.querySelector("#lending-tools");
 const passiveTools = document.querySelector("#passive-tools");
+const printLabel = document.querySelector("#print-label");
 
 const storageKeys = [
   { key: "openCreateILL", element: openCreateILL },
@@ -153,6 +154,12 @@ const addEventListeners = () => {
     autoReceiveRequestButton.checked
       ? chrome.storage.local.set({ autoReceiveRequest: true })
       : chrome.storage.local.set({ autoReceiveRequest: false });
+  });
+
+  printLabel.addEventListener("click", () => {
+    printLabel.checked
+      ? chrome.storage.local.set({ printLabel: true })
+      : chrome.storage.local.set({ printLabel: false });
   });
 };
 
