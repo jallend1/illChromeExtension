@@ -60,7 +60,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/*", "modules/*"],
+      "resources": ["images/*", "modules/*", "libs/*"],
       "matches": ["<all_urls>"]
     }
   ],

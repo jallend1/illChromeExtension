@@ -56,6 +56,36 @@ const sessionLog = () => {
   });
 };
 
+const getAddressFromStorage = () => {
+  chrome.storage.local.get("addressString", (result) => {
+    if (chrome.runtime.lastError) {
+      console.error("Error retrieving address from storage:", error);
+      return;
+    }
+    const addressString = result.addressString;
+    if (addressString) {
+      console.log("Address String:", addressString);
+      printDymo(addressString);
+    } else {
+      console.error("No address string found in storage.");
+    }
+  });
+};
+
+const fireUpDymo = (tabId) => {
+  chrome.scripting
+    .executeScript({
+      target: { tabId: tabId },
+      files: ["./libs/dymo.connect.framework.js"],
+    })
+    .then(() => {
+      console.log("Dymo script loaded up!");
+    })
+    .catch((error) => {
+      console.error("Error loading Dymo script:", error);
+    });
+};
+
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
@@ -95,6 +125,15 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const { tabId, url } = details;
   if (url.includes("/eg2/en-US/staff/")) {
     executeScript(tabId, "frequentLending");
+  }
+});
+
+// Loads up Dymo framework when URL contains '.share.worldcat.org'
+chrome.webNavigation.onCompleted.addListener((details) => {
+  const { tabId, url } = details;
+  if (url.includes(".share.worldcat.org")) {
+    console.log("Firing up Dymo framework!");
+    fireUpDymo(tabId);
   }
 });
 

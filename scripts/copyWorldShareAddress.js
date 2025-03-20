@@ -116,6 +116,43 @@
       return addressString;
     };
 
+    const printDymoLabel = (address) => {
+      console.log("Attempting to print Dymo label...");
+      console.log(dymo);
+      if (typeof dymo !== "undefined" && dymo.label.framework) {
+        dymo.label.framework.init(() => {
+          console.log("Dymo Label Framework initialized.");
+
+          const labelXml = `
+            <DieCutLabel Version="8.0" Units="twips">
+              <PaperOrientation>Landscape</PaperOrientation>
+              <Id>Address</Id>
+              <PaperName>30252 Address</PaperName>
+              <ObjectInfo>
+                <TextObject>
+                  <Name>Address</Name>
+                  <Text>${address}</Text>
+                  <Bounds X="332" Y="150" Width="4455" Height="1260" />
+                </TextObject>
+              </ObjectInfo>
+            </DieCutLabel>
+          `;
+
+          const printers = dymo.label.framework.getPrinters();
+          if (printers.length === 0) {
+            console.error("No Dymo printers found.");
+            return;
+          }
+
+          const label = dymo.label.framework.openLabelXml(labelXml);
+          console.log("Printing!");
+          // label.print(printers[0].name);
+        });
+      } else {
+        console.error("Dymo framework is not loaded.");
+      }
+    };
+
     const addressString = createAddressString();
 
     // If keyboard shortcut is used, the address is copied to clipboard
@@ -124,6 +161,8 @@
     else {
       chrome.storage.local.set({ addressString: addressString });
     }
+    console.log("Printing dymo!");
+    printDymoLabel(addressString);
 
     statusModal(
       `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,

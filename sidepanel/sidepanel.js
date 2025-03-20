@@ -160,11 +160,11 @@ addEventListeners();
 
 const setupDymo = () => {
   // Initialize the DYMO Label Framework
-  dymo.label.framework.init(function() {
-      console.log('DYMO Label Framework initialized');
-      
-      // Test loading a label
-      const labelXml = `<?xml version="1.0" encoding="utf-8"?>
+  dymo.label.framework.init(function () {
+    console.log("DYMO Label Framework initialized");
+
+    // Test loading a label
+    const labelXml = `<?xml version="1.0" encoding="utf-8"?>
             <DieCutLabel Version="8.0" Units="twips">
                 <PaperOrientation>Landscape</PaperOrientation>
                 <Id>Address</Id>
@@ -197,21 +197,21 @@ const setupDymo = () => {
                     <Bounds X="331" Y="150" Width="4680" Height="1260"/>
                 </ObjectInfo>
             </DieCutLabel>`;
-        
-      const label = dymo.label.framework.openLabelXml(labelXml);
-      console.log('Label loaded:', label);
-  
-      // Get printers
-      const printers = dymo.label.framework.getPrinters();
-      console.log('Printers:', printers);
-  
-      // Print a label (make sure you have a DYMO printer connected)
-      if (printers.length > 0) {
-          const printerName = printers[0].name; // Use the first printer found
-          dymo.label.framework.printLabel(printerName, '', labelXml);
-          console.log('Label printed');
-      } else {
-          console.log('No DYMO printers found');
-      }
+
+    const label = dymo.label.framework.openLabelXml(labelXml);
+    console.log("Label loaded:", label);
+
+    // Get printers
+    const printers = dymo.label.framework.getPrinters();
+    console.log("Printers:", printers);
+
+    // Print a label (make sure you have a DYMO printer connected)
+    if (printers.length > 0) {
+      const printerName = printers[0].name; // Use the first printer found
+      dymo.label.framework.printLabel(printerName, "", labelXml);
+      console.log("Label printed");
+    } else {
+      console.log("No DYMO printers found");
+    }
   });
-}
+};
