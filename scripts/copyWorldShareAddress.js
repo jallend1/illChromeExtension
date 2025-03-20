@@ -16,7 +16,7 @@
 
     const convertStateNameToAbbreviation = (stateName) => {
       if (!stateName) {
-        return "NOT LISTED";
+        return "NOT LISTED IN WORLDSHARE";
       }
       if (!states[stateName]) {
         return "NOT FOUND";
@@ -92,11 +92,13 @@
           case "attention":
           case "line1":
           case "line2":
-            if (addressObject[key] !== "")
+            if (addressObject[key] !== "") {
               addressString += addressObject[key] + "\n";
+            }
             break;
           case "locality":
             addressString += addressObject[key] + ", ";
+
             break;
           case "region":
             addressObject[key] === null
@@ -116,13 +118,18 @@
       return addressString;
     };
 
+    // TODO: Implement logic to resize font size to fit label
+    const resizeToFitLabel = (address, boundsWidth, boundsHeight) => {
+      let fontSize = 12; // Starting font size -- Too small?
+      const addressLines = address.split("\n");
+      const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
+    };
+
     const printDymoLabel = (address) => {
       console.log("Attempting to print Dymo label...");
-      console.log(dymo);
+      console.log("Address: ", address);
       if (typeof dymo !== "undefined" && dymo.label.framework) {
         dymo.label.framework.init(() => {
-          console.log("Dymo Label Framework initialized.");
-
           const labelXml = `
             <DieCutLabel Version="8.0" Units="twips">
               <PaperOrientation>Landscape</PaperOrientation>
@@ -146,7 +153,7 @@
 
           const label = dymo.label.framework.openLabelXml(labelXml);
           console.log("Printing!");
-          // label.print(printers[0].name);
+          label.print(printers[0].name);
         });
       } else {
         console.error("Dymo framework is not loaded.");
@@ -161,7 +168,6 @@
     else {
       chrome.storage.local.set({ addressString: addressString });
     }
-    console.log("Printing dymo!");
 
     const dymoToggle = chrome.storage.local.get("printLabel");
     dymoToggle.then((result) => {
@@ -171,8 +177,6 @@
         console.log("Dymo printing is disabled.");
       }
     });
-
-    // printDymoLabel(addressString);
 
     statusModal(
       `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
