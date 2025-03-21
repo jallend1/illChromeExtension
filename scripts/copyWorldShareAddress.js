@@ -3,8 +3,10 @@
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
+  const autoReturnEnabled = await chrome.storage.local.get("autoReturnILL");
 
   function copyWorldShareAddress() {
+    console.log("Auto return enabled: ", autoReturnEnabled);
     let addressObject = {
       attention: null,
       line1: null,
@@ -125,14 +127,15 @@
       const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
     };
 
-     const sanitizeForXML = (str) => {
-      return str.replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&apos;")
-                .replace(/\//g, "&#47;");
-    }
+    const sanitizeForXML = (str) => {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;")
+        .replace(/\//g, "&#47;");
+    };
 
     const printDymoLabel = (address) => {
       console.log("Attempting to print Dymo label...");
@@ -142,41 +145,40 @@
       if (typeof dymo !== "undefined" && dymo.label.framework) {
         dymo.label.framework.init(() => {
           const labelXml = `
-  <DieCutLabel Version="8.0" Units="twips">
-    <PaperOrientation>Landscape</PaperOrientation>
-    <Id>Address</Id>
-    <PaperName>30252 Address</PaperName>
-    <DrawCommands>
-      <RoundRectangle X="0" Y="0" Width="3060" Height="720" Rx="180" Ry="180" />
-    </DrawCommands>
-    <ObjectInfo>
-      <TextObject>
-        <Name>Address</Name>
-        <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
-        <BackColor Alpha="0" Red="255" Green="255" Blue="255" />
-        <LinkedObjectName></LinkedObjectName>
-        <Rotation>Rotation0</Rotation>
-        <IsMirrored>False</IsMirrored>
-        <IsVariable>True</IsVariable>
-        <HorizontalAlignment>Left</HorizontalAlignment>
-        <VerticalAlignment>Middle</VerticalAlignment>
-        <TextFitMode>AlwaysFit</TextFitMode>
-        <UseFullFontHeight>True</UseFullFontHeight>
-        <Verticalized>False</Verticalized>
-        <StyledText>
-          <Element>
-            <String>${sanitizedAddress}</String>
-            <Attributes>
-              <Font Family="Arial" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False" />
-              <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
-            </Attributes>
-          </Element>
-        </StyledText>
-      </TextObject>
-      <Bounds X="332" Y="150" Width="4455" Height="1260" />
-    </ObjectInfo>
-  </DieCutLabel>
-`;
+            <DieCutLabel Version="8.0" Units="twips">
+              <PaperOrientation>Landscape</PaperOrientation>
+              <Id>Address</Id>
+              <PaperName>30252 Address</PaperName>
+              <DrawCommands>
+                <RoundRectangle X="0" Y="0" Width="3060" Height="720" Rx="180" Ry="180" />
+              </DrawCommands>
+              <ObjectInfo>
+                <TextObject>
+                  <Name>Address</Name>
+                  <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
+                  <BackColor Alpha="0" Red="255" Green="255" Blue="255" />
+                  <LinkedObjectName></LinkedObjectName>
+                  <Rotation>Rotation0</Rotation>
+                  <IsMirrored>False</IsMirrored>
+                  <IsVariable>True</IsVariable>
+                  <HorizontalAlignment>Left</HorizontalAlignment>
+                  <VerticalAlignment>Middle</VerticalAlignment>
+                  <TextFitMode>AlwaysFit</TextFitMode>
+                  <UseFullFontHeight>True</UseFullFontHeight>
+                  <Verticalized>False</Verticalized>
+                  <StyledText>
+                    <Element>
+                      <String>${sanitizedAddress}</String>
+                      <Attributes>
+                        <Font Family="Arial" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False" />
+                        <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
+                      </Attributes>
+                    </Element>
+                  </StyledText>
+                </TextObject>
+                <Bounds X="332" Y="150" Width="4455" Height="1260" />
+              </ObjectInfo>
+            </DieCutLabel>`;
 
           const printers = dymo.label.framework.getPrinters();
           if (printers.length === 0) {
@@ -206,6 +208,9 @@
     dymoToggle.then((result) => {
       if (result.printLabel) {
         printDymoLabel(addressString);
+        if (autoReturnEnabled.autoReturnILL) {
+          autoReturnILL();
+        }
       } else {
         console.log("Dymo printing is disabled.");
       }
@@ -218,9 +223,23 @@
     );
   }
 
+  const autoReturnILL = () => {
+    const returnButtons = document.querySelectorAll(
+      "button.returned-button.button-return"
+    );
+    const buttonId = returnButtons[returnButtons.length - 1].id;
+    const requestId = buttonId.split("-")[1];
+    // TODO: Pass request ID to modal along with address and title?
+    console.log(`Returning ILL request ${requestId}...`);
+    returnButtons[returnButtons.length - 1].click();
+  };
+
   const currentURL = window.location.href;
   if (currentURL.includes("worldcat.org")) {
     copyWorldShareAddress();
+    if (autoReturnEnabled.autoReturnILL) {
+      autoReturnILL();
+    }
   } else {
     statusModal(
       `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Please run this from WorldShare.</p>`,
