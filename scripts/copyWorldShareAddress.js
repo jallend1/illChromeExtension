@@ -125,9 +125,20 @@
       const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
     };
 
+     const sanitizeForXML = (str) => {
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&apos;")
+                .replace(/\//g, "&#47;");
+    }
+
     const printDymoLabel = (address) => {
       console.log("Attempting to print Dymo label...");
       console.log("Address: ", address);
+      const sanitizedAddress = sanitizeForXML(address);
+      console.log("Sanitized Address: ", sanitizedAddress);
       if (typeof dymo !== "undefined" && dymo.label.framework) {
         dymo.label.framework.init(() => {
           const labelXml = `
@@ -154,7 +165,7 @@
         <Verticalized>False</Verticalized>
         <StyledText>
           <Element>
-            <String>${address}</String>
+            <String>${sanitizedAddress}</String>
             <Attributes>
               <Font Family="Arial" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False" />
               <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
