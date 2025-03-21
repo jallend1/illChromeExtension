@@ -6,7 +6,6 @@
   const autoReturnEnabled = await chrome.storage.local.get("autoReturnILL");
 
   function copyWorldShareAddress() {
-    console.log("Auto return enabled: ", autoReturnEnabled);
     let addressObject = {
       attention: null,
       line1: null,
@@ -127,6 +126,7 @@
       const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
     };
 
+    // WorldShare address fields sometimes have a handful of special characters that need to be sanitized for XML
     const sanitizeForXML = (str) => {
       return str
         .replace(/&/g, "&amp;")
@@ -137,14 +137,9 @@
         .replace(/\//g, "&#47;");
     };
 
-    const printDymoLabel = (address) => {
-      console.log("Attempting to print Dymo label...");
-      console.log("Address: ", address);
-      const sanitizedAddress = sanitizeForXML(address);
-      console.log("Sanitized Address: ", sanitizedAddress);
-      if (typeof dymo !== "undefined" && dymo.label.framework) {
-        dymo.label.framework.init(() => {
-          const labelXml = `
+    // Generate XML for Dymo label
+    const generateLabelXML = (address) => {
+      return `
             <DieCutLabel Version="8.0" Units="twips">
               <PaperOrientation>Landscape</PaperOrientation>
               <Id>Address</Id>
@@ -168,7 +163,7 @@
                   <Verticalized>False</Verticalized>
                   <StyledText>
                     <Element>
-                      <String>${sanitizedAddress}</String>
+                      <String>${address}</String>
                       <Attributes>
                         <Font Family="Arial" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False" />
                         <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
@@ -179,14 +174,22 @@
                 <Bounds X="332" Y="150" Width="4455" Height="1260" />
               </ObjectInfo>
             </DieCutLabel>`;
+    };
+
+    const printDymoLabel = (address) => {
+      const sanitizedAddress = sanitizeForXML(address);
+      if (typeof dymo !== "undefined" && dymo.label.framework) {
+        dymo.label.framework.init(() => {
+          const labelXML = generateLabelXML(sanitizedAddress);
 
           const printers = dymo.label.framework.getPrinters();
           if (printers.length === 0) {
+            // TODO: Pass error to modal?
             console.error("No Dymo printers found.");
             return;
           }
 
-          const label = dymo.label.framework.openLabelXml(labelXml);
+          const label = dymo.label.framework.openLabelXml(labelXML);
           console.log("Printing!");
           label.print(printers[0].name);
         });

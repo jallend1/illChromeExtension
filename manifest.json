@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "2.6.22",
+  "version": "3.0.0",
   "permissions": [
     "activeTab",
     "storage",
