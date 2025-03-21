@@ -18,6 +18,7 @@ const isAllowedHost = (url) => {
   });
 };
 
+// TODO: Maybe just run this onInstall event?
 const sessionLog = () => {
   const logToConsole = () => {
     console.log(`
@@ -72,13 +73,20 @@ const getAddressFromStorage = () => {
   });
 };
 
+// TODO: If Dymo isn't taking very long, probably just load it up only when the user clicks the button
+// Probably resolve the issue where Dymo stops being detected after a while? LIkely a result of the service worker going inactive?
 const fireUpDymo = (tabId) => {
+  const startTime = performance.now();
   chrome.scripting
     .executeScript({
       target: { tabId: tabId },
       files: ["./libs/dymo.connect.framework.js"],
     })
     .then(() => {
+      const endTime = performance.now();
+      console.log(
+        `Dymo framework loaded in ${Math.round(endTime - startTime)} ms`
+      );
       console.log("Dymo script loaded up!");
     })
     .catch((error) => {
