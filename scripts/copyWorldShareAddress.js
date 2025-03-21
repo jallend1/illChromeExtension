@@ -131,19 +131,41 @@
       if (typeof dymo !== "undefined" && dymo.label.framework) {
         dymo.label.framework.init(() => {
           const labelXml = `
-            <DieCutLabel Version="8.0" Units="twips">
-              <PaperOrientation>Landscape</PaperOrientation>
-              <Id>Address</Id>
-              <PaperName>30252 Address</PaperName>
-              <ObjectInfo>
-                <TextObject>
-                  <Name>Address</Name>
-                  <Text>${address}</Text>
-                  <Bounds X="332" Y="150" Width="4455" Height="1260" />
-                </TextObject>
-              </ObjectInfo>
-            </DieCutLabel>
-          `;
+  <DieCutLabel Version="8.0" Units="twips">
+    <PaperOrientation>Landscape</PaperOrientation>
+    <Id>Address</Id>
+    <PaperName>30252 Address</PaperName>
+    <DrawCommands>
+      <RoundRectangle X="0" Y="0" Width="3060" Height="720" Rx="180" Ry="180" />
+    </DrawCommands>
+    <ObjectInfo>
+      <TextObject>
+        <Name>Address</Name>
+        <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
+        <BackColor Alpha="0" Red="255" Green="255" Blue="255" />
+        <LinkedObjectName></LinkedObjectName>
+        <Rotation>Rotation0</Rotation>
+        <IsMirrored>False</IsMirrored>
+        <IsVariable>True</IsVariable>
+        <HorizontalAlignment>Left</HorizontalAlignment>
+        <VerticalAlignment>Middle</VerticalAlignment>
+        <TextFitMode>AlwaysFit</TextFitMode>
+        <UseFullFontHeight>True</UseFullFontHeight>
+        <Verticalized>False</Verticalized>
+        <StyledText>
+          <Element>
+            <String>${address}</String>
+            <Attributes>
+              <Font Family="Arial" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False" />
+              <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
+            </Attributes>
+          </Element>
+        </StyledText>
+      </TextObject>
+      <Bounds X="332" Y="150" Width="4455" Height="1260" />
+    </ObjectInfo>
+  </DieCutLabel>
+`;
 
           const printers = dymo.label.framework.getPrinters();
           if (printers.length === 0) {
