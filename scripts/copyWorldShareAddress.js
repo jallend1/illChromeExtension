@@ -98,16 +98,32 @@
             }
             break;
           case "locality":
-            addressString += addressObject[key] + ", ";
+            if (!addressObject[key]) {
+              const city = prompt(
+                "City not listed in WorldShare. Please enter city name."
+              );
+              city !== ""
+                ? (addressString += city + ", ")
+                : (addressString += "NOT LISTED, ");
+            } else {
+              addressString += addressObject[key] + ", ";
+            }
 
             break;
           case "region":
-            addressObject[key] === null
-              ? (addressString += "NOT LISTED ")
-              : (addressString +=
-                  convertStateNameToAbbreviation(
-                    addressObject[key]
-                  ).toUpperCase() + " ");
+            if (!addressObject[key]) {
+              const state = prompt(
+                "State not listed in WorldShare. Please enter state two-letter abbreviation."
+              );
+              state !== ""
+                ? (addressString += state.toUpperCase() + " ")
+                : (addressString += "NOT LISTED ");
+            } else {
+              addressString +=
+                convertStateNameToAbbreviation(
+                  addressObject[key]
+                ).toUpperCase() + " ";
+            }
             break;
           case "postal":
             addressString += addressObject[key];
