@@ -4,6 +4,7 @@
     chrome.runtime.getURL("modules/modal.js")
   );
   const autoReturnEnabled = await chrome.storage.local.get("autoReturnILL");
+  const { printLabel } = await chrome.storage.local.get("printLabel");
 
   function copyWorldShareAddress() {
     let addressObject = {
@@ -131,9 +132,6 @@
             break;
         }
       });
-      console.log(addressString);
-      isSuitableToPrint(addressString);
-      console.log(isSuitableToPrint(addressString));
       return addressString;
     };
 
@@ -248,25 +246,13 @@
 
     // If keyboard shortcut is used, the address is copied to clipboard
     if (document.hasFocus()) navigator.clipboard.writeText(addressString);
+    // TODO: This isn't actually happening??
     // If sidePanel click is used, the address is stored and extracted in sidepanel.js
     else {
       chrome.storage.local.set({ addressString: addressString });
     }
 
-    const dymoToggle = chrome.storage.local.get("printLabel");
-    dymoToggle.then((result) => {
-      console.log(dymoToggle);
-      console.log(result.printLabel);
-      if (result.printLabel) {
-        printDymoLabel(addressString);
-        console.log("Did it print");
-        if (autoReturnEnabled.autoReturnILL) {
-          autoReturnILL();
-        }
-      } else {
-        console.log("Dymo printing is disabled.");
-      }
-    });
+    if (printLabel) printDymoLabel(addressString);
 
     statusModal(
       `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,

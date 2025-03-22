@@ -22,6 +22,8 @@ const storageKeys = [
   { key: "lendingMode", element: lendingMode },
   { key: "arePassiveToolsActive", element: passiveTools },
   { key: "darkMode", element: darkModeToggle },
+  { key: "printLabel", element: printLabel },
+  { key: "autoReturnILL", element: autoReturnILL },
 ];
 
 const getStorageValue = (key, element) => {
@@ -161,6 +163,8 @@ const addEventListeners = () => {
     printLabel.checked
       ? chrome.storage.local.set({ printLabel: true })
       : chrome.storage.local.set({ printLabel: false });
+    console.log("Print label clicked");
+    console.log(printLabel.checked);
   });
 
   autoReturnILL.addEventListener("click", () => {
