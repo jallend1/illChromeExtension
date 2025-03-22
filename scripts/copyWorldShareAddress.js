@@ -102,13 +102,12 @@
               const city = prompt(
                 "City not listed in WorldShare. Please enter city name."
               );
-              city !== ""
+              city
                 ? (addressString += city + ", ")
                 : (addressString += "NOT LISTED, ");
             } else {
               addressString += addressObject[key] + ", ";
             }
-
             break;
           case "region":
             if (!addressObject[key]) {
@@ -132,6 +131,9 @@
             break;
         }
       });
+      console.log(addressString);
+      isSuitableToPrint(addressString);
+      console.log(isSuitableToPrint(addressString));
       return addressString;
     };
 
@@ -192,7 +194,35 @@
             </DieCutLabel>`;
     };
 
+    // Make sure address contains basic information needed for label before printing
+    const isSuitableToPrint = (address) => {
+      const addressLines = address.split("\n");
+      // Address requires name, street address, and city/state/zip
+      if (addressLines.length < 3) {
+        console.error(`Address is not suitable for printing: ${address}`);
+        return false;
+      }
+      // City and State sometimes have "NOT LISTED" or "NOT FOUND" in them
+      const invalidLine =
+        addressLines.find((line) => line.includes("NOT LISTED")) ||
+        line.includes("NOT FOUND");
+      if (invalidLine) {
+        console.error(`Address is not suitable for printing: ${address}`);
+        return false;
+      }
+      return true;
+    };
+
     const printDymoLabel = (address) => {
+      if (!isSuitableToPrint(address)) {
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not suitable for printing.</p>`,
+          "#e85e6a",
+          chrome.runtime.getURL("images/kawaii-book-sad.png")
+        );
+        return;
+      }
+
       const sanitizedAddress = sanitizeForXML(address);
       if (typeof dymo !== "undefined" && dymo.label.framework) {
         dymo.label.framework.init(() => {
@@ -225,8 +255,11 @@
 
     const dymoToggle = chrome.storage.local.get("printLabel");
     dymoToggle.then((result) => {
+      console.log(dymoToggle);
+      console.log(result.printLabel);
       if (result.printLabel) {
         printDymoLabel(addressString);
+        console.log("Did it print");
         if (autoReturnEnabled.autoReturnILL) {
           autoReturnILL();
         }
