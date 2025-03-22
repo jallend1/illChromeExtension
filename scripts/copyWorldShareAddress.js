@@ -91,6 +91,7 @@
       let addressString = "";
       Object.keys(addressObject).forEach((key) => {
         switch (key) {
+          // Attention, line 1 and line 2 all go on separate lines
           case "attention":
           case "line1":
           case "line2":
@@ -98,6 +99,7 @@
               addressString += addressObject[key] + "\n";
             }
             break;
+          // If city is blank, provide opportunity for user to enter it
           case "locality":
             if (!addressObject[key]) {
               const city = prompt(
@@ -110,6 +112,7 @@
               addressString += addressObject[key] + ", ";
             }
             break;
+          // If state is blank, provide opportunity for user to enter it
           case "region":
             if (!addressObject[key]) {
               const state = prompt(
@@ -201,9 +204,9 @@
         return false;
       }
       // City and State sometimes have "NOT LISTED" or "NOT FOUND" in them
-      const invalidLine =
-        addressLines.find((line) => line.includes("NOT LISTED")) ||
-        line.includes("NOT FOUND");
+      const invalidLine = addressLines.find(
+        (line) => line.includes("NOT LISTED") || line.includes("NOT FOUND")
+      );
       if (invalidLine) {
         console.error(`Address is not suitable for printing: ${address}`);
         return false;
@@ -214,7 +217,12 @@
     const printDymoLabel = (address) => {
       if (!isSuitableToPrint(address)) {
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not suitable for printing.</p>`,
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> 
+          <p style="font-size: 1.25rem;">
+            Address is not suitable for printing.
+            <br/>
+            ${address}
+          </p>`,
           "#e85e6a",
           chrome.runtime.getURL("images/kawaii-book-sad.png")
         );
@@ -252,13 +260,13 @@
       chrome.storage.local.set({ addressString: addressString });
     }
 
-    if (printLabel) printDymoLabel(addressString);
-
-    statusModal(
-      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
-      "#4CAF50",
-      chrome.runtime.getURL("images/kawaii-dinosaur.png")
-    );
+    printLabel
+      ? printDymoLabel(addressString)
+      : statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
+          "#4CAF50",
+          chrome.runtime.getURL("images/kawaii-dinosaur.png")
+        );
   }
 
   const autoReturnILL = () => {
