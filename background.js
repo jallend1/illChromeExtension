@@ -76,27 +76,43 @@ const getAddressFromStorage = () => {
 // TODO: If Dymo isn't taking very long, probably just load it up only when the user clicks the button
 // Probably resolve the issue where Dymo stops being detected after a while? LIkely a result of the service worker going inactive?
 const fireUpDymo = (tabId) => {
-  const startTime = performance.now();
-  chrome.scripting
-    .executeScript({
-      target: { tabId: tabId },
-      files: ["./libs/dymo.connect.framework.js"],
-    })
-    .then(() => {
-      const endTime = performance.now();
-      console.log(
-        `Dymo framework loaded in ${Math.round(endTime - startTime)} ms`
-      );
-      console.log("Dymo script loaded up!");
-    })
-    .catch((error) => {
-      console.error("Error loading Dymo script:", error);
-    });
+  // const startTime = performance.now();
+  // chrome.scripting
+  //   .executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./libs/dymo.connect.framework.js"],
+  //   })
+  //   .then(() => {
+  //     const endTime = performance.now();
+  //     console.log(
+  //       `Dymo framework loaded in ${Math.round(endTime - startTime)} ms`
+  //     );
+  //     console.log("Dymo script loaded up!");
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error loading Dymo script:", error);
+  //   });
 };
 
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
+  console.log(`Executing script: ${script}`);
+
+  // Duplicative code?
+  // if (script === "copyWorldShareAddress") {
+  //   console.log("Copying address from WorldShare...");
+  //   chrome.scripting.executeScript(
+  //     {
+  //       target: { tabId: tabId },
+  //       files: ["./libs/dymo.connect.framework.js"],
+  //     },
+  //     () => {
+  //       console.log("Loading Dymo Framework");
+  //     }
+  //   );
+  // }
+  // console.log(`Executing script: ${script}`);
 
   chrome.scripting.executeScript(
     {
@@ -221,6 +237,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         "https://evgclient.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
       calculateURL(mobilePrefix, clientPrefix);
       return;
+    }
+
+    if (request.data === "copyWorldShareAddress") {
+      console.log("Copying address from WorldShare...");
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: activeTab.id },
+          files: ["./libs/dymo.connect.framework.js"],
+        },
+        () => {
+          console.log("Loading Dymo Framework");
+        }
+      );
     }
 
     chrome.scripting.executeScript(
