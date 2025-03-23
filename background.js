@@ -153,13 +153,13 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 });
 
 // Loads up Dymo framework when URL contains '.share.worldcat.org'
-chrome.webNavigation.onCompleted.addListener((details) => {
-  const { tabId, url } = details;
-  if (url.includes(".share.worldcat.org")) {
-    console.log("Firing up Dymo framework!");
-    fireUpDymo(tabId);
-  }
-});
+// chrome.webNavigation.onCompleted.addListener((details) => {
+//   const { tabId, url } = details;
+//   if (url.includes(".share.worldcat.org")) {
+//     console.log("Firing up Dymo framework!");
+//     fireUpDymo(tabId);
+//   }
+// });
 
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
