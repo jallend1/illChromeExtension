@@ -73,46 +73,10 @@ const getAddressFromStorage = () => {
   });
 };
 
-// TODO: If Dymo isn't taking very long, probably just load it up only when the user clicks the button
-// Probably resolve the issue where Dymo stops being detected after a while? LIkely a result of the service worker going inactive?
-const fireUpDymo = (tabId) => {
-  // const startTime = performance.now();
-  // chrome.scripting
-  //   .executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./libs/dymo.connect.framework.js"],
-  //   })
-  //   .then(() => {
-  //     const endTime = performance.now();
-  //     console.log(
-  //       `Dymo framework loaded in ${Math.round(endTime - startTime)} ms`
-  //     );
-  //     console.log("Dymo script loaded up!");
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error loading Dymo script:", error);
-  //   });
-};
-
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
   console.log(`Executing script: ${script}`);
-
-  // Duplicative code?
-  // if (script === "copyWorldShareAddress") {
-  //   console.log("Copying address from WorldShare...");
-  //   chrome.scripting.executeScript(
-  //     {
-  //       target: { tabId: tabId },
-  //       files: ["./libs/dymo.connect.framework.js"],
-  //     },
-  //     () => {
-  //       console.log("Loading Dymo Framework");
-  //     }
-  //   );
-  // }
-  // console.log(`Executing script: ${script}`);
 
   chrome.scripting.executeScript(
     {
@@ -151,15 +115,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     executeScript(tabId, "frequentLending");
   }
 });
-
-// Loads up Dymo framework when URL contains '.share.worldcat.org'
-// chrome.webNavigation.onCompleted.addListener((details) => {
-//   const { tabId, url } = details;
-//   if (url.includes(".share.worldcat.org")) {
-//     console.log("Firing up Dymo framework!");
-//     fireUpDymo(tabId);
-//   }
-// });
 
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
