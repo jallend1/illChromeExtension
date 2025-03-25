@@ -57,20 +57,22 @@ const sessionLog = () => {
   });
 };
 
-const getAddressFromStorage = () => {
-  chrome.storage.local.get("addressString", (result) => {
-    if (chrome.runtime.lastError) {
-      console.error("Error retrieving address from storage:", error);
-      return;
-    }
-    const addressString = result.addressString;
-    if (addressString) {
-      printDymo(addressString);
-    } else {
-      console.error("No address string found in storage.");
-    }
-  });
-};
+// TODO: This...doesn't seem to be being used??? printDymo doesn't exist in this function; getAddressFrom Storage isn't called anywhere I can see
+// const getAddressFromStorage = () => {
+//   chrome.storage.local.get("addressString", (result) => {
+//     if (chrome.runtime.lastError) {
+//       console.error("Error retrieving address from storage:", error);
+//       return;
+//     }
+//     const addressString = result.addressString;
+//     if (addressString) {
+//       console.log("here i am");
+//       printDymo(addressString);
+//     } else {
+//       console.error("No address string found in storage.");
+//     }
+//   });
+// };
 
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
@@ -122,6 +124,9 @@ chrome.commands.onCommand.addListener((command) => {
       chrome.tabs.query(
         { active: true, currentWindow: true },
         ([activeTab]) => {
+          if (option.id === "copyWorldShareAddress") {
+            injectDymoFramework(activeTab.id);
+          }
           chrome.scripting.executeScript({
             target: { tabId: activeTab.id },
             files: [`./scripts/${option.id}.js`],

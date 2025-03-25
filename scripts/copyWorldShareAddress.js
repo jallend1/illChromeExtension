@@ -170,16 +170,18 @@
       else {
         chrome.storage.local.set({ addressString: addressString });
       }
-      printLabel
-        ? dymoFunctions.printDymoLabel(addressString)
-        : statusModal(
-            `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
-            "#4CAF50",
-            chrome.runtime.getURL("images/kawaii-dinosaur.png")
-          );
+
+      if (printLabel) {
+        dymoFunctions.printDymoLabel(addressString);
+      }
+      statusModal(
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
+        "#4CAF50",
+        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      );
     } else {
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not valid.</p>`,
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not valid.</p><p>${address}</p>`,
         "#e85e6a",
         chrome.runtime.getURL("images/kawaii-book-sad.png")
       );
