@@ -195,16 +195,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 
     if (request.data === "copyWorldShareAddress") {
-      console.log("Copying address from WorldShare...");
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: activeTab.id },
-          files: ["./libs/dymo.connect.framework.js"],
-        },
-        () => {
-          console.log("Loading Dymo Framework");
-        }
-      );
+      // console.log("Copying address from WorldShare...");
+      // chrome.scripting.executeScript(
+      //   {
+      //     target: { tabId: activeTab.id },
+      //     files: ["./libs/dymo.connect.framework.js"],
+      //   },
+      //   () => {
+      //     console.log("Loading Dymo Framework");
+      //   }
+      // );
+      injectDymoFramework(activeTab.id);
     }
 
     chrome.scripting.executeScript(
@@ -219,6 +220,45 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   });
   return true;
 });
+
+const injectDymoFramework = (tabId) => {
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: tabId },
+      func: () => {
+        return typeof dymo !== "undefined" && dymo.label;
+      },
+    },
+    (result) => {
+      console.log(result);
+      if (chrome.runtime.lastError) {
+        console.error(
+          "Error injecting Dymo framework:",
+          chrome.runtime.lastError
+        );
+        return;
+      }
+      const isDymoLoaded = result[0]?.result;
+      if (isDymoLoaded) {
+        console.log("Dymo already loaded!");
+      } else {
+        console.log("Dymo not loaded, injecting...");
+        chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          files: ["./libs/dymo.connect.framework.js"],
+        });
+      }
+      // if (result[0].result) {
+      //   getAddressFromStorage();
+      // } else {
+      //   chrome.scripting.executeScript({
+      //     target: { tabId: tabId },
+      //     files: ["./libs/dymo.connect.framework.js"],
+      //   });
+      // }
+    }
+  );
+};
 
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
