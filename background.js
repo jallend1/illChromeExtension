@@ -248,14 +248,6 @@ const injectDymoFramework = (tabId) => {
           files: ["./libs/dymo.connect.framework.js"],
         });
       }
-      // if (result[0].result) {
-      //   getAddressFromStorage();
-      // } else {
-      //   chrome.scripting.executeScript({
-      //     target: { tabId: tabId },
-      //     files: ["./libs/dymo.connect.framework.js"],
-      //   });
-      // }
     }
   );
 };

@@ -138,6 +138,23 @@
       return addressString;
     };
 
+    // Check if address is valid before printing by looking at first three lines
+    const validAddressFound = () => {
+      if (
+        !addressObject.attention &&
+        !addressObject.line1 &&
+        !addressObject.line2
+      ) {
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">No valid address found on this page.</p>`,
+          "#e85e6a",
+          chrome.runtime.getURL("images/kawaii-book-sad.png")
+        );
+        return false;
+      }
+      return true;
+    };
+
     // TODO: Implement logic to resize font size to fit label
     const resizeToFitLabel = (address, boundsWidth, boundsHeight) => {
       let fontSize = 12; // Starting font size -- Too small?
@@ -250,15 +267,27 @@
       }
     };
 
-    const addressString = createAddressString();
+    if (validAddressFound()) {
+      const addressString = createAddressString();
 
-    // If keyboard shortcut is used, the address is copied to clipboard
-    if (document.hasFocus()) navigator.clipboard.writeText(addressString);
-    // TODO: This isn't actually happening??
-    // If sidePanel click is used, the address is stored and extracted in sidepanel.js
-    else {
-      chrome.storage.local.set({ addressString: addressString });
+      // If keyboard shortcut is used, the address is copied to clipboard
+      if (document.hasFocus()) navigator.clipboard.writeText(addressString);
+      // TODO: This isn't actually happening??
+      // If sidePanel click is used, the address is stored and extracted in sidepanel.js
+      else {
+        chrome.storage.local.set({ addressString: addressString });
+      }
+    } else {
+      statusModal(
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not valid.</p>`,
+        "#e85e6a",
+        chrome.runtime.getURL("images/kawaii-book-sad.png")
+      );
+      return;
     }
+    // isValidAddress();
+
+    // const addressString = createAddressString();
 
     printLabel
       ? printDymoLabel(addressString)
