@@ -65,7 +65,6 @@ const getAddressFromStorage = () => {
     }
     const addressString = result.addressString;
     if (addressString) {
-      console.log("Address String:", addressString);
       printDymo(addressString);
     } else {
       console.error("No address string found in storage.");
@@ -195,16 +194,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 
     if (request.data === "copyWorldShareAddress") {
-      // console.log("Copying address from WorldShare...");
-      // chrome.scripting.executeScript(
-      //   {
-      //     target: { tabId: activeTab.id },
-      //     files: ["./libs/dymo.connect.framework.js"],
-      //   },
-      //   () => {
-      //     console.log("Loading Dymo Framework");
-      //   }
-      // );
       injectDymoFramework(activeTab.id);
     }
 
@@ -230,7 +219,6 @@ const injectDymoFramework = (tabId) => {
       },
     },
     (result) => {
-      console.log(result);
       if (chrome.runtime.lastError) {
         console.error(
           "Error injecting Dymo framework:",
@@ -239,10 +227,7 @@ const injectDymoFramework = (tabId) => {
         return;
       }
       const isDymoLoaded = result[0]?.result;
-      if (isDymoLoaded) {
-        console.log("Dymo already loaded!");
-      } else {
-        console.log("Dymo not loaded, injecting...");
+      if (!isDymoLoaded) {
         chrome.scripting.executeScript({
           target: { tabId: tabId },
           files: ["./libs/dymo.connect.framework.js"],
