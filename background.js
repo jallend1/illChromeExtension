@@ -247,6 +247,7 @@ chrome.sidePanel
   .catch((error) => console.error(error));
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  console.log(`Tab updated: ${tabId}, URL: ${tab.url}`);
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
   if (tab.url.includes("/staff/")) {

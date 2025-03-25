@@ -93,54 +93,35 @@
 
     // Format addressObject for mail label
     const createAddressString = () => {
-      let addressString = "";
-      Object.keys(addressObject).forEach((key) => {
+      const addressParts = Object.entries(addressObject).map(([key, value]) => {
         switch (key) {
-          // Attention, line 1 and line 2 all go on separate lines
           case "attention":
           case "line1":
           case "line2":
-            if (addressObject[key] !== "") {
-              addressString += addressObject[key] + "\n";
-            }
-            break;
-          // If city is blank, provide opportunity for user to enter it
+            return value ? `${value}\n` : "";
           case "locality":
-            if (!addressObject[key]) {
+            if (!value) {
               const city = prompt(
                 "City not listed in WorldShare. Please enter city name."
               );
-              city
-                ? (addressString += city + ", ")
-                : (addressString += "NOT LISTED, ");
-            } else {
-              addressString += addressObject[key] + ", ";
+              return city ? `${city}, ` : "NOT LISTED, ";
             }
-            break;
-          // If state is blank, provide opportunity for user to enter it
+            return `${value}, `;
           case "region":
-            if (!addressObject[key]) {
+            if (!value) {
               const state = prompt(
                 "State not listed in WorldShare. Please enter state two-letter abbreviation."
               );
-              state !== ""
-                ? (addressString += state.toUpperCase() + " ")
-                : (addressString += "NOT LISTED ");
-            } else {
-              addressString +=
-                convertStateNameToAbbreviation(
-                  addressObject[key]
-                ).toUpperCase() + " ";
+              return state ? `${state.toUpperCase()} ` : "NOT LISTED ";
             }
-            break;
+            return `${convertStateNameToAbbreviation(value).toUpperCase()} `;
           case "postal":
-            addressString += addressObject[key];
-            break;
+            return value || "";
           default:
-            break;
+            return "";
         }
       });
-      return addressString;
+      return addressParts.join("");
     };
 
     // Check if address is valid before printing by looking at first three lines
