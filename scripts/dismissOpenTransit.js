@@ -13,4 +13,19 @@ function dismissOpenTransit() {
   }
 }
 
-dismissOpenTransit();
+// dismissOpenTransit();
+
+const observer = new MutationObserver(() => {
+  console.log("Mutation observed!!!!!!");
+  dismissOpenTransit();
+});
+
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
+
+window.addEventListener("beforeunload", () => {
+  clearInterval(intervalID);
+  observer.disconnect();
+});
