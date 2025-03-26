@@ -77,7 +77,6 @@ const sessionLog = () => {
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
-  console.log(`Executing script: ${script}`);
 
   chrome.scripting.executeScript(
     {
@@ -247,7 +246,6 @@ chrome.sidePanel
   .catch((error) => console.error(error));
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log(`Tab updated: ${tabId}, URL: ${tab.url}`);
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
   if (tab.url.includes("/staff/")) {
