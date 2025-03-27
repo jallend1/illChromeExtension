@@ -24,7 +24,6 @@
   });
 
   window.addEventListener("beforeunload", () => {
-    clearInterval(intervalID);
     observer.disconnect();
   });
 })();
