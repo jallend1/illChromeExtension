@@ -1,4 +1,7 @@
-function isbnSearch() {
+async function isbnSearch() {
+  const { statusModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
+  );
   const extractFields = (selector) => {
     const fields = document.querySelectorAll(selector);
     const subtractor = selector.includes("title") ? 2 : 1; // Title field has an extra node for some reason
@@ -7,17 +10,8 @@ function isbnSearch() {
     return latestField.textContent;
   };
 
-  const getSearchQuery = (isbn, title, author) => {
-    if (isbn) {
-      return isbn;
-    } else if (title && author) {
-      return `${title} ${author}`;
-    } else if (title) {
-      return title;
-    } else {
-      return null;
-    }
-  };
+  const getSearchQuery = (isbn, title, author) =>
+    isbn ? isbn : title && author ? `${title} ${author}` : title || null;
 
   let isbn = extractFields(".yui-field-isbn")?.split(" ")[0].replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
   let title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
@@ -29,10 +23,11 @@ function isbnSearch() {
     // Checks previous isbnSearch to prevent duplicate searches
     const previousIsbnSearch = sessionStorage.getItem("isbnSearch");
 
-    // TODO: Maybe make this a bit more expansive? Error modal? Automatic page refresh?
     if (previousIsbnSearch === searchQuery) {
-      alert(
-        "This matches the last search we did. Double check the item is what you're looking for on the next page. If not, try refreshing WorldShare!"
+      statusModal(
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Possible Duplicate Search!</h2> <p style="font-size: 1rem;">This matches the last search we did. Double check the item is what you're looking for on the next page. If not, try refreshing WorldShare!</p>`,
+        "#e85e6a",
+        chrome.runtime.getURL("images/kawaii-book-sad.png")
       );
     }
     sessionStorage.setItem("isbnSearch", searchQuery);
