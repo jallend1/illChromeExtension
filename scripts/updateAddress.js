@@ -12,6 +12,35 @@
     chrome.runtime.getURL("modules/modal.js")
   );
 
+  //  Selectors and values for the text inputs
+  const textInputs = {
+    "#au-dob-input": "1980-07-16",
+    "#au-family_name-input": "ILL DEPT",
+  };
+
+  // Selectors, values, and options for the dropdown inputs
+  const dropDownSelections = [
+    {
+      field: "Patron Permission Type",
+      optionText: "ILL",
+      optionSelector:
+        '[role="listbox"].dropdown-menu.show button[role="option"]',
+      inputSelector: 'eg-combobox[placeholder="Profile Group"] input',
+    },
+    {
+      field: "Internet Access Level",
+      optionText: "No Access",
+      optionSelector: "#au-net_access_level-input-101",
+      inputSelector: "#au-net_access_level-input",
+    },
+    {
+      field: "Library District of Residence",
+      optionText: "Unset",
+      optionSelector: "#asc-12-input-210182",
+      inputSelector: "#asc-12-input",
+    },
+  ];
+
   const generateEvent = (type) => {
     const event = new Event(type, {
       bubbles: true,
@@ -31,19 +60,15 @@
     }
   };
 
+  const fillUniversalSettings = () => {
+    Object.entries(textInputs).forEach(([selector, value]) => {
+      applyInputValues(selector, value);
+    });
+  };
+
   function updateAddress() {
+    // TODO: Modify error handling to be less nonsensical
     let errorCount = 0;
-
-    const fillUniversalSettings = () => {
-      const inputs = {
-        "#au-dob-input": "1980-07-16",
-        "#au-family_name-input": "ILL DEPT",
-      };
-
-      Object.entries(inputs).forEach(([selector, value]) => {
-        applyInputValues(selector, value);
-      });
-    };
 
     const waitForOptionsAndSelect = async (
       optionText,
@@ -90,32 +115,11 @@
       selectOption();
     };
 
-    //   Data to navigate the dropdowns and fill in the fields
-    const selections = [
-      {
-        field: "Patron Permission Type",
-        optionText: "ILL",
-        optionSelector:
-          '[role="listbox"].dropdown-menu.show button[role="option"]',
-        inputSelector: 'eg-combobox[placeholder="Profile Group"] input',
-      },
-      {
-        field: "Internet Access Level",
-        optionText: "No Access",
-        optionSelector: "#au-net_access_level-input-101",
-        inputSelector: "#au-net_access_level-input",
-      },
-      {
-        field: "Library District of Residence",
-        optionText: "Unset",
-        optionSelector: "#asc-12-input-210182",
-        inputSelector: "#asc-12-input",
-      },
-    ];
-
-    selections.forEach(({ optionText, optionSelector, inputSelector }) => {
-      waitForOptionsAndSelect(optionText, optionSelector, inputSelector);
-    });
+    dropDownSelections.forEach(
+      ({ optionText, optionSelector, inputSelector }) => {
+        waitForOptionsAndSelect(optionText, optionSelector, inputSelector);
+      }
+    );
 
     fillUniversalSettings();
 
