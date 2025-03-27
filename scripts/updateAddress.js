@@ -1,17 +1,38 @@
+// **************************************
+// *      Update Address Script         *
+// **************************************
+// This script is designed to be run from the Evergreen web client. It will
+// update the address fields for ILL accounts to a standard set of values. This
+// includes setting the Patron Permission Type to ILL, Internet Access Level to No Access,
+// and Library District of Residence to Unset. It also fills in the universal settings
+// for the account, including a default date of birth and 'ILL DEPT' as family name.
+
 (async () => {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
 
+  const generateEvent = (type) => {
+    const event = new Event(type, {
+      bubbles: true,
+      cancelable: true,
+    });
+    return event;
+  };
+
+  const applyInputValues = (selector, value) => {
+    const input = document.querySelector(selector);
+    if (input) {
+      input.value = value;
+      input.dispatchEvent(generateEvent("input"));
+      if (selector === "#au-dob-input") {
+        input.dispatchEvent(generateEvent("change")); // DOB requires special handling in order to trigger the change event
+      }
+    }
+  };
+
   function updateAddress() {
     let errorCount = 0;
-    const generateEvent = (type) => {
-      const event = new Event(type, {
-        bubbles: true,
-        cancelable: true,
-      });
-      return event;
-    };
 
     const fillUniversalSettings = () => {
       const inputs = {
@@ -20,15 +41,7 @@
       };
 
       Object.entries(inputs).forEach(([selector, value]) => {
-        const input = document.querySelector(selector);
-        if (input) {
-          input.value = value;
-          input.dispatchEvent(generateEvent("input"));
-
-          // Change event required in order to get the DOB to save
-          if (selector === "#au-dob-input")
-            input.dispatchEvent(generateEvent("change"));
-        }
+        applyInputValues(selector, value);
       });
     };
 
