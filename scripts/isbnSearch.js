@@ -1,37 +1,31 @@
 function isbnSearch() {
   const extractFields = (selector) => {
     const fields = document.querySelectorAll(selector);
-    // Title field has an extra node for some reason
-    const subtractor = selector.includes("title") ? 2 : 1;
+    const subtractor = selector.includes("title") ? 2 : 1; // Title field has an extra node for some reason
     const latestField = fields[fields.length - subtractor];
     if (!latestField) return null;
     return latestField.textContent;
   };
 
-  let isbn = extractFields(".yui-field-isbn");
-  let title = extractFields(".yui-field-title");
-  let author = extractFields(".yui-field-author");
+  const getSearchQuery = (isbn, title, author) => {
+    if (isbn) {
+      return isbn;
+    } else if (title && author) {
+      return `${title} ${author}`;
+    } else if (title) {
+      return title;
+    } else {
+      return null;
+    }
+  };
 
-  let searchQuery = null;
-  if (isbn) {
-    // Takes only the first ISBN if multiple are present
-    searchQuery = isbn.split(" ")[0];
-    // Removes any "-" from the ISBN
-    searchQuery = searchQuery.replace(/-/g, "");
-  } else if (title && author) {
-    let firstAuthor = author.split(";")[0];
-    searchQuery = `${title} ${firstAuthor}`;
-  } else if (title) {
-    searchQuery = title;
-  } else {
-    alert("No ISBN or Title/Author found. Please check the record.");
-    return;
-  }
+  let isbn = extractFields(".yui-field-isbn")?.split(" ")[0].replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
+  let title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
+  let author = extractFields(".yui-field-author")?.split(";")[0]; // Takes the first author
+
+  let searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
-    // Keyword search doesn't like colons
-    searchQuery = searchQuery.replace(":", "");
-
     // Checks previous isbnSearch to prevent duplicate searches
     const previousIsbnSearch = sessionStorage.getItem("isbnSearch");
 
