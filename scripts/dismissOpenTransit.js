@@ -9,6 +9,7 @@
     const modalText = modal.textContent;
 
     if (modalText.includes("open transit on item")) {
+      console.log("Found open transit modal, dismissing it.");
       const modalFooterButton = document.querySelector(".modal-footer button");
       if (modalFooterButton) modalFooterButton.click();
     }
@@ -42,6 +43,16 @@
       barcodeInput.dataset.listenerAdded = true;
     }
   }
+
+  // TODO: What am I doing.
+  // 1) Keep track of the number of holds in the holds field #ngb-nav-2.textContent
+  // 2) Track mutations on the list of currently checked out items -- New children in childlist of .eg-grid-body
+  // 3) When the list of currently checked out items goes up, check if the number of holds went down by 1
+  // 4) If so, then we know that the user checked out an item with a hold on it (Success!)
+  // 5) If it didn't go down, populate an error modal indicating so
+
+  const barcodeInput = document.querySelector("#barcode-input");
+  console.log(barcodeInput);
 
   observer.observe(document.body, {
     childList: true,
