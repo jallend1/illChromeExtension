@@ -16,9 +16,14 @@
   }
 
   const observer = new MutationObserver((mutations) => {
-    console.log(mutations);
+    // console.log(mutations);
+    mutations.forEach((mutation) => {
+      if (mutation.type === "characterData") {
+        console.log("Character data changed:", mutation.target.textContent);
+      }
+    });
     dismissOpenTransit();
-    monitorInput();
+    // monitorInput();
   });
 
   // function monitorInput() {
@@ -47,18 +52,25 @@
 
   // TODO: What am I doing.
   // 1) Observe mutations Items Out and Holds fields
-  const holdsField = document.querySelector("[ngbnavitem='holds'] > a");
-  const itemsOutField = document.querySelector("[ngbnavitem='items_out'] > a");
-  console.log(holdsField.textContent);
-  console.log(itemsOutField.textContent);
+  const holdsField = document.querySelector(
+    "[ngbnavitem='holds'] > a"
+  )?.firstChild; // Targets text node inside the anchor tag
+  const itemsOutField = document.querySelector(
+    "[ngbnavitem='items_out'] > a"
+  )?.firstChild; // Targets text node inside the anchor tag
+  if (holdsField) console.log(holdsField.textContent);
+  if (itemsOutField) console.log(itemsOutField.textContent);
 
-  observer.observer(holdsField, {
-    characterData: true,
-  });
-
-  observer.observe(itemsOutField, {
-    characterData: true,
-  });
+  if (holdsField) {
+    observer.observe(holdsField, {
+      characterData: true,
+    });
+  }
+  if (itemsOutField) {
+    observer.observe(itemsOutField, {
+      characterData: true,
+    });
+  }
 
   // 2) When Items Out goes up, check if the number of holds went down by 1
   // 3) If not, throw an error modal indicating as much
