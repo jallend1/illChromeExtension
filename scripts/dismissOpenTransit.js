@@ -1,4 +1,8 @@
-(() => {
+(async () => {
+  const { statusModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
+  );
+
   function dismissOpenTransit() {
     const modal = document.querySelector(".modal-body");
 
@@ -101,6 +105,13 @@
   monitorInput();
 
   // 3) If not, throw an error modal indicating as much
+  if ((err = true)) {
+    statusModal(
+      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Holds didn't seem to have decreased!</p>`,
+      "#e85e6a",
+      chrome.runtime.getURL("images/kawaii-book-sad.png")
+    );
+  }
 
   observer.observe(document.body, {
     childList: true,
