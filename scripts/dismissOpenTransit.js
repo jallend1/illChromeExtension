@@ -1,3 +1,5 @@
+console.log("Dismiss open transit script loaded!");
+
 (async () => {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
@@ -40,6 +42,9 @@
             console.log("Current value:", currentValue);
             console.log("Old value:", oldValue);
           }
+        }
+        if (MutationObserver.OLDvALUE.INCLUDES("Holds")) {
+          // TODO: Global variable tracking hold count up top? Set it to value once it changes from 0 and store it?
         }
       } else if (mutation.type === "characterData") {
         console.log("Character data changed:", mutation.target.textContent);
@@ -105,13 +110,13 @@
   monitorInput();
 
   // 3) If not, throw an error modal indicating as much
-  if ((err = true)) {
-    statusModal(
-      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Holds didn't seem to have decreased!</p>`,
-      "#e85e6a",
-      chrome.runtime.getURL("images/kawaii-book-sad.png")
-    );
-  }
+  // if ((err = true)) {
+  //   statusModal(
+  //     `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Holds didn't seem to have decreased!</p>`,
+  //     "#e85e6a",
+  //     chrome.runtime.getURL("images/kawaii-book-sad.png")
+  //   );
+  // }
 
   observer.observe(document.body, {
     childList: true,
