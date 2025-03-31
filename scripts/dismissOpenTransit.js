@@ -30,7 +30,7 @@ console.log("Dismiss open transit script loaded!");
     // TODO: Check the mutation array and see if the holds field AND items out are in the same one
     // console.log(mutations);
     mutations.forEach((mutation) => {
-      if (mutation.type === "characterData" && listeningForBarcode) {
+            if (mutation.type === "characterData" && listeningForBarcode) {
         console.log(mutation);
         if (mutation.oldValue.includes(" Items Out")) {
           const oldValue = mutation.oldValue.match(itemsOutRegex)[0]; // Extracts the number in parentheses in nav field
@@ -44,19 +44,33 @@ console.log("Dismiss open transit script loaded!");
             return;
           }
           if (latestValue > oldValue) {
-            console.log("Done resetting, probably");
-            console.log("Current value:", latestValue);
+            // console.log("Done resetting, probably");
+            // console.log("Current value:", latestValue);
             if (itemsOut !== latestValue) {
-              console.log(
-                "Items out changed from",
-                itemsOut,
-                "to",
-                latestValue
-              );
+              // console.log(
+              //   "Items out changed from",
+              //   itemsOut,
+              //   "to",
+              //   latestValue
+              // );
               itemsOut = latestValue;
             }
           }
         }
+       else if (mutation.oldValue.includes("Holds")) {
+        const oldValue = mutation.oldValue.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+        const currentText = mutation.target.textContent.trim();
+        const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+        console.log("Current holds value:", currentValue);
+        if (currentValue < oldValue) {
+          console.log("Holds decreased from", oldValue, "to", currentValue);
+          if (holdCount !== currentValue) {
+            console.log("Holds count changed from", holdCount, "to", currentValue);
+            holdCount = currentValue;
+          }
+        }
+      }
+    }
         // if (MutationObserver.oldValue.includes("Holds")) {
         //   // TODO: Global variable tracking hold count up top? Set it to value once it changes from 0 and store it?
         // }
