@@ -28,10 +28,21 @@ console.log("Dismiss open transit script loaded!");
 
   const observer = new MutationObserver((mutations) => {
     // TODO: Check the mutation array and see if the holds field AND items out are in the same one
-    // console.log(mutations);
+    // They are!
+    // Tomorrow's agenda:
+    // Check the values of itemsOut and holdsCount
+    // If both are undefined, check the values of both the items out and holds fields in the DOM
+    // If both are at zero, then ignore the mutation as it is likely just a reset
+    // If not, store the values in the variables
+    // If both are defined, check if the values have changed
+    // If they have, if the itemsOut variable has increased by one, make sure the holdsCount has decreased by one
+    // If it has, then everything is good and we can dismiss the modal
+    // If not, then throw an error modal indicating as much
+
+    console.log(mutations);
     mutations.forEach((mutation) => {
-            if (mutation.type === "characterData" && listeningForBarcode) {
-        console.log(mutation);
+      if (mutation.type === "characterData" && listeningForBarcode) {
+        // console.log(mutation);
         if (mutation.oldValue.includes(" Items Out")) {
           const oldValue = mutation.oldValue.match(itemsOutRegex)[0]; // Extracts the number in parentheses in nav field
           const currentText = mutation.target.textContent.trim();
@@ -56,24 +67,28 @@ console.log("Dismiss open transit script loaded!");
               itemsOut = latestValue;
             }
           }
-        }
-       else if (mutation.oldValue.includes("Holds")) {
-        const oldValue = mutation.oldValue.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-        const currentText = mutation.target.textContent.trim();
-        const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-        console.log("Current holds value:", currentValue);
-        if (currentValue < oldValue) {
-          console.log("Holds decreased from", oldValue, "to", currentValue);
-          if (holdCount !== currentValue) {
-            console.log("Holds count changed from", holdCount, "to", currentValue);
-            holdCount = currentValue;
+        } else if (mutation.oldValue.includes("Holds")) {
+          const oldValue = mutation.oldValue.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+          const currentText = mutation.target.textContent.trim();
+          const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+          console.log("Current holds value:", currentValue);
+          if (currentValue === 0) {
+            console.log("Holds are zero, ignoring this mutation.");
+            return;
+          }
+          if (currentValue < oldValue) {
+            console.log("Holds decreased from", oldValue, "to", currentValue);
+            if (holdCount !== currentValue) {
+              console.log(
+                "Holds count changed from",
+                holdCount,
+                "to",
+                currentValue
+              );
+              holdCount = currentValue;
+            }
           }
         }
-      }
-    }
-        // if (MutationObserver.oldValue.includes("Holds")) {
-        //   // TODO: Global variable tracking hold count up top? Set it to value once it changes from 0 and store it?
-        // }
       } else if (mutation.type === "characterData") {
         if (mutation.target.textContent.includes("Items Out")) {
           const currentText = mutation.target.textContent.trim();
