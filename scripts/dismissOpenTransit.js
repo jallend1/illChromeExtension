@@ -27,27 +27,33 @@ console.log("Dismiss open transit script loaded!");
   const holdsRegex = /\(\d+\s*\/\s*(\d+)\)/;
 
   const observer = new MutationObserver((mutations) => {
-    // TODO: Check the mutation array and see if the holds field AND items out are in the same one
-    // They are!
-    // Tomorrow's agenda:
-    // Check the values of itemsOut and holdsCount
-    // If both are undefined, check the values of both the items out and holds fields in the DOM
-    // If both are at zero, then ignore the mutation as it is likely just a reset
-    // If not, store the values in the variables
-    // If both are defined, check if the values have changed
-    // If they have, if the itemsOut variable has increased by one, make sure the holdsCount has decreased by one
-    // If it has, then everything is good and we can dismiss the modal
-    // If not, then throw an error modal indicating as much
+    const filteredMutations = mutations.filter(
+      (mutation) => mutation.type === "characterData"
+    );
 
-    console.log(mutations);
-    mutations.forEach((mutation) => {
-      if (mutation.type === "characterData" && listeningForBarcode) {
+    filteredMutations.forEach((mutation) => {
+      if (listeningForBarcode) {
         // console.log(mutation);
         if (mutation.oldValue.includes(" Items Out")) {
-          const oldValue = mutation.oldValue.match(itemsOutRegex)[0]; // Extracts the number in parentheses in nav field
+          const oldValue = parseInt(mutation.oldValue.match(itemsOutRegex)[0]); // Extracts the number in parentheses in nav field
           const currentText = mutation.target.textContent.trim();
-          const latestValue = currentText.match(itemsOutRegex)[0]; // Extracts the number in parentheses in nav field
-
+          const latestValue = parseInt(currentText.match(itemsOutRegex)[0]); // Extracts the number in parentheses in nav field
+          // Check if latestValue is higher than itemsOut
+          if (latestValue !== 0) {
+            console.log("Current items out value:", latestValue);
+            console.log(`Items out value`, itemsOut);
+            console.log("Old value:", oldValue);
+            // Check if latestValue is greater than itemsOut
+            if (latestValue > itemsOut) {
+              console.log(
+                "Items out value increased from",
+                itemsOut,
+                "to",
+                latestValue
+              );
+              itemsOut = latestValue;
+            }
+          }
           // On update, Evergreen briefly sets items out to zero regardless of
           // how many items are actually out before populating it with the new value
           // Probably just ignore this period?
@@ -64,48 +70,50 @@ console.log("Dismiss open transit script loaded!");
               //   "to",
               //   latestValue
               // );
-              itemsOut = latestValue;
+              // itemsOut = latestValue;
             }
           }
         } else if (mutation.oldValue.includes("Holds")) {
-          const oldValue = mutation.oldValue.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-          const currentText = mutation.target.textContent.trim();
-          const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-          console.log("Current holds value:", currentValue);
-          if (currentValue === 0) {
-            console.log("Holds are zero, ignoring this mutation.");
-            return;
-          }
-          if (currentValue < oldValue) {
-            console.log("Holds decreased from", oldValue, "to", currentValue);
-            if (holdCount !== currentValue) {
-              console.log(
-                "Holds count changed from",
-                holdCount,
-                "to",
-                currentValue
-              );
-              holdCount = currentValue;
-            }
-          }
+          // const oldValue = mutation.oldValue.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+          // const currentText = mutation.target.textContent.trim();
+          // const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+          // console.log("Current holds value:", currentValue);
+          // if (currentValue === 0) {
+          //   console.log("Holds are zero, ignoring this mutation.");
+          //   return;
+          // }
+          // if (currentValue < oldValue) {
+          //   console.log("Holds decreased from", oldValue, "to", currentValue);
+          //   if (holdCount !== currentValue) {
+          //     console.log(
+          //       "Holds count changed from",
+          //       holdCount,
+          //       "to",
+          //       currentValue
+          //     );
+          //     holdCount = currentValue;
+          //   }
+          // }
         }
-      } else if (mutation.type === "characterData") {
-        if (mutation.target.textContent.includes("Items Out")) {
-          const currentText = mutation.target.textContent.trim();
-          const currentValue = currentText.match(itemsOutRegex)[0]; // Extracts the number in parentheses in nav field
-          // console.log(currentValue);
-          itemsOut = currentValue;
-        }
-        if (mutation.target.textContent.includes("Holds")) {
-          const currentText = mutation.target.textContent.trim();
-          const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-          // console.log(currentValue);
-          holdCount = currentValue;
-        }
-        console.log("Character data changed:", mutation.target.textContent);
-        console.log("old value:", mutation.oldValue);
       }
+      // else if (mutation.type === "characterData") {
+      //   if (mutation.target.textContent.includes("Items Out")) {
+      //     const currentText = mutation.target.textContent.trim();
+      //     const currentValue = currentText.match(itemsOutRegex)[0]; // Extracts the number in parentheses in nav field
+      //     // console.log(currentValue);
+      //     itemsOut = currentValue;
+      //   }
+      //   if (mutation.target.textContent.includes("Holds")) {
+      //     const currentText = mutation.target.textContent.trim();
+      //     const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
+      //     // console.log(currentValue);
+      //     holdCount = currentValue;
+      //   }
+      //   console.log("Character data changed:", mutation.target.textContent);
+      //   console.log("old value:", mutation.oldValue);
+      // }
     });
+
     dismissOpenTransit();
     // monitorInput();
   });
@@ -151,6 +159,22 @@ console.log("Dismiss open transit script loaded!");
     }
   };
 
+  const assignInitialValues = () => {
+    const holdsField = document.querySelector("[ngbnavitem='holds'] > a");
+    const itemsOutField = document.querySelector(
+      "[ngbnavitem='items_out'] > a"
+    );
+    if (holdsField) {
+      holdCount = parseInt(holdsField.textContent.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
+      console.log("Initial holds count:", holdCount);
+    }
+    if (itemsOutField) {
+      itemsOut = parseInt(itemsOutField.textContent.match(itemsOutRegex)[0]); // Extracts the number in parentheses in nav field
+      console.log("Initial items out count:", itemsOut);
+    }
+  };
+
+  assignInitialValues();
   attachMutationObservers();
 
   // 2 ) If enter is pressed, check if the number of holds went down by 1
