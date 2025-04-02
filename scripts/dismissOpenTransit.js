@@ -40,17 +40,17 @@ console.log("Dismiss open transit script loaded!");
           const latestValue = parseInt(currentText.match(itemsOutRegex)[0]); // Extracts the number in parentheses in nav field
           // Check if latestValue is higher than itemsOut
           if (latestValue !== 0) {
-            console.log("Current items out value:", latestValue);
-            console.log(`Items out value`, itemsOut);
-            console.log("Old value:", oldValue);
+            // console.log("Current items out value:", latestValue);
+            // console.log(`Items out value`, itemsOut);
+            // console.log("Old value:", oldValue);
             // Check if latestValue is greater than itemsOut
             if (latestValue > itemsOut) {
-              console.log(
-                "Items out value increased from",
-                itemsOut,
-                "to",
-                latestValue
-              );
+              // console.log(
+              //   "Items out value increased from",
+              //   itemsOut,
+              //   "to",
+              //   latestValue
+              // );
               itemsOut = latestValue;
             }
           }
@@ -74,14 +74,41 @@ console.log("Dismiss open transit script loaded!");
             }
           }
         } else if (mutation.oldValue.includes("Holds")) {
-          // const oldValue = mutation.oldValue.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-          // const currentText = mutation.target.textContent.trim();
-          // const currentValue = currentText.match(holdsRegex)[1]; // Extracts the number in parentheses in nav field
-          // console.log("Current holds value:", currentValue);
-          // if (currentValue === 0) {
-          //   console.log("Holds are zero, ignoring this mutation.");
-          //   return;
-          // }
+          const oldValue = parseInt(mutation.oldValue.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
+          const currentText = mutation.target.textContent.trim();
+          const currentValue = parseInt(currentText.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
+          console.log("Current holds value:", currentValue);
+          // Ignore if the current value is zero because it's resetting
+          if (currentValue === 0) {
+            if (oldValue !== 0) {
+              console.log("current value is zero, setting hold count to old value");
+              holdCount = oldValue;
+              console.log("Hold count set to old value:", holdCount);
+            }
+            // console.log("Holds are zero, ignoring this mutation.");
+            // console.log("Old value:", oldValue);
+            // console.log("Hold count:", holdCount);
+            return;
+          }
+          else {
+            // If holdsCount is zero, set the value to current mutation
+            if (holdCount === 0) {
+              holdCount = currentValue;
+              console.log("Holds count set to current value from 0:", holdCount);
+            }
+            else if (currentValue === holdCount) {
+              console.error(
+                "Current value is the same as the old value!"
+              );
+            }
+            else if (currentValue < holdCount){
+              console.log("Holds decreased from", holdCount, "to", currentValue, "Expected behavior!!");
+              // Updates hold count to the new value for the next checkout
+              holdCount = currentValue;
+            }
+
+
+          }
           // if (currentValue < oldValue) {
           //   console.log("Holds decreased from", oldValue, "to", currentValue);
           //   if (holdCount !== currentValue) {
