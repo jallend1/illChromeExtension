@@ -17,7 +17,7 @@ console.log("Dismiss open transit script loaded!");
     const modalText = modal.textContent;
 
     if (modalText.includes("open transit on item")) {
-      console.log("Found open transit modal, dismissing it.");
+      // console.log("Found open transit modal, dismissing it.");
       const modalFooterButton = document.querySelector(".modal-footer button");
       if (modalFooterButton) modalFooterButton.click();
     }
@@ -77,13 +77,13 @@ console.log("Dismiss open transit script loaded!");
           const oldValue = parseInt(mutation.oldValue.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
           const currentText = mutation.target.textContent.trim();
           const currentValue = parseInt(currentText.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
-          console.log("Current holds value:", currentValue);
+          // console.log("Current holds value:", currentValue);
           // Ignore if the current value is zero because it's resetting
           if (currentValue === 0) {
             if (oldValue !== 0) {
-              console.log("current value is zero, setting hold count to old value");
+              console.log("Current value is zero, setting hold count to old value:" , oldValue);
+              console.log('Hold count value before this:', holdCount);
               holdCount = oldValue;
-              console.log("Hold count set to old value:", holdCount);
             }
             // console.log("Holds are zero, ignoring this mutation.");
             // console.log("Old value:", oldValue);
