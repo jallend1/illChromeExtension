@@ -28,52 +28,39 @@ console.log("Dismiss open transit script loaded!");
       (mutation) => mutation.type === "characterData"
     );
 
-    filteredMutations.forEach((mutation) => { 
-      
-    if (listeningForBarcode && mutation.oldValue.includes("Holds")) {
-          const oldValue = parseInt(mutation.oldValue.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
-          const currentText = mutation.target.textContent.trim();
-          const currentValue = parseInt(currentText.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
-          if (currentValue === 0) {
-            // If the old value is not zero, set the stored holdCount to the old value
-            if (oldValue !== 0) {
-              holdCount = oldValue;
-            }
-            // If not, ignore the transitional mutation
-            return;
-          }
-          else {
-            // If stored hold variable is zero, set the value to current mutation
-            if (holdCount === 0) {
-              holdCount = currentValue;
-              console.log("Holds count set to current value from 0:", holdCount);
-            }
-            else if (currentValue === holdCount) {
-              console.error(
-                "Current value is the same as the old value!"
-              );
-              statusModal(
-                `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Holds didn't seem to have decreased!</p>`,
-                "#e85e6a",
-                chrome.runtime.getURL("images/kawaii-book-sad.png")
-              );
-            }
-            else if (currentValue < holdCount){
-              console.log("Holds decreased from", holdCount, "to", currentValue, "Expected behavior!!");
-              // Updates hold count to the new value for the next checkout
-              holdCount = currentValue;
-            }
+    filteredMutations.forEach((mutation) => {
+      if (listeningForBarcode) {
+        const oldValue = parseInt(mutation.oldValue.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
+        const currentText = mutation.target.textContent.trim();
+        const currentValue = parseInt(currentText.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
+        if (currentValue === 0) {
+          // If the old value is not zero, set the stored holdCount to the old value
+          if (oldValue !== 0) holdCount = oldValue;
+          // If not, ignore the transitional mutation
+          return;
+        } else {
+          // If stored hold variable is zero, set the value to current mutation
+          if (holdCount === 0) {
+            holdCount = currentValue;
+          } else if (currentValue === holdCount) {
+            console.warn("Current value is the same as the old value!");
+            statusModal(
+              `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Alert!</h2> <p style="font-size: 1rem;">The number of holds on this card didn't seem to go down with that last checkout. Verify the most recently checked out item is intended for this library system.</p>`,
+              "#e85e6a",
+              chrome.runtime.getURL("images/kawaii-book-sad.png")
+            );
+          } else if (currentValue < holdCount) {
+            // Updates hold count to the new value for the next checkout
+            holdCount = currentValue;
           }
         }
-        else if(mutation.target.textContent.includes("Holds") && !holdCount) {
-          // Set the initial value of holdCount
-          const holdsField = document.querySelector("[ngbnavitem='holds'] > a");
-          if (holdsField) {
-            holdCount = parseInt(holdsField.textContent.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
-            console.log("Initial holds count:", holdCount);
-          }
-          
+      } else if (!holdCount) {
+        // Set the initial value of holdCount
+        const holdsField = document.querySelector("[ngbnavitem='holds'] > a");
+        if (holdsField) {
+          holdCount = parseInt(holdsField.textContent.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
         }
+      }
     });
 
     dismissOpenTransit();
@@ -86,7 +73,6 @@ console.log("Dismiss open transit script loaded!");
     if (barcodeInput && !barcodeInput.dataset.listenerAdded) {
       barcodeInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-          console.log("Enter has been pressed!");
           listeningForBarcode = true;
         }
       });
@@ -106,18 +92,6 @@ console.log("Dismiss open transit script loaded!");
     }
   };
 
-  const assignInitialValues = () => {
-    const holdsField = document.querySelector("[ngbnavitem='holds'] > a");
-    // const itemsOutField = document.querySelector(
-    //   "[ngbnavitem='items_out'] > a"
-    // );
-    if (holdsField) {
-      holdCount = parseInt(holdsField.textContent.match(holdsRegex)[1]); // Extracts the number in parentheses in nav field
-      console.log("Initial holds count:", holdCount);
-    }
-  };
-
-  // assignInitialValues();
   attachMutationObservers();
 
   // 2 ) If enter is pressed, check if the number of holds went down by 1
