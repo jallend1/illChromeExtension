@@ -43,7 +43,7 @@ export const keyboardCowboy = () => {
 
     const p = document.createElement("p");
     p.style.color = "#000";
-    p.innerHTML = `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse! Inside new modal!`;
+    p.innerHTML = `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`;
     main.appendChild(img);
     main.appendChild(p);
 
