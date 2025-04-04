@@ -4,7 +4,9 @@
   );
 
   function holdScreenMods() {
-    keyboardCowboy();
+    keyboardCowboy(
+      `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`
+    );
 
     // If item has a second patron, automatically populate departmental card barcode
     const placeHoldOnKCLSCard = () => {

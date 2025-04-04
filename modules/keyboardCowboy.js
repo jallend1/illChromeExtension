@@ -1,4 +1,4 @@
-export const keyboardCowboy = () => {
+export const keyboardCowboy = (message) => {
   const mainSection = document.querySelector("main");
 
   const removeTooltip = () => {
@@ -43,7 +43,7 @@ export const keyboardCowboy = () => {
 
     const p = document.createElement("p");
     p.style.color = "#000";
-    p.innerHTML = `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`;
+    p.innerHTML = message;
     main.appendChild(img);
     main.appendChild(p);
 
