@@ -21,34 +21,15 @@
     };
 
     const addMutationObserver = () => {
-      // Selects parent div of item record section
-      let targetNode = document.querySelector(
-        ".hold-records-list.common-form.striped-even"
-      );
-      if (!targetNode) {
-        // If the target node is not found, try again for up to 15 seconds
-        let counter = 0;
-        const interval = setInterval(() => {
-          counter++;
-          targetNode = document.querySelector(
-            ".hold-records-list.common-form.striped-even"
-          );
-          if (targetNode) {
-            clearInterval(interval);
-            addMutationObserver();
-          }
-          if (counter >= 15) {
-            clearInterval(interval);
-            console.log("Target node not found after 15 seconds. Exiting...");
-          }
-        }, 1000);
-        return;
-      }
-
       // TODO: Why am I setting an interval here and not just using the observer directly?
       const handleMutationObserver = (mutationList, observer) => {
+        console.log("Mutation observer triggered");
         for (const mutation of mutationList) {
+          if (mutation.type === "characterData") {
+            console.log("Character data changed:", mutation.target.textContent);
+          }
           if (mutation.type === "childList") {
+            console.log("Child list changed:", mutation.target);
             if (mutation.addedNodes.length > 0) {
               for (const node of mutation.addedNodes) {
                 // Iterates through added nodes to isolate hold status message
@@ -100,8 +81,12 @@
         }
       };
 
+      const targetNode = document.querySelector(
+        ".hold-records-list.common-form.striped-even"
+      );
+      console.log(targetNode);
       const observer = new MutationObserver(handleMutationObserver);
-      const config = { childList: true, subtree: true };
+      const config = { childList: true, subtree: true, CharacterData: true };
       observer.observe(targetNode, config);
     };
 

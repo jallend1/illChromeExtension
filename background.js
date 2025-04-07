@@ -267,6 +267,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // TODO: Feels like overkill and incredibly over complicated -- Simplify this
   // If the tab is updated and the URL includes /hold/, check for lending fee
   if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
+    console.log("Checking lending fee...");
     chrome.storage.local.get("lendingFee", (result) => {
       if (result.lendingFee && result.lendingFee === "0.00") {
         chrome.scripting.executeScript(
