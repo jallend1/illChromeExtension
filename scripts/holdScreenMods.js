@@ -20,78 +20,72 @@
       barcodeField.focus();
     };
 
-    const addMutationObserver = () => {
-      const handleMutationObserver = (mutationList, observer) => {
-        for (const mutation of mutationList) {
-          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-            const addedNodes = Array.from(mutation.addedNodes);
+    const handleMutationObserver = (mutationList, observer) => {
+      for (const mutation of mutationList) {
+        if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+          const addedNodes = Array.from(mutation.addedNodes);
 
-            // Filter nodes to find relevant alert messages
-            const alertNodes = addedNodes.filter(
-              (node) =>
-                node.classList &&
-                node.classList.contains("alert") &&
-                node.classList.contains("p-1") &&
-                node.classList.contains("ms-2")
-            );
+          // Filter nodes to find relevant alert messages
+          const alertNodes = addedNodes.filter(
+            (node) =>
+              node.classList &&
+              node.classList.contains("alert") &&
+              node.classList.contains("p-1") &&
+              node.classList.contains("ms-2")
+          );
 
-            for (const alertNode of alertNodes) {
-              // Check for specific hold status messages
-              if (
-                alertNode.textContent.includes("MAX_HOLDS") ||
-                alertNode.textContent.includes("HOLD_EXISTS")
-              ) {
-                let infoButtons = document.querySelectorAll(".btn.btn-info");
+          for (const alertNode of alertNodes) {
+            // Check for specific hold status messages
+            if (
+              alertNode.textContent.includes("MAX_HOLDS") ||
+              alertNode.textContent.includes("HOLD_EXISTS")
+            ) {
+              let infoButtons = document.querySelectorAll(".btn.btn-info");
 
-                // Retry logic if only one button is available
-                if (infoButtons.length === 1) {
-                  let counter = 0;
-                  const interval = setInterval(() => {
-                    counter++;
-                    const updatedInfoButtons =
-                      document.querySelectorAll(".btn.btn-info");
+              // Retry if only one button is available
+              if (infoButtons.length === 1) {
+                let counter = 0;
+                const interval = setInterval(() => {
+                  counter++;
+                  const updatedInfoButtons =
+                    document.querySelectorAll(".btn.btn-info");
 
-                    // Check if more than one button is available
-                    if (updatedInfoButtons.length > 1) {
-                      clearInterval(interval);
-                      const overrideButton = Array.from(
-                        updatedInfoButtons
-                      ).find((button) =>
-                        button.textContent.includes("Override")
-                      );
-                      if (overrideButton) {
-                        overrideButton.focus();
-                      }
+                  // Check if more than one button is available
+                  if (updatedInfoButtons.length > 1) {
+                    clearInterval(interval);
+                    const overrideButton = Array.from(updatedInfoButtons).find(
+                      (button) => button.textContent.includes("Override")
+                    );
+                    if (overrideButton) {
+                      overrideButton.focus();
                     }
+                  }
 
-                    // Stop the interval after 10 seconds
-                    if (counter >= 20) {
-                      clearInterval(interval);
-                    }
-                  }, 500);
-                }
+                  // Clear the interval after 10 seconds
+                  if (counter >= 20) {
+                    clearInterval(interval);
+                  }
+                }, 500);
               }
-
-              // TODO: Add logic to display solution for 'No available copies' message here
-              // TODO: Uncomment this when 2nd patron is tracked
-              // if (alertNode.textContent.includes("Hold Succeeded")) {
-              //   placeHoldOnKCLSCard();
-              // }
             }
+
+            // TODO: Add logic to display solution for 'No available copies' message here
+            // TODO: Uncomment this when 2nd patron is tracked
+            // if (alertNode.textContent.includes("Hold Succeeded")) {
+            //   placeHoldOnKCLSCard();
+            // }
           }
         }
-      };
-
-      const targetNode = document.querySelector(
-        ".hold-records-list.common-form.striped-even"
-      );
-
-      const observer = new MutationObserver(handleMutationObserver);
-      const config = { childList: true, subtree: true, CharacterData: true };
-      observer.observe(targetNode, config);
+      }
     };
 
-    addMutationObserver();
+    const targetNode = document.querySelector(
+      ".hold-records-list.common-form.striped-even"
+    );
+
+    const observer = new MutationObserver(handleMutationObserver);
+    const config = { childList: true, subtree: true };
+    observer.observe(targetNode, config);
   }
 
   holdScreenMods();
