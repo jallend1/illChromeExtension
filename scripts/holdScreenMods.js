@@ -21,15 +21,9 @@
     };
 
     const addMutationObserver = () => {
-      // TODO: Why am I setting an interval here and not just using the observer directly?
       const handleMutationObserver = (mutationList, observer) => {
-        console.log("Mutation observer triggered");
         for (const mutation of mutationList) {
-          if (mutation.type === "characterData") {
-            console.log("Character data changed:", mutation.target.textContent);
-          }
           if (mutation.type === "childList") {
-            console.log("Child list changed:", mutation.target);
             if (mutation.addedNodes.length > 0) {
               for (const node of mutation.addedNodes) {
                 // Iterates through added nodes to isolate hold status message
@@ -39,33 +33,39 @@
                   node.classList.contains("p-1") &&
                   node.classList.contains("ms-2")
                 ) {
-                  // console.log(node.textContent);
-
-                  // TODO: Need example of maximum holds...I *THINK* it is "MAX_HOLDS" but who knows
                   // If maximum number of holds, focus on Override button for user convenience
-                  if (node.textContent.includes("MAX_HOLDS")) {
+                  if (
+                    node.textContent.includes("MAX_HOLDS") ||
+                    node.textContent.includes("HOLD_EXISTS")
+                  ) {
                     let infoButtons =
                       document.querySelectorAll(".btn.btn-info");
-                    // If infoButtons is only one in length, try again for up to 15 seconds
+                    // If infoButtons is only one in length, try again for up to 10 seconds
                     if (infoButtons.length === 1) {
                       let counter = 0;
                       const interval = setInterval(() => {
                         counter++;
-                        infoButtons =
+                        const updatedInfoButtons =
                           document.querySelectorAll(".btn.btn-info");
-                        if (infoButtons.length > 1) {
+
+                        // Check if more than one button is available
+                        if (updatedInfoButtons.length > 1) {
                           clearInterval(interval);
-                          for (const button of infoButtons) {
-                            if (button.textContent.includes("Override")) {
-                              button.focus();
-                            }
+                          const overrideButton = Array.from(
+                            updatedInfoButtons
+                          ).find((button) =>
+                            button.textContent.includes("Override")
+                          );
+                          if (overrideButton) {
+                            overrideButton.focus();
                           }
                         }
-                        if (counter >= 15) {
+
+                        // Stop the interval after 10 seconds
+                        if (counter >= 20) {
                           clearInterval(interval);
                         }
-                      }, 1000);
-                      return;
+                      }, 500);
                     }
                   }
 
@@ -84,7 +84,7 @@
       const targetNode = document.querySelector(
         ".hold-records-list.common-form.striped-even"
       );
-      console.log(targetNode);
+
       const observer = new MutationObserver(handleMutationObserver);
       const config = { childList: true, subtree: true, CharacterData: true };
       observer.observe(targetNode, config);
