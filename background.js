@@ -297,6 +297,25 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
     executeScript(tabId, "courierHighlight");
   }
+  if (
+    changeInfo.status === "complete" &&
+    tab.url.includes("/circ/patron/bcsearch")
+  ) {
+    // Run keyboardCowboy module to add tooltip to the page
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      func: (message) => {
+        import(chrome.runtime.getURL("modules/keyboardCowboy.js")).then(
+          ({ keyboardCowboy }) => {
+            keyboardCowboy(message);
+          }
+        );
+      },
+      args: [
+        `Press <span style="font-weight:bold;">F1</span> from any Evergreen page to reach this screen without ever touching your mouse!`,
+      ],
+    });
+  }
 });
 
 // SPA navigation handling

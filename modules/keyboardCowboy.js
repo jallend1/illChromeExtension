@@ -50,7 +50,7 @@ export const keyboardCowboy = (message) => {
     tooltip.appendChild(header);
     tooltip.appendChild(main);
 
-    mainSection.parentElement.insertBefore(tooltip, mainSection);
+    mainSection?.parentElement?.insertBefore(tooltip, mainSection);
   };
   checkExistingTooltip();
   addTooltip();
