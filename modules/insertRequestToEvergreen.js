@@ -69,11 +69,6 @@ export async function insertRequestToEvergreen() {
               `This request might have a lending fee of $${isLendingFee}. Please verify and add it to the patron's record.`
             );
           }
-          // TODO: Seems impossible to focus on the item barcode from sidebar but functions as expected with keyboard shortcut?
-          const kclsBarcodeInput = document.querySelector(
-            "#item-barcode-input"
-          );
-          kclsBarcodeInput.focus();
           chrome.storage.local.remove("requestData");
         }
       });
