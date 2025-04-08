@@ -27,6 +27,7 @@
       currentLender: 'span[data="lenderString.currentSupplier.symbol"]',
       region: 'span[data="returning.address.region"]',
       patronName: 'input[data="requester.patron.name"]',
+      patronNote: 'textarea[data="requester.patron.note"]',
     };
 
     const extractValueFromField = (selector) => {
@@ -157,6 +158,7 @@
       const patronID = extractValueFromField(elementSelectors.patronID);
       const isLendingFee = extractValueFromField(elementSelectors.lendingFee);
       const patronName = extractValueFromField(elementSelectors.patronName);
+
       return {
         addressString,
         requestNumber,
@@ -165,6 +167,21 @@
         isLendingFee,
         patronName,
       };
+    };
+
+    const isSecondPatron = () => {
+      const patronNote = extractValueFromField(elementSelectors.patronNote);
+      console.log(patronNote.includes("2nd"));
+      return patronNote.includes("2nd");
+      if (patronNote.includes("2nd")) {
+        chrome.storage.local.set({
+          secondPatron: true,
+        });
+      } else {
+        chrome.storage.local.set({
+          secondPatron: false,
+        });
+      }
     };
 
     const convertDataToJSON = (data) => {
@@ -197,6 +214,7 @@
           chrome.storage.local.set(
             {
               requestData: data,
+              isSecondPatron: isSecondPatron(),
             },
             () => {
               statusModal(success.result, success.headerColor, success.imgURL);

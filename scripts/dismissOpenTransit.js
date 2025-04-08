@@ -97,7 +97,6 @@ console.log("Dismiss open transit script loaded!");
   // 2 ) If enter is pressed, check if the number of holds went down by 1
   monitorInput();
 
-  // TODO: More narrowly focus this for the modal specifically
   observer.observe(document.body, {
     childList: true,
     subtree: true,
