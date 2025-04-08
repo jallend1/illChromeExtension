@@ -68,25 +68,21 @@
                 }, 500);
               }
             } else if (alertNode.textContent.includes("Succeeded")) {
-              console.log("Successful hold placed.");
               // Check if isSecondPatron is true
-              chrome.local.storage.get(
-                "isSecondPatron",
-                (result) => {
-                  if (result.isSecondPatron) {
-                    // If true, place hold on KCLS card
-                    // placeHoldOnKCLSCard();
-                    console.log("Placing hold!");
-                  }
-                },
-                () => {
-                  chrome.local.storage.set({ isSecondPatron: false });
+              chrome.storage.local.get("isSecondPatron").then((result) => {
+                console.log("Checking for second patron...");
+                if (result.isSecondPatron) {
+                  // If true, place hold on KCLS card
+                  // placeHoldOnKCLSCard();
+                  console.log("Placing hold!");
+                  chrome.storage.local.set({
+                    isSecondPatron: false,
+                  });
                 }
-              );
+              });
             }
 
             // TODO: Add logic to display solution for 'No available copies' message here
-            // TODO: Uncomment this when 2nd patron is tracked
           }
         }
       }
