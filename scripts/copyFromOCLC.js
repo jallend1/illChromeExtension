@@ -7,7 +7,7 @@
     chrome.runtime.getURL("modules/orbisLibrarySymbols.js")
   );
 
-  function copyFromOCLC(statusModal) {
+  function copyFromOCLC() {
     // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
     let addressObject = {
       attention: null,
@@ -263,7 +263,7 @@
 
   const currentURL = window.location.href;
   if (currentURL.includes("worldcat.org")) {
-    copyFromOCLC(statusModal);
+    copyFromOCLC();
   } else {
     statusModal(
       `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">This function only be used on a WorldShare page.</p>`,

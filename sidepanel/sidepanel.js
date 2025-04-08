@@ -38,6 +38,7 @@ storageKeys.forEach((storageKey) => {
 
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
+  console.log(scriptName);
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     var currentTab = tabs[0];
     chrome.tabs.update(currentTab.id, { active: true });

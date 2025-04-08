@@ -152,9 +152,15 @@ const calculateURL = (mobileURL, clientURL) => {
     }
     let url = mobile ? mobileURL : clientURL;
     if (evgClientTab) {
-      chrome.tabs.update(evgClientTab.id, { url: url, active: true });
+      // Update the existing tab and bring it to the foreground
+      chrome.tabs.update(evgClientTab.id, { url: url, active: true }, () => {
+        chrome.windows.update(evgClientTab.windowId, { focused: true });
+      });
     } else {
-      chrome.tabs.create({ url: url, active: true });
+      // Create a new tab and bring it to the foreground
+      chrome.tabs.create({ url: url, active: true }, (newTab) => {
+        chrome.windows.update(newTab.windowId, { focused: true });
+      });
     }
   });
 };
