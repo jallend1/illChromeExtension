@@ -77,7 +77,6 @@ export async function insertRequestToEvergreen() {
               `This request might have a lending fee of $${isLendingFee}. Please verify and add it to the patron's record.`
             );
           }
-          chrome.storage.local.remove("requestData");
         }
       });
     };

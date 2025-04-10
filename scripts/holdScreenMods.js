@@ -17,7 +17,7 @@
         cancelable: true,
       });
       barcodeField.dispatchEvent(event);
-      barcodeField.focus();
+      // barcodeField.focus();
     };
 
     const handleMutationObserver = (mutationList, observer) => {
@@ -69,16 +69,16 @@
               }
             } else if (alertNode.textContent.includes("Succeeded")) {
               // Check if isSecondPatron is true
-              chrome.storage.local.get("isSecondPatron").then((result) => {
+              chrome.storage.local.get("requestData").then((result) => {
                 console.log("Checking for second patron...");
-                if (result.isSecondPatron) {
+                // TODO: Add on screen message that this is happening
+                if (result.requestData.includes('"isSecondPatron":true')) {
                   // If true, place hold on KCLS card
-                  // placeHoldOnKCLSCard();
-                  console.log("Placing hold!");
-                  chrome.storage.local.set({
-                    isSecondPatron: false,
-                  });
+                  console.log("Second patron found! Placing hold!");
+                  placeHoldOnKCLSCard();
+                  // TODO: Also click the submit button?
                 }
+                chrome.storage.local.remove("requestData");
               });
             }
 

@@ -204,7 +204,6 @@
             },
             () => {
               statusModal(success.result, success.headerColor, success.imgURL);
-              console.log("Data saved to storage: ", data);
             }
           );
         });
