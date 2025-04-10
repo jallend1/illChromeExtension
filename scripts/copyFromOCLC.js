@@ -158,7 +158,9 @@
       const patronID = extractValueFromField(elementSelectors.patronID);
       const isLendingFee = extractValueFromField(elementSelectors.lendingFee);
       const patronName = extractValueFromField(elementSelectors.patronName);
-
+      const isSecondPatron = extractValueFromField(
+        elementSelectors.patronNote
+      )?.includes("2nd");
       return {
         addressString,
         requestNumber,
@@ -166,22 +168,8 @@
         patronID,
         isLendingFee,
         patronName,
+        isSecondPatron,
       };
-    };
-
-    const isSecondPatron = () => {
-      const patronNote = extractValueFromField(elementSelectors.patronNote);
-      console.log(patronNote.includes("2nd"));
-      return patronNote.includes("2nd");
-      if (patronNote.includes("2nd")) {
-        chrome.storage.local.set({
-          secondPatron: true,
-        });
-      } else {
-        chrome.storage.local.set({
-          secondPatron: false,
-        });
-      }
     };
 
     const convertDataToJSON = (data) => {
@@ -191,7 +179,7 @@
     const compiledData = compileRequestData();
     const stringifiedData = convertDataToJSON(compiledData);
 
-    async function copyToStorage(data, requestNum, lendingFee) {
+    async function copyToStorage(data, requestNum) {
       // If the request number isn't defined, display an error and remove the previous data from storage just in case
       if (!requestNum) {
         const result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.</p>`;
@@ -209,56 +197,17 @@
         };
 
         // Clears previous data from storage
-        chrome.storage.local.remove(
-          ["requestData", "lendingFee", "secondPatron"],
-          () => {
-            chrome.storage.local.set(
-              {
-                requestData: data,
-                isSecondPatron: isSecondPatron(),
-              },
-              () => {
-                statusModal(
-                  success.result,
-                  success.headerColor,
-                  success.imgURL
-                );
-                console.log("Data saved to storage: ", data);
-                console.log("isSecondPatron: ", isSecondPatron());
-              }
-            );
-          }
-        );
-
-        // chrome.storage.local.set(
-        //   {
-        //     requestData: data,
-        //     isSecondPatron: isSecondPatron(),
-        //   },
-        //   () => {
-        //     console.log("Data saved to storage: ", data);
-        //   }
-        // );
-
-        // chrome.storage.local.get(
-        //   ["requestData", "lendingFee", "isSecondPatron"],
-        //   (result) => {
-        //     if (result.requestData) chrome.storage.local.remove("requestData");
-        //     chrome.storage.local.set(
-        //       {
-        //         requestData: data,
-        //         isSecondPatron: isSecondPatron(),
-        //       },
-        //       () => {
-        //         statusModal(
-        //           success.result,
-        //           success.headerColor,
-        //           success.imgURL
-        //         );
-        //       }
-        //     );
-        //   }
-        // );
+        chrome.storage.local.remove(["requestData"], () => {
+          chrome.storage.local.set(
+            {
+              requestData: data,
+            },
+            () => {
+              statusModal(success.result, success.headerColor, success.imgURL);
+              console.log("Data saved to storage: ", data);
+            }
+          );
+        });
       } catch (err) {
         let result = "";
         let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
