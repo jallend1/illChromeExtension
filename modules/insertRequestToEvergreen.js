@@ -64,6 +64,14 @@ export async function insertRequestToEvergreen() {
           updateInputField("#patron-barcode-input", patronID);
           updatePatronAddress(addressString);
 
+          // Moves focus to barcode input field
+          const barcodeInputField = document.querySelector(
+            "#item-barcode-input"
+          );
+          if (barcodeInputField) {
+            barcodeInputField.focus();
+          }
+
           if (isLendingFee !== "0.00" && isLendingFee !== "") {
             alert(
               `This request might have a lending fee of $${isLendingFee}. Please verify and add it to the patron's record.`
