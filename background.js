@@ -136,6 +136,44 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
+// TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
+const retrievePatron = () => {
+  console.log("Retrieving patron!");
+  chrome.tabs.create(
+    {
+      url: "https://evgmobile.kcls.org/eg2/en-US/staff/circ/patron/bcsearch",
+      active: true,
+    },
+    (newTab) => {
+      if (!newTab) {
+        console.error("Failed to create a new tab.");
+        return;
+      }
+
+      const onTabUpdated = (tabId, changeInfo) => {
+        if (tabId === newTab.id && changeInfo.status === "complete") {
+          chrome.scripting.executeScript(
+            {
+              target: { tabId: newTab.id },
+              files: ["./scripts/retrievePatron.js"],
+            },
+            () => {
+              if (chrome.runtime.lastError) {
+                console.error(
+                  "Error executing script:",
+                  chrome.runtime.lastError.message
+                );
+              }
+            }
+          );
+          chrome.tabs.onUpdated.removeListener(onTabUpdated);
+        }
+      };
+      chrome.tabs.onUpdated.addListener(onTabUpdated);
+    }
+  );
+};
+
 const calculateURL = (mobileURL, clientURL) => {
   chrome.tabs.query({}, function (tabs) {
     let mobile = false;
