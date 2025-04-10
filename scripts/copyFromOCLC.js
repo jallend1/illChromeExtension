@@ -208,19 +208,57 @@
           result: `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`,
         };
 
-        // Checks for requestData in local storage, and if it exists, removes it
-        chrome.storage.local.get(["requestData", "lendingFee"], (result) => {
-          if (result.requestData) chrome.storage.local.remove("requestData");
-          chrome.storage.local.set(
-            {
-              requestData: data,
-              isSecondPatron: isSecondPatron(),
-            },
-            () => {
-              statusModal(success.result, success.headerColor, success.imgURL);
-            }
-          );
-        });
+        // Clears previous data from storage
+        chrome.storage.local.remove(
+          ["requestData", "lendingFee", "secondPatron"],
+          () => {
+            chrome.storage.local.set(
+              {
+                requestData: data,
+                isSecondPatron: isSecondPatron(),
+              },
+              () => {
+                statusModal(
+                  success.result,
+                  success.headerColor,
+                  success.imgURL
+                );
+                console.log("Data saved to storage: ", data);
+                console.log("isSecondPatron: ", isSecondPatron());
+              }
+            );
+          }
+        );
+
+        // chrome.storage.local.set(
+        //   {
+        //     requestData: data,
+        //     isSecondPatron: isSecondPatron(),
+        //   },
+        //   () => {
+        //     console.log("Data saved to storage: ", data);
+        //   }
+        // );
+
+        // chrome.storage.local.get(
+        //   ["requestData", "lendingFee", "isSecondPatron"],
+        //   (result) => {
+        //     if (result.requestData) chrome.storage.local.remove("requestData");
+        //     chrome.storage.local.set(
+        //       {
+        //         requestData: data,
+        //         isSecondPatron: isSecondPatron(),
+        //       },
+        //       () => {
+        //         statusModal(
+        //           success.result,
+        //           success.headerColor,
+        //           success.imgURL
+        //         );
+        //       }
+        //     );
+        //   }
+        // );
       } catch (err) {
         let result = "";
         let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
