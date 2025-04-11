@@ -3,6 +3,10 @@
     chrome.runtime.getURL("modules/keyboardCowboy.js")
   );
 
+  const { statusModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
+  );
+
   function holdScreenMods() {
     keyboardCowboy(
       `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`
@@ -20,7 +24,7 @@
       const placeHoldButton = document.querySelector(
         '[keydesc="Place Hold(s)"]'
       );
-      // Watch for disabled attribute to be removed from placeHoldButton
+      // Wait for disabled attribute to be removed from placeHoldButton
       const observer = new MutationObserver((mutationList) => {
         mutationList.forEach((mutation) => {
           if (
@@ -93,6 +97,11 @@
                 if (result?.requestData?.includes('"isSecondPatron":true')) {
                   // If true, place hold on KCLS card
                   console.log("Second patron found! Placing hold!");
+                  statusModal(
+                    `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Second Patron Detected!</h2> <p style="font-size: 1rem;">Please wait while we automatically place a hold on the departmental card.</p>`,
+                    "#4CAF50",
+                    chrome.runtime.getURL("images/kawaii-dinosaur.png")
+                  );
                   placeHoldOnKCLSCard();
                 }
                 chrome.storage.local.remove("requestData");
