@@ -17,7 +17,25 @@
         cancelable: true,
       });
       barcodeField.dispatchEvent(event);
-      // barcodeField.focus();
+      const placeHoldButton = document.querySelector(
+        '[keydesc="Place Hold(s)"]'
+      );
+      // Watch for disabled attribute to be removed from placeHoldButton
+      const observer = new MutationObserver((mutationList) => {
+        mutationList.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            !placeHoldButton.hasAttribute("disabled")
+          ) {
+            placeHoldButton.click();
+            observer.disconnect(); // Stop observing once the button is clicked
+          }
+        });
+      });
+      observer.observe(placeHoldButton, {
+        attributes: true,
+        attributeFilter: ["disabled"],
+      });
     };
 
     const handleMutationObserver = (mutationList, observer) => {
@@ -72,11 +90,10 @@
               chrome.storage.local.get("requestData").then((result) => {
                 console.log("Checking for second patron...");
                 // TODO: Add on screen message that this is happening
-                if (result.requestData.includes('"isSecondPatron":true')) {
+                if (result?.requestData?.includes('"isSecondPatron":true')) {
                   // If true, place hold on KCLS card
                   console.log("Second patron found! Placing hold!");
                   placeHoldOnKCLSCard();
-                  // TODO: Also click the submit button?
                 }
                 chrome.storage.local.remove("requestData");
               });
