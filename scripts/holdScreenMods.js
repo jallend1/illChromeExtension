@@ -13,7 +13,12 @@
     );
 
     // If item has a second patron, automatically populate departmental card barcode
-    const placeHoldOnKCLSCard = () => {
+    const handleSecondPatron = () => {
+      statusModal(
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Second Patron Detected!</h2> <p style="font-size: 1rem;">Please wait while we automatically place a hold on the departmental card.</p>`,
+        "#4CAF50",
+        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      );
       const barcodeField = document.querySelector("#patron-barcode");
       barcodeField.value = "0040746158";
       const event = new Event("input", {
@@ -42,7 +47,7 @@
       });
     };
 
-    const handleMutationObserver = (mutationList, observer) => {
+    const handleHoldStatusMutation = (mutationList, observer) => {
       for (const mutation of mutationList) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
           const addedNodes = Array.from(mutation.addedNodes);
@@ -90,20 +95,18 @@
                 }, 500);
               }
             } else if (alertNode.textContent.includes("Succeeded")) {
-              // Check if isSecondPatron is true
               chrome.storage.local.get("requestData").then((result) => {
+                if (!result.requestData) return;
+                const { isSecondPatron, isLendingFee } = JSON.parse(
+                  result.requestData
+                );
+
                 console.log("Checking for second patron...");
-                // TODO: Add on screen message that this is happening
-                if (result?.requestData?.includes('"isSecondPatron":true')) {
-                  // If true, place hold on KCLS card
-                  console.log("Second patron found! Placing hold!");
-                  statusModal(
-                    `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Second Patron Detected!</h2> <p style="font-size: 1rem;">Please wait while we automatically place a hold on the departmental card.</p>`,
-                    "#4CAF50",
-                    chrome.runtime.getURL("images/kawaii-dinosaur.png")
-                  );
-                  placeHoldOnKCLSCard();
-                }
+                if (isSecondPatron) handleSecondPatron();
+
+                console.log("Checking for lending fee...");
+                if (isLendingFee) handleFee(isLendingFee);
+
                 chrome.storage.local.remove("requestData");
               });
             }
@@ -114,11 +117,16 @@
       }
     };
 
+    const handleFee = (fee) => {
+      // Employee a status modal on testing
+      alert(`This request may have a lending fee of ${isLendingFee}.`);
+    };
+
     const targetNode = document.querySelector(
       ".hold-records-list.common-form.striped-even"
     );
 
-    const observer = new MutationObserver(handleMutationObserver);
+    const observer = new MutationObserver(handleHoldStatusMutation);
     const config = { childList: true, subtree: true };
     observer.observe(targetNode, config);
   }
