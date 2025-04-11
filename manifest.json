@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "permissions": [
     "activeTab",
     "storage",
@@ -67,11 +67,5 @@
   "side_panel": {
     "default_path": "sidepanel/sidepanel.html",
     "open_at_install": true
-  },
-  "content_scripts": [
-    {
-      "matches": ["*://*/*hold/*"],
-      "js": ["scripts/lendingFeeAlert.js"]
-    }
-  ]
+  }
 }

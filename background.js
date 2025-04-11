@@ -309,35 +309,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 
   // TODO: Feels like overkill and incredibly over complicated -- Simplify this
-  // If the tab is updated and the URL includes /hold/, check for lending fee
-  if (changeInfo.status === "complete" && tab.url.includes("/hold/")) {
-    console.log("Checking lending fee...");
-    chrome.storage.local.get("lendingFee", (result) => {
-      if (result.lendingFee && result.lendingFee === "0.00") {
-        chrome.scripting.executeScript(
-          {
-            target: { tabId: tabId },
-            files: ["./scripts/lendingFeeAlert.js"],
-          },
-          () => {
-            // Send message to content script to display lending fee alert
-            chrome.tabs.sendMessage(
-              tabId,
-              { data: "lendingFeeAlert", lendingFee: result.lendingFee },
-              (response) => {
-                if (chrome.runtime.lastError) {
-                  console.error(
-                    "Error sending message:",
-                    chrome.runtime.lastError
-                  );
-                }
-              }
-            );
-          }
-        );
-      }
-    });
-  }
   if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
     executeScript(tabId, "courierHighlight");
   }

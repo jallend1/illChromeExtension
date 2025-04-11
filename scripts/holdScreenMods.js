@@ -119,7 +119,7 @@
 
     const handleFee = (fee) => {
       // Employee a status modal on testing
-      alert(`This request may have a lending fee of ${isLendingFee}.`);
+      alert(`This request may have a lending fee of ${fee}.`);
     };
 
     const targetNode = document.querySelector(
