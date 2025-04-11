@@ -63,23 +63,16 @@
   // TODO: In progress - Verify patron name against WorldShare; Auto-update pickup location to request info
   const extractPatronDataFromStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
-      if (!result.requestData) {
-        statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Couldn't find any data to paste. Try copying from WorldShare again. If the error persists, please contact Jason.</p>`,
-          "#e85e6a",
-          chrome.runtime.getURL("images/kawaii-book-sad.png")
-        );
-        return;
-      } else {
-        const { patronName } = JSON.parse(result.requestData);
-        console.log(patronName);
-        const nameField = patronName.split(", ");
-        // Converts name to match Evergreen formatting
-        const name =
-          nameField[0].toUpperCase() + ", " + nameField[1].toUpperCase();
-        const pickupLocation = nameField[2];
-        console.log("Name: ", name, "Pickup Location: ", pickupLocation);
-      }
+      if (!result.requestData) return;
+
+      const { patronName } = JSON.parse(result.requestData);
+      console.log(patronName);
+      const nameField = patronName.split(", ");
+      // Converts name to match Evergreen formatting
+      const name =
+        nameField[0].toUpperCase() + ", " + nameField[1].toUpperCase();
+      const pickupLocation = nameField[2];
+      console.log("Name: ", name, "Pickup Location: ", pickupLocation);
     });
   };
 
