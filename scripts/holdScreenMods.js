@@ -133,6 +133,8 @@
 
   holdScreenMods();
 
+  // TODO: Send message to background script with patron barcode to retrieve patron info
+
   // ***********************************
   // * Adds Edit Patron Button, but    *
   // * unable to get patron ID through *
