@@ -119,6 +119,7 @@
 
     const handleFee = (fee) => {
       // Employee a status modal on testing
+      sendMessageToBackground();
       alert(`This request may have a lending fee of ${fee}.`);
     };
 
@@ -133,7 +134,19 @@
 
   holdScreenMods();
 
-  // TODO: Send message to background script with patron barcode to retrieve patron info
+  // TODO: Send message to background script with patron barcode to open patron in new tab
+  const sendMessageToBackground = () => {
+    chrome.runtime.sendMessage(
+      { action: "retrievePatron", patronBarcode: barcode },
+      (response) => {
+        if (response.success) {
+          console.log("Patron info retrieved successfully:", response.data);
+        } else {
+          console.error("Failed to retrieve patron info:", response.error);
+        }
+      }
+    );
+  };
 
   // ***********************************
   // * Adds Edit Patron Button, but    *
