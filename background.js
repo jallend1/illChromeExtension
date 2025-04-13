@@ -245,6 +245,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       injectDymoFramework(activeTab.id);
     }
 
+    if (request.action === "retrievePatron") {
+      const patronBarcode = request.patronBarcode;
+      chrome.storage.local.set({ patronBarcode: patronBarcode }, () => {
+        console.log("Patron barcode stored:", patronBarcode);
+      });
+      retrievePatron();
+      return;
+    }
+
     chrome.scripting.executeScript(
       {
         target: { tabId: activeTab.id },

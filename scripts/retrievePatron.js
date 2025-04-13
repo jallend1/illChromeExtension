@@ -18,14 +18,24 @@
     });
 
   try {
-    const patronBarcode = "00000000";
     const inputField = await waitForElementWithInterval(
       "#barcode-search-input"
     );
+    const submitButton = await waitForElementWithInterval(
+      ".btn.btn-outline-secondary"
+    );
 
-    inputField.value = patronBarcode;
-    const event = new Event("input", { bubbles: true, cancelable: true });
-    inputField.dispatchEvent(event);
+    chrome.storage.local.get("patronBarcode", (result) => {
+      console.log(result.patronBarcode);
+      if (!result.patronBarcode)
+        throw new Error("Patron ID not found in storage.");
+
+      console.log(result.patronBarcode);
+      inputField.value = result.patronBarcode;
+      const event = new Event("input", { bubbles: true, cancelable: true });
+      inputField.dispatchEvent(event);
+      submitButton.click();
+    });
   } catch (error) {
     console.error(error.message);
   }

@@ -97,15 +97,17 @@
             } else if (alertNode.textContent.includes("Succeeded")) {
               chrome.storage.local.get("requestData").then((result) => {
                 if (!result.requestData) return;
-                const { isSecondPatron, isLendingFee } = JSON.parse(
-                  result.requestData
-                );
 
-                console.log("Checking for second patron...");
+                const requestData = JSON.parse(result.requestData);
+                const { isSecondPatron, isLendingFee } = requestData;
+
                 if (isSecondPatron) handleSecondPatron();
 
                 console.log("Checking for lending fee...");
-                if (isLendingFee) handleFee(isLendingFee);
+                if (isLendingFee) {
+                  const { patronID } = requestData;
+                  handleFee(isLendingFee, patronID);
+                }
 
                 chrome.storage.local.remove("requestData");
               });
@@ -117,10 +119,10 @@
       }
     };
 
-    const handleFee = (fee) => {
+    const handleFee = (fee, patronID) => {
       // Employee a status modal on testing
-      sendMessageToBackground();
-      alert(`This request may have a lending fee of ${fee}.`);
+      sendMessageToBackground(patronID);
+      // alert(`This request may have a lending fee of ${fee}.`);
     };
 
     const targetNode = document.querySelector(
@@ -135,7 +137,7 @@
   holdScreenMods();
 
   // TODO: Send message to background script with patron barcode to open patron in new tab
-  const sendMessageToBackground = () => {
+  const sendMessageToBackground = (barcode) => {
     chrome.runtime.sendMessage(
       { action: "retrievePatron", patronBarcode: barcode },
       (response) => {
