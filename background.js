@@ -246,9 +246,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 
     if (request.action === "retrievePatron") {
-      const patronBarcode = request.patronBarcode;
-      chrome.storage.local.set({ patronBarcode: patronBarcode }, () => {
-        console.log("Patron barcode stored:", patronBarcode);
+      const { patronBarcode, title, fee } = request;
+      console.log(request);
+      chrome.storage.local.set({ request }, () => {
+        console.log("Request Data stored", request);
       });
       retrievePatron();
       return;

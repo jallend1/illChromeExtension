@@ -105,8 +105,8 @@
 
                 console.log("Checking for lending fee...");
                 if (isLendingFee) {
-                  const { patronID } = requestData;
-                  handleFee(isLendingFee, patronID);
+                  const { patronID, title } = requestData;
+                  handleFee(isLendingFee, patronID, title);
                 }
 
                 chrome.storage.local.remove("requestData");
@@ -119,9 +119,9 @@
       }
     };
 
-    const handleFee = (fee, patronID) => {
-      // Employee a status modal on testing
-      sendMessageToBackground(patronID);
+    const handleFee = (fee, patronID, title) => {
+      // Employ a status modal on testing
+      sendMessageToBackground(fee, patronID, title);
       // alert(`This request may have a lending fee of ${fee}.`);
     };
 
@@ -137,9 +137,9 @@
   holdScreenMods();
 
   // TODO: Send message to background script with patron barcode to open patron in new tab
-  const sendMessageToBackground = (barcode) => {
+  const sendMessageToBackground = (fee, barcode, title) => {
     chrome.runtime.sendMessage(
-      { action: "retrievePatron", patronBarcode: barcode },
+      { action: "retrievePatron", patronBarcode: barcode, fee, title },
       (response) => {
         if (response.success) {
           console.log("Patron info retrieved successfully:", response.data);
