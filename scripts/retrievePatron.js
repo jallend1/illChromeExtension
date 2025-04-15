@@ -1,4 +1,4 @@
-(async () => {
+(async (patronBarcode, title, fee) => {
   const waitForElementWithInterval = (selectorOrFunction) =>
     new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -26,22 +26,26 @@
       ".btn.btn-outline-secondary"
     );
 
-    chrome.storage.local.get("patronBarcode", (result) => {
-      if (!result.patronBarcode)
-        throw new Error("Patron ID not found in storage.");
-      inputField.value = result.patronBarcode;
+    chrome.storage.local.get("request", (result) => {
+      console.log(result);
+      const { patronBarcode, title, fee } = result.request || {};
+      console.log(patronBarcode, title, fee);
+      if (!patronBarcode) throw new Error("Patron barcode not provided.");
+
+      inputField.value = patronBarcode;
       const event = new Event("input", { bubbles: true, cancelable: true });
       inputField.dispatchEvent(event);
       submitButton.click();
-      goToBilling();
+      goToBillingTab();
       clickAddBilling();
-      chrome.storage.local.remove("patronBarcode");
+      addBillingNotes(title, fee);
+      chrome.storage.local.remove("request");
     });
   } catch (error) {
     console.error(error.message);
   }
 
-  const goToBilling = async () => {
+  const goToBillingTab = async () => {
     // Waits for link to billing tab to appear on patron page
     try {
       const billingLink = await waitForElementWithInterval(() => {
@@ -66,6 +70,25 @@
       addBillingButton.click();
     } catch (error) {
       console.error("Add Billing button not found:", error.message);
+    }
+  };
+
+  const addBillingNotes = async (title, fee) => {
+    // Waits for billing modal to appear and then fills out fee and title
+    try {
+      const billingModal = await waitForElementWithInterval(() => {
+        return document.querySelector(".modal-content");
+      });
+      const feeInput = billingModal.querySelector("#amount-input");
+      const titleInput = billingModal.querySelector("textarea");
+
+      feeInput.value = fee;
+      titleInput.value = `Patron approved lending fee for "ILL Title - ${title}" sent out from ILL today.`;
+
+      const submitButton = billingModal.querySelector(".btn.btn-success");
+      saveButton.focus();
+    } catch (error) {
+      console.error("Billing modal not found:", error.message);
     }
   };
 })();
