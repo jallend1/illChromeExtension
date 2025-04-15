@@ -164,8 +164,6 @@ const addEventListeners = () => {
     printLabel.checked
       ? chrome.storage.local.set({ printLabel: true })
       : chrome.storage.local.set({ printLabel: false });
-    console.log("Print label clicked");
-    console.log(printLabel.checked);
   });
 
   autoReturnILL.addEventListener("click", () => {
