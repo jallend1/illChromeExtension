@@ -1,4 +1,4 @@
-(async (patronBarcode, title, fee) => {
+(async () => {
   const waitForElementWithInterval = (selectorOrFunction) =>
     new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -79,6 +79,8 @@
       const billingModal = await waitForElementWithInterval(() => {
         return document.querySelector(".modal-content");
       });
+      if (!billingModal) throw new Error("Billing modal not found.");
+      
       const feeInput = billingModal.querySelector("#amount-input");
       const titleInput = billingModal.querySelector("textarea");
 
@@ -86,7 +88,7 @@
       titleInput.value = `Patron approved lending fee for "ILL Title - ${title}" sent out from ILL today.`;
 
       const submitButton = billingModal.querySelector(".btn.btn-success");
-      saveButton.focus();
+      submitButton.focus();
     } catch (error) {
       console.error("Billing modal not found:", error.message);
     }
