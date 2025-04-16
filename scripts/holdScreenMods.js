@@ -104,7 +104,7 @@
                 if (isSecondPatron) handleSecondPatron();
 
                 console.log("Checking for lending fee...");
-                if (isLendingFee) {
+                if (isLendingFee && isLendingFee !== "0.00") {
                   const { patronID, title } = requestData;
                   handleFee(isLendingFee, patronID, title);
                 }
