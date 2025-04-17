@@ -398,6 +398,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   // TODO: Work in progress to implement recommendations for return dates
   if (currentUrl.includes("share.worldcat.org")) {
     // TODO: Add some kind of flag to check if the script has already been run? Regex seems like a good potential solution?
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/worldShareMods.js"],
+    });
     // const regex = /\/requests\/(\d+)/;
     // const match = currentUrl.match(regex);
     // console.log(match[1]);
