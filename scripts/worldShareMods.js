@@ -1,4 +1,3 @@
-// TODO: Insert this with background.js on appropriate pages
 (async () => {
   // Same function as in retrievePatron.js
   const waitForElementWithInterval = (selectorOrFunction) =>
@@ -7,7 +6,7 @@
       const intervalId = setInterval(() => {
         const element =
           typeof selectorOrFunction === "function"
-            ? selectorOrFunction() // If a function, call it to get the element
+            ? selectorOrFunction() // If a function, invoke it to get the element (Not necessary in this file...yet)
             : document.querySelector(selectorOrFunction); // If a selector, go to town
 
         if (element) {
@@ -45,7 +44,6 @@
       dispositionElement.innerText.includes("Overdue")
     ) {
       applyStyles(dispositionElement);
-      applyStyles(requestStatus);
     }
   }
 })();
