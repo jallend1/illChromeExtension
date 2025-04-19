@@ -89,8 +89,13 @@ if (!window.worldShareModsInjected) {
       }
     };
 
-    highlightDueDate();
-    highlightRequestStatus();
+    //
+    const requestUrlRegEx = /(\d{8,10})/;
+
+    if (window.currentUrl.match(requestUrlRegEx)) {
+      highlightDueDate();
+      highlightRequestStatus();
+    }
   };
 
   const monitorUrlChanges = () => {
