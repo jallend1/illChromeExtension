@@ -28,14 +28,19 @@ if (!window.worldShareModsInjected) {
       requestsContainer.dataset.observerAdded = true;
       requestsContainer.dataset.currentChildCount =
         requestsContainer.childElementCount;
-      const config = { childList: true, subtree: true };
+      const config = { childList: true, subtree: true, attributes: true };
 
       const handleRequestsMutations = (mutationsList) => {
         for (const mutation of mutationsList) {
           if (
-            mutation.type === "childList" &&
+            mutation.type === "attributes" &&
             mutation.target === requestsContainer
           ) {
+            // TODO: Shift to classlist.contains() instead of checking for specific classes
+            const addedClass = mutation.target.classList.contains(
+              "yui3-default-hidden"
+            );
+
             const newChildCount = mutation.target.childElementCount;
             const oldChildCount = requestsContainer.dataset.currentChildCount;
             if (newChildCount !== oldChildCount) {
