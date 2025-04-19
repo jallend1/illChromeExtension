@@ -69,15 +69,8 @@ if (!window.worldShareModsInjected) {
         const diffTime = dueDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
         // If due date is today or in the past, emphasize it
-        if (diffDays <= 0) {
-          console.log(
-            "Due date is today or in the past, applying warning styles..."
-          );
-          applyWarningStyles(dueDateElement);
-        } else if (diffDays >= 21) {
-          console.log(
-            "Due date is more than 21 days away, applying green styles..."
-          );
+        if (diffDays <= 0) applyWarningStyles(dueDateElement);
+        else if (diffDays >= 21) {
           dueDateElement.style.backgroundColor = "green";
           dueDateElement.style.color = "white";
           dueDateElement.style.padding = "0.4rem";
@@ -89,7 +82,7 @@ if (!window.worldShareModsInjected) {
       }
     };
 
-    //
+    // Checks if the current URL has a request number, versus any other WorldShare page
     const requestUrlRegEx = /(\d{8,10})/;
 
     if (window.currentUrl.match(requestUrlRegEx)) {
