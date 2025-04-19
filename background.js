@@ -108,14 +108,6 @@ chrome.storage.local.get("lendingMode", (result) => {
   }
 });
 
-// Fire frequentLending script to update when page is updated to ensure persistence of lending bar
-chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  const { tabId, url } = details;
-  if (url.includes("/eg2/en-US/staff/")) {
-    executeScript(tabId, "frequentLending");
-  }
-});
-
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
   currentOptions.forEach((option) => {
@@ -309,6 +301,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
   }
 
+  if (
+    changeInfo.status === "complete" &&
+    tab.url.includes("share.worldcat.org")
+  ) {
+    console.log("Tabs updated!");
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/worldShareMods.js"],
+    });
+  }
+
   // TODO: Add a modal informing user that transit was clicked
   // Dismisses 'Open Transit on item' modal when checking out items
   if (tab.url.includes("/checkout") && changeInfo.status === "complete") {
@@ -347,8 +350,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   // TODO: This if/else situation is absurd and nobody should ever lay eyes on it but me
   if (arePassiveToolsActive === false) return;
+
   let tabId = details.tabId;
   let currentUrl = details.url;
+
+  // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
+  if (currentUrl.includes("/eg2/en-US/staff/")) {
+    executeScript(tabId, "frequentLending");
+  }
+
   if (!isAllowedHost(currentUrl)) {
     return;
   }
