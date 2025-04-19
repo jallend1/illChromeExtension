@@ -3,26 +3,62 @@ if (!window.worldShareModsInjected) {
   window.worldShareModsInjected = true;
   window.currentUrl = window.location.href;
 
-  const runWorldShareMods = async () => {
-    const waitForElementWithInterval = (selectorOrFunction) =>
-      new Promise((resolve, reject) => {
-        const startTime = Date.now();
-        const intervalId = setInterval(() => {
-          const element =
-            typeof selectorOrFunction === "function"
-              ? selectorOrFunction()
-              : document.querySelector(selectorOrFunction);
+  const waitForElementWithInterval = (selectorOrFunction) =>
+    new Promise((resolve, reject) => {
+      const startTime = Date.now();
+      const intervalId = setInterval(() => {
+        const element =
+          typeof selectorOrFunction === "function"
+            ? selectorOrFunction()
+            : document.querySelector(selectorOrFunction);
 
-          if (element) {
-            clearInterval(intervalId); // Clears interval when element is found
-            resolve(element);
-          } else if (Date.now() - startTime > 10000) {
-            clearInterval(intervalId);
-            reject(new Error(`Element not found.`));
+        if (element) {
+          clearInterval(intervalId); // Clears interval when element is found
+          resolve(element);
+        } else if (Date.now() - startTime > 10000) {
+          clearInterval(intervalId);
+          reject(new Error(`Element not found.`));
+        }
+      }, 100);
+    });
+
+  const retrieveRequestsContainer = async () => {
+    const requestsContainer = await waitForElementWithInterval("#requests");
+    if (requestsContainer && !requestsContainer.dataset.observerAdded) {
+      requestsContainer.dataset.observerAdded = true;
+      requestsContainer.dataset.currentChildCount =
+        requestsContainer.childElementCount;
+      const config = { childList: true, subtree: true };
+
+      const handleRequestsMutations = (mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (
+            mutation.type === "childList" &&
+            mutation.target === requestsContainer
+          ) {
+            const newChildCount = mutation.target.childElementCount;
+            const oldChildCount = requestsContainer.dataset.currentChildCount;
+            if (newChildCount !== oldChildCount) {
+              console.log("Child count changed.");
+              requestsContainer.dataset.currentChildCount = newChildCount;
+              // console.log(requestsContainer.childElementCount);
+              // console.log("A child node has been added or removed.");
+              runWorldShareMods();
+            }
           }
-        }, 100);
-      });
+        }
+      };
+      const observer = new MutationObserver(handleRequestsMutations);
+      observer.observe(requestsContainer, config);
+    }
+    console.log(requestsContainer?.childElementCount);
+  };
 
+  retrieveRequestsContainer();
+
+  const runWorldShareMods = async () => {
+    console.log("Running WorldShare mods...");
+    // retrieveRequestsContainer();
     const applyWarningStyles = (el) => {
       el.style.backgroundColor = "red";
       el.style.color = "white";
@@ -33,8 +69,9 @@ if (!window.worldShareModsInjected) {
 
     const highlightRequestStatus = async () => {
       const requestStatus = await waitForElementWithInterval(
-        "[data='requestStatus']"
+        "div:not(.yui3-default-hidden) span[data='requestStatus']"
       );
+      // console.log(requestStatus.innerText);
       if (!requestStatus) {
         console.error("Request status not found.");
         return;
@@ -57,8 +94,9 @@ if (!window.worldShareModsInjected) {
     };
     const highlightDueDate = async () => {
       const dueDateElement = await waitForElementWithInterval(
-        '[data="returning.originalDueToSupplier"]'
+        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]'
       );
+      // console.log(dueDateElement.innerText);
       try {
         if (!dueDateElement) {
           console.error("Due date element not found.");
@@ -101,6 +139,6 @@ if (!window.worldShareModsInjected) {
     observer.observe(document.body, { childList: true, subtree: true });
   };
 
-  runWorldShareMods();
+  // runWorldShareMods();
   monitorUrlChanges();
 }
