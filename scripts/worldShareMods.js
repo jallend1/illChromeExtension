@@ -17,53 +17,14 @@ if (!window.worldShareModsInjected) {
           resolve(element);
         } else if (Date.now() - startTime > 10000) {
           clearInterval(intervalId);
-          reject(new Error(`Element not found.`));
+          reject(new Error(`Element not found. ${selectorOrFunction}`));
         }
       }, 100);
     });
 
-  const retrieveRequestsContainer = async () => {
-    const requestsContainer = await waitForElementWithInterval("#requests");
-    if (requestsContainer && !requestsContainer.dataset.observerAdded) {
-      requestsContainer.dataset.observerAdded = true;
-      requestsContainer.dataset.currentChildCount =
-        requestsContainer.childElementCount;
-      const config = { childList: true, subtree: true, attributes: true };
-
-      const handleRequestsMutations = (mutationsList) => {
-        for (const mutation of mutationsList) {
-          if (
-            mutation.type === "attributes" &&
-            mutation.target === requestsContainer
-          ) {
-            // TODO: Shift to classlist.contains() instead of checking for specific classes
-            const addedClass = mutation.target.classList.contains(
-              "yui3-default-hidden"
-            );
-
-            const newChildCount = mutation.target.childElementCount;
-            const oldChildCount = requestsContainer.dataset.currentChildCount;
-            if (newChildCount !== oldChildCount) {
-              console.log("Child count changed.");
-              requestsContainer.dataset.currentChildCount = newChildCount;
-              // console.log(requestsContainer.childElementCount);
-              // console.log("A child node has been added or removed.");
-              runWorldShareMods();
-            }
-          }
-        }
-      };
-      const observer = new MutationObserver(handleRequestsMutations);
-      observer.observe(requestsContainer, config);
-    }
-    console.log(requestsContainer?.childElementCount);
-  };
-
-  retrieveRequestsContainer();
-
   const runWorldShareMods = async () => {
     console.log("Running WorldShare mods...");
-    // retrieveRequestsContainer();
+
     const applyWarningStyles = (el) => {
       el.style.backgroundColor = "red";
       el.style.color = "white";
@@ -74,9 +35,8 @@ if (!window.worldShareModsInjected) {
 
     const highlightRequestStatus = async () => {
       const requestStatus = await waitForElementWithInterval(
-        "div:not(.yui3-default-hidden) span[data='requestStatus']"
+        "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
       );
-      // console.log(requestStatus.innerText);
       if (!requestStatus) {
         console.error("Request status not found.");
         return;
@@ -87,7 +47,7 @@ if (!window.worldShareModsInjected) {
         applyWarningStyles(requestStatus);
       else if (requestStatus.innerText.includes("Received")) {
         const dispositionElement = document.querySelector(
-          "[data='disposition']"
+          "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)"
         );
         if (
           dispositionElement &&
@@ -99,7 +59,7 @@ if (!window.worldShareModsInjected) {
     };
     const highlightDueDate = async () => {
       const dueDateElement = await waitForElementWithInterval(
-        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]'
+        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
       );
       // console.log(dueDateElement.innerText);
       try {
@@ -128,9 +88,9 @@ if (!window.worldShareModsInjected) {
     // Checks if the current URL has a request number, versus any other WorldShare page
     const requestUrlRegEx = /(\d{8,10})/;
 
+    highlightDueDate();
+    highlightRequestStatus();
     if (window.currentUrl.match(requestUrlRegEx)) {
-      highlightDueDate();
-      highlightRequestStatus();
     }
   };
 
@@ -144,6 +104,6 @@ if (!window.worldShareModsInjected) {
     observer.observe(document.body, { childList: true, subtree: true });
   };
 
-  // runWorldShareMods();
+  runWorldShareMods();
   monitorUrlChanges();
 }
