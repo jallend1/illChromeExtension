@@ -19,20 +19,19 @@
     };
 
     const elementSelectors = {
-      title: 'span[data="resource.title"]',
-      requestNumber: ".accordionRequestDetailsRequestId",
-      patronID: 'input[data="requester.patron.userId"]',
-      lendingFee: 'span[data="billing.charges.amountAsString"]',
-      dueDate: 'span[data="returning.originalDueToSupplier"]',
-      currentLender: 'span[data="lenderString.currentSupplier.symbol"]',
-      region: 'span[data="returning.address.region"]',
-      patronName: 'input[data="requester.patron.name"]',
-      patronNote: 'textarea[data="requester.patron.note"]',
+      title: 'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
+      requestNumber: "div:not(.yui3-default-hidden) span.accordionRequestDetailsRequestId:not(div.yui3-default-hidden span)",
+      patronID: 'div:not(.yui3-default-hidden) input[data="requester.patron.userId"]:not(div.yui3-default-hidden input)',
+      lendingFee: 'div:not(.yui3-default-hidden) span[data="billing.charges.amountAsString"]:not(div.yui3-default-hidden span)',
+      dueDate: 'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
+      currentLender: 'div:not(.yui3-default-hidden) span[data="lenderString.currentSupplier.symbol"]:not(div.yui3-default-hidden span)',
+      region: 'div:not(.yui3-default-hidden) span[data="returning.address.region"]:not(div.yui3-default-hidden span)',
+      patronName: 'div:not(.yui3-default-hidden) input[data="requester.patron.name"]:not(div.yui3-default-hidden input)',
+      patronNote: 'div:not(.yui3-default-hidden) textarea[data="requester.patron.note"]:not(div.yui3-default-hidden textarea)',
     };
 
     const extractValueFromField = (selector) => {
-      const allMatches = document.querySelectorAll(selector);
-      const currentMatch = allMatches[allMatches.length - 1];
+      const currentMatch = document.querySelector(selector);
       if (selector.includes("patron.userId"))
         return currentMatch?.value.replace(/[^0-9]/g, "");
       // If selector includes 'input' return the value, otherwise return the textContent
@@ -58,7 +57,7 @@
           : (addressObject[key] = "NONE");
       } else {
         let element = extractValueFromField(
-          `input[data="returning.address.${key}"]`
+          `div:not(.yui3-default-hidden) input[data="returning.address.${key}"]:not(div.yui3-default-hidden input)`
         );
         element ? (addressObject[key] = element) : (addressObject[key] = "");
       }
