@@ -19,15 +19,24 @@
     };
 
     const elementSelectors = {
-      title: 'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
-      requestNumber: "div:not(.yui3-default-hidden) span.accordionRequestDetailsRequestId:not(div.yui3-default-hidden span)",
-      patronID: 'div:not(.yui3-default-hidden) input[data="requester.patron.userId"]:not(div.yui3-default-hidden input)',
-      lendingFee: 'div:not(.yui3-default-hidden) span[data="billing.charges.amountAsString"]:not(div.yui3-default-hidden span)',
-      dueDate: 'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-      currentLender: 'div:not(.yui3-default-hidden) span[data="lenderString.currentSupplier.symbol"]:not(div.yui3-default-hidden span)',
-      region: 'div:not(.yui3-default-hidden) span[data="returning.address.region"]:not(div.yui3-default-hidden span)',
-      patronName: 'div:not(.yui3-default-hidden) input[data="requester.patron.name"]:not(div.yui3-default-hidden input)',
-      patronNote: 'div:not(.yui3-default-hidden) textarea[data="requester.patron.note"]:not(div.yui3-default-hidden textarea)',
+      title:
+        "#requests > div:not([class*='hidden']) span[data='resource.title']",
+      requestNumber:
+        "#requests > div:not([class*='hidden']) span.accordionRequestDetailsRequestId",
+      patronID:
+        '#requests > div:not([class*="hidden"]) input[data="requester.patron.userId"]',
+      lendingFee:
+        '#requests > div:not([class*="hidden"]) span[data="billing.charges.amountAsString"]',
+      dueDate:
+        '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
+      currentLender:
+        '#requests > div:not([class*="hidden"]) span[data="lenderString.currentSupplier.symbol"]',
+      region:
+        '#requests > div:not([class*="hidden"]) span[data="returning.address.region"]',
+      patronName:
+        '#requests > div:not([class*="hidden"]) input[data="requester.patron.name"]',
+      patronNote:
+        '#requests > div:not([class*="hidden"]) textarea[data="requester.patron.note"]',
     };
 
     const extractValueFromField = (selector) => {
@@ -57,7 +66,7 @@
           : (addressObject[key] = "NONE");
       } else {
         let element = extractValueFromField(
-          `div:not(.yui3-default-hidden) input[data="returning.address.${key}"]:not(div.yui3-default-hidden input)`
+          `#requests > div:not([class*="hidden"]) input[data="returning.address.${key}"]`
         );
         element ? (addressObject[key] = element) : (addressObject[key] = "");
       }
@@ -160,6 +169,7 @@
       const isSecondPatron = extractValueFromField(
         elementSelectors.patronNote
       )?.includes("2nd");
+
       return {
         addressString,
         requestNumber,
