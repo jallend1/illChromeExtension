@@ -153,13 +153,21 @@
       }
 
       if (printLabel) {
+        // Prints the Dymo label and indicates as much in status modal
         dymoFunctions.printDymoLabel(addressString);
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Printing label!</h2> <p style="font-size: 1rem;">The address has also been copied to your clipboard.</p>`,
+          "#4CAF50",
+          chrome.runtime.getURL("images/kawaii-dinosaur.png")
+        );
+      } else {
+        // Displays a success modal indicating the address has been copied
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
+          "#4CAF50",
+          chrome.runtime.getURL("images/kawaii-dinosaur.png")
+        );
       }
-      statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
-        "#4CAF50",
-        chrome.runtime.getURL("images/kawaii-dinosaur.png")
-      );
     } else {
       statusModal(
         `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not valid.</p><p>${address}</p>`,
