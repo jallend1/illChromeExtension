@@ -88,9 +88,9 @@ if (!window.worldShareModsInjected) {
     // Checks if the current URL has a request number, versus any other WorldShare page
     const requestUrlRegEx = /(\d{8,10})/;
 
-    highlightDueDate();
-    highlightRequestStatus();
     if (window.currentUrl.match(requestUrlRegEx)) {
+       highlightDueDate();
+       highlightRequestStatus();
     }
   };
 
