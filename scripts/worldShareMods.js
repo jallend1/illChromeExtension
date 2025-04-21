@@ -3,6 +3,14 @@ if (!window.worldShareModsInjected) {
   window.worldShareModsInjected = true;
   window.currentUrl = window.location.href;
 
+  const calculateTimeDiff = (dueDateString) => {
+    const dueDate = new Date(dueDateString);
+    const today = new Date();
+    const diffTime = dueDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
+    return diffDays;
+  }
+
   const waitForElementWithInterval = (selectorOrFunction) =>
     new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -24,9 +32,8 @@ if (!window.worldShareModsInjected) {
     });
 
   const runWorldShareMods = async () => {
-
-    const applyWarningStyles = (el) => {
-      el.style.backgroundColor = "red";
+    const applyWarningStyles = (el, color) => {
+      el.style.backgroundColor = color;
       el.style.color = "white";
       el.style.padding = "0.4rem";
       el.style.borderRadius = "0.5rem";
@@ -37,14 +44,11 @@ if (!window.worldShareModsInjected) {
       const requestStatus = await waitForElementWithInterval(
         "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
       );
-      if (!requestStatus) {
-        console.error("Request status not found.");
-        return;
-      }
-
+      if (!requestStatus) return;
       // If the request status is recalled, emphasize it
       if (requestStatus.innerText.includes("Recalled"))
-        applyWarningStyles(requestStatus);
+        applyWarningStyles(requestStatus, "red");
+      // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
         const dispositionElement = document.querySelector(
           "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)"
@@ -53,7 +57,7 @@ if (!window.worldShareModsInjected) {
           dispositionElement &&
           dispositionElement.innerText.includes("Overdue")
         ) {
-          applyWarningStyles(dispositionElement);
+          applyWarningStyles(dispositionElement, "red");
         }
       }
     };
@@ -62,22 +66,12 @@ if (!window.worldShareModsInjected) {
         'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
       );
       try {
-        if (!dueDateElement) {
-          // console.error("Due date element not found.");
-          return;
-        }
-        const dueDate = new Date(dueDateElement.innerText);
-        const today = new Date();
-        const diffTime = dueDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
+        if (!dueDateElement) return;
+        const diffDays = calculateTimeDiff(dueDateElement.innerText);
         // If due date is today or in the past, emphasize it
-        if (diffDays <= 0) applyWarningStyles(dueDateElement);
+        if (diffDays <= 0) applyWarningStyles(dueDateElement, "red");
         else if (diffDays >= 21) {
-          dueDateElement.style.backgroundColor = "green";
-          dueDateElement.style.color = "white";
-          dueDateElement.style.padding = "0.4rem";
-          dueDateElement.style.borderRadius = "0.5rem";
-          dueDateElement.style.fontWeight = "bold";
+          applyWarningStyles(dueDateElement, "green");
         }
       } catch (error) {
         console.error("Error parsing due date:", error);
@@ -100,9 +94,16 @@ if (!window.worldShareModsInjected) {
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener("beforeunload", () => {
+      observer.disconnect();
+    });
   };
 
+  // Runs the script initially when the page loads
   if(isTargetUrl(window.currentUrl)) runWorldShareMods();
 
+  // Sets up a MutationObserver to monitor URL changes
+  // and reruns the script when we got a new URL
   monitorUrlChanges();
 }
