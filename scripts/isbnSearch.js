@@ -20,9 +20,9 @@ async function isbnSearch() {
   };
 
   const extractFields = (selector) => {
-    const fields = document.querySelectorAll(selector);
-    const subtractor = selector.includes("title") ? 2 : 1; // Title field has an extra node for some reason
-    const latestField = fields[fields.length - subtractor];
+    const latestField = document.querySelector(`div:not(.yui3-default-hidden) span${selector}:not(div.yui3-default-hidden span)`);
+    // const subtractor = selector.includes("title") ? 2 : 1; // Title field has an extra node for some reason
+    // const latestField = fields[fields.length - subtractor];
     return latestField ? latestField.textContent : null;
   };
 
@@ -32,7 +32,9 @@ async function isbnSearch() {
   let isbn = extractFields(".yui-field-isbn")?.split(" ")[0].replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
   let title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
   let author = extractFields(".yui-field-author")?.split(";")[0]; // Takes the first author
-
+  console.log("ISBN: ", isbn);
+  console.log("Title: ", title);
+  console.log("Author: ", author);
   let searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
