@@ -17,13 +17,13 @@ if (!window.worldShareModsInjected) {
           resolve(element);
         } else if (Date.now() - startTime > 10000) {
           clearInterval(intervalId);
-          reject(new Error(`Element not found. ${selectorOrFunction}`));
+          resolve(null); // Resolves with null cuz we don't need to be throwing errors around willy nilly
+          // reject(new Error(`Element not found. ${selectorOrFunction}`));
         }
       }, 100);
     });
 
   const runWorldShareMods = async () => {
-    console.log("Running WorldShare mods...");
 
     const applyWarningStyles = (el) => {
       el.style.backgroundColor = "red";
@@ -61,10 +61,9 @@ if (!window.worldShareModsInjected) {
       const dueDateElement = await waitForElementWithInterval(
         'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
       );
-      // console.log(dueDateElement.innerText);
       try {
         if (!dueDateElement) {
-          console.error("Due date element not found.");
+          // console.error("Due date element not found.");
           return;
         }
         const dueDate = new Date(dueDateElement.innerText);
@@ -84,26 +83,26 @@ if (!window.worldShareModsInjected) {
         console.error("Error parsing due date:", error);
       }
     };
-
-    // Checks if the current URL has a request number, versus any other WorldShare page
-    const requestUrlRegEx = /(\d{8,10})/;
-
-    if (window.currentUrl.match(requestUrlRegEx)) {
-       highlightDueDate();
-       highlightRequestStatus();
-    }
+    highlightDueDate();
+    highlightRequestStatus();
   };
+
+  const isTargetUrl = (url) => {
+    const requestUrlRegEx = /(\d{8,10})/;
+    return url.match(requestUrlRegEx);
+  }
 
   const monitorUrlChanges = () => {
     const observer = new MutationObserver(() => {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
-        runWorldShareMods();
+        if(isTargetUrl(window.currentUrl)) runWorldShareMods();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
   };
 
-  runWorldShareMods();
+  if(isTargetUrl(window.currentUrl)) runWorldShareMods();
+
   monitorUrlChanges();
 }
