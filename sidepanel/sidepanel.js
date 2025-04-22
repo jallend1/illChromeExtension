@@ -29,19 +29,20 @@ const storageKeys = [
 ];
 
 const branchHours = {
-  0: { system: 11, bellevue: 11, dayOfWeek: "Sunday" },
-  1: { system: 10, bellevue: 10, dayOfWeek: "Monday" },
-  2: { system: 12, bellevue: 11, dayOfWeek: "Tuesday" },
-  3: { system: 12, bellevue: 11, dayOfWeek: "Wednesday" },
-  4: { system: 10, bellevue: 10, dayOfWeek: "Thursday" },
-  5: { system: 10, bellevue: 10, dayOfWeek: "Friday" },
-  6: { system: 11, bellevue: 11, dayOfWeek: "Saturday" },
+  0: { system: 11, bellevue: 11 },
+  1: { system: 10, bellevue: 10 },
+  2: { system: 12, bellevue: 11 },
+  3: { system: 12, bellevue: 11 },
+  4: { system: 10, bellevue: 10 },
+  5: { system: 10, bellevue: 10 },
+  6: { system: 11, bellevue: 11 },
 };
 
 const countdownTimer = () => {
   const today = new Date();
   const dayOfWeek = today.getDay();
   const { system, bellevue } = branchHours[dayOfWeek];
+
   const openingTime = new Date(
     today.getFullYear(),
     today.getMonth(),
@@ -60,16 +61,15 @@ const countdownTimer = () => {
   );
 
   const timeDifference = bellevueOpeningTime - today;
-  if (timeDifference < 0) {
-    if (today >= openingTime) {
-      countdownTimerElement.textContent = "Branches are open.";
-      clearInterval(intervalID);
-    } else if (today >= bellevueOpeningTime) {
-      countdownTimerElement.textContent = "Bellevue branch is open.";
-      countdownTextElement.textContent = `Other branches: ${calculateTime(
-        openingTime - today
-      )}`;
-    }
+
+  if (today >= openingTime) {
+    countdownTimerElement.textContent = "All branches have opened.";
+    clearInterval(intervalID);
+  } else if (today >= bellevueOpeningTime) {
+    countdownTimerElement.textContent = "Bellevue branch has opened.";
+    countdownTextElement.textContent = `Other branches: ${calculateTime(
+      openingTime - today
+    )}`;
   } else {
     countdownTimerElement.textContent = calculateTime(timeDifference);
   }
