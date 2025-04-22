@@ -16,13 +16,14 @@ async function isbnSearch() {
   );
 
   const buildSearchURL = (query) => {
-    return `search?org=1&limit=10&query=${query}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
+    const encodedQuery = encodeURIComponent(query); // Encodes the query for URL to deal with those troublesome ampersands
+    return `search?org=1&limit=10&query=${encodedQuery}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
   };
 
   const extractFields = (selector) => {
-    const latestField = document.querySelector(`div:not(.yui3-default-hidden) span${selector}:not(div.yui3-default-hidden span)`);
-    // const subtractor = selector.includes("title") ? 2 : 1; // Title field has an extra node for some reason
-    // const latestField = fields[fields.length - subtractor];
+    const latestField = document.querySelector(
+      `div:not(.yui3-default-hidden) span${selector}:not(div.yui3-default-hidden span)`
+    );
     return latestField ? latestField.textContent : null;
   };
 
@@ -32,9 +33,6 @@ async function isbnSearch() {
   let isbn = extractFields(".yui-field-isbn")?.split(" ")[0].replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
   let title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
   let author = extractFields(".yui-field-author")?.split(";")[0]; // Takes the first author
-  console.log("ISBN: ", isbn);
-  console.log("Title: ", title);
-  console.log("Author: ", author);
   let searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
