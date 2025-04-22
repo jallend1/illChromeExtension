@@ -3,6 +3,8 @@ const illActions = document.querySelectorAll(".ill-actions");
 const logoLeft = document.querySelector("#logo-left");
 const logoRight = document.querySelector("#logo-right");
 const isbnSearch = document.querySelector("#isbn-search");
+const countdownTimerElement = document.querySelector("#countdown");
+const countdownTextElement = document.querySelector("#countdown-text");
 
 // Toggle Switch Elements
 const darkModeToggle = document.querySelector("#dark-mode");
@@ -25,6 +27,66 @@ const storageKeys = [
   { key: "printLabel", element: printLabel },
   { key: "autoReturnILL", element: autoReturnILL },
 ];
+
+const branchHours = {
+  0: { system: 11, bellevue: 11, dayOfWeek: "Sunday" },
+  1: { system: 10, bellevue: 10, dayOfWeek: "Monday" },
+  2: { system: 12, bellevue: 11, dayOfWeek: "Tuesday" },
+  3: { system: 12, bellevue: 11, dayOfWeek: "Wednesday" },
+  4: { system: 10, bellevue: 10, dayOfWeek: "Thursday" },
+  5: { system: 10, bellevue: 10, dayOfWeek: "Friday" },
+  6: { system: 11, bellevue: 11, dayOfWeek: "Saturday" },
+};
+
+const countdownTimer = () => {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const { system, bellevue } = branchHours[dayOfWeek];
+  const openingTime = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+    system,
+    0,
+    0
+  );
+  const bellevueOpeningTime = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+    bellevue,
+    0,
+    0
+  );
+
+  const timeDifference = bellevueOpeningTime - today;
+  if (timeDifference < 0) {
+    if (today >= openingTime) {
+      countdownTimerElement.textContent = "Branches are open.";
+      clearInterval(intervalID);
+    } else if (today >= bellevueOpeningTime) {
+      countdownTimerElement.textContent = "Bellevue branch is open.";
+      countdownTextElement.textContent = `Other branches: ${calculateTime(
+        openingTime - today
+      )}`;
+    }
+  } else {
+    countdownTimerElement.textContent = calculateTime(timeDifference);
+  }
+};
+
+const intervalID = setInterval(countdownTimer, 1000);
+
+const calculateTime = (timeDifference) => {
+  const totalSeconds = Math.floor(timeDifference / 1000);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = Math.floor(totalSeconds % 60);
+  const remainingHours = Math.floor(totalMinutes / 60);
+  const remainingMinutes = Math.floor(totalMinutes % 60);
+  return `${remainingHours < 10 ? "0" + remainingHours : remainingHours}:${
+    remainingMinutes < 10 ? "0" + remainingMinutes : remainingMinutes
+  }:${remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds}`;
+};
 
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {
