@@ -43,7 +43,7 @@ body {
       font-size: 0.8rem;
 
       p {
-        margin: 0;
+        margin: 0.25rem;
       }
     }
   }
@@ -391,4 +391,10 @@ button {
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+.countdown-alert {
+  background-color: rgb(231, 93, 93);
+  padding: 0.25rem;
+  border-radius: 0.5rem;
 }

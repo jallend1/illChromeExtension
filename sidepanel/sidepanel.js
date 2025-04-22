@@ -31,7 +31,7 @@ const storageKeys = [
 const branchHours = {
   0: { system: 11, bellevue: 11 },
   1: { system: 10, bellevue: 10 },
-  2: { system: 12, bellevue: 11 },
+  2: { system: 14, bellevue: 13 },
   3: { system: 12, bellevue: 11 },
   4: { system: 10, bellevue: 10 },
   5: { system: 10, bellevue: 10 },
@@ -64,14 +64,33 @@ const countdownTimer = () => {
 
   if (today >= openingTime) {
     countdownTimerElement.textContent = "All branches have opened.";
+    countdownTimerElement.classList.remove("countdown-alert");
     clearInterval(intervalID);
   } else if (today >= bellevueOpeningTime) {
-    countdownTimerElement.textContent = "Bellevue branch has opened.";
-    countdownTextElement.textContent = `Other branches: ${calculateTime(
-      openingTime - today
-    )}`;
+    countdownTimerElement.textContent = "Bellevue has opened.";
+    countdownTimerElement.classList.remove("countdown-alert");
+    const otherBranchOpeningTime = calculateTime(openingTime - today);
+    countdownTextElement.textContent = `Other branches: ${otherBranchOpeningTime}`;
+    otherBranchOpeningTime.startsWith("00")
+      ? countdownTextElement.classList.add("countdown-alert")
+      : countdownTextElement.classList.remove("countdown-alert");
   } else {
-    countdownTimerElement.textContent = calculateTime(timeDifference);
+    if (bellevue === system) {
+      countdownTimerElement.textContent = `Branches open in ${calculateTime(
+        timeDifference
+      )}`;
+      countdownTimerElement.textContent.startsWith("00")
+        ? countdownTimerElement.classList.add("countdown-alert")
+        : countdownTimerElement.classList.remove("countdown-alert");
+    } else {
+      const otherBranchOpeningTime = calculateTime(openingTime - today);
+      const bellevueOpeningTime = calculateTime(bellevueOpeningTime - today);
+      countdownTimerElement.textContent = `Bellevue opens in ${bellevueOpeningTime}`;
+      countdownTextElement.textContent = `Other branches: ${otherBranchOpeningTime}`;
+      bellevueOpeningTime.startsWith("00")
+        ? countdownTimerElement.classList.add("countdown-alert")
+        : countdownTimerElement.classList.remove("countdown-alert");
+    }
   }
 };
 
