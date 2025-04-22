@@ -245,14 +245,6 @@ const addEventListeners = () => {
     });
   });
 
-  logoLeft.addEventListener("click", () => {
-    logoLeft.classList.toggle("logo-left-animation");
-  });
-
-  logoRight.addEventListener("click", () => {
-    logoRight.classList.toggle("logo-right-animation");
-  });
-
   collapseToggle.forEach((toggle) => {
     toggle.addEventListener("click", () => {
       const mainSection = toggle.parentElement.nextElementSibling;
@@ -285,13 +277,6 @@ const addEventListeners = () => {
     lendingMode.checked
       ? chrome.storage.local.set({ lendingMode: true })
       : chrome.storage.local.set({ lendingMode: false });
-  });
-
-  darkModeToggle.addEventListener("click", () => {
-    initiateScript("darkMode");
-    darkModeToggle.checked
-      ? chrome.storage.local.set({ darkMode: true })
-      : chrome.storage.local.set({ darkMode: false });
   });
 
   openCreateILL.addEventListener("click", () => {

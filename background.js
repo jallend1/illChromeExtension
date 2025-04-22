@@ -294,13 +294,6 @@ chrome.sidePanel
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
-  if (tab.url.includes("/staff/")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/darkMode.js"],
-    });
-  }
-
   if (
     changeInfo.status === "complete" &&
     tab.url.includes("share.worldcat.org")
@@ -361,17 +354,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 
   if (!isAllowedHost(currentUrl)) {
     return;
-  }
-  // TODO: This is a work in progress -- Mostly just playing right now
-  if (currentUrl.includes("/staff/")) {
-    chrome.scripting.insertCSS({
-      target: { tabId: tabId },
-      files: ["./styles/darkmode.css"],
-    });
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/darkMode.js"],
-    });
   }
   // Injects 'Box' and 'Bag' checkboxes on the Create ILL form
   if (currentUrl.includes("/cat/ill/track")) {
