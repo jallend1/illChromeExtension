@@ -38,6 +38,20 @@ const branchHours = {
   6: { system: 11, bellevue: 11 },
 };
 
+const updateCountdownElement = (element, text, isAlert = false) => {
+  element.textContent = text;
+  if (isAlert) {
+    element.classList.add("countdown-alert");
+  } else {
+    element.classList.remove("countdown-alert");
+  }
+};
+
+const getFormattedTimeDifference = (openingTime, currentTime) => {
+  const timeDifference = openingTime - currentTime;
+  return calculateTime(timeDifference);
+};
+
 const countdownTimer = () => {
   const today = new Date();
   const dayOfWeek = today.getDay();
@@ -60,39 +74,90 @@ const countdownTimer = () => {
     0
   );
 
-  const timeDifference = bellevueOpeningTime - today;
-
   if (today >= openingTime) {
-    countdownTimerElement.textContent = "All branches have opened.";
-    countdownTimerElement.classList.remove("countdown-alert");
+    // All branches have opened
+    updateCountdownElement(countdownTimerElement, "All branches have opened.");
     clearInterval(intervalID);
-  } else if (today >= bellevueOpeningTime) {
-    countdownTimerElement.textContent = "Bellevue has opened.";
-    countdownTimerElement.classList.remove("countdown-alert");
-    const otherBranchOpeningTime = calculateTime(openingTime - today);
-    countdownTextElement.textContent = `Other branches: ${otherBranchOpeningTime}`;
-    otherBranchOpeningTime.startsWith("00")
-      ? countdownTextElement.classList.add("countdown-alert")
-      : countdownTextElement.classList.remove("countdown-alert");
+    return;
+  }
+
+  if (today >= bellevueOpeningTime) {
+    // Bellevue has opened, others not yet
+    const branchOpeningTime = getFormattedTimeDifference(openingTime, today);
+    updateCountdownElement(
+      countdownTimerElement,
+      "Bellevue has opened.",
+      false
+    );
+    updateCountdownElement(
+      countdownTextElement,
+      `Other branches: ${branchOpeningTime}`,
+      branchOpeningTime.startsWith("00")
+    );
+    return;
+  }
+
+  // No branches have opened yet
+  const bellevueTimeRemaining = getFormattedTimeDifference(
+    bellevueOpeningTime,
+    today
+  );
+  const systemTimeRemaining = getFormattedTimeDifference(openingTime, today);
+  if (bellevue === system) {
+    // Everybody opens at the same time
+    updateCountdownElement(
+      countdownTimerElement,
+      `Branches open in ${bellevueTimeRemaining}`,
+      bellevueTimeRemaining.startsWith("00")
+    );
   } else {
-    if (bellevue === system) {
-      countdownTimerElement.textContent = `Branches open in ${calculateTime(
-        timeDifference
-      )}`;
-      countdownTimerElement.textContent.startsWith("00")
-        ? countdownTimerElement.classList.add("countdown-alert")
-        : countdownTimerElement.classList.remove("countdown-alert");
-    } else {
-      const otherBranchOpeningTime = calculateTime(openingTime - today);
-      const bellevueOpeningTime = calculateTime(bellevueOpeningTime - today);
-      countdownTimerElement.textContent = `Bellevue opens in ${bellevueOpeningTime}`;
-      countdownTextElement.textContent = `Other branches: ${otherBranchOpeningTime}`;
-      bellevueOpeningTime.startsWith("00")
-        ? countdownTimerElement.classList.add("countdown-alert")
-        : countdownTimerElement.classList.remove("countdown-alert");
-    }
+    // Bellevue and branches open at different times
+    updateCountdownElement(
+      countdownTimerElement,
+      `Bellevue opens in ${bellevueTimeRemaining}`,
+      bellevueTimeRemaining.startsWith("00")
+    );
+    updateCountdownElement(
+      countdownTextElement,
+      `Other branches: ${systemTimeRemaining}`,
+      systemTimeRemaining.startsWith("00")
+    );
   }
 };
+
+//   const timeDifference = bellevueOpeningTime - today;
+
+//   if (today >= openingTime) {
+//     countdownTimerElement.textContent = "All branches have opened.";
+//     countdownTimerElement.classList.remove("countdown-alert");
+//     clearInterval(intervalID);
+//   } else if (today >= bellevueOpeningTime) {
+//     countdownTimerElement.textContent = "Bellevue has opened.";
+//     countdownTimerElement.classList.remove("countdown-alert");
+//     const otherBranchOpeningTime = calculateTime(openingTime - today);
+//     countdownTextElement.textContent = `Other branches: ${otherBranchOpeningTime}`;
+//     otherBranchOpeningTime.startsWith("00")
+//       ? countdownTextElement.classList.add("countdown-alert")
+//       : countdownTextElement.classList.remove("countdown-alert");
+//   } else {
+//     if (bellevue === system) {
+//       countdownTimerElement.textContent = `Branches open in ${calculateTime(
+//         timeDifference
+//       )}`;
+//       countdownTimerElement.textContent.startsWith("00")
+//         ? countdownTimerElement.classList.add("countdown-alert")
+//         : countdownTimerElement.classList.remove("countdown-alert");
+//     } else {
+//       const otherBranchOpeningTime = calculateTime(openingTime - today);
+//       const bellevueOpeningTime = calculateTime(bellevueOpeningTime - today);
+//       countdownTimerElement.textContent = `Bellevue opens in ${bellevueOpeningTime}`;
+//       countdownTextElement.textContent = `Other branches: ${otherBranchOpeningTime}`;
+//       bellevueOpeningTime.startsWith("00")
+//         ? countdownTimerElement.classList.add("countdown-alert")
+//         : countdownTimerElement.classList.remove("countdown-alert");
+//     }
+//   }
+// };
 
 const intervalID = setInterval(countdownTimer, 1000);
 
