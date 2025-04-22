@@ -20,7 +20,6 @@ const storageKeys = [
   { key: "autoReceiveRequest", element: autoReceiveRequestButton },
   { key: "lendingMode", element: lendingMode },
   { key: "arePassiveToolsActive", element: passiveTools },
-  { key: "darkMode", element: darkModeToggle },
   { key: "printLabel", element: printLabel },
   { key: "autoReturnILL", element: autoReturnILL },
 ];

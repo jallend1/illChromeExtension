@@ -9,7 +9,7 @@ if (!window.worldShareModsInjected) {
     const diffTime = dueDate - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert to days
     return diffDays;
-  }
+  };
 
   const waitForElementWithInterval = (selectorOrFunction) =>
     new Promise((resolve, reject) => {
@@ -25,8 +25,8 @@ if (!window.worldShareModsInjected) {
           resolve(element);
         } else if (Date.now() - startTime > 10000) {
           clearInterval(intervalId);
-          resolve(null); // Resolves with null cuz we don't need to be throwing errors around willy nilly
-          // reject(new Error(`Element not found. ${selectorOrFunction}`));
+          // Resolves with null cuz we don't need to be throwing errors around willy nilly
+          resolve(null);
         }
       }, 100);
     });
@@ -42,7 +42,7 @@ if (!window.worldShareModsInjected) {
 
     const highlightRequestStatus = async () => {
       const requestStatus = await waitForElementWithInterval(
-        "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
+        "#requests > div:not([class*='hidden']) span[data='requestStatus']"
       );
       if (!requestStatus) return;
       // If the request status is recalled, emphasize it
@@ -51,7 +51,7 @@ if (!window.worldShareModsInjected) {
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
         const dispositionElement = document.querySelector(
-          "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)"
+          "#requests > div:not([class*='hidden']) span[data='disposition']"
         );
         if (
           dispositionElement &&
@@ -63,15 +63,30 @@ if (!window.worldShareModsInjected) {
     };
     const highlightDueDate = async () => {
       const dueDateElement = await waitForElementWithInterval(
-        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
+        '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]'
       );
       try {
         if (!dueDateElement) return;
         const diffDays = calculateTimeDiff(dueDateElement.innerText);
         // If due date is today or in the past, emphasize it
-        if (diffDays <= 0) applyWarningStyles(dueDateElement, "red");
-        else if (diffDays >= 21) {
+        if (diffDays <= 0) {
+          const requestStatus = await waitForElementWithInterval(
+            "#requests > div:not([class*='hidden']) span[data='requestStatus']"
+          );
+          // Don't highlight red if the request is returned
+          if (requestStatus && !requestStatus.innerText.includes("Returned")) {
+            applyWarningStyles(dueDateElement, "red");
+            const requestHeader = document.querySelector(
+              "#requests > div:not([class*='hidden']) .nd-request-header"
+            );
+            requestHeader.style.backgroundColor = "#f8d7da";
+          }
+        } else if (diffDays >= 21) {
           applyWarningStyles(dueDateElement, "green");
+          const requestHeader = document.querySelector(
+            "#requests > div:not([class*='hidden']) .nd-request-header"
+          );
+          requestHeader.style.backgroundColor = "#d4f0d4";
         }
       } catch (error) {
         console.error("Error parsing due date:", error);
@@ -84,13 +99,13 @@ if (!window.worldShareModsInjected) {
   const isTargetUrl = (url) => {
     const requestUrlRegEx = /(\d{8,10})/;
     return url.match(requestUrlRegEx);
-  }
+  };
 
   const monitorUrlChanges = () => {
     const observer = new MutationObserver(() => {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
-        if(isTargetUrl(window.currentUrl)) runWorldShareMods();
+        if (isTargetUrl(window.currentUrl)) runWorldShareMods();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
@@ -101,7 +116,7 @@ if (!window.worldShareModsInjected) {
   };
 
   // Runs the script initially when the page loads
-  if(isTargetUrl(window.currentUrl)) runWorldShareMods();
+  if (isTargetUrl(window.currentUrl)) runWorldShareMods();
 
   // Sets up a MutationObserver to monitor URL changes
   // and reruns the script when we got a new URL
