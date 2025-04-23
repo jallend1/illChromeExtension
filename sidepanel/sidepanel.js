@@ -73,6 +73,7 @@ const countdownTimer = () => {
   if (today >= openingTime) {
     // All branches have opened
     updateCountdownElement(countdownTimerElement, "All branches have opened.");
+    updateCountdownElement(countdownTextElement, "", false);
     clearInterval(intervalID);
     return;
   }
