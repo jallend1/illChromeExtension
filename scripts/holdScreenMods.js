@@ -172,8 +172,20 @@
       newButton.addEventListener("click", () => {
         const currentPatron = document.querySelector("#patron-barcode").value;
         console.log(currentPatron);
+        // Store the current patron barcode in local storage
+        chrome.storage.local.set({ patronToEdit: currentPatron });
+        chrome.runtime.sendMessage(
+          {action: "editPatron", patronBarcode: currentPatron},
+          (response) => {
+            if (response.success) {
+              console.log("Patron info retrieved successfully:", response.data);
+            } else {
+              console.error("Failed to retrieve patron info:", response.error);
+            }
+          }
+        );
       });
-      newButton.disabled = true;
+      newButton.disabled = false;
       return newButton;
     };
 
