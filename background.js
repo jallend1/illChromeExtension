@@ -129,7 +129,7 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 // TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
-const retrievePatron = () => {
+const retrievePatron = (editPatron = false) => {
   console.log("Retrieving patron!");
   chrome.tabs.create(
     {
@@ -212,6 +212,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           console.log("Extension disabled.");
         });
       });
+      return;
+    }
+    if (request.action === 'editPatron'){
+      // Store patron barcode in local storage
+      chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
+        console.log("Patron barcode stored:", request.patronBarcode);
+      });
+      // Open the patron page in a new tab
+      retrievePatron();
       return;
     }
     if (request.command === "openCreateILL") {
