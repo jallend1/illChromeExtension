@@ -18,32 +18,45 @@
       }, 100);
     });
 
-  try {
-    const inputField = await waitForElementWithInterval(
-      "#barcode-search-input"
-    );
-    const submitButton = await waitForElementWithInterval(
-      ".btn.btn-outline-secondary"
-    );
-
-    chrome.storage.local.get("request", (result) => {
-      console.log(result);
-      const { patronBarcode, title, fee } = result.request || {};
-      console.log(patronBarcode, title, fee);
-      if (!patronBarcode) throw new Error("Patron barcode not provided.");
-
-      inputField.value = patronBarcode;
-      const event = new Event("input", { bubbles: true, cancelable: true });
-      inputField.dispatchEvent(event);
-      submitButton.click();
-      goToBillingTab();
-      clickAddBilling();
-      addBillingNotes(title, fee);
-      chrome.storage.local.remove("request");
-    });
-  } catch (error) {
-    console.error(error.message);
-  }
+    try {
+      const inputField = await waitForElementWithInterval(
+        "#barcode-search-input"
+      );
+      const submitButton = await waitForElementWithInterval(
+        ".btn.btn-outline-secondary"
+      );
+  
+      chrome.storage.local.get(["patronToEdit", "request"], (result) => {
+        if (result.patronToEdit) {
+          // Editing Patron
+          const { patronToEdit } = result;
+          console.log("Editing patron:", patronToEdit);  
+          inputField.value = patronToEdit;
+          const event = new Event("input", { bubbles: true, cancelable: true });
+          inputField.dispatchEvent(event);
+          submitButton.click();
+          chrome.storage.local.remove("patronToEdit");
+        } else if (result.request) {
+          // Otherwise, handle fee
+          const { patronBarcode, title, fee } = result.request;
+          console.log("Handling fee for patron:", patronBarcode);
+          inputField.value = patronBarcode;
+          const event = new Event("input", { bubbles: true, cancelable: true });
+          inputField.dispatchEvent(event);
+          submitButton.click();
+          // TODO: Provide some clarity to the user that the fee is being added
+          goToBillingTab();
+          clickAddBilling();
+          addBillingNotes(title, fee);
+  
+          chrome.storage.local.remove("request");
+        } else {
+          console.error("No valid data found in local storage.");
+        }
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
 
   const goToBillingTab = async () => {
     // Waits for link to billing tab to appear on patron page
