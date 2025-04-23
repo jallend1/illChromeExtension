@@ -1,3 +1,4 @@
+// TODO: Add check if request is retrieved directly or the queue and modify querySelector as appropriate
 if (!window.worldShareModsInjected) {
   // Sets a flag on the window object to prevent the script from running multiple times
   window.worldShareModsInjected = true;
@@ -19,7 +20,6 @@ if (!window.worldShareModsInjected) {
           typeof selectorOrFunction === "function"
             ? selectorOrFunction()
             : document.querySelector(selectorOrFunction);
-
         if (element) {
           clearInterval(intervalId); // Clears interval when element is found
           resolve(element);
@@ -32,7 +32,7 @@ if (!window.worldShareModsInjected) {
     });
 
   const runWorldShareMods = async () => {
-    const applyWarningStyles = (el, color) => {
+    const applyEmphasisStyle = (el, color) => {
       el.style.backgroundColor = color;
       el.style.color = "white";
       el.style.padding = "0.4rem";
@@ -41,50 +41,75 @@ if (!window.worldShareModsInjected) {
     };
 
     const highlightRequestStatus = async () => {
+      // TODO: This variable works when it is the queue, but not when pulled up directly
+      // const requestStatus = await waitForElementWithInterval(
+      //   "#requests > div:not([class*='hidden']) span[data='requestStatus']"
+      // );
       const requestStatus = await waitForElementWithInterval(
-        "#requests > div:not([class*='hidden']) span[data='requestStatus']"
+        "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
       );
       if (!requestStatus) return;
       // If the request status is recalled, emphasize it
       if (requestStatus.innerText.includes("Recalled"))
-        applyWarningStyles(requestStatus, "red");
+        applyEmphasisStyle(requestStatus, "red");
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
+        // TODO: This variable works when it is the queue, but not when pulled up directly
+        // const dispositionElement = document.querySelector(
+        //   "#requests > div:not([class*='hidden']) span[data='disposition']"
+        // );
         const dispositionElement = document.querySelector(
-          "#requests > div:not([class*='hidden']) span[data='disposition']"
-        );
+          "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)"
+        )
         if (
           dispositionElement &&
           dispositionElement.innerText.includes("Overdue")
         ) {
-          applyWarningStyles(dispositionElement, "red");
+          applyEmphasisStyle(dispositionElement, "red");
         }
       }
     };
     const highlightDueDate = async () => {
+      // TODO: This variable works when it is the queue, but not when pulled up directly
+      // const dueDateElement = await waitForElementWithInterval(
+      //   '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]'
+      // );
       const dueDateElement = await waitForElementWithInterval(
-        '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]'
+       'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
       );
       try {
         if (!dueDateElement) return;
         const diffDays = calculateTimeDiff(dueDateElement.innerText);
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
+          // TODO: This variable works when it is the queue, but not when pulled up directly
+          // const requestStatus = await waitForElementWithInterval(
+          //   "#requests > div:not([class*='hidden']) span[data='requestStatus']"
+          // );
           const requestStatus = await waitForElementWithInterval(
-            "#requests > div:not([class*='hidden']) span[data='requestStatus']"
-          );
+            "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
+          )
           // Don't highlight red if the request is returned
           if (requestStatus && !requestStatus.innerText.includes("Returned")) {
-            applyWarningStyles(dueDateElement, "red");
+            applyEmphasisStyle(dueDateElement, "red");
+            // TODO: This variable works when it is the queue, but not when pulled up directly
+            // const requestHeader = document.querySelector(
+            //   "#requests > div:not([class*='hidden']) .nd-request-header"
+            // );
             const requestHeader = document.querySelector(
-              "#requests > div:not([class*='hidden']) .nd-request-header"
+              "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)"
             );
+            // #requestSearchResults
             requestHeader.style.backgroundColor = "#f8d7da";
           }
         } else if (diffDays >= 21) {
-          applyWarningStyles(dueDateElement, "green");
+          applyEmphasisStyle(dueDateElement, "green");
+          //TODO: This variable works when it is the queue, but not when pulled up directly
+          // const requestHeader = document.querySelector(
+          //   "#requests > div:not([class*='hidden']) .nd-request-header"
+          // );
           const requestHeader = document.querySelector(
-            "#requests > div:not([class*='hidden']) .nd-request-header"
+            "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)"
           );
           requestHeader.style.backgroundColor = "#d4f0d4";
         }
@@ -102,8 +127,10 @@ if (!window.worldShareModsInjected) {
   };
 
   const monitorUrlChanges = () => {
+    console.log("Monitoring URL changes...");
     const observer = new MutationObserver(() => {
       if (window.location.href !== window.currentUrl) {
+        console.log("URL changed:", window.location.href);
         window.currentUrl = window.location.href; // Update the current URL
         if (isTargetUrl(window.currentUrl)) runWorldShareMods();
       }
