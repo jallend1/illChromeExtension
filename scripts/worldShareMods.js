@@ -79,7 +79,12 @@ if (!window.worldShareModsInjected) {
       );
       try {
         if (!dueDateElement) return;
-        const diffDays = calculateTimeDiff(dueDateElement.innerText);
+        const renewalDueDateElement = document.querySelector(
+          'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)'
+        )
+        // If the renewal due date element exists, use it instead of the original due date element
+        const dueDate = renewalDueDateElement ? renewalDueDateElement : dueDateElement;
+        const diffDays = calculateTimeDiff(dueDate.innerText);
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
           // TODO: This variable works when it is the queue, but not when pulled up directly
@@ -91,7 +96,7 @@ if (!window.worldShareModsInjected) {
           )
           // Don't highlight red if the request is returned
           if (requestStatus && !requestStatus.innerText.includes("Returned")) {
-            applyEmphasisStyle(dueDateElement, "red");
+            applyEmphasisStyle(dueDate, "red");
             // TODO: This variable works when it is the queue, but not when pulled up directly
             // const requestHeader = document.querySelector(
             //   "#requests > div:not([class*='hidden']) .nd-request-header"
@@ -103,7 +108,7 @@ if (!window.worldShareModsInjected) {
             requestHeader.style.backgroundColor = "#f8d7da";
           }
         } else if (diffDays >= 21) {
-          applyEmphasisStyle(dueDateElement, "green");
+          applyEmphasisStyle(dueDate, "green");
           //TODO: This variable works when it is the queue, but not when pulled up directly
           // const requestHeader = document.querySelector(
           //   "#requests > div:not([class*='hidden']) .nd-request-header"
@@ -127,10 +132,8 @@ if (!window.worldShareModsInjected) {
   };
 
   const monitorUrlChanges = () => {
-    console.log("Monitoring URL changes...");
     const observer = new MutationObserver(() => {
       if (window.location.href !== window.currentUrl) {
-        console.log("URL changed:", window.location.href);
         window.currentUrl = window.location.href; // Update the current URL
         if (isTargetUrl(window.currentUrl)) runWorldShareMods();
       }
