@@ -74,6 +74,46 @@ const sessionLog = () => {
 //   });
 // };
 
+// TODO: Break up calculateURL to use isEvgMobile
+const isEvgMobile = () => {
+  // Checks if any of the open tabs are Evergreen Mobile
+  return new Promise((resolve) => {
+    chrome.tabs.query({}, (tabs) => {
+      const isMobile = tabs.some((tab) => tab.url.includes("evgmobile"));
+      resolve(isMobile);
+    });
+  });
+};
+
+const calculateURL = (mobileURL, clientURL) => {
+  chrome.tabs.query({}, function (tabs) {
+    let mobile = false;
+    let evgClientTab = null;
+    for (let tab of tabs) {
+      if (tab.url.includes("evgmobile")) {
+        mobile = true;
+        evgClientTab = tab;
+        break;
+      } else if (tab.url.includes("evgclient")) {
+        evgClientTab = tab;
+        break;
+      }
+    }
+    let url = mobile ? mobileURL : clientURL;
+    if (evgClientTab) {
+      // Update the existing tab and bring it to the foreground
+      chrome.tabs.update(evgClientTab.id, { url: url, active: true }, () => {
+        chrome.windows.update(evgClientTab.windowId, { focused: true });
+      });
+    } else {
+      // Create a new tab and bring it to the foreground
+      chrome.tabs.create({ url: url, active: true }, (newTab) => {
+        chrome.windows.update(newTab.windowId, { focused: true });
+      });
+    }
+  });
+};
+
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
@@ -129,11 +169,23 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 // TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
-const retrievePatron = (editPatron = false) => {
+const retrievePatron = async (editPatron = false) => {
   console.log("Retrieving patron!");
+  // let mobileURL =
+  //   "https://evgmobile.kcls.org/eg2/en-US/staff/circ/patron/bcsearch";
+  // let clientURL =
+  //   "https://evgclient.kcls.org/eg2/en-US/staff/circ/patron/bcsearch";
+  let url = "/eg2/en-US/staff/circ/patron/bcsearch";
+  const needsMobileUrl = await isEvgMobile();
+  if (needsMobileUrl) {
+    url = "https://evgmobile.kcls.org" + url;
+  } else {
+    url = "https://evgclient.kcls.org" + url;
+  }
+
   chrome.tabs.create(
     {
-      url: "https://evgmobile.kcls.org/eg2/en-US/staff/circ/patron/bcsearch",
+      url: url,
       active: true,
     },
     (newTab) => {
@@ -166,35 +218,6 @@ const retrievePatron = (editPatron = false) => {
   );
 };
 
-const calculateURL = (mobileURL, clientURL) => {
-  chrome.tabs.query({}, function (tabs) {
-    let mobile = false;
-    let evgClientTab = null;
-    for (let tab of tabs) {
-      if (tab.url.includes("evgmobile")) {
-        mobile = true;
-        evgClientTab = tab;
-        break;
-      } else if (tab.url.includes("evgclient")) {
-        evgClientTab = tab;
-        break;
-      }
-    }
-    let url = mobile ? mobileURL : clientURL;
-    if (evgClientTab) {
-      // Update the existing tab and bring it to the foreground
-      chrome.tabs.update(evgClientTab.id, { url: url, active: true }, () => {
-        chrome.windows.update(evgClientTab.windowId, { focused: true });
-      });
-    } else {
-      // Create a new tab and bring it to the foreground
-      chrome.tabs.create({ url: url, active: true }, (newTab) => {
-        chrome.windows.update(newTab.windowId, { focused: true });
-      });
-    }
-  });
-};
-
 // TODO: Using command and actions here is a bit confusing -- Maybe combine? Or at least have a justification for it
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
@@ -217,7 +240,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.action === "editPatron") {
       // Store patron barcode in local storage
       chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
-        console.log("Patron barcode stored:", request.patronBarcode);
+        console.log("Patron barcode stored");
       });
       // Open the patron page in a new tab
       retrievePatron();
