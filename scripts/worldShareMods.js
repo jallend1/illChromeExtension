@@ -1,11 +1,9 @@
-// TODO: Add check if request is retrieved directly or the queue and modify querySelector as appropriate
 if (!window.worldShareModsInjected) {
   // Sets a flag on the window object to prevent the script from running multiple times
   window.worldShareModsInjected = true;
   window.currentUrl = window.location.href;
   // Check URL to see if it includes the word queue
   const isQueueUrl = window.currentUrl.includes("queue");
-  console.log("isQueueUrl", isQueueUrl);
   const selectors = {
     queue: {
       requestHeader:
@@ -64,7 +62,6 @@ if (!window.worldShareModsInjected) {
 
   const runWorldShareMods = async () => {
     const applyEmphasisStyle = (el, backgroundColor, color = "white") => {
-      console.log("applyEmphasisStyle", el);
       el.style.backgroundColor = backgroundColor;
       el.style.color = color;
       el.style.padding = "0.4rem";
@@ -73,27 +70,12 @@ if (!window.worldShareModsInjected) {
     };
 
     const highlightRequestStatus = async () => {
-      // TODO: This variable works when it is the queue, but not when pulled up directly
-      // const requestStatus = await waitForElementWithInterval(
-      //   "#requests > div:not([class*='hidden']) span[data='requestStatus']"
-      // );
-      // const requestStatus = await waitForElementWithInterval(
-      //   "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
-      // );
       const requestStatus = await waitForElementWithInterval(
         activeSelectors.requestStatus
       );
-      console.log("requestStatus", requestStatus);
       if (!requestStatus) return;
       if (requestStatus.innerText.includes("Closed")) {
         applyEmphasisStyle(requestStatus, "black", "white");
-        // TODO: This variable works when it is the queue, but not when pulled up directly
-        // const requestHeader = document.querySelector(
-        //   "#requests > div:not([class*='hidden']) .nd-request-header"
-        // );
-        // const requestHeader = document.querySelector(
-        //   "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)"
-        // );
         const requestHeader = await waitForElementWithInterval(
           activeSelectors.requestHeader
         );
@@ -109,13 +91,6 @@ if (!window.worldShareModsInjected) {
       }
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
-        // TODO: This variable works when it is the queue, but not when pulled up directly
-        // const dispositionElement = document.querySelector(
-        //   "#requests > div:not([class*='hidden']) span[data='disposition']"
-        // );
-        // const dispositionElement = document.querySelector(
-        //   "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)"
-        // );
         const dispositionElement = await waitForElementWithInterval(
           activeSelectors.dispositionElement
         );
@@ -128,76 +103,38 @@ if (!window.worldShareModsInjected) {
       }
     };
     const highlightDueDate = async () => {
-      // TODO: This variable works when it is the queue, but not when pulled up directly
-      // const dueDateElement = await waitForElementWithInterval(
-      //   '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]'
-      // );
-      // const dueDateElement = await waitForElementWithInterval(
-      //   'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
-      // );
       const dueDateElement = await waitForElementWithInterval(
         activeSelectors.dueDateElement
       );
       try {
         if (!dueDateElement) return;
-        // const renewalDueDateElement = document.querySelector(
-        //   'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)'
-        // );
-        console.log("dueDateElement", dueDateElement.textContent);
         const renewalDueDateElement = await waitForElementWithInterval(
           activeSelectors.renewalDueDateElement
         );
-        // console.log("renewalDueDateElement", renewalDueDateElement.textContent);
-        // If the renewal due date element exists, use it instead of the original due date element
         const dueDate = renewalDueDateElement
           ? renewalDueDateElement
           : dueDateElement;
-        console.log("dueDate", dueDate.innerText);
+
         const diffDays = calculateTimeDiff(dueDate.innerText);
-        console.log("diffDays", diffDays);
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
-          console.log("Due date is today or in the past.");
-          // TODO: This variable works when it is the queue, but not when pulled up directly
-          // const requestStatus = await waitForElementWithInterval(
-          //   "#requests > div:not([class*='hidden']) span[data='requestStatus']"
-          // );
-          // const requestStatus = await waitForElementWithInterval(
-          //   "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
-          // );
           const requestStatus = await waitForElementWithInterval(
             activeSelectors.requestStatus
           );
-          console.log("requestStatus from where it should be", requestStatus);
+
           // Don't highlight red if the request is returned
           if (requestStatus) {
             if (requestStatus.innerText.includes("Returned")) return;
-
-            console.log("About to apply red style to due date");
-            console.log("dueDate", dueDate);
             applyEmphasisStyle(dueDate, "red");
-            // TODO: This variable works when it is the queue, but not when pulled up directly
-            // const requestHeader = document.querySelector(
-            //   "#requests > div:not([class*='hidden']) .nd-request-header"
-            // );
-            // const requestHeader = document.querySelector(
-            //   "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)"
-            // );
+
             const requestHeader = await waitForElementWithInterval(
               activeSelectors.requestHeader
             );
-            // #requestSearchResults
-            requestHeader.style.backgroundColor = "#f8d7da";
+            applyEmphasisStyle(requestHeader, "#f8d7da", "black");
           }
         } else if (diffDays >= 21) {
           applyEmphasisStyle(dueDate, "green");
-          //TODO: This variable works when it is the queue, but not when pulled up directly
-          // const requestHeader = document.querySelector(
-          //   "#requests > div:not([class*='hidden']) .nd-request-header"
-          // );
-          // const requestHeader = document.querySelector(
-          //   "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)"
-          // );
+
           const requestHeader = await waitForElementWithInterval(
             activeSelectors.requestHeader
           );
