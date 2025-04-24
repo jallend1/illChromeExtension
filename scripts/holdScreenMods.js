@@ -175,7 +175,7 @@
         // Store the current patron barcode in local storage
         chrome.storage.local.set({ patronToEdit: currentPatron });
         chrome.runtime.sendMessage(
-          {action: "editPatron", patronBarcode: currentPatron},
+          { action: "editPatron", patronBarcode: currentPatron },
           (response) => {
             if (response.success) {
               console.log("Patron info retrieved successfully:", response.data);
@@ -206,10 +206,31 @@
     searchButtonDiv.parentElement.appendChild(createContainerDiv());
   };
 
+  // TODO: Add a function that recognizes when a name is included in the <small> tag and only enable Edit button then
+  const monitorPatronName = () => {
+    const h3Elements = document.querySelectorAll("h3");
+    const placeHoldField = Array.from(h3Elements).find((h3) =>
+      h3.textContent.includes("Place Hold")
+    );
+    // If the target H3 element is found, create a MutationObserver to monitor changes
+    if (placeHoldField) {
+      console.log("Place Hold field found:", placeHoldField);
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === "childList") {
+            console.log("Changes detected in the target H3 element.");
+          }
+        });
+      });
+      observer.observe(placeHoldField, { childList: true, subtree: true });
+    }
+  };
+
   // function sendMessageToBackground() {
   //   const urlSuffix = `search?org=1&limit=10&query=${searchQuery}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
   //   chrome.runtime.sendMessage({ action: "holdScreenMods", url: urlSuffix });
   // }
 
   createEditPatronButton();
+  monitorPatronName();
 })();
