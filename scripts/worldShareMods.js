@@ -60,7 +60,7 @@ if (!window.worldShareModsInjected) {
         // );
         const dispositionElement = document.querySelector(
           "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)"
-        )
+        );
         if (
           dispositionElement &&
           dispositionElement.innerText.includes("Overdue")
@@ -75,15 +75,17 @@ if (!window.worldShareModsInjected) {
       //   '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]'
       // );
       const dueDateElement = await waitForElementWithInterval(
-       'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
+        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)'
       );
       try {
         if (!dueDateElement) return;
         const renewalDueDateElement = document.querySelector(
           'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)'
-        )
+        );
         // If the renewal due date element exists, use it instead of the original due date element
-        const dueDate = renewalDueDateElement ? renewalDueDateElement : dueDateElement;
+        const dueDate = renewalDueDateElement
+          ? renewalDueDateElement
+          : dueDateElement;
         const diffDays = calculateTimeDiff(dueDate.innerText);
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
@@ -93,9 +95,16 @@ if (!window.worldShareModsInjected) {
           // );
           const requestStatus = await waitForElementWithInterval(
             "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)"
-          )
-          // Don't highlight red if the request is returned
-          if (requestStatus && !requestStatus.innerText.includes("Returned")) {
+          );
+          // Don't highlight red if the request is returned or closed
+          if (requestStatus)
+            if (
+              !requestStatus.innerText.includes("Returned") ||
+              requestStatus.innerText.includes("Closed")
+            ) {
+              return;
+            }
+          {
             applyEmphasisStyle(dueDate, "red");
             // TODO: This variable works when it is the queue, but not when pulled up directly
             // const requestHeader = document.querySelector(
