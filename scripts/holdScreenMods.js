@@ -156,7 +156,6 @@
   // * barcode at this time            *
   // ***********************************
   const createEditPatronButton = () => {
-    // Ugly, but most reliable selector for the search button
     const searchButton = document.querySelector(
       "button > span.align-middle"
     ).parentElement;
@@ -210,17 +209,17 @@
 
   const monitorPatronName = () => {
     const h3Elements = document.querySelectorAll("h3");
+
     const placeHoldField = Array.from(h3Elements).find((h3) =>
       h3.textContent.includes("Place Hold")
     );
-    // If the target H3 element is found, create a MutationObserver to wait for appearance of small tag
-    if (placeHoldField) {
-      console.log("Place Hold field found:", placeHoldField);
+    const parentElement = placeHoldField?.parentElement;
+    if (parentElement) {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.type === "childList") {
-            console.log(mutation.addedNodes);
             if (mutation.addedNodes.length > 0) {
+              // Check if any small tags were added
               const addedNodes = Array.from(mutation.addedNodes);
               const smallTags = addedNodes.filter(
                 (node) => node.tagName === "SMALL"
@@ -234,18 +233,28 @@
                   editButton.disabled = false;
                 }
               }
+            } else if (mutation.removedNodes.length > 0) {
+              // Check if any small tags were removed
+              const removedNodes = Array.from(mutation.removedNodes);
+              const smallTags = removedNodes.filter(
+                (node) => node.tagName === "SMALL"
+              );
+              if (smallTags.length > 0) {
+                // Disable the Edit button if a <small> tag is found
+                const editButton = document.querySelector(
+                  "#edit-patron-button"
+                );
+                if (editButton) {
+                  editButton.disabled = true;
+                }
+              }
             }
           }
         });
       });
-      observer.observe(placeHoldField, { childList: true, subtree: true });
+      observer.observe(parentElement, { childList: true, subtree: true });
     }
   };
-
-  // function sendMessageToBackground() {
-  //   const urlSuffix = `search?org=1&limit=10&query=${searchQuery}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
-  //   chrome.runtime.sendMessage({ action: "holdScreenMods", url: urlSuffix });
-  // }
 
   createEditPatronButton();
   monitorPatronName();

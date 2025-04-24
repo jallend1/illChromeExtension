@@ -214,7 +214,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       });
       return;
     }
-    if (request.action === 'editPatron'){
+    if (request.action === "editPatron") {
       // Store patron barcode in local storage
       chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
         console.log("Patron barcode stored:", request.patronBarcode);
