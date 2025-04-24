@@ -164,9 +164,11 @@
 
     const createButton = () => {
       const newButton = document.createElement("button");
+      newButton.id = "edit-patron-button";
       newButton.type = "button";
       newButton.classList.add("btn", "btn-outline-dark", "btn-sm");
       newButton.style.height = "100%";
+      newButton.disabled = true;
       const newSpan = createSpanText();
       newButton.appendChild(newSpan);
       newButton.addEventListener("click", () => {
@@ -185,7 +187,7 @@
           }
         );
       });
-      newButton.disabled = false;
+
       return newButton;
     };
 
@@ -206,19 +208,33 @@
     searchButtonDiv.parentElement.appendChild(createContainerDiv());
   };
 
-  // TODO: Add a function that recognizes when a name is included in the <small> tag and only enable Edit button then
   const monitorPatronName = () => {
     const h3Elements = document.querySelectorAll("h3");
     const placeHoldField = Array.from(h3Elements).find((h3) =>
       h3.textContent.includes("Place Hold")
     );
-    // If the target H3 element is found, create a MutationObserver to monitor changes
+    // If the target H3 element is found, create a MutationObserver to wait for appearance of small tag
     if (placeHoldField) {
       console.log("Place Hold field found:", placeHoldField);
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.type === "childList") {
-            console.log("Changes detected in the target H3 element.");
+            console.log(mutation.addedNodes);
+            if (mutation.addedNodes.length > 0) {
+              const addedNodes = Array.from(mutation.addedNodes);
+              const smallTags = addedNodes.filter(
+                (node) => node.tagName === "SMALL"
+              );
+              if (smallTags.length > 0) {
+                // Enable the Edit button if a <small> tag is found
+                const editButton = document.querySelector(
+                  "#edit-patron-button"
+                );
+                if (editButton) {
+                  editButton.disabled = false;
+                }
+              }
+            }
           }
         });
       });
