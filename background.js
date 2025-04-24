@@ -171,10 +171,6 @@ chrome.commands.onCommand.addListener((command) => {
 // TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
 const retrievePatron = async (editPatron = false) => {
   console.log("Retrieving patron!");
-  // let mobileURL =
-  //   "https://evgmobile.kcls.org/eg2/en-US/staff/circ/patron/bcsearch";
-  // let clientURL =
-  //   "https://evgclient.kcls.org/eg2/en-US/staff/circ/patron/bcsearch";
   let url = "/eg2/en-US/staff/circ/patron/bcsearch";
   const needsMobileUrl = await isEvgMobile();
   if (needsMobileUrl) {
@@ -408,7 +404,13 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       target: { tabId: tabId },
       files: ["./scripts/searchResults.js"],
     });
+  } else if (currentUrl.includes("/circ/patron/register")) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/updateAddress.js"],
+    });
   }
+
   if (!currentUrl.includes("catalog/hold/")) {
     // Remove the tooltip if the user navigates away from the hold page
     chrome.scripting.executeScript({

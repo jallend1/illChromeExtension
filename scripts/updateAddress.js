@@ -41,6 +41,23 @@
     },
   ];
 
+  const waitForElement = (selector) => {
+    return new Promise((resolve, reject) => {
+      const startTime = Date.now();
+      const interval = setInterval(() => {
+        const element = document.querySelector(selector);
+        if (element) {
+          clearInterval(interval);
+          resolve(element);
+        }
+        if (Date.now() - startTime > 10000) {
+          clearInterval(interval);
+          reject(new Error(`Element ${selector} not found`));
+        }
+      });
+    });
+  };
+
   const generateEvent = (type) => {
     const event = new Event(type, {
       bubbles: true,
@@ -49,8 +66,9 @@
     return event;
   };
 
-  const applyInputValues = (selector, value) => {
-    const input = document.querySelector(selector);
+  const applyInputValues = async (selector, value) => {
+    const input = await waitForElement(selector);
+
     if (input) {
       input.value = value;
       input.dispatchEvent(generateEvent("input"));
@@ -75,7 +93,9 @@
       selector,
       inputSelector
     ) => {
-      const inputField = document.querySelector(inputSelector);
+      // const inputField = document.querySelector(inputSelector);
+      const inputField = await waitForElement(inputSelector);
+
       if (!inputField) {
         errorCount++;
         statusModal(
@@ -86,11 +106,12 @@
         return;
       }
 
-      inputField.click(); // Opens the dropdown
+      console.log("Dropdown clicked.");
       // Options are loaded only after clicking the dropdown, so wait for them to populate
       let attempts = 0;
 
       const selectOption = () => {
+        inputField.click(); // Opens the dropdown
         const options = document.querySelectorAll(selector);
         const targetOption = Array.from(options).find(
           (option) => option.textContent.trim() === optionText
@@ -98,7 +119,7 @@
 
         if (targetOption) {
           targetOption.click();
-        } else if (attempts < 10) {
+        } else if (attempts < 100) {
           // Retry up to 10 times
           setTimeout(selectOption, 100); // Wait 100ms before retrying
           attempts++;
@@ -113,6 +134,17 @@
       };
 
       selectOption();
+
+      // If URL includes "register", focus on the #au-first_given_name-input field
+      if (window.location.href.includes("register")) {
+        const firstNameInput = document.querySelector(
+          "#au-first_given_name-input"
+        );
+        if (firstNameInput) {
+          firstNameInput.focus();
+          console.log("First name input focused.");
+        }
+      }
     };
 
     dropDownSelections.forEach(
