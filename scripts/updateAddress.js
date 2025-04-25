@@ -105,8 +105,6 @@
         );
         return;
       }
-
-      console.log("Dropdown clicked.");
       // Options are loaded only after clicking the dropdown, so wait for them to populate
       let attempts = 0;
 
@@ -142,7 +140,6 @@
         );
         if (firstNameInput) {
           firstNameInput.focus();
-          console.log("First name input focused.");
         }
       }
     };
