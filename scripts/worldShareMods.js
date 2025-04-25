@@ -69,16 +69,29 @@ if (!window.worldShareModsInjected) {
       el.style.fontWeight = "bold";
     };
 
-    const highlightRequestStatus = async () => {
-      const requestStatus = await waitForElementWithInterval(
+    const elements = {
+      requestHeader: await waitForElementWithInterval(
+        activeSelectors.requestHeader
+      ),
+      requestStatus: await waitForElementWithInterval(
         activeSelectors.requestStatus
-      );
+      ),
+      dispositionElement: await waitForElementWithInterval(
+        activeSelectors.dispositionElement
+      ),
+      dueDateElement: await waitForElementWithInterval(
+        activeSelectors.dueDateElement
+      ),
+      renewalDueDateElement: await waitForElementWithInterval(
+        activeSelectors.renewalDueDateElement
+      ),
+    }
+
+    const highlightRequestStatus = async () => {
+      const { requestStatus, requestHeader, dispositionElement } = elements;
       if (!requestStatus) return;
       if (requestStatus.innerText.includes("Closed")) {
         applyEmphasisStyle(requestStatus, "black", "white");
-        const requestHeader = await waitForElementWithInterval(
-          activeSelectors.requestHeader
-        );
         applyEmphasisStyle(requestHeader, "black", "white");
         return;
       }
@@ -91,9 +104,6 @@ if (!window.worldShareModsInjected) {
       }
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
-        const dispositionElement = await waitForElementWithInterval(
-          activeSelectors.dispositionElement
-        );
         if (
           dispositionElement &&
           dispositionElement.innerText.includes("Overdue")
@@ -103,25 +113,13 @@ if (!window.worldShareModsInjected) {
       }
     };
     const highlightDueDate = async () => {
-      const dueDateElement = await waitForElementWithInterval(
-        activeSelectors.dueDateElement
-      );
+      const { dueDateElement, renewalDueDateElement, requestStatus, requestHeader } = elements;
       try {
         if (!dueDateElement) return;
-        const renewalDueDateElement = await waitForElementWithInterval(
-          activeSelectors.renewalDueDateElement
-        );
         const dueDate = renewalDueDateElement
           ? renewalDueDateElement
           : dueDateElement;
-
         const diffDays = calculateTimeDiff(dueDate.innerText);
-        const requestStatus = await waitForElementWithInterval(
-          activeSelectors.requestStatus
-        );
-        const requestHeader = await waitForElementWithInterval(
-          activeSelectors.requestHeader
-        );
         if (requestStatus.innerText.includes("Returned") || requestStatus.innerText.includes("Transit")) return;
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
