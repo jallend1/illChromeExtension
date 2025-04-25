@@ -71,12 +71,15 @@ body {
       background-color: #fff;
 
       & button {
-        color: rgb(33, 37, 41);
-        border: solid 1px rgb(33, 37, 41);
-        border-radius: 4px;
+        padding: 0.5rem 1rem;
         font-size: 0.75rem;
-        background-color: #fff;
-        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        color: #333;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s;
       }
 
       button.more-info {
@@ -84,11 +87,13 @@ body {
       }
 
       & button:hover {
-        background-color: rgb(33, 37, 41);
-        color: #fff;
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
       }
 
       & button:active {
+        background: linear-gradient(135deg, #dee2e6, #ced4da);
         transform: translateY(1px);
       }
     }
@@ -326,26 +331,25 @@ button {
 }
 
 .toggle-label {
-  display: inline-block;
-  width: 30px;
-  height: 14px;
+  width: 40px;
+  height: 20px;
   background-color: #ccc;
-  border-radius: 30px;
+  border-radius: 20px;
   position: relative;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .toggle-label:after {
   content: "";
-  display: block;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   background-color: #fff;
   border-radius: 50%;
   position: absolute;
-  top: 1px;
-  left: 4px;
-  transition: 0.3s;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
 }
 
 .toggle-switch:checked + .toggle-label {
@@ -353,7 +357,7 @@ button {
 }
 
 .toggle-switch:checked + .toggle-label:after {
-  transform: translateX(12px);
+  transform: translateX(20px);
 }
 
 .toggle-label:active {
@@ -371,6 +375,7 @@ button {
 .tooltip {
   position: relative;
   display: inline-block;
+  z-index: 1000;
 }
 
 .tooltip .tooltiptext {
@@ -381,7 +386,6 @@ button {
   text-align: center;
   border-radius: 5px;
   padding: 0.5rem;
-  z-index: 1;
   top: 125%;
   left: 50%;
   opacity: 0;
