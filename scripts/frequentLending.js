@@ -5,6 +5,9 @@ async function loadFrequentLending() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
+  const { applyStyles } = await import(
+    chrome.runtime.getURL("modules/utils.js")
+  );
 
   function frequentLending() {
     const isEvergreen =
@@ -49,13 +52,7 @@ async function loadFrequentLending() {
         }, 500);
       }
     };
-
-    const applyStyles = (el, styles) => {
-      for (const style in styles) {
-        el.style[style] = styles[style];
-      }
-    };
-
+    
     const copyValuetoInput = (value) => {
       let barcodeInput;
       let isSearchScreen = document.querySelector("#barcode-search-input");
