@@ -343,8 +343,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 
   // TODO: Feels like overkill and incredibly over complicated -- Simplify this
-  if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
-    executeScript(tabId, "courierHighlight");
+ if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
+    // Don't run it on patron registration page
+    if(!tab.url.includes("register")){
+      executeScript(tabId, "courierHighlight");
+    }
   }
   if (
     changeInfo.status === "complete" &&
