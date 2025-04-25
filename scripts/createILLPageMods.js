@@ -2,15 +2,13 @@
   const { insertRequestToEvergreen, updateInputField } = await import(
     chrome.runtime.getURL("modules/insertRequestToEvergreen.js")
   );
+  const { applyStyles } = await import(
+    chrome.runtime.getURL("modules/utils.js")
+  );
 
   insertRequestToEvergreen();
 
   function createILLPageMods() {
-    const applyStyles = (element, styles) => {
-      for (const property in styles) {
-        element.style[property] = styles[property];
-      }
-    };
 
     const createClearFormButton = () => {
       const clearFormButton = document.createElement("button");
