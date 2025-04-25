@@ -43,21 +43,22 @@ if (!window.worldShareModsInjected) {
 
   const waitForElementWithInterval = (selectorOrFunction) =>
     new Promise((resolve, reject) => {
-      const startTime = Date.now();
-      const intervalId = setInterval(() => {
-        const element =
-          typeof selectorOrFunction === "function"
-            ? selectorOrFunction()
-            : document.querySelector(selectorOrFunction);
-        if (element) {
-          clearInterval(intervalId); // Clears interval when element is found
-          resolve(element);
-        } else if (Date.now() - startTime > 10000) {
-          clearInterval(intervalId);
-          // Resolves with null cuz we don't need to be throwing errors around willy nilly
-          resolve(null);
-        }
-      }, 100);
+        const startTime = Date.now();
+        const intervalId = setInterval(() => {
+          const element =
+            typeof selectorOrFunction === "function"
+              ? selectorOrFunction()
+              : document.querySelector(selectorOrFunction);
+          if (element) {
+            clearInterval(intervalId); // Clears interval when element is found
+            resolve(element);
+          } else if (Date.now() - startTime > 10000) {
+            clearInterval(intervalId);
+            // Resolves with null cuz we don't need to be throwing errors around willy nilly
+            resolve(null);
+          }
+        }, 100);
+      // }
     });
 
   const runWorldShareMods = async () => {
@@ -82,11 +83,12 @@ if (!window.worldShareModsInjected) {
       dueDateElement: await waitForElementWithInterval(
         activeSelectors.dueDateElement
       ),
-      renewalDueDateElement: await waitForElementWithInterval(
-        activeSelectors.renewalDueDateElement
-      ),
     }
 
+    // renewalDueDateElement does not exist on all pages, but will exist if dueDateElement exists
+    if(elements.dueDateElement) {
+      elements.renewalDueDateElement = document.querySelector(activeSelectors.renewalDueDateElement);
+    }
     const highlightRequestStatus = async () => {
       const { requestStatus, requestHeader, dispositionElement } = elements;
       if (!requestStatus) return;
