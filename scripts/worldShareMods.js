@@ -116,30 +116,20 @@ if (!window.worldShareModsInjected) {
           : dueDateElement;
 
         const diffDays = calculateTimeDiff(dueDate.innerText);
+        const requestStatus = await waitForElementWithInterval(
+          activeSelectors.requestStatus
+        );
+        const requestHeader = await waitForElementWithInterval(
+          activeSelectors.requestHeader
+        );
+        if (requestStatus.innerText.includes("Returned") || requestStatus.innerText.includes("Transit")) return;
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
-          const requestStatus = await waitForElementWithInterval(
-            activeSelectors.requestStatus
-          );
-
-          // Don't highlight red if the request is returned
-          if (requestStatus) {
-            if (requestStatus.innerText.includes("Returned")) return;
-            applyEmphasisStyle(dueDate, "red");
-
-            const requestHeader = await waitForElementWithInterval(
-              activeSelectors.requestHeader
-            );
-            applyEmphasisStyle(requestHeader, "#f8d7da", "black");
-          }
+          applyEmphasisStyle(dueDate, "red");
+          applyEmphasisStyle(requestHeader, "#f8d7da", "black");
         } else if (diffDays >= 21) {
           applyEmphasisStyle(dueDate, "green");
-
-          const requestHeader = await waitForElementWithInterval(
-            activeSelectors.requestHeader
-          );
-          applyEmphasisStyle(requestHeader, "#d4f0d4");
-          // requestHeader.style.backgroundColor = "#d4f0d4";
+          applyEmphasisStyle(requestHeader, "#d4f0d4", "black");
         }
       } catch (error) {
         console.error("Error parsing due date:", error);
