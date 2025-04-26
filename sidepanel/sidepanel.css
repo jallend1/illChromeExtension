@@ -203,41 +203,6 @@ button:active {
   background: var(--header-background);
 }
 
-#modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 1rem;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 85%;
-  font-size: 1rem;
-  padding: 1rem;
-  background-color: #f8f9fa;
-
-  & button {
-    color: rgb(33, 37, 41);
-    border: solid 1px rgb(33, 37, 41);
-    border-radius: 4px;
-    font-size: 0.8rem;
-    background-color: #fff;
-    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-  }
-
-  & button:hover {
-    background-color: rgb(33, 37, 41);
-    color: #fff;
-  }
-
-  & button:active {
-    transform: translateY(1px);
-  }
-}
-
 #about {
   display: flex;
   flex-direction: column;
