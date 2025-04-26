@@ -8,94 +8,40 @@ body {
 body {
   height: 100%;
   font-family: "Roboto", sans-serif;
-}
-
-.dreary-mode {
   background: #fff;
   color: #000;
+}
 
-  & .sidebar-header {
-    background: -webkit-linear-gradient(#00593d, #007a54);
-    color: #fff;
-    padding: 0;
-    width: 100%;
+.sidebar-header {
+  background: -webkit-linear-gradient(#00593d, #007a54);
+  color: #fff;
+  padding: 0;
+  width: 100%;
 
-    & main {
-      display: flex;
-      justify-content: center;
+  & main {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    & h1 {
       text-align: center;
-      & h1 {
-        text-align: center;
-      }
-
-      & img {
-        height: 40px;
-      }
     }
 
-    & footer {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 1rem;
-      color: #fff;
-      font-size: 0.8rem;
-
-      p {
-        margin: 0.25rem;
-      }
+    & img {
+      height: 40px;
     }
   }
 
-  & section {
-    padding: 0;
-    & header {
-      width: 100%;
-      background-color: rgb(223, 240, 216);
-      justify-content: center;
-      padding: 0;
+  & footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    color: #fff;
+    font-size: 0.8rem;
 
-      & h2 {
-        color: rgb(13, 119, 100);
-        font-size: 1rem;
-      }
-
-      & img {
-        filter: invert(1);
-      }
-    }
-
-    & main {
-      padding: 0 0 1rem 0;
-      background-color: #fff;
-
-      & button {
-        padding: 0.5rem 1rem;
-        font-size: 0.75rem;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        color: #333;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s;
-      }
-
-      button.more-info {
-        font-size: 0.5rem;
-      }
-
-      & button:hover {
-        background: linear-gradient(135deg, #e9ecef, #dee2e6);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-        transform: translateY(-2px);
-      }
-
-      & button:active {
-        background: linear-gradient(135deg, #dee2e6, #ced4da);
-        transform: translateY(1px);
-      }
+    p {
+      margin: 0.25rem;
     }
   }
 }
@@ -117,6 +63,7 @@ section {
   align-items: center;
   padding: 1rem;
   border-top: solid 1px #fff;
+  padding: 0;
 }
 
 img {
@@ -126,13 +73,22 @@ img {
 
 section header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  width: 100%;
+  background-color: rgb(223, 240, 216);
+  padding: 0;
 }
 
 section h2 {
   font-size: 1.25rem;
   margin-bottom: 1rem;
+  color: rgb(13, 119, 100);
+  font-size: 1rem;
+}
+
+section img {
+  filter: invert(1);
 }
 
 section main {
@@ -140,12 +96,36 @@ section main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 0 0 1rem 0;
+  background-color: #fff;
 }
 
 button {
-  padding: 0.5rem 1rem;
   cursor: pointer;
   margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s;
+}
+
+button.more-info {
+  font-size: 0.5rem;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #e9ecef, #dee2e6);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+button:active {
+  background: linear-gradient(135deg, #dee2e6, #ced4da);
+  transform: translateY(1px);
 }
 
 .collapsible {
