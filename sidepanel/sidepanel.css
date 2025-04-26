@@ -1,9 +1,10 @@
 :root {
   --header-background: linear-gradient(135deg, #00593d, #007a54);
+  --header-text-color: #fff;
   --section-header-background: #d4edda;
   --button-background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  --toggle-background-active: #4cd137;
-  --toggle-background-inactive: #ccc;
+  --toggle-bg-active: #4cd137;
+  --toggle-inactive-bg: #ccc;
 }
 
 html,
@@ -13,6 +14,10 @@ body {
   box-sizing: border-box;
 }
 
+/* ************** */
+/* * Typography * */
+/* ************** */
+
 body {
   height: 100%;
   font-family: "Roboto", sans-serif;
@@ -20,37 +25,53 @@ body {
   color: #000;
 }
 
+h1 {
+  text-align: center;
+}
+
+a {
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+
+a:active {
+  transform: translateY(1px);
+}
+
+/* ******************* */
+/* *     Header      * */
+/* ******************* */
 .sidebar-header {
   background: var(--header-background);
-  color: #fff;
+  color: var(--header-text-color);
   padding: 0;
   width: 100%;
+}
 
-  & main {
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    & h1 {
-      text-align: center;
-    }
+.sidebar-header main {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
 
-    & img {
-      height: 40px;
-    }
-  }
+.sidebar-header img {
+  height: 40px;
+}
 
-  & footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 1rem;
-    color: #fff;
-    font-size: 0.8rem;
+.sidebar-header footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  color: var(--header-text-color);
+  font-size: 0.8rem;
+  margin-top: 1rem;
 
-    p {
-      margin: 0.25rem;
-    }
+  p {
+    margin: 0.25rem;
   }
 }
 
@@ -62,7 +83,14 @@ body {
 
 .subtitle {
   text-align: center;
+  margin: 0;
+  font-size: 0.65rem;
+  padding: 0;
 }
+
+/* ******************* */
+/* *     Section     * */
+/* ******************* */
 
 section {
   display: flex;
@@ -74,6 +102,7 @@ section {
   padding: 0;
 }
 
+/* Only applicable image so far is the collapse toggle */
 img {
   height: 15px;
   padding: 1rem;
@@ -89,7 +118,6 @@ section header {
 }
 
 section h2 {
-  font-size: 1.25rem;
   margin-bottom: 1rem;
   color: rgb(13, 119, 100);
   font-size: 1rem;
@@ -107,6 +135,10 @@ section main {
   padding: 0 0 1rem 0;
   background-color: #fff;
 }
+
+/* ******************* */
+/* *    Buttons      * */
+/* ******************* */
 
 button {
   cursor: pointer;
@@ -136,6 +168,10 @@ button:active {
   transform: translateY(1px);
 }
 
+/* ******************** */
+/* * Section Collapse * */
+/* ******************** */
+
 .collapsible {
   overflow: hidden;
   transition: max-height 300ms ease-out, opacity 300ms ease-out;
@@ -154,34 +190,17 @@ button:active {
   display: none;
 }
 
-.subtitle {
-  font-size: 0.65rem;
-  padding: 0;
-  margin-bottom: 1rem;
-}
+/* ******************* */
+/* *     Footer      * */
+/* ******************* */
 
 .sidebar-footer {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  text-align: right;
   position: fixed;
   bottom: 0px;
   width: 100%;
   background: var(--header-background);
-
-  & a {
-    color: white;
-    font-size: 0.7rem;
-    padding: 0.5rem 1rem;
-
-    border: none;
-    text-decoration: none;
-  }
-
-  & a:active {
-    transform: translateY(1px);
-  }
 }
 
 #modal {
@@ -272,6 +291,10 @@ button:active {
   margin: 0 0 1rem 0;
 }
 
+/* ******************* */
+/* *    Toggles      * */
+/* ******************* */
+
 .toggles {
   display: flex;
   justify-content: center;
@@ -296,7 +319,7 @@ button:active {
 .toggle-label {
   width: 40px;
   height: 20px;
-  background-color: var(--toggle-background-inactive);
+  background-color: var(--toggle-inactive-bg);
   border-radius: 20px;
   position: relative;
   cursor: pointer;
@@ -316,7 +339,7 @@ button:active {
 }
 
 .toggle-switch:checked + .toggle-label {
-  background-color: var(--toggle-background-active);
+  background-color: var(--toggle-bg-active);
 }
 
 .toggle-switch:checked + .toggle-label:after {
@@ -324,7 +347,7 @@ button:active {
 }
 
 .toggle-label:active {
-  background-color: var(--toggle-background-active);
+  background-color: var(--toggle-bg-active);
 }
 
 .toggle-text {
@@ -334,6 +357,10 @@ button:active {
   max-width: 100px;
   text-align: center;
 }
+
+/* ******************* */
+/* *    Tooltips     * */
+/* ******************* */
 
 .tooltip {
   position: relative;
