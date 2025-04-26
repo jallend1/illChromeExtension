@@ -127,13 +127,12 @@ const intervalID = setInterval(countdownTimer, 1000);
 
 const calculateTime = (timeDifference) => {
   const totalSeconds = Math.floor(timeDifference / 1000);
-  const totalMinutes = Math.floor(totalSeconds / 60);
-  const remainingSeconds = Math.floor(totalSeconds % 60);
-  const remainingHours = Math.floor(totalMinutes / 60);
-  const remainingMinutes = Math.floor(totalMinutes % 60);
-  return `${remainingHours < 10 ? "0" + remainingHours : remainingHours}:${
-    remainingMinutes < 10 ? "0" + remainingMinutes : remainingMinutes
-  }:${remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds}`;
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const formatTime = (timeStr) => String(timeStr).padStart(2, "0");
+  return `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
 };
 
 const getStorageValue = (key, element) => {
@@ -183,7 +182,6 @@ const extractFromStorage = async (key) => {
 
 const toggleSection = (toggle, mainSection) => {
   const isCollapsed = mainSection.classList.contains("collapsed");
-
   if (isCollapsed) {
     mainSection.classList.remove("hidden");
     requestAnimationFrame(() => {
