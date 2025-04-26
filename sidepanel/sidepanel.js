@@ -244,29 +244,16 @@ const addEventListeners = () => {
       : chrome.storage.local.set({ lendingMode: false });
   });
 
-  openCreateILL.addEventListener("click", () => {
-    openCreateILL.checked
-      ? chrome.storage.local.set({ openCreateILL: true })
-      : chrome.storage.local.set({ openCreateILL: false });
-  });
+  const addCheckboxListener = (checkbox, key) => {
+    checkbox.addEventListener("click", () => {
+      chrome.storage.local.set({ [key]: checkbox.checked });
+    });
+  };
 
-  autoReceiveRequestButton.addEventListener("click", () => {
-    autoReceiveRequestButton.checked
-      ? chrome.storage.local.set({ autoReceiveRequest: true })
-      : chrome.storage.local.set({ autoReceiveRequest: false });
-  });
-
-  printLabel.addEventListener("click", () => {
-    printLabel.checked
-      ? chrome.storage.local.set({ printLabel: true })
-      : chrome.storage.local.set({ printLabel: false });
-  });
-
-  autoReturnILL.addEventListener("click", () => {
-    autoReturnILL.checked
-      ? chrome.storage.local.set({ autoReturnILL: true })
-      : chrome.storage.local.set({ autoReturnILL: false });
-  });
+  addCheckboxListener(openCreateILL, "openCreateILL");
+  addCheckboxListener(autoReceiveRequestButton, "autoReceiveRequest");
+  addCheckboxListener(printLabel, "printLabel");
+  addCheckboxListener(autoReturnILL, "autoReturnILL");
 };
 
 addEventListeners();
