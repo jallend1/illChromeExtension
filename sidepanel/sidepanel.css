@@ -1,3 +1,11 @@
+:root {
+  --header-background: linear-gradient(135deg, #00593d, #007a54);
+  --section-header-background: #d4edda;
+  --button-background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  --toggle-background-active: #4cd137;
+  --toggle-background-inactive: #ccc;
+}
+
 html,
 body {
   margin: 0;
@@ -13,7 +21,7 @@ body {
 }
 
 .sidebar-header {
-  background: -webkit-linear-gradient(#00593d, #007a54);
+  background: var(--header-background);
   color: #fff;
   padding: 0;
   width: 100%;
@@ -76,7 +84,7 @@ section header {
   justify-content: center;
   align-items: center;
   width: 100%;
-  background-color: rgb(223, 240, 216);
+  background-color: var(--section-header-background);
   padding: 0;
 }
 
@@ -107,7 +115,7 @@ button {
   font-size: 0.75rem;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  background: var(--button-background);
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s;
@@ -152,48 +160,23 @@ button:active {
   margin-bottom: 1rem;
 }
 
-.steps {
-  text-align: left;
-
-  & ol {
-    margin: 0;
-  }
-
-  & li {
-    margin-bottom: 0.5rem;
-    line-height: 1.5rem;
-    font-size: 1.15rem;
-  }
-}
-
 .sidebar-footer {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  color: white;
   text-align: right;
   position: fixed;
-  bottom: 10px;
+  bottom: 0px;
   width: 100%;
-
-  & button {
-    font-size: 0.7rem;
-    padding: 0.5rem 1rem;
-    background-color: transparent;
-    border: none;
-  }
-
-  & button:active {
-    transform: translateY(1px);
-  }
+  background: var(--header-background);
 
   & a {
+    color: white;
     font-size: 0.7rem;
     padding: 0.5rem 1rem;
-    background-color: transparent;
+
     border: none;
     text-decoration: none;
-    color: rgb(33, 37, 41);
   }
 
   & a:active {
@@ -313,7 +296,7 @@ button:active {
 .toggle-label {
   width: 40px;
   height: 20px;
-  background-color: #ccc;
+  background-color: var(--toggle-background-inactive);
   border-radius: 20px;
   position: relative;
   cursor: pointer;
@@ -333,7 +316,7 @@ button:active {
 }
 
 .toggle-switch:checked + .toggle-label {
-  background-color: #4cd137;
+  background-color: var(--toggle-background-active);
 }
 
 .toggle-switch:checked + .toggle-label:after {
@@ -341,7 +324,7 @@ button:active {
 }
 
 .toggle-label:active {
-  background-color: #4cd137;
+  background-color: var(--toggle-background-active);
 }
 
 .toggle-text {
