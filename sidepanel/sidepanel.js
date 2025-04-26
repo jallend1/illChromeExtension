@@ -1,27 +1,25 @@
-const collapseToggle = document.querySelectorAll("img.collapsible");
-const illActions = document.querySelectorAll(".ill-actions");
-const isbnSearch = document.querySelector("#isbn-search");
-const countdownTimerElement = document.querySelector("#countdown");
-const countdownTextElement = document.querySelector("#countdown-text");
-
-// Toggle Switch Elements
-const disableButton = document.querySelector("#disable-extension");
-const openCreateILL = document.querySelector("#open-create-ill");
-const autoReceiveRequestButton = document.querySelector(
-  "#auto-receive-request"
-);
-const lendingMode = document.querySelector("#lending-tools");
-const passiveTools = document.querySelector("#passive-tools");
-const printLabel = document.querySelector("#print-label");
-const autoReturnILL = document.querySelector("#auto-return-ill");
+const elements = {
+  collapseToggle: document.querySelectorAll("img.collapsible"),
+  illActions: document.querySelectorAll(".ill-actions"),
+  isbnSearch: document.querySelector("#isbn-search"),
+  countdownTimerElement: document.querySelector("#countdown"),
+  countdownTextElement: document.querySelector("#countdown-text"),
+  disableButton: document.querySelector("#disable-extension"),
+  openCreateILL: document.querySelector("#open-create-ill"),
+  autoReceiveRequestButton: document.querySelector("#auto-receive-request"),
+  lendingMode: document.querySelector("#lending-tools"),
+  passiveTools: document.querySelector("#passive-tools"),
+  printLabel: document.querySelector("#print-label"),
+  autoReturnILL: document.querySelector("#auto-return-ill"),
+};
 
 const storageKeys = [
-  { key: "openCreateILL", element: openCreateILL },
-  { key: "autoReceiveRequest", element: autoReceiveRequestButton },
-  { key: "lendingMode", element: lendingMode },
-  { key: "arePassiveToolsActive", element: passiveTools },
-  { key: "printLabel", element: printLabel },
-  { key: "autoReturnILL", element: autoReturnILL },
+  { key: "openCreateILL", element: elements.openCreateILL },
+  { key: "autoReceiveRequest", element: elements.autoReceiveRequestButton },
+  { key: "lendingMode", element: elements.lendingMode },
+  { key: "arePassiveToolsActive", element: elements.passiveTools },
+  { key: "printLabel", element: elements.printLabel },
+  { key: "autoReturnILL", element: elements.autoReturnILL },
 ];
 
 const branchHours = {
@@ -73,10 +71,10 @@ const countdownTimer = () => {
   if (today >= openingTime) {
     // All branches have opened
     updateCountdownElement(
-      countdownTimerElement,
+      elements.countdownTimerElement,
       "All branches have opened for the day."
     );
-    updateCountdownElement(countdownTextElement, "", false);
+    updateCountdownElement(elements.countdownTextElement, "", false);
     clearInterval(intervalID);
     return;
   }
@@ -85,12 +83,12 @@ const countdownTimer = () => {
     // Bellevue has opened, others not yet
     const branchOpeningTime = getFormattedTimeDifference(openingTime, today);
     updateCountdownElement(
-      countdownTimerElement,
+      elements.countdownTimerElement,
       "Bellevue has opened.",
       false
     );
     updateCountdownElement(
-      countdownTextElement,
+      elements.countdownTextElement,
       `Other branches: ${branchOpeningTime}`,
       branchOpeningTime.startsWith("00")
     );
@@ -106,19 +104,19 @@ const countdownTimer = () => {
   if (bellevue === system) {
     // Everybody opens at the same time
     updateCountdownElement(
-      countdownTimerElement,
+      elements.countdownTimerElement,
       `Branches open in ${bellevueTimeRemaining}`,
       bellevueTimeRemaining.startsWith("00")
     );
   } else {
     // Bellevue and branches open at different times
     updateCountdownElement(
-      countdownTimerElement,
+      elements.countdownTimerElement,
       `Bellevue opens in ${bellevueTimeRemaining}`,
       bellevueTimeRemaining.startsWith("00")
     );
     updateCountdownElement(
-      countdownTextElement,
+      elements.countdownTextElement,
       `Other branches: ${systemTimeRemaining}`,
       systemTimeRemaining.startsWith("00")
     );
@@ -166,7 +164,6 @@ const initiateScript = (scriptName) => {
         }
       }
     );
-    // }
   });
 };
 
@@ -184,8 +181,26 @@ const extractFromStorage = async (key) => {
   }
 };
 
+const toggleSection = (toggle, mainSection) => {
+  const isCollapsed = mainSection.classList.contains("collapsed");
+
+  if (isCollapsed) {
+    mainSection.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      mainSection.classList.remove("collapsed");
+    });
+    toggle.src = chrome.runtime.getURL("images/collapse.svg");
+  } else {
+    mainSection.classList.add("collapsed");
+    setTimeout(() => {
+      mainSection.classList.add("hidden");
+    }, 300);
+    toggle.src = chrome.runtime.getURL("images/expand.svg");
+  }
+};
+
 const addEventListeners = () => {
-  passiveTools.addEventListener("click", () => {
+  elements.passiveTools.addEventListener("click", () => {
     chrome.storage.local.get("arePassiveToolsActive", (result) => {
       // Send message to background.js to toggle extension status
       chrome.storage.local.set(
@@ -194,7 +209,7 @@ const addEventListeners = () => {
         },
         () => {
           arePassiveToolsActive = !result.arePassiveToolsActive;
-          passiveTools.checked = arePassiveToolsActive;
+          elements.passiveTools.checked = arePassiveToolsActive;
           chrome.runtime.sendMessage({
             command: "toggleExtension",
           });
@@ -203,43 +218,27 @@ const addEventListeners = () => {
     });
   });
 
-  illActions.forEach((button) => {
+  elements.illActions.forEach((button) => {
     button.addEventListener("click", (event) => {
       const buttonId = event.target.id;
       initiateScript(buttonId);
     });
   });
 
-  collapseToggle.forEach((toggle) => {
+  elements.collapseToggle.forEach((toggle) => {
     toggle.addEventListener("click", () => {
       const mainSection = toggle.parentElement.nextElementSibling;
-      if (mainSection.classList.contains("collapsed")) {
-        mainSection.classList.remove("hidden");
-        requestAnimationFrame(() => {
-          mainSection.classList.remove("collapsed");
-        });
-      } else {
-        mainSection.classList.add("collapsed");
-        toggle.textContent = "Expand";
-        setTimeout(() => {
-          mainSection.classList.add("hidden");
-        }, 300);
-      }
-      if (toggle.src.includes("collapse")) {
-        toggle.src = chrome.runtime.getURL("images/expand.svg");
-      } else {
-        toggle.src = chrome.runtime.getURL("images/collapse.svg");
-      }
+      toggleSection(toggle, mainSection);
     });
   });
 
-  disableButton.addEventListener("click", () => {
+  elements.disableButton.addEventListener("click", () => {
     chrome.runtime.sendMessage({ command: "disableButton" });
   });
 
-  lendingMode.addEventListener("click", () => {
+  elements.lendingMode.addEventListener("click", () => {
     initiateScript("frequentLending");
-    lendingMode.checked
+    elements.lendingMode.checked
       ? chrome.storage.local.set({ lendingMode: true })
       : chrome.storage.local.set({ lendingMode: false });
   });
@@ -250,10 +249,10 @@ const addEventListeners = () => {
     });
   };
 
-  addCheckboxListener(openCreateILL, "openCreateILL");
-  addCheckboxListener(autoReceiveRequestButton, "autoReceiveRequest");
-  addCheckboxListener(printLabel, "printLabel");
-  addCheckboxListener(autoReturnILL, "autoReturnILL");
+  addCheckboxListener(elements.openCreateILL, "openCreateILL");
+  addCheckboxListener(elements.autoReceiveRequestButton, "autoReceiveRequest");
+  addCheckboxListener(elements.printLabel, "printLabel");
+  addCheckboxListener(elements.autoReturnILL, "autoReturnILL");
 };
 
 addEventListeners();
