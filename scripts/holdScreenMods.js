@@ -207,6 +207,13 @@
     searchButtonDiv.parentElement.appendChild(createContainerDiv());
   };
 
+  const isEditDisabled = (boolean) => {
+    const editButton = document.querySelector("#edit-patron-button");
+    if (editButton) {
+      editButton.disabled = boolean;
+    }
+  };
+
   const monitorPatronName = () => {
     const h3Elements = document.querySelectorAll("h3");
 
@@ -224,30 +231,14 @@
               const smallTags = addedNodes.filter(
                 (node) => node.tagName === "SMALL"
               );
-              if (smallTags.length > 0) {
-                // Enable the Edit button if a <small> tag is found
-                const editButton = document.querySelector(
-                  "#edit-patron-button"
-                );
-                if (editButton) {
-                  editButton.disabled = false;
-                }
-              }
+              isEditDisabled(!smallTags.length > 0);
             } else if (mutation.removedNodes.length > 0) {
               // Check if any small tags were removed
               const removedNodes = Array.from(mutation.removedNodes);
               const smallTags = removedNodes.filter(
                 (node) => node.tagName === "SMALL"
               );
-              if (smallTags.length > 0) {
-                // Disable the Edit button if a <small> tag is found
-                const editButton = document.querySelector(
-                  "#edit-patron-button"
-                );
-                if (editButton) {
-                  editButton.disabled = true;
-                }
-              }
+              isEditDisabled(!smallTags.length > 0);
             }
           }
         });
