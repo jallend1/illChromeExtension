@@ -214,6 +214,15 @@
     }
   };
 
+  const comparePatronNames = (evgLastNameTextContent, requestLastName) => {
+    // TODO: Add styles to name if they don't match and a warning text
+    const evgLastNameArr =evgLastNameTextContent.split(",")[0];
+    const indexOfParentheses = evgLastNameArr.indexOf("(");
+    const evgLastName = evgLastNameArr.slice(indexOfParentheses + 1);
+    console.log(evgLastName);
+    console.log(requestLastName.includes(evgLastName));
+  }
+
   const monitorPatronName = () => {
     const h3Elements = document.querySelectorAll("h3");
 
@@ -231,6 +240,15 @@
               const smallTags = addedNodes.filter(
                 (node) => node.tagName === "SMALL"
               );
+              const evgLastName = smallTags[0].textContent;
+              
+              chrome.storage.local.get("requestData").then((result) => {
+                // TODO: Checking storage twice is not the way to live your life -- Lift it to global?
+                if (!result.requestData) return;
+                const { patronName } = JSON.parse(result.requestData);
+                const requestLastName = patronName.split(",")[0];
+                comparePatronNames(evgLastName, requestLastName);
+              });
               isEditDisabled(!smallTags.length > 0);
             } else if (mutation.removedNodes.length > 0) {
               // Check if any small tags were removed
