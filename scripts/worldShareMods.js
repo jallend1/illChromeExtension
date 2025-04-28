@@ -4,6 +4,15 @@ if (!window.worldShareModsInjected) {
   window.currentUrl = window.location.href;
   // Check URL to see if it includes the word queue
   const isQueueUrl = window.currentUrl.includes("queue");
+  const lendingSelectors = {
+    queue: {
+      borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
+    },
+    direct: {
+      borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
+    },
+  };
+
   const selectors = {
     queue: {
       requestHeader:
@@ -43,33 +52,51 @@ if (!window.worldShareModsInjected) {
 
   const waitForElementWithInterval = (selectorOrFunction) =>
     new Promise((resolve, reject) => {
-        const startTime = Date.now();
-        const intervalId = setInterval(() => {
-          const element =
-            typeof selectorOrFunction === "function"
-              ? selectorOrFunction()
-              : document.querySelector(selectorOrFunction);
-          if (element) {
-            clearInterval(intervalId); // Clears interval when element is found
-            resolve(element);
-          } else if (Date.now() - startTime > 10000) {
-            clearInterval(intervalId);
-            // Resolves with null cuz we don't need to be throwing errors around willy nilly
-            resolve(null);
-          }
-        }, 100);
+      const startTime = Date.now();
+      const intervalId = setInterval(() => {
+        const element =
+          typeof selectorOrFunction === "function"
+            ? selectorOrFunction()
+            : document.querySelector(selectorOrFunction);
+        if (element) {
+          clearInterval(intervalId); // Clears interval when element is found
+          resolve(element);
+        } else if (Date.now() - startTime > 10000) {
+          clearInterval(intervalId);
+          // Resolves with null cuz we don't need to be throwing errors around willy nilly
+          resolve(null);
+        }
+      }, 100);
       // }
     });
 
-  const runWorldShareMods = async () => {
-    const applyEmphasisStyle = (el, backgroundColor, color = "white") => {
-      el.style.backgroundColor = backgroundColor;
-      el.style.color = color;
-      el.style.padding = "0.4rem";
-      el.style.borderRadius = "0.5rem";
-      el.style.fontWeight = "bold";
-    };
+  const isLendingRequest = async () => {
+    const borrowingLibrary = await waitForElementWithInterval(
+      "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
+    );
+    console.log(borrowingLibrary);
+    console.log(!borrowingLibrary.textContent.includes("NTG"));
+    return !borrowingLibrary.textContent.includes("NTG");
+  };
 
+  const runLendingMods = async () => {
+    const borrowingNotes = await waitForElementWithInterval(
+      lendingSelectors.direct.borrowingNotes
+    );
+    if (borrowingNotes) {
+      applyEmphasisStyle(borrowingNotes, "yellow", "black");
+    }
+  };
+
+  const applyEmphasisStyle = (el, backgroundColor, color = "white") => {
+    el.style.backgroundColor = backgroundColor;
+    el.style.color = color;
+    el.style.padding = "0.4rem";
+    el.style.borderRadius = "0.5rem";
+    el.style.fontWeight = "bold";
+  };
+
+  const runWorldShareMods = async () => {
     const elements = {
       requestHeader: await waitForElementWithInterval(
         activeSelectors.requestHeader
@@ -83,11 +110,13 @@ if (!window.worldShareModsInjected) {
       dueDateElement: await waitForElementWithInterval(
         activeSelectors.dueDateElement
       ),
-    }
+    };
 
     // renewalDueDateElement does not exist on all pages, but will exist if dueDateElement exists
-    if(elements.dueDateElement) {
-      elements.renewalDueDateElement = document.querySelector(activeSelectors.renewalDueDateElement);
+    if (elements.dueDateElement) {
+      elements.renewalDueDateElement = document.querySelector(
+        activeSelectors.renewalDueDateElement
+      );
     }
     const highlightRequestStatus = async () => {
       const { requestStatus, requestHeader, dispositionElement } = elements;
@@ -114,15 +143,25 @@ if (!window.worldShareModsInjected) {
         }
       }
     };
+
     const highlightDueDate = async () => {
-      const { dueDateElement, renewalDueDateElement, requestStatus, requestHeader } = elements;
+      const {
+        dueDateElement,
+        renewalDueDateElement,
+        requestStatus,
+        requestHeader,
+      } = elements;
       try {
         if (!dueDateElement) return;
         const dueDate = renewalDueDateElement
           ? renewalDueDateElement
           : dueDateElement;
         const diffDays = calculateTimeDiff(dueDate.innerText);
-        if (requestStatus.innerText.includes("Returned") || requestStatus.innerText.includes("Transit")) return;
+        if (
+          requestStatus.innerText.includes("Returned") ||
+          requestStatus.innerText.includes("Transit")
+        )
+          return;
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
           applyEmphasisStyle(dueDate, "red");
@@ -135,8 +174,15 @@ if (!window.worldShareModsInjected) {
         console.error("Error parsing due date:", error);
       }
     };
+
+    const highlightBorrowingNotes = () => {
+      if (elements.borrowingNotes)
+        applyEmphasisStyle(borrowingNotes, "yellow", "black");
+    };
+
     highlightDueDate();
     highlightRequestStatus();
+    // highlightBorrowingNotes();
   };
 
   const isTargetUrl = (url) => {
@@ -144,11 +190,24 @@ if (!window.worldShareModsInjected) {
     return url.match(requestUrlRegEx);
   };
 
+  const determineMods = async () => {
+    const isLending = await isLendingRequest();
+
+    if (isLending) {
+      runLendingMods();
+    } else {
+      runWorldShareMods();
+    }
+  };
+
   const monitorUrlChanges = () => {
     const observer = new MutationObserver(() => {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
-        if (isTargetUrl(window.currentUrl)) runWorldShareMods();
+        if (isTargetUrl(window.currentUrl)) {
+          // runWorldShareMods();
+          determineMods();
+        }
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
@@ -159,7 +218,12 @@ if (!window.worldShareModsInjected) {
   };
 
   // Runs the script initially when the page loads
-  if (isTargetUrl(window.currentUrl)) runWorldShareMods();
+  if (isTargetUrl(window.currentUrl)) {
+    // console.log("IsLendingRequest: ", isLendingRequest());
+    // isLendingRequest() ? runLendingMods() : runWorldShareMods();
+    // runWorldShareMods();
+    determineMods();
+  }
 
   // Sets up a MutationObserver to monitor URL changes
   // and reruns the script when we got a new URL
