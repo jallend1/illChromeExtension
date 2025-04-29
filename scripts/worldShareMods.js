@@ -131,7 +131,7 @@ if (!window.worldShareModsInjected) {
         requestStatus.innerText.includes("Recalled") ||
         requestStatus.innerText.includes("Missing")
       ) {
-        applyEmphasisStyle(requestStatus, "#f8d7da");
+        applyEmphasisStyle(requestStatus, "#f8d7da", "black");
       }
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
@@ -139,7 +139,7 @@ if (!window.worldShareModsInjected) {
           dispositionElement &&
           dispositionElement.innerText.includes("Overdue")
         ) {
-          applyEmphasisStyle(dispositionElement, "#f8d7da");
+          applyEmphasisStyle(dispositionElement, "#f8d7da", "black");
         }
       }
     };
@@ -164,7 +164,7 @@ if (!window.worldShareModsInjected) {
           return;
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
-          applyEmphasisStyle(dueDate, "#f8d7da");
+          applyEmphasisStyle(dueDate, "#f8d7da", "black");
           applyEmphasisStyle(requestHeader, "#f8d7da", "black");
         } else if (diffDays >= 21) {
           applyEmphasisStyle(dueDate, "green");
