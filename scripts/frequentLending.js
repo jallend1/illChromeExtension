@@ -52,7 +52,7 @@ async function loadFrequentLending() {
         }, 500);
       }
     };
-    
+
     const copyValuetoInput = (value) => {
       let barcodeInput;
       let isSearchScreen = document.querySelector("#barcode-search-input");
@@ -95,24 +95,27 @@ async function loadFrequentLending() {
 
       const buttonStyles = {
         margin: "0.5em",
-        padding: "0.5em 0.5em",
-        border: "1px solid black",
-        borderRadius: "5px",
-        backgroundColor: "white",
-        color: "black",
+        padding: "0.6em 1.2em",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #e2e6ea 100%)", // Subtle gray gradient
+        color: "#222",
         cursor: "pointer",
-        fontSize: "0.9em",
-        minWidth: "75px",
+        fontSize: "0.65rem",
+        fontWeight: "bold",
+        fontFamily: "Arial, sans-serif",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        letterSpacing: "0.03em",
+        transition: "background 0.2s, transform 0.15s, box-shadow 0.2s",
+        outline: "none",
+        transform: "none",
       };
 
       const hoverStyles = {
-        margin: "0.5em",
-        padding: "0.5em 0.5em",
-        border: "1px solid black",
-        borderRadius: "5px",
-        backgroundColor: "#076376",
-        color: "white",
-        fontSize: "0.9em",
+        ...buttonStyles,
+        background: "linear-gradient(135deg, #e2e6ea 0%, #f5f7fa 100%)", // Reverse subtle gradient
+        boxShadow: "0 4px 16px rgba(0,0,0,0.13)",
+        transform: "translateY(-2px) scale(1.04)",
       };
 
       applyStyles(libraryButton, buttonStyles);
@@ -143,7 +146,7 @@ async function loadFrequentLending() {
         justifyContent: "center",
         alignItems: "center",
         border: "1px solid #ccc",
-        backgroundColor: "#dff0d8",
+        background: "linear-gradient(135deg, #f8fafc 0%, #e8f0ee 100%)",
         borderRadius: "5px",
         marginTop: "35px",
         paddingTop: "10px",
