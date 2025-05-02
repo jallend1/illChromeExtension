@@ -71,12 +71,12 @@ if (!window.worldShareModsInjected) {
     });
 
   const isLendingRequest = async () => {
+    if(window.location.href.includes("lendingSubmittedLoan")) return true;
     const borrowingLibrary = await waitForElementWithInterval(
-      "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
+      "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
     );
     if (!borrowingLibrary) console.log("What page are we on when we're getting this borrowingLibrary error?");
-    console.log(borrowingLibrary);
-    if(!borrowingLibrary.textContent.includes("NTG")) console.log("borrowingLibrary does not include NTG. Lending request?")
+    
     console.log("isLending : " + !borrowingLibrary.textContent.includes("NTG"));
     // If borrowingLibrary does not include "NTG", it's a lending request
     return !borrowingLibrary.textContent.includes("NTG");
