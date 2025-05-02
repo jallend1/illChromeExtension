@@ -2,6 +2,13 @@ if (!window.worldShareModsInjected) {
   // Sets a flag on the window object to prevent the script from running multiple times
   window.worldShareModsInjected = true;
   window.currentUrl = window.location.href;
+
+  const determineSelectors = () => {
+    // TODO: Selectors are not updating when the URL changes
+    // Move that logic here and remove the function from the global scope
+    // Call it in the monitorUrlChanges function
+  }
+  
   // Check URL to see if it includes the word queue
   const isQueueUrl = window.currentUrl.includes("queue");
   const lendingSelectors = {
@@ -203,6 +210,7 @@ if (!window.worldShareModsInjected) {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
         if (isTargetUrl(window.currentUrl)) {
+          determineSelectors();
           determineMods();
         }
       }
