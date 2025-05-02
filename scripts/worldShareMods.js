@@ -74,8 +74,11 @@ if (!window.worldShareModsInjected) {
     const borrowingLibrary = await waitForElementWithInterval(
       "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
     );
+    if (!borrowingLibrary) console.log("What page are we on when we're getting this borrowingLibrary error?");
     console.log(borrowingLibrary);
-    console.log(!borrowingLibrary.textContent.includes("NTG"));
+    if(!borrowingLibrary.textContent.includes("NTG")) console.log("borrowingLibrary does not include NTG. Lending request?")
+    console.log("isLending : " + !borrowingLibrary.textContent.includes("NTG"));
+    // If borrowingLibrary does not include "NTG", it's a lending request
     return !borrowingLibrary.textContent.includes("NTG");
   };
 
@@ -175,14 +178,8 @@ if (!window.worldShareModsInjected) {
       }
     };
 
-    const highlightBorrowingNotes = () => {
-      if (elements.borrowingNotes)
-        applyEmphasisStyle(borrowingNotes, "yellow", "black");
-    };
-
     highlightDueDate();
     highlightRequestStatus();
-    // highlightBorrowingNotes();
   };
 
   const isTargetUrl = (url) => {
@@ -192,6 +189,7 @@ if (!window.worldShareModsInjected) {
 
   const determineMods = async () => {
     const isLending = await isLendingRequest();
+    console.log("Determine mods - isLending: " + isLending);
 
     if (isLending) {
       runLendingMods();
@@ -205,7 +203,6 @@ if (!window.worldShareModsInjected) {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
         if (isTargetUrl(window.currentUrl)) {
-          // runWorldShareMods();
           determineMods();
         }
       }
@@ -218,12 +215,8 @@ if (!window.worldShareModsInjected) {
   };
 
   // Runs the script initially when the page loads
-  if (isTargetUrl(window.currentUrl)) {
-    // console.log("IsLendingRequest: ", isLendingRequest());
-    // isLendingRequest() ? runLendingMods() : runWorldShareMods();
-    // runWorldShareMods();
-    determineMods();
-  }
+  if (isTargetUrl(window.currentUrl)) determineMods();
+  
 
   // Sets up a MutationObserver to monitor URL changes
   // and reruns the script when we got a new URL
