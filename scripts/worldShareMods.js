@@ -7,8 +7,37 @@ if (!window.worldShareModsInjected) {
     // TODO: Selectors are not updating when the URL changes
     // Move that logic here and remove the function from the global scope
     // Call it in the monitorUrlChanges function
-  }
-  
+    // const isQueueUrl = window.currentUrl.includes("queue");
+    // const selectors = {
+    //   queue: {
+    //     requestHeader:
+    //       "#requests > div:not([class*='hidden']) .nd-request-header",
+    //     requestStatus:
+    //       "#requests > div:not([class*='hidden']) span[data='requestStatus']",
+    //     dispositionElement:
+    //       "#requests > div:not([class*='hidden']) span[data='disposition']",
+    //     dueDateElement:
+    //       '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
+    //     renewalDueDateElement:
+    //       '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
+    //   },
+    //   direct: {
+    //     requestHeader:
+    //       "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
+    //     requestStatus:
+    //       "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
+    //     dispositionElement:
+    //       "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
+    //     dueDateElement:
+    //       'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
+    //     renewalDueDateElement:
+    //       'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
+    //   },
+    // };
+    // const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
+    // return activeSelectors;
+  };
+
   // Check URL to see if it includes the word queue
   const isQueueUrl = window.currentUrl.includes("queue");
   const lendingSelectors = {
@@ -78,12 +107,15 @@ if (!window.worldShareModsInjected) {
     });
 
   const isLendingRequest = async () => {
-    if(window.location.href.includes("lendingSubmittedLoan")) return true;
+    if (window.location.href.includes("lendingSubmittedLoan")) return true;
     const borrowingLibrary = await waitForElementWithInterval(
       "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
     );
-    if (!borrowingLibrary) console.log("What page are we on when we're getting this borrowingLibrary error?");
-    
+    if (!borrowingLibrary)
+      console.log(
+        "What page are we on when we're getting this borrowingLibrary error?"
+      );
+
     console.log("isLending : " + !borrowingLibrary.textContent.includes("NTG"));
     // If borrowingLibrary does not include "NTG", it's a lending request
     return !borrowingLibrary.textContent.includes("NTG");
@@ -224,7 +256,6 @@ if (!window.worldShareModsInjected) {
 
   // Runs the script initially when the page loads
   if (isTargetUrl(window.currentUrl)) determineMods();
-  
 
   // Sets up a MutationObserver to monitor URL changes
   // and reruns the script when we got a new URL
