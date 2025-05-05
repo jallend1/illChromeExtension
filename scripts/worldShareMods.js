@@ -3,84 +3,96 @@ if (!window.worldShareModsInjected) {
   window.worldShareModsInjected = true;
   window.currentUrl = window.location.href;
 
-  const determineSelectors = () => {
+  const determineSelectors = (isLending) => {
     // TODO: Selectors are not updating when the URL changes
     // Move that logic here and remove the function from the global scope
     // Call it in the monitorUrlChanges function
-    // const isQueueUrl = window.currentUrl.includes("queue");
-    // const isLending = isLendingRequest();
-    // if (isLending) {
-    // TODO: Lending Selectors logic here
-    // }
-    // const selectors = {
-    //   queue: {
-    //     requestHeader:
-    //       "#requests > div:not([class*='hidden']) .nd-request-header",
-    //     requestStatus:
-    //       "#requests > div:not([class*='hidden']) span[data='requestStatus']",
-    //     dispositionElement:
-    //       "#requests > div:not([class*='hidden']) span[data='disposition']",
-    //     dueDateElement:
-    //       '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
-    //     renewalDueDateElement:
-    //       '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
-    //   },
-    //   direct: {
-    //     requestHeader:
-    //       "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
-    //     requestStatus:
-    //       "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
-    //     dispositionElement:
-    //       "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
-    //     dueDateElement:
-    //       'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-    //     renewalDueDateElement:
-    //       'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
-    //   },
-    // };
-    // const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
-    // return activeSelectors;
+    const isQueueUrl = window.currentUrl.includes("queue");
+    if (isLending) {
+      // TODO: Lending Selectors logic here
+      const lendingSelectors = {
+        queue: {
+          borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
+        },
+        direct: {
+          borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
+        },
+      };
+      const activeSelectors = isQueueUrl
+        ? lendingSelectors.queue
+        : lendingSelectors.direct;
+      return activeSelectors;
+    } else {
+      const selectors = {
+        queue: {
+          requestHeader:
+            "#requests > div:not([class*='hidden']) .nd-request-header",
+          requestStatus:
+            "#requests > div:not([class*='hidden']) span[data='requestStatus']",
+          dispositionElement:
+            "#requests > div:not([class*='hidden']) span[data='disposition']",
+          dueDateElement:
+            '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
+          renewalDueDateElement:
+            '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
+        },
+        direct: {
+          requestHeader:
+            "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
+          requestStatus:
+            "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
+          dispositionElement:
+            "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
+          dueDateElement:
+            'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
+          renewalDueDateElement:
+            'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
+        },
+      };
+      const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
+      return activeSelectors;
+    }
   };
 
   // Check URL to see if it includes the word queue
-  const isQueueUrl = window.currentUrl.includes("queue");
-  const lendingSelectors = {
-    queue: {
-      borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
-    },
-    direct: {
-      borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
-    },
-  };
+  // const isQueueUrl = window.currentUrl.includes("queue");
+  // const lendingSelectors = {
+  //   queue: {
+  //     borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
+  //   },
+  //   direct: {
+  //     borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
+  //   },
+  // };
 
-  const selectors = {
-    queue: {
-      requestHeader:
-        "#requests > div:not([class*='hidden']) .nd-request-header",
-      requestStatus:
-        "#requests > div:not([class*='hidden']) span[data='requestStatus']",
-      dispositionElement:
-        "#requests > div:not([class*='hidden']) span[data='disposition']",
-      dueDateElement:
-        '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
-      renewalDueDateElement:
-        '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
-    },
-    direct: {
-      requestHeader:
-        "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
-      requestStatus:
-        "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
-      dispositionElement:
-        "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
-      dueDateElement:
-        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-      renewalDueDateElement:
-        'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
-    },
-  };
+  // const selectors = {
+  //   queue: {
+  //     requestHeader:
+  //       "#requests > div:not([class*='hidden']) .nd-request-header",
+  //     requestStatus:
+  //       "#requests > div:not([class*='hidden']) span[data='requestStatus']",
+  //     dispositionElement:
+  //       "#requests > div:not([class*='hidden']) span[data='disposition']",
+  //     dueDateElement:
+  //       '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
+  //     renewalDueDateElement:
+  //       '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
+  //   },
+  //   direct: {
+  //     requestHeader:
+  //       "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
+  //     requestStatus:
+  //       "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
+  //     dispositionElement:
+  //       "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
+  //     dueDateElement:
+  //       'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
+  //     renewalDueDateElement:
+  //       'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
+  //   },
+  // };
 
-  const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
+  // const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
 
   const calculateTimeDiff = (dueDateString) => {
     const dueDate = new Date(dueDateString);
@@ -112,9 +124,18 @@ if (!window.worldShareModsInjected) {
 
   const isLendingRequest = async () => {
     if (window.location.href.includes("lendingSubmittedLoan")) return true;
-    const borrowingLibrary = await waitForElementWithInterval(
-      "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
-    );
+    const isQueueUrl = window.currentUrl.includes("queue");
+    let borrowingLibrary;
+    isQueueUrl
+      ? (borrowingLibrary = await waitForElementWithInterval(
+          "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
+        ))
+      : (borrowingLibrary = await waitForElementWithInterval(
+          "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
+        ));
+    // const borrowingLibrary = await waitForElementWithInterval(
+    //   "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
+    // );
     if (!borrowingLibrary)
       console.log(
         "What page are we on when we're getting this borrowingLibrary error?"
@@ -125,9 +146,9 @@ if (!window.worldShareModsInjected) {
     return !borrowingLibrary.textContent.includes("NTG");
   };
 
-  const runLendingMods = async () => {
+  const runLendingMods = async (activeSelectors) => {
     const borrowingNotes = await waitForElementWithInterval(
-      lendingSelectors.direct.borrowingNotes
+      activeSelectors.borrowingNotes
     );
     if (borrowingNotes) {
       applyEmphasisStyle(borrowingNotes, "#fff9c4", "black");
@@ -142,7 +163,7 @@ if (!window.worldShareModsInjected) {
     el.style.fontWeight = "bold";
   };
 
-  const runWorldShareMods = async () => {
+  const runWorldShareMods = async (activeSelectors) => {
     const elements = {
       requestHeader: await waitForElementWithInterval(
         activeSelectors.requestHeader
@@ -233,7 +254,7 @@ if (!window.worldShareModsInjected) {
   const determineMods = async () => {
     const isLending = await isLendingRequest();
     console.log("Determine mods - isLending: " + isLending);
-    const activeSelectors = determineSelectors();
+    const activeSelectors = determineSelectors(isLending);
 
     if (isLending) {
       runLendingMods(activeSelectors);
