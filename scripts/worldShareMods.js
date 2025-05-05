@@ -4,12 +4,8 @@ if (!window.worldShareModsInjected) {
   window.currentUrl = window.location.href;
 
   const determineSelectors = (isLending) => {
-    // TODO: Selectors are not updating when the URL changes
-    // Move that logic here and remove the function from the global scope
-    // Call it in the monitorUrlChanges function
     const isQueueUrl = window.currentUrl.includes("queue");
     if (isLending) {
-      // TODO: Lending Selectors logic here
       const lendingSelectors = {
         queue: {
           borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
@@ -23,7 +19,7 @@ if (!window.worldShareModsInjected) {
         : lendingSelectors.direct;
       return activeSelectors;
     } else {
-      const selectors = {
+      const borrowingSelectors = {
         queue: {
           requestHeader:
             "#requests > div:not([class*='hidden']) .nd-request-header",
@@ -49,50 +45,12 @@ if (!window.worldShareModsInjected) {
             'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
         },
       };
-      const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
+      const activeSelectors = isQueueUrl
+        ? borrowingSelectors.queue
+        : borrowingSelectors.direct;
       return activeSelectors;
     }
   };
-
-  // Check URL to see if it includes the word queue
-  // const isQueueUrl = window.currentUrl.includes("queue");
-  // const lendingSelectors = {
-  //   queue: {
-  //     borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
-  //   },
-  //   direct: {
-  //     borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
-  //   },
-  // };
-
-  // const selectors = {
-  //   queue: {
-  //     requestHeader:
-  //       "#requests > div:not([class*='hidden']) .nd-request-header",
-  //     requestStatus:
-  //       "#requests > div:not([class*='hidden']) span[data='requestStatus']",
-  //     dispositionElement:
-  //       "#requests > div:not([class*='hidden']) span[data='disposition']",
-  //     dueDateElement:
-  //       '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
-  //     renewalDueDateElement:
-  //       '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
-  //   },
-  //   direct: {
-  //     requestHeader:
-  //       "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
-  //     requestStatus:
-  //       "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
-  //     dispositionElement:
-  //       "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
-  //     dueDateElement:
-  //       'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-  //     renewalDueDateElement:
-  //       'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
-  //   },
-  // };
-
-  // const activeSelectors = isQueueUrl ? selectors.queue : selectors.direct;
 
   const calculateTimeDiff = (dueDateString) => {
     const dueDate = new Date(dueDateString);
@@ -133,16 +91,6 @@ if (!window.worldShareModsInjected) {
       : (borrowingLibrary = await waitForElementWithInterval(
           "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
         ));
-    // const borrowingLibrary = await waitForElementWithInterval(
-    //   "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
-    // );
-    if (!borrowingLibrary)
-      console.log(
-        "What page are we on when we're getting this borrowingLibrary error?"
-      );
-
-    console.log("isLending : " + !borrowingLibrary.textContent.includes("NTG"));
-    // If borrowingLibrary does not include "NTG", it's a lending request
     return !borrowingLibrary.textContent.includes("NTG");
   };
 
@@ -163,7 +111,7 @@ if (!window.worldShareModsInjected) {
     el.style.fontWeight = "bold";
   };
 
-  const runWorldShareMods = async (activeSelectors) => {
+  const runBorrowingMods = async (activeSelectors) => {
     const elements = {
       requestHeader: await waitForElementWithInterval(
         activeSelectors.requestHeader
@@ -253,13 +201,12 @@ if (!window.worldShareModsInjected) {
 
   const determineMods = async () => {
     const isLending = await isLendingRequest();
-    console.log("Determine mods - isLending: " + isLending);
     const activeSelectors = determineSelectors(isLending);
 
     if (isLending) {
       runLendingMods(activeSelectors);
     } else {
-      runWorldShareMods(activeSelectors);
+      runBorrowingMods(activeSelectors);
     }
   };
 
@@ -268,8 +215,6 @@ if (!window.worldShareModsInjected) {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
         if (isTargetUrl(window.currentUrl)) {
-          // const activeSelectors = determineSelectors();
-          // determineSelectors();
           determineMods();
         }
       }
