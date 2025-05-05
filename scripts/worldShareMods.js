@@ -8,6 +8,10 @@ if (!window.worldShareModsInjected) {
     // Move that logic here and remove the function from the global scope
     // Call it in the monitorUrlChanges function
     // const isQueueUrl = window.currentUrl.includes("queue");
+    // const isLending = isLendingRequest();
+    // if (isLending) {
+    // TODO: Lending Selectors logic here
+    // }
     // const selectors = {
     //   queue: {
     //     requestHeader:
@@ -229,11 +233,12 @@ if (!window.worldShareModsInjected) {
   const determineMods = async () => {
     const isLending = await isLendingRequest();
     console.log("Determine mods - isLending: " + isLending);
+    const activeSelectors = determineSelectors();
 
     if (isLending) {
-      runLendingMods();
+      runLendingMods(activeSelectors);
     } else {
-      runWorldShareMods();
+      runWorldShareMods(activeSelectors);
     }
   };
 
@@ -242,7 +247,8 @@ if (!window.worldShareModsInjected) {
       if (window.location.href !== window.currentUrl) {
         window.currentUrl = window.location.href; // Update the current URL
         if (isTargetUrl(window.currentUrl)) {
-          determineSelectors();
+          // const activeSelectors = determineSelectors();
+          // determineSelectors();
           determineMods();
         }
       }
