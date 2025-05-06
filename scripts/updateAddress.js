@@ -12,13 +12,19 @@
     chrome.runtime.getURL("modules/modal.js")
   );
 
-  //  Selectors and values for the text inputs
+  // -- Constants for modal messages --
+  const SUCCESS_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`;
+  const ERROR_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`;
+  const ERROR_COLOR = "#e85e6a";
+  const SUCCESS_COLOR = "#4CAF50";
+
+  //  -- Constants for text inputs --
   const textInputs = {
     "#au-dob-input": "1980-07-16",
     "#au-family_name-input": "ILL DEPT",
   };
 
-  // Selectors, values, and options for the dropdown inputs
+  // -- Constants for dropdown selections --
   const dropDownSelections = [
     {
       field: "Patron Permission Type",
@@ -41,6 +47,7 @@
     },
   ];
 
+  // -- Utility Functions --
   const waitForElement = (selector) => {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -78,12 +85,6 @@
     }
   };
 
-  const fillUniversalSettings = async () => {
-    for (const [selector, value] of Object.entries(textInputs)) {
-      await applyInputValues(selector, value);
-    }
-  };
-
   const waitForOptionsAndSelect = async (
     optionText,
     selector,
@@ -94,8 +95,8 @@
     if (!inputField) {
       errorCount++;
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`,
-        "#e85e6a",
+        ERROR_MSG,
+        ERROR_COLOR,
         chrome.runtime.getURL("images/kawaii-book-sad.png")
       );
       return;
@@ -119,8 +120,8 @@
       } else {
         errorCount++;
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">The expected options didn't present themselves for reasons that are mysterious to us all.</p>`,
-          "#e85e6a",
+          ERROR_MSG,
+          ERROR_COLOR,
           chrome.runtime.getURL("images/kawaii-book-sad.png")
         );
       }
@@ -139,6 +140,13 @@
     }
   };
 
+  const fillUniversalSettings = async () => {
+    for (const [selector, value] of Object.entries(textInputs)) {
+      await applyInputValues(selector, value);
+    }
+  };
+
+  // -- Main Function --
   async function updateAddress() {
     // TODO: Modify error handling to be less nonsensical
     let errorCount = 0;
@@ -155,8 +163,8 @@
 
     if (errorCount === 0) {
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`,
-        "#4CAF50",
+        SUCCESS_MSG,
+        SUCCESS_COLOR,
         chrome.runtime.getURL("images/kawaii-dinosaur.png")
       );
     }
