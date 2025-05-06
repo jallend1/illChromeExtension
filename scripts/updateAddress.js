@@ -82,9 +82,10 @@
     Object.entries(textInputs).forEach(([selector, value]) => {
       applyInputValues(selector, value);
     });
+    console.log("Universal settings filled!");
   };
 
-  function updateAddress() {
+  async function updateAddress() {
     // TODO: Modify error handling to be less nonsensical
     let errorCount = 0;
 
@@ -93,7 +94,6 @@
       selector,
       inputSelector
     ) => {
-      // const inputField = document.querySelector(inputSelector);
       const inputField = await waitForElement(inputSelector);
 
       if (!inputField) {
@@ -144,15 +144,18 @@
       }
     };
 
-    dropDownSelections.forEach(
-      ({ optionText, optionSelector, inputSelector }) => {
-        waitForOptionsAndSelect(optionText, optionSelector, inputSelector);
-      }
-    );
+    for (const {
+      optionText,
+      optionSelector,
+      inputSelector,
+    } of dropDownSelections) {
+      await waitForOptionsAndSelect(optionText, optionSelector, inputSelector);
+    }
 
     fillUniversalSettings();
 
     if (errorCount === 0) {
+      console.log("Firing modal");
       statusModal(
         `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`,
         "#4CAF50",
@@ -161,5 +164,5 @@
     }
   }
 
-  updateAddress();
+  await updateAddress();
 })();
