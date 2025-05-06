@@ -78,71 +78,70 @@
     }
   };
 
-  const fillUniversalSettings = () => {
-    Object.entries(textInputs).forEach(([selector, value]) => {
-      applyInputValues(selector, value);
-    });
-    console.log("Universal settings filled!");
+  const fillUniversalSettings = async () => {
+    for (const [selector, value] of Object.entries(textInputs)) {
+      await applyInputValues(selector, value);
+    }
+  };
+
+  const waitForOptionsAndSelect = async (
+    optionText,
+    selector,
+    inputSelector
+  ) => {
+    const inputField = await waitForElement(inputSelector);
+
+    if (!inputField) {
+      errorCount++;
+      statusModal(
+        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`,
+        "#e85e6a",
+        chrome.runtime.getURL("images/kawaii-book-sad.png")
+      );
+      return;
+    }
+    // Options are loaded only after clicking the dropdown, so wait for them to populate
+    let attempts = 0;
+
+    const selectOption = () => {
+      inputField.click(); // Opens the dropdown
+      const options = document.querySelectorAll(selector);
+      const targetOption = Array.from(options).find(
+        (option) => option.textContent.trim() === optionText
+      );
+
+      if (targetOption) {
+        targetOption.click();
+      } else if (attempts < 100) {
+        // Retry up to 10 times
+        setTimeout(selectOption, 100); // Wait 100ms before retrying
+        attempts++;
+      } else {
+        errorCount++;
+        statusModal(
+          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">The expected options didn't present themselves for reasons that are mysterious to us all.</p>`,
+          "#e85e6a",
+          chrome.runtime.getURL("images/kawaii-book-sad.png")
+        );
+      }
+    };
+
+    selectOption();
+
+    // If URL includes "register", focus on the #au-first_given_name-input field
+    if (window.location.href.includes("register")) {
+      const firstNameInput = document.querySelector(
+        "#au-first_given_name-input"
+      );
+      if (firstNameInput) {
+        firstNameInput.focus();
+      }
+    }
   };
 
   async function updateAddress() {
     // TODO: Modify error handling to be less nonsensical
     let errorCount = 0;
-
-    const waitForOptionsAndSelect = async (
-      optionText,
-      selector,
-      inputSelector
-    ) => {
-      const inputField = await waitForElement(inputSelector);
-
-      if (!inputField) {
-        errorCount++;
-        statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`,
-          "#e85e6a",
-          chrome.runtime.getURL("images/kawaii-book-sad.png")
-        );
-        return;
-      }
-      // Options are loaded only after clicking the dropdown, so wait for them to populate
-      let attempts = 0;
-
-      const selectOption = () => {
-        inputField.click(); // Opens the dropdown
-        const options = document.querySelectorAll(selector);
-        const targetOption = Array.from(options).find(
-          (option) => option.textContent.trim() === optionText
-        );
-
-        if (targetOption) {
-          targetOption.click();
-        } else if (attempts < 100) {
-          // Retry up to 10 times
-          setTimeout(selectOption, 100); // Wait 100ms before retrying
-          attempts++;
-        } else {
-          errorCount++;
-          statusModal(
-            `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">The expected options didn't present themselves for reasons that are mysterious to us all.</p>`,
-            "#e85e6a",
-            chrome.runtime.getURL("images/kawaii-book-sad.png")
-          );
-        }
-      };
-
-      selectOption();
-
-      // If URL includes "register", focus on the #au-first_given_name-input field
-      if (window.location.href.includes("register")) {
-        const firstNameInput = document.querySelector(
-          "#au-first_given_name-input"
-        );
-        if (firstNameInput) {
-          firstNameInput.focus();
-        }
-      }
-    };
 
     for (const {
       optionText,
@@ -155,7 +154,6 @@
     fillUniversalSettings();
 
     if (errorCount === 0) {
-      console.log("Firing modal");
       statusModal(
         `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`,
         "#4CAF50",
