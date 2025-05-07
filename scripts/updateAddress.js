@@ -147,7 +147,7 @@
   // -- Main Function --
   async function updateAddress() {
     try {
-      statusModal(WORKING_MSG, WORKING_COLOR, null, true); // Show working modal
+      statusModal(WORKING_MSG, WORKING_COLOR, null, true);
       for (const {
         optionText,
         optionSelector,
@@ -182,7 +182,7 @@
       ERROR_COLOR,
       chrome.runtime.getURL("images/kawaii-book-sad.png")
     );
-  } else {
-    await updateAddress();
+    return;
   }
+  await updateAddress();
 })();
