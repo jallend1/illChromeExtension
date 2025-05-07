@@ -16,6 +16,8 @@
   // -- Constants for modal messages --
   const SUCCESS_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`;
   const ERROR_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`;
+  const WORKING_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Please wait...</h2> <p style="font-size: 1rem;">Attempting to fill standard address fields.</p>`;
+  const WORKING_COLOR = "#ffc107";
   const ERROR_COLOR = "#e85e6a";
   const SUCCESS_COLOR = "#4CAF50";
 
@@ -145,6 +147,7 @@
   // -- Main Function --
   async function updateAddress() {
     try {
+      statusModal(WORKING_MSG, WORKING_COLOR, null, true); // Show working modal
       for (const {
         optionText,
         optionSelector,
