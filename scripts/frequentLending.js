@@ -5,7 +5,7 @@ async function loadFrequentLending() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { applyStyles } = await import(
+  const { buttonStyles, applyStyles } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
@@ -93,24 +93,6 @@ async function loadFrequentLending() {
       const libraryButton = document.createElement("button");
       libraryButton.textContent = library;
       libraryButton.value = frequentLibraries[library];
-
-      const buttonStyles = {
-        margin: "0.5em",
-        padding: "0.6em 1.2em",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        background: "linear-gradient(135deg, #f5f7fa 0%, #e2e6ea 100%)", // Subtle gray gradient
-        color: "#222",
-        cursor: "pointer",
-        fontSize: "0.65rem",
-        fontWeight: "bold",
-        fontFamily: "Arial, sans-serif",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-        letterSpacing: "0.03em",
-        transition: "background 0.2s, transform 0.15s, box-shadow 0.2s",
-        outline: "none",
-        transform: "none",
-      };
 
       const hoverStyles = {
         ...buttonStyles,

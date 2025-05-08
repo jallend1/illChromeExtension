@@ -3,6 +3,10 @@
     chrome.runtime.getURL("modules/courierLibraries.js")
   );
 
+  const { buttonStyles } = await import(
+    chrome.runtime.getURL("modules/utils.js")
+  );
+
   const courierStates = [", WA ", ", OR ", ", ID "];
 
   function courierHighlight(courierLibraries) {
@@ -120,26 +124,6 @@
         courierHighlight.style.display = "flex";
         courierHighlight.style.alignItems = "center";
         courierHighlight.style.justifyContent = "center";
-
-        // Button styles (from frequentLending.js)
-        const buttonStyles = {
-          background: "linear-gradient(135deg, #f5f7fa 0%, #e2e6ea 100%)",
-          color: "#222",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          padding: "0.6em 1.2em",
-          fontSize: "0.65rem",
-          fontWeight: "bold",
-          fontFamily: "Arial, sans-serif",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-          letterSpacing: "0.03em",
-          cursor: "pointer",
-          marginTop: "0",
-          outline: "none",
-          transition: "background 0.2s, transform 0.15s, box-shadow 0.2s",
-          transform: "none",
-          display: "block",
-        };
 
         const hoverStyles = {
           ...buttonStyles,
