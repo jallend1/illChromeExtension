@@ -5,9 +5,8 @@ async function loadFrequentLending() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { buttonStyles, hoverStyles, applyStyles } = await import(
-    chrome.runtime.getURL("modules/utils.js")
-  );
+  const { buttonStyles, hoverStyles, applyStyles, waitForElementWithInterval } =
+    await import(chrome.runtime.getURL("modules/utils.js"));
 
   function frequentLending() {
     const isEvergreen =
@@ -29,27 +28,14 @@ async function loadFrequentLending() {
       document.head.appendChild(style);
     };
 
-    const checkNavBar = () => {
-      let navBar = document.querySelector("eg-staff-nav-bar");
-      if (navBar) {
-        if (!document.querySelector("#frequentLibraries")) {
-          generateLendingContainer(navBar);
-        }
-      } else {
-        // If no navBar yet, keep trying for 15 seconds
-        let attempts = 0;
-        const interval = setInterval(() => {
-          navBar = document.querySelector("eg-staff-nav-bar");
-          if (navBar) {
-            clearInterval(interval);
-            generateLendingContainer(navBar);
-          }
-          attempts++;
-          if (attempts > 30) {
-            console.log("No navBar found");
-            clearInterval(interval);
-          }
-        }, 500);
+    const checkNavBar = async () => {
+      let navBar = await waitForElementWithInterval("eg-staff-nav-bar");
+      if (!navBar) {
+        console.log("No navBar found.");
+        return;
+      }
+      if (!document.querySelector("#frequentLibraries")) {
+        generateLendingContainer(navBar);
       }
     };
 
