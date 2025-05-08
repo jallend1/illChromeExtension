@@ -107,17 +107,73 @@
     });
 
     // Inserts courier alert into patron page
+
     const insertCourierAlert = () => {
       const lead = document.querySelector(".lead");
       const courierHighlightExists =
         document.querySelector(".courier-highlight");
       if (!courierHighlightExists) {
         const courierHighlight = document.createElement("div");
-        courierHighlight.innerHTML = `
-            <div class="courier-highlight">
-            <p style="color: green; font-size: smaller;">This is likely a courier library. Verify on the courier list.</p>
-            </div>
-        `;
+        courierHighlight.className = "courier-highlight";
+        courierHighlight.style.margin = "1rem";
+
+        courierHighlight.style.display = "flex";
+        courierHighlight.style.alignItems = "center";
+        courierHighlight.style.justifyContent = "center";
+
+        // Button styles (from frequentLending.js)
+        const buttonStyles = {
+          background: "linear-gradient(135deg, #f5f7fa 0%, #e2e6ea 100%)",
+          color: "#222",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "0.6em 1.2em",
+          fontSize: "0.65rem",
+          fontWeight: "bold",
+          fontFamily: "Arial, sans-serif",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          letterSpacing: "0.03em",
+          cursor: "pointer",
+          marginTop: "0",
+          outline: "none",
+          transition: "background 0.2s, transform 0.15s, box-shadow 0.2s",
+          transform: "none",
+          display: "block",
+        };
+
+        const hoverStyles = {
+          ...buttonStyles,
+          background: "linear-gradient(135deg, #e2e6ea 0%, #f5f7fa 100%)",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.13)",
+          transform: "translateY(-2px) scale(1.04)",
+        };
+
+        // Create the button
+        const button = document.createElement("button");
+        button.textContent = "Likely a Courier Library";
+        button.title = "Open the courier list in a new tab";
+        button.type = "button";
+
+        // Apply base styles
+        Object.assign(button.style, buttonStyles);
+
+        // Add hover effect
+        button.addEventListener("mouseover", () => {
+          Object.assign(button.style, hoverStyles);
+        });
+        button.addEventListener("mouseout", () => {
+          Object.assign(button.style, buttonStyles);
+        });
+
+        // Open courier list on click
+        button.addEventListener("click", () => {
+          window.open(
+            "https://docs.google.com/spreadsheets/d/1wisjUQEoMlPOI4HKtNJ8CiMD-fHMZTq5LOTjtqqBwXo/edit?pli=1&gid=0#gid=0",
+            "_blank"
+          );
+        });
+
+        courierHighlight.appendChild(button);
         lead.appendChild(courierHighlight);
       }
     };
