@@ -95,15 +95,11 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
       if (overdueTitles.length === 0) {
         resultHeading = "Heads up!";
         resultMessage = `No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.`;
-        // result = `<h2>Heads up!</h2><p style="padding: 2rem;">No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.</p>`;
       } else {
         resultHeading = "Success!";
         resultMessage = `An overdue notice letter was copied to your clipboard for ${
           overdueTitles.length
         } ${overdueTitles.length === 1 ? "item" : "items"}.`;
-        // result = `<h2>Success!</h2> <p style="">An overdue notice letter was copied to your clipboard for ${
-        //   overdueTitles.length
-        // } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`;
       }
       statusModal(resultHeading, resultMessage, headerColor, imgURL);
     } catch (err) {
@@ -113,11 +109,9 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
       if (err.message.includes("Document is not focused")) {
         resultHeading = "Error!";
         resultMessage = "Please click on the page and try again.";
-        // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
       } else {
         resultHeading = "Error!";
         resultMessage = `An error occurred while copying the overdue notice letter to your clipboard. Please try again.`;
-        // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
       }
       statusModal(resultHeading, resultMessage, headerColor, imgURL);
       console.error(err);
