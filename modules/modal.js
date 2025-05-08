@@ -1,7 +1,12 @@
 export const statusModal = (data, backgroundColor, imgURL) => {
+  const existingModal = document.getElementById("powILL-modal");
+  if (existingModal) {
+    existingModal.remove();
+  }
   const modal = document.createElement("div");
-  modal.setAttribute("id", "modal");
-  const modalStyles = {
+  modal.setAttribute("id", "powILL-modal");
+
+  Object.assign(modal.style, {
     position: "fixed",
     top: "50%",
     left: "50%",
@@ -16,11 +21,8 @@ export const statusModal = (data, backgroundColor, imgURL) => {
     fontSize: "4rem",
     border: "1px solid #000",
     boxShadow: "0 0 10px 5px #000",
-  };
+  });
 
-  for (const [key, value] of Object.entries(modalStyles)) {
-    modal.style[key] = value;
-  }
   modal.innerHTML = `
   <div>  
     <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
