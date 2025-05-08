@@ -42,3 +42,10 @@ export const buttonStyles = {
   transform: "none",
   display: "block",
 };
+
+export const hoverStyles = {
+  ...buttonStyles,
+  background: "linear-gradient(135deg, #e2e6ea 0%, #f5f7fa 100%)", // Reverse subtle gradient
+  boxShadow: "0 4px 16px rgba(0,0,0,0.13)",
+  transform: "translateY(-2px) scale(1.04)",
+};

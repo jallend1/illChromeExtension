@@ -3,13 +3,13 @@
     chrome.runtime.getURL("modules/courierLibraries.js")
   );
 
-  const { buttonStyles } = await import(
+  const { buttonStyles, waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
   const courierStates = [", WA ", ", OR ", ", ID "];
 
-  function courierHighlight(courierLibraries) {
+  async function courierHighlight(courierLibraries) {
     // Checks if patron name matches ILL name formatting
     const isLibrary = (patronLastName) =>
       ["ILL DEPT", "LIBRARY"].includes(patronLastName);
@@ -66,47 +66,24 @@
 
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.data === "courierHighlight") {
-        // Doesn't run it if on the search page
-        if (window.location.href.includes("search")) {
-          sendResponse({
-            response: "Courier Highlighting doesn't run on the search page",
-          });
-          return;
-        }
-        let patronNameElement;
-        patronNameElement = document.querySelector(".patron-status-color h4");
+        (async () => {
+          // Doesn't run it if on the search page
+          if (window.location.href.includes("search")) {
+            sendResponse({
+              response: "Courier Highlighting doesn't run on the search page",
+            });
+            return;
+          }
 
-        if (!patronNameElement) {
-          const interval = setInterval(() => {
-            patronNameElement = document.querySelector(
-              ".patron-status-color h4"
-            );
-            if (patronNameElement) {
-              clearInterval(interval); // Stop checking once patronName has a value
-              processName(patronNameElement.textContent)
-                ? insertCourierAlert()
-                : null;
-            }
-          }, 100);
-
-          const timeout = setTimeout(() => {
-            console.log("Patron name not found -- Courier Highlight");
-            clearInterval(interval);
-          }, 4000);
-
-          const checkInterval = setInterval(() => {
-            if (patronNameElement) {
-              clearTimeout(timeout);
-              clearInterval(checkInterval);
-            }
-          }, 100);
-        } else {
+          // Waits for patron name to appear on the page
+          const patronNameElement = await waitForElementWithInterval(
+            ".patron-status-color h4"
+          );
           processName(patronNameElement.textContent)
             ? insertCourierAlert()
             : null;
-        }
-
-        sendResponse({ response: "Message received" });
+          sendResponse({ response: "Message received" });
+        })();
       }
     });
 
@@ -125,10 +102,17 @@
         courierHighlight.style.alignItems = "center";
         courierHighlight.style.justifyContent = "center";
 
-        const hoverStyles = {
+        const greenButtonStyles = {
           ...buttonStyles,
-          background: "linear-gradient(135deg, #e2e6ea 0%, #f5f7fa 100%)",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.13)",
+          background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
+          color: "#1b3a2b",
+          border: "1px solid #50e3c2",
+        };
+
+        const greenHoverStyles = {
+          ...greenButtonStyles,
+          background: "linear-gradient(135deg, #50e3c2 0%, #b7f8db 100%)",
+          boxShadow: "0 4px 16px rgba(80, 227, 194, 0.18)",
           transform: "translateY(-2px) scale(1.04)",
         };
 
@@ -139,14 +123,14 @@
         button.type = "button";
 
         // Apply base styles
-        Object.assign(button.style, buttonStyles);
+        Object.assign(button.style, greenButtonStyles);
 
         // Add hover effect
         button.addEventListener("mouseover", () => {
-          Object.assign(button.style, hoverStyles);
+          Object.assign(button.style, greenHoverStyles);
         });
         button.addEventListener("mouseout", () => {
-          Object.assign(button.style, buttonStyles);
+          Object.assign(button.style, greenButtonStyles);
         });
 
         // Open courier list on click

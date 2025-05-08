@@ -5,7 +5,7 @@ async function loadFrequentLending() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { buttonStyles, applyStyles } = await import(
+  const { buttonStyles, hoverStyles, applyStyles } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
@@ -94,23 +94,16 @@ async function loadFrequentLending() {
       libraryButton.textContent = library;
       libraryButton.value = frequentLibraries[library];
 
-      const hoverStyles = {
-        ...buttonStyles,
-        background: "linear-gradient(135deg, #e2e6ea 0%, #f5f7fa 100%)", // Reverse subtle gradient
-        boxShadow: "0 4px 16px rgba(0,0,0,0.13)",
-        transform: "translateY(-2px) scale(1.04)",
-      };
-
-      applyStyles(libraryButton, buttonStyles);
+      Object.assign(libraryButton.style, buttonStyles);
 
       libraryButton.addEventListener("click", (e) => {
         copyValuetoInput(e.target.value);
       });
       libraryButton.addEventListener("mouseover", () => {
-        applyStyles(libraryButton, hoverStyles);
+        Object.assign(libraryButton.style, hoverStyles);
       });
       libraryButton.addEventListener("mouseout", () => {
-        applyStyles(libraryButton, buttonStyles);
+        Object.assign(libraryButton.style, buttonStyles);
       });
       containerEl.appendChild(libraryButton);
     };
@@ -132,7 +125,8 @@ async function loadFrequentLending() {
         background: "linear-gradient(135deg, #f8fafc 0%, #e8f0ee 100%)",
         borderRadius: "5px",
         marginTop: "35px",
-        paddingTop: "10px",
+        paddingTop: "1rem",
+        paddingBottom: "0.75rem",
       };
 
       applyStyles(frequentLibrariesDiv, divStyles);
