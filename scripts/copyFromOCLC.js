@@ -41,8 +41,6 @@
 
     const extractValueFromField = (selector) => {
       const currentMatch = document.querySelector(selector);
-      // const allMatches = document.querySelectorAll(selector);
-      // const currentMatch = allMatches[allMatches.length - 1];
       if (selector.includes("patron.userId"))
         return currentMatch?.value.replace(/[^0-9]/g, "");
       // If selector includes 'input' return the value, otherwise return the textContent
@@ -199,7 +197,6 @@
       if (!requestNum) {
         const resultHeading = "Something went wrong!";
         const resultMessage = `We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.`;
-        // const result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.</p>`;
         const imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
         const headerColor = "#e85e6a";
         chrome.storage.local.remove("requestData");
@@ -212,7 +209,6 @@
           imgURL: chrome.runtime.getURL("images/kawaii-dinosaur.png"),
           heading: "Success!",
           message: "Request Number: " + requestNum,
-          // result: `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`,
         };
 
         // Clears previous data from storage
@@ -238,11 +234,9 @@
         if (err.message.includes("Document is not focused")) {
           heading = "Error!";
           message = "Suggested tip: Please click on the page and try again";
-          // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
         } else {
           heading = "Error!";
           message = "Something went wrong! Please try again.";
-          // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
         }
         chrome.storage.local.remove("requestData");
         statusModal(heading, message, headerColor, imgURL);
