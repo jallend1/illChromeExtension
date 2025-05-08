@@ -12,6 +12,9 @@
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
+  const { waitForElementWithInterval } = await import(
+    chrome.runtime.getURL("modules/utils.js")
+  );
 
   // -- Constants for modal messages --
   const SUCCESS_HEADING = "Success!";
@@ -55,23 +58,6 @@
   ];
 
   // -- Utility Functions --
-  const waitForElement = (selector) => {
-    return new Promise((resolve, reject) => {
-      const startTime = Date.now();
-      const interval = setInterval(() => {
-        const element = document.querySelector(selector);
-        if (element) {
-          clearInterval(interval);
-          resolve(element);
-        }
-        if (Date.now() - startTime > 10000) {
-          clearInterval(interval);
-          reject(new Error(`Element ${selector} not found`));
-        }
-      });
-    });
-  };
-
   const generateEvent = (type) => {
     return new Event(type, {
       bubbles: true,
@@ -80,7 +66,7 @@
   };
 
   const applyInputValues = async (selector, value) => {
-    const input = await waitForElement(selector);
+    const input = await waitForElementWithInterval(selector);
     if (!input) throw new Error(`Input field ${selector} not found`);
     input.value = value;
     input.dispatchEvent(generateEvent("input"));
@@ -94,7 +80,7 @@
     selector,
     inputSelector
   ) => {
-    const inputField = await waitForElement(inputSelector);
+    const inputField = await waitForElementWithInterval(inputSelector);
     if (!inputField)
       throw new Error(`Dropdown input ${inputSelector} not found`);
 
