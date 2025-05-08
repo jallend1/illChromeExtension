@@ -1,4 +1,4 @@
-export const statusModal = (data, backgroundColor, imgURL) => {
+export const statusModal = (heading, message, backgroundColor, imgURL) => {
   const existingModal = document.getElementById("powILL-modal");
   if (existingModal) {
     existingModal.remove();
@@ -29,7 +29,10 @@ export const statusModal = (data, backgroundColor, imgURL) => {
       <img src=${imgURL} style="width: 100px; height: 100px; border-radius: 50%;">
     </div>
     <div style="background-color: #f9f9f9; text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-      ${data}
+      <header style="font-size: 2rem; font-weight: bold; color: #3b607c;">
+        <h2 style="font-weight: thin; padding: 1rem; color: #3b607c">${heading}</h2>
+      </header>
+      <p style="font-size: 1rem; color: #3b607c;">${message}</p>
       <button id="close-button" style="margin-top: 1rem; padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; background-color: ${backgroundColor}; color: #fff; font-size: 1.5rem; cursor: pointer;">
         Close
       </button>

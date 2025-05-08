@@ -132,7 +132,8 @@
         !addressObject.line2
       ) {
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">No valid address found on this page.</p>`,
+          "Error!",
+          "No valid address found on this page.",
           "#e85e6a",
           chrome.runtime.getURL("images/kawaii-book-sad.png")
         );
@@ -156,21 +157,24 @@
         // Prints the Dymo label and indicates as much in status modal
         dymoFunctions.printDymoLabel(addressString);
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Printing label!</h2> <p style="font-size: 1rem;">The address has also been copied to your clipboard.</p>`,
+          "Printing label!",
+          "The address has also been copied to your clipboard.",
           "#4CAF50",
           chrome.runtime.getURL("images/kawaii-dinosaur.png")
         );
       } else {
         // Displays a success modal indicating the address has been copied
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Address Copied!</h2> <p style="font-size: 1rem;">The address has been copied to your clipboard.</p>`,
+          "Address Copied!",
+          "The address has been copied to your clipboard.",
           "#4CAF50",
           chrome.runtime.getURL("images/kawaii-dinosaur.png")
         );
       }
     } else {
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Address is not valid.</p><p>${address}</p>`,
+        "Error!",
+        "Address is not valid.",
         "#e85e6a",
         chrome.runtime.getURL("images/kawaii-book-sad.png")
       );
@@ -197,7 +201,8 @@
     }
   } else {
     statusModal(
-      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Please run this from WorldShare.</p>`,
+      "Error!",
+      "Please run this from WorldShare.",
       "#e85e6a",
       chrome.runtime.getURL("images/kawaii-book-sad.png")
     );

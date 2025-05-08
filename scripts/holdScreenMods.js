@@ -15,7 +15,8 @@
     // If item has a second patron, automatically populate departmental card barcode
     const handleSecondPatron = () => {
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Second Patron Detected!</h2> <p style="font-size: 1rem;">Please wait while we automatically place a hold on the departmental card.</p>`,
+        "Second Patron Detected!",
+        `Please wait while we automatically place a hold on the departmental card.`,
         "#4CAF50",
         chrome.runtime.getURL("images/kawaii-dinosaur.png")
       );
@@ -216,12 +217,12 @@
 
   const comparePatronNames = (evgLastNameTextContent, requestLastName) => {
     // TODO: Add styles to name if they don't match and a warning text
-    const evgLastNameArr =evgLastNameTextContent.split(",")[0];
+    const evgLastNameArr = evgLastNameTextContent.split(",")[0];
     const indexOfParentheses = evgLastNameArr.indexOf("(");
     const evgLastName = evgLastNameArr.slice(indexOfParentheses + 1);
     console.log(evgLastName);
     console.log(requestLastName.includes(evgLastName));
-  }
+  };
 
   const monitorPatronName = () => {
     const h3Elements = document.querySelectorAll("h3");
@@ -241,7 +242,7 @@
                 (node) => node.tagName === "SMALL"
               );
               const evgLastName = smallTags[0].textContent;
-              
+
               chrome.storage.local.get("requestData").then((result) => {
                 // TODO: Checking storage twice is not the way to live your life -- Lift it to global?
                 if (!result.requestData) return;

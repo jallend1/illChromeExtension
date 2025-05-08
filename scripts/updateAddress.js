@@ -14,9 +14,16 @@
   );
 
   // -- Constants for modal messages --
-  const SUCCESS_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`;
-  const ERROR_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`;
-  const WORKING_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Please wait...</h2> <p style="font-size: 1rem;">Attempting to fill standard address fields.</p>`;
+  const SUCCESS_HEADING = "Success!";
+  const ERROR_HEADING = "Something went wrong!";
+  const WORKING_HEADING = "Please wait...";
+  const SUCCESS_MSG = "Standard address fields have been applied!";
+  const ERROR_MSG =
+    "Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.";
+  const WORKING_MSG = "Attempting to fill standard address fields.";
+  // const SUCCESS_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Standard address fields have been applied!</p>`;
+  // const ERROR_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.</p>`;
+  // const WORKING_MSG = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Please wait...</h2> <p style="font-size: 1rem;">Attempting to fill standard address fields.</p>`;
   const WORKING_COLOR = "#ffc107";
   const ERROR_COLOR = "#e85e6a";
   const SUCCESS_COLOR = "#4CAF50";
@@ -138,6 +145,7 @@
 
   const showErrorModal = () => {
     statusModal(
+      ERROR_HEADING,
       ERROR_MSG,
       ERROR_COLOR,
       chrome.runtime.getURL("images/kawaii-book-sad.png")
@@ -147,7 +155,7 @@
   // -- Main Function --
   async function updateAddress() {
     try {
-      statusModal(WORKING_MSG, WORKING_COLOR, null, true);
+      statusModal(WORKING_HEADING, WORKING_MSG, WORKING_COLOR, null, true);
       for (const {
         optionText,
         optionSelector,
@@ -163,6 +171,7 @@
       await fillUniversalSettings();
 
       statusModal(
+        SUCCESS_HEADING,
         SUCCESS_MSG,
         SUCCESS_COLOR,
         chrome.runtime.getURL("images/kawaii-dinosaur.png")
@@ -178,6 +187,7 @@
     !window.location.href.includes("edit")
   ) {
     statusModal(
+      ERROR_HEADING,
       ERROR_MSG,
       ERROR_COLOR,
       chrome.runtime.getURL("images/kawaii-book-sad.png")

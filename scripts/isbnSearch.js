@@ -39,7 +39,8 @@ async function isbnSearch() {
     const previousIsbnSearch = sessionStorage.getItem("isbnSearch"); // Checks previous isbnSearch to prevent duplicate searches
     if (previousIsbnSearch === searchQuery) {
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Possible Duplicate Search!</h2> <p style="font-size: 1rem;">This matches the last search we did. Double check the item is what you're looking for on the next page. If not, try refreshing WorldShare!</p>`,
+        "Possible Duplicate Search!",
+        "This matches the last search we did. Double check the item is what you're looking for on the next page. If not, try refreshing WorldShare!",
         "#e85e6a",
         chrome.runtime.getURL("images/kawaii-book-sad.png")
       );
@@ -54,7 +55,8 @@ async function isbnSearch() {
   } else {
     // If no search parameters are found, show error modal
     statusModal(
-      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">No Search Parameters Found!</h2> <p style="font-size: 1rem;">We couldn't find any ISBN or Title/Author fields on this page. Please check the fields and try again.</p>`,
+      "No Search Parameters Found!",
+      "We couldn't find any ISBN or Title/Author fields on this page. Please check the fields and try again.",
       "#e85e6a",
       chrome.runtime.getURL("images/kawaii-book-sad.png")
     );

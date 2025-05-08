@@ -22,14 +22,17 @@ export async function insertRequestToEvergreen() {
   // TODO: Patron name stored in localStorage but not used in this function yet
   // Use to 1) Verify patron name on Evergreen screen 2) Add patron pickup location
   function pasteToEvergreen() {
-    let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason.</p>`;
+    let heading = "Something went wrong!";
+    let message =
+      "Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason.";
+    // let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason.</p>`;
     const imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
     const headerColor = "#e85e6a";
 
     const updatePatronAddress = (addressString) => {
       const inputField = document.querySelector("textarea");
       if (!inputField) {
-        statusModal(result, headerColor, imgURL);
+        statusModal(heading, message, headerColor, imgURL);
         return;
       }
       const bagText = "**BAG**\n";

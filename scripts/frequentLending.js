@@ -65,7 +65,8 @@ async function loadFrequentLending() {
       if (!barcodeInput) {
         navigator.clipboard.writeText(value);
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Copied to clipboard!</h2> <p style="font-size: 1rem;">We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.</p>`,
+          "Copied to clipboard!",
+          `We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.`,
           "#4CAF50",
           chrome.runtime.getURL("images/kawaii-dinosaur.png")
         );

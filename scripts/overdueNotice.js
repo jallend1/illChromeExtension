@@ -4,7 +4,10 @@ copies an overdue notice letter containing the relevant info to the clipboard. *
 // TODO: Extract patron contact information from page and add to letter
 // TODO: Extract patron email address from page
 
-function overdueNotice() {
+async function overdueNotice() {
+  const { statusModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
+  );
   window.focus();
   let todaysDate = new Date().toLocaleDateString();
   const overdueTitles = [];
@@ -65,47 +68,6 @@ function overdueNotice() {
 
   overdueText = determineOverdueText();
 
-  const statusModal = (data, backgroundColor, imgURL) => {
-    const modal = document.createElement("div");
-    modal.setAttribute("id", "modal");
-    const modalStyles = {
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      borderRadius: "1rem",
-      zIndex: "1000",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      color: "#000",
-      fontSize: "1.2rem",
-      border: "1px solid #000",
-      boxShadow: "0 0 10px 5px #000",
-    };
-
-    for (const key in modalStyles) {
-      modal.style[key] = modalStyles[key];
-    }
-
-    modal.innerHTML = `
-    <div>  
-      <div style="background-color: ${backgroundColor}; padding: 1rem; border-radius: 1rem 1rem 0 0; text-align: center;">
-        <img src=${imgURL} style="border-radius: 50%; max-height:100px;">
-      </div>
-      <div style="background-color: #f9f9f9;  text-align: center; border-radius: 0 0 1rem 1rem; padding: 1rem;">
-        ${data}
-      </div>
-    </div>
-    `;
-
-    document.body.appendChild(modal);
-    setTimeout(() => {
-      modal.remove();
-    }, 4000);
-  };
-
   const overdueLetter = `
 King County Library System
 Interlibrary Loan
@@ -126,26 +88,38 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
       let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
       let headerColor = "#4CAF50";
       let result = "";
+      let resultHeading = "";
+      let resultMessage = "";
       // Stores overdue notice in local storage for sidepanel to access
       chrome.storage.local.set({ overdueNotice: data });
       if (overdueTitles.length === 0) {
-        result = `<h2>Heads up!</h2><p style="padding: 2rem;">No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.</p>`;
+        resultHeading = "Heads up!";
+        resultMessage = `No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.`;
+        // result = `<h2>Heads up!</h2><p style="padding: 2rem;">No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.</p>`;
       } else {
-        result = `<h2>Success!</h2> <p style="">An overdue notice letter was copied to your clipboard for ${
+        resultHeading = "Success!";
+        resultMessage = `An overdue notice letter was copied to your clipboard for ${
           overdueTitles.length
-        } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`;
+        } ${overdueTitles.length === 1 ? "item" : "items"}.`;
+        // result = `<h2>Success!</h2> <p style="">An overdue notice letter was copied to your clipboard for ${
+        //   overdueTitles.length
+        // } ${overdueTitles.length === 1 ? "item" : "items"}.</p>`;
       }
-      statusModal(result, headerColor, imgURL);
+      statusModal(resultHeading, resultMessage, headerColor, imgURL);
     } catch (err) {
       let result = "";
       let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
       let headerColor = "#e85e6a";
       if (err.message.includes("Document is not focused")) {
-        result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
+        resultHeading = "Error!";
+        resultMessage = "Please click on the page and try again.";
+        // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
       } else {
-        result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
+        resultHeading = "Error!";
+        resultMessage = `An error occurred while copying the overdue notice letter to your clipboard. Please try again.`;
+        // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
       }
-      statusModal(result, headerColor, imgURL);
+      statusModal(resultHeading, resultMessage, headerColor, imgURL);
       console.error(err);
     }
   }

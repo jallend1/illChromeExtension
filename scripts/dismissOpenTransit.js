@@ -45,7 +45,8 @@ console.log("Dismiss open transit script loaded!");
           } else if (currentValue === holdCount) {
             console.warn("Current value is the same as the old value!");
             statusModal(
-              `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Alert!</h2> <p style="font-size: 1rem;">The number of holds on this card didn't seem to go down with that last checkout. Verify the most recently checked out item is intended for this library system.</p>`,
+              "Error!",
+              "The number of holds on this card didn't seem to go down with that last checkout. Verify the most recently checked out item is intended for this library system.",
               "#e85e6a",
               chrome.runtime.getURL("images/kawaii-book-sad.png")
             );

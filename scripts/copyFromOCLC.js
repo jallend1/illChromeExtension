@@ -19,15 +19,24 @@
     };
 
     const elementSelectors = {
-      title: 'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
-       requestNumber: "div:not(.yui3-default-hidden) span.accordionRequestDetailsRequestId:not(div.yui3-default-hidden span)",
-       patronID: 'div:not(.yui3-default-hidden) input[data="requester.patron.userId"]:not(div.yui3-default-hidden input)',
-       lendingFee: 'div:not(.yui3-default-hidden) span[data="billing.charges.amountAsString"]:not(div.yui3-default-hidden span)',
-       dueDate: 'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-       currentLender: 'div:not(.yui3-default-hidden) span[data="lenderString.currentSupplier.symbol"]:not(div.yui3-default-hidden span)',
-       region: 'div:not(.yui3-default-hidden) span[data="returning.address.region"]:not(div.yui3-default-hidden span)',
-       patronName: 'div:not(.yui3-default-hidden) input[data="requester.patron.name"]:not(div.yui3-default-hidden input)',
-       patronNote: 'div:not(.yui3-default-hidden) textarea[data="requester.patron.note"]:not(div.yui3-default-hidden textarea)',
+      title:
+        'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
+      requestNumber:
+        "div:not(.yui3-default-hidden) span.accordionRequestDetailsRequestId:not(div.yui3-default-hidden span)",
+      patronID:
+        'div:not(.yui3-default-hidden) input[data="requester.patron.userId"]:not(div.yui3-default-hidden input)',
+      lendingFee:
+        'div:not(.yui3-default-hidden) span[data="billing.charges.amountAsString"]:not(div.yui3-default-hidden span)',
+      dueDate:
+        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
+      currentLender:
+        'div:not(.yui3-default-hidden) span[data="lenderString.currentSupplier.symbol"]:not(div.yui3-default-hidden span)',
+      region:
+        'div:not(.yui3-default-hidden) span[data="returning.address.region"]:not(div.yui3-default-hidden span)',
+      patronName:
+        'div:not(.yui3-default-hidden) input[data="requester.patron.name"]:not(div.yui3-default-hidden input)',
+      patronNote:
+        'div:not(.yui3-default-hidden) textarea[data="requester.patron.note"]:not(div.yui3-default-hidden textarea)',
     };
 
     const extractValueFromField = (selector) => {
@@ -63,7 +72,8 @@
         // );
         // `input[data="returning.address.${key}"]`
         let element = extractValueFromField(
-          `div:not(.yui3-default-hidden) input[data="returning.address.${key}"]:not(div.yui3-default-hidden input)`);
+          `div:not(.yui3-default-hidden) input[data="returning.address.${key}"]:not(div.yui3-default-hidden input)`
+        );
         element ? (addressObject[key] = element) : (addressObject[key] = "");
       }
     };
@@ -187,18 +197,22 @@
     async function copyToStorage(data, requestNum) {
       // If the request number isn't defined, display an error and remove the previous data from storage just in case
       if (!requestNum) {
-        const result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.</p>`;
+        const resultHeading = "Something went wrong!";
+        const resultMessage = `We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.`;
+        // const result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">We couldn't find a WorldShare request number on this page. To prevent errors, head back to the request and try copying it again.</p>`;
         const imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
         const headerColor = "#e85e6a";
         chrome.storage.local.remove("requestData");
-        statusModal(result, headerColor, imgURL);
+        statusModal(resultHeading, resultMessage, headerColor, imgURL);
         return;
       }
       try {
         const success = {
           headerColor: "#4CAF50",
           imgURL: chrome.runtime.getURL("images/kawaii-dinosaur.png"),
-          result: `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`,
+          heading: "Success!",
+          message: "Request Number: " + requestNum,
+          // result: `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Success!</h2> <p style="font-size: 1rem;">Request Number: ${requestNum}</p>`,
         };
 
         // Clears previous data from storage
@@ -208,7 +222,12 @@
               requestData: data,
             },
             () => {
-              statusModal(success.result, success.headerColor, success.imgURL);
+              statusModal(
+                success.heading,
+                success.message,
+                success.headerColor,
+                success.imgURL
+              );
             }
           );
         });
@@ -217,12 +236,16 @@
         let imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
         let headerColor = "#e85e6a";
         if (err.message.includes("Document is not focused")) {
-          result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
+          heading = "Error!";
+          message = "Suggested tip: Please click on the page and try again";
+          // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Suggested tip: Please click on the page and try again</p>`;
         } else {
-          result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
+          heading = "Error!";
+          message = "Something went wrong! Please try again.";
+          // result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">"${err}";</p>`;
         }
         chrome.storage.local.remove("requestData");
-        statusModal(result, headerColor, imgURL);
+        statusModal(heading, message, headerColor, imgURL);
         console.error(err);
       }
     }
@@ -233,7 +256,8 @@
         receiveButton.click();
       } else {
         statusModal(
-          `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">Couldn't mark it received :(</p>`,
+          "Error!",
+          "Couldn't mark it received :(",
           "#e85e6a",
           chrome.runtime.getURL("images/kawaii-book-sad.png")
         );
@@ -257,7 +281,8 @@
     copyFromOCLC();
   } else {
     statusModal(
-      `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> <p style="font-size: 1rem;">This function only be used on a WorldShare page.</p>`,
+      "Error!",
+      "This function only be used on a WorldShare page.",
       "#e85e6a",
       chrome.runtime.getURL("images/kawaii-book-sad.png")
     );

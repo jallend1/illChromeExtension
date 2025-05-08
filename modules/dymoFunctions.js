@@ -74,12 +74,8 @@ export const dymoFunctions = {
   printDymoLabel: (address) => {
     if (!dymoFunctions.isSuitableToPrint(address)) {
       statusModal(
-        `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Error!</h2> 
-        <p style="font-size: 1.25rem;">
-          Address is not suitable for printing.
-          <br/>
-          ${address}
-        </p>`,
+        "Error!",
+        "Address is not suitable for printing.",
         "#e85e6a",
         chrome.runtime.getURL("images/kawaii-book-sad.png")
       );
