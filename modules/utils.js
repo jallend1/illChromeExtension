@@ -41,6 +41,7 @@ export const buttonStyles = {
   transition: "background 0.2s, transform 0.15s, box-shadow 0.2s",
   transform: "none",
   display: "block",
+  margin: "0 0.25rem",
 };
 
 export const hoverStyles = {

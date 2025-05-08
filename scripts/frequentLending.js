@@ -5,7 +5,7 @@ async function loadFrequentLending() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { buttonStyles, hoverStyles, applyStyles, waitForElementWithInterval } =
+  const { buttonStyles, hoverStyles, waitForElementWithInterval } =
     await import(chrome.runtime.getURL("modules/utils.js"));
 
   function frequentLending() {
@@ -15,18 +15,20 @@ async function loadFrequentLending() {
 
     if (!isEvergreen) return;
 
-    const doNotPrintNavBar = () => {
-      // Nobody needs to see the frequent lending buttons when printing. That's madness.
+    // -- Hide frequent lending buttons when printing --
+    function injectPrintStyles() {
+      if (document.getElementById("frequentLibrariesPrintStyle")) return;
       const style = document.createElement("style");
+      style.id = "frequentLibrariesPrintStyle";
       style.textContent = `
-        @media print {
-          #frequentLibraries {
-            display: none !important;
-          }
+      @media print {
+        #frequentLibraries {
+          display: none !important;
         }
-      `;
+      }
+    `;
       document.head.appendChild(style);
-    };
+    }
 
     const checkNavBar = async () => {
       let navBar = await waitForElementWithInterval("eg-staff-nav-bar");
@@ -98,7 +100,7 @@ async function loadFrequentLending() {
       if (document.querySelector("#frequentLibraries")) {
         return;
       }
-      doNotPrintNavBar();
+      injectPrintStyles();
       const frequentLibrariesDiv = document.createElement("div");
       frequentLibrariesDiv.id = "frequentLibraries";
 
@@ -115,7 +117,7 @@ async function loadFrequentLending() {
         paddingBottom: "0.75rem",
       };
 
-      applyStyles(frequentLibrariesDiv, divStyles);
+      Object.assign(frequentLibrariesDiv.style, divStyles);
 
       for (const library in frequentLibraries) {
         generateButton(frequentLibrariesDiv, library);
