@@ -64,28 +64,38 @@
       return true;
     };
 
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.data === "courierHighlight") {
-        (async () => {
-          // Doesn't run it if on the search page
-          if (window.location.href.includes("search")) {
-            sendResponse({
-              response: "Courier Highlighting doesn't run on the search page",
-            });
-            return;
-          }
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.data === "courierHighlight") {
+    (async () => {
+      try {
+        // Doesn't run it if on the search page
+        if (window.location.href.includes("search")) {
+          sendResponse({
+            response: "Courier Highlighting doesn't run on the search page",
+          });
+          return;
+        }
 
-          // Waits for patron name to appear on the page
-          const patronNameElement = await waitForElementWithInterval(
-            ".patron-status-color h4"
-          );
-          processName(patronNameElement.textContent)
-            ? insertCourierAlert()
-            : null;
-          sendResponse({ response: "Message received" });
-        })();
+        // Waits for patron name to appear on the page
+        const patronNameElement = await waitForElementWithInterval(
+          ".patron-status-color h4"
+        );
+
+        if (processName(patronNameElement.textContent)) {
+          insertCourierAlert();
+          sendResponse({ response: "Courier library detected and highlighted" });
+        } else {
+          sendResponse({ response: "Not a courier library" });
+        }
+      } catch (error) {
+        console.error("Error in courierHighlight:", error);
+        sendResponse({ response: "An error occurred", error: error.message });
       }
-    });
+    })();
+    // Return true to indicate the response will be sent asynchronously and eliminate those nasty errors
+    return true;
+  }
+});
 
     // Inserts courier alert into patron page
 
