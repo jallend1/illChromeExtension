@@ -156,6 +156,8 @@
 
     // --- Page Analysis Functions ---
     const isRequestUrl = (url) => {
+      // Return false if request is being updated in OCLC with URL parameters
+      if(url.includes("?message")) return false;
       const requestUrlRegEx = /(\d{8,10})/;
       return url.match(requestUrlRegEx);
     };
