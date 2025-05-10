@@ -182,10 +182,8 @@ chrome.commands.onCommand.addListener((command) => {
 
 // TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
 const retrievePatron = async (editPatron = false) => {
-  const needsMobileUrl = await isEvgMobile();
-  const url = needsMobileUrl
-    ? URLS.MOBILE_BASE + URLS.PATRON_SEARCH
-    : URLS.CLIENT_BASE + URLS.PATRON_SEARCH;
+  const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
+  const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
   chrome.tabs.create(
     {
@@ -261,23 +259,11 @@ chrome.runtime.onMessage.addListener(async function (
         return;
       }
       if (request.command === "openCreateILL") {
-        // let mobileURL =
-        //   "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
-        // let clientURL =
-        //   "https://evgclient.kcls.org/eg2/en-US/staff/cat/ill/track";
         calculateURL(URLS.CREATE_ILL);
-        // calculateURL(mobileURL, clientURL);
         return;
       }
-      // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
       if (request.action === "isbnSearch") {
-        const urlSuffix = request.url;
-        // let mobilePrefix =
-        //   "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
-        // let clientPrefix =
-        //   "https://evgclient.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
-        // calculateURL(mobilePrefix, clientPrefix);
-        calculateURL(URLS.CATALOG + urlSuffix);
+        calculateURL(URLS.CATALOG + request.url);
         return;
       }
 
@@ -407,7 +393,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   if (!isAllowedHost(currentUrl)) {
     return;
   }
-  // Injects 'Box' and 'Bag' checkboxes on the Create ILL form
+  // -- Create ILL Page --
   if (currentUrl.includes("/cat/ill/track")) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
