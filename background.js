@@ -1,3 +1,5 @@
+import { isEvgMobile, evergreenTabId, isAllowedHost } from "./modules/utils.js";
+
 const currentOptions = [
   { id: "copyWorldShareAddress", title: "Copy Address from WorldShare" },
   { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
@@ -16,15 +18,6 @@ let arePassiveToolsActive;
 chrome.storage.local.get("arePassiveToolsActive", (result) => {
   arePassiveToolsActive = result.arePassiveToolsActive;
 });
-
-const isAllowedHost = (url) => {
-  const manifest = chrome.runtime.getManifest();
-  const allowedHosts = manifest.host_permissions || [];
-  return allowedHosts.some((pattern) => {
-    const urlPattern = new URLPattern(pattern);
-    return urlPattern.test(url);
-  });
-};
 
 // TODO: Maybe just run this onInstall event?
 const sessionLog = () => {
@@ -63,39 +56,6 @@ const sessionLog = () => {
       chrome.storage.session.set({ logged: true });
     }
   });
-};
-
-// TODO: This...doesn't seem to be being used??? printDymo doesn't exist in this function; getAddressFrom Storage isn't called anywhere I can see
-// const getAddressFromStorage = () => {
-//   chrome.storage.local.get("addressString", (result) => {
-//     if (chrome.runtime.lastError) {
-//       console.error("Error retrieving address from storage:", error);
-//       return;
-//     }
-//     const addressString = result.addressString;
-//     if (addressString) {
-//       console.log("here i am");
-//       printDymo(addressString);
-//     } else {
-//       console.error("No address string found in storage.");
-//     }
-//   });
-// };
-
-// TODO: Break up calculateURL to use isEvgMobile
-const isEvgMobile = async () => {
-  const tabs = await chrome.tabs.query({});
-  return tabs.some((tab) => tab.url.includes("evgmobile"));
-};
-
-const evergreenTabId = async () => {
-  const tabs = await chrome.tabs.query({});
-  for (let tab of tabs) {
-    if (tab.url.includes("evgclient") || tab.url.includes("evgmobile")) {
-      return tab.id;
-    }
-  }
-  return null;
 };
 
 const calculateURL = async (urlSuffix) => {
