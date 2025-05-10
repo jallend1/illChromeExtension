@@ -4,6 +4,14 @@ const currentOptions = [
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
 
+const URLS = {
+  CLIENT_BASE: "https://evgclient.kcls.org",
+  MOBILE_BASE: "https://evgmobile.kcls.org",
+  PATRON_SEARCH: "/eg2/en-US/staff/circ/patron/bcsearch",
+  CREATE_ILL: "/eg2/en-US/staff/cat/ill/track",
+  CATALOG: "/eg2/en-US/staff/catalog",
+};
+
 let arePassiveToolsActive;
 chrome.storage.local.get("arePassiveToolsActive", (result) => {
   arePassiveToolsActive = result.arePassiveToolsActive;
@@ -170,14 +178,10 @@ chrome.commands.onCommand.addListener((command) => {
 
 // TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
 const retrievePatron = async (editPatron = false) => {
-  console.log("Retrieving patron!");
-  let url = "/eg2/en-US/staff/circ/patron/bcsearch";
   const needsMobileUrl = await isEvgMobile();
-  if (needsMobileUrl) {
-    url = "https://evgmobile.kcls.org" + url;
-  } else {
-    url = "https://evgclient.kcls.org" + url;
-  }
+  const url = needsMobileUrl
+    ? URLS.MOBILE_BASE + URLS.PATRON_SEARCH
+    : URLS.CLIENT_BASE + URLS.PATRON_SEARCH;
 
   chrome.tabs.create(
     {
@@ -343,9 +347,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 
   // TODO: Feels like overkill and incredibly over complicated -- Simplify this
- if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
+  if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
     // Don't run it on patron registration page
-    if(!tab.url.includes("register")){
+    if (!tab.url.includes("register")) {
       executeScript(tabId, "courierHighlight");
     }
   }
