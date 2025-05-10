@@ -66,12 +66,9 @@ const sessionLog = async () => {
 
 const calculateURL = async (urlSuffix) => {
   const needsMobileUrl = await isEvgMobile();
-  console.log("urlSuffix", urlSuffix);
-  console.log("needsMobileUrl", needsMobileUrl);
   const url = needsMobileUrl
     ? URLS.MOBILE_BASE + urlSuffix
     : URLS.CLIENT_BASE + urlSuffix;
-  console.log("url", url);
   const evergreenTab = await evergreenTabId();
   if (evergreenTab) {
     // Update the existing tab and bring it to the foreground
@@ -296,7 +293,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     changeInfo.status === "complete" &&
     tab.url.includes("share.worldcat.org")
   ) {
-    console.log("Tabs updated!");
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/worldShareMods.js"],
