@@ -19,8 +19,18 @@ chrome.storage.local.get("arePassiveToolsActive", (result) => {
   arePassiveToolsActive = result.arePassiveToolsActive;
 });
 
+const getActiveTab = async () => {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (tabs.length > 0) {
+    return tabs[0];
+  } else {
+    console.error("No active tab found.");
+    return null;
+  }
+};
+
 // TODO: Maybe just run this onInstall event?
-const sessionLog = () => {
+const sessionLog = async () => {
   const logToConsole = () => {
     console.log(`
   ⊂_ヽ    
@@ -40,19 +50,15 @@ const sessionLog = () => {
   (_／
    `);
   };
-  chrome.storage.session.get(["logged"], (result) => {
+  chrome.storage.session.get(["logged"], async (result) => {
     if (!result.logged) {
-      chrome.tabs.query(
-        { active: true, currentWindow: true },
-        ([activeTab]) => {
-          if (activeTab) {
-            chrome.scripting.executeScript({
-              target: { tabId: activeTab.id },
-              func: logToConsole,
-            });
-          }
-        }
-      );
+      const activeTab = await getActiveTab();
+      if (activeTab) {
+        chrome.scripting.executeScript({
+          target: { tabId: activeTab.id },
+          func: logToConsole,
+        });
+      }
       chrome.storage.session.set({ logged: true });
     }
   });
@@ -60,9 +66,12 @@ const sessionLog = () => {
 
 const calculateURL = async (urlSuffix) => {
   const needsMobileUrl = await isEvgMobile();
+  console.log("urlSuffix", urlSuffix);
+  console.log("needsMobileUrl", needsMobileUrl);
   const url = needsMobileUrl
     ? URLS.MOBILE_BASE + urlSuffix
     : URLS.CLIENT_BASE + urlSuffix;
+  console.log("url", url);
   const evergreenTab = await evergreenTabId();
   if (evergreenTab) {
     // Update the existing tab and bring it to the foreground
@@ -111,31 +120,30 @@ const executeScript = (tabId, script) => {
 };
 
 // If lendingMode is true, turn on the frequent lenders bar
-chrome.storage.local.get("lendingMode", (result) => {
+chrome.storage.local.get("lendingMode", async (result) => {
   if (result.lendingMode) {
-    chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
+    const activeTab = await getActiveTab();
+    if (activeTab) {
       if (!isAllowedHost(activeTab.url)) return;
       executeScript(activeTab.id, "frequentLending");
-    });
+    }
   }
 });
 
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
-  currentOptions.forEach((option) => {
+  currentOptions.forEach(async (option) => {
     if (command === option.id) {
-      chrome.tabs.query(
-        { active: true, currentWindow: true },
-        ([activeTab]) => {
-          if (option.id === "copyWorldShareAddress") {
-            injectDymoFramework(activeTab.id);
-          }
-          chrome.scripting.executeScript({
-            target: { tabId: activeTab.id },
-            files: [`./scripts/${option.id}.js`],
-          });
+      const activeTab = await getActiveTab();
+      if (activeTab) {
+        if (option.id === "copyWorldShareAddress") {
+          injectDymoFramework(activeTab.id);
         }
-      );
+        chrome.scripting.executeScript({
+          target: { tabId: activeTab.id },
+          files: [`./scripts/${option.id}.js`],
+        });
+      }
     }
   });
 });
@@ -186,72 +194,67 @@ chrome.runtime.onMessage.addListener(async function (
   sender,
   sendResponse
 ) {
-  chrome.tabs.query(
-    { active: true, currentWindow: true },
-    async ([activeTab]) => {
-      if (!isAllowedHost(activeTab.url)) return;
-      if (request.command === "toggleExtension") {
-        chrome.storage.local.get("arePassiveToolsActive", (result) => {
-          arePassiveToolsActive = result.arePassiveToolsActive;
-        });
-        return;
-      }
-      if (request.command === "disableButton") {
-        chrome.management.getSelf((extensionInfo) => {
-          chrome.tabs.reload(activeTab.id);
-          chrome.management.setEnabled(extensionInfo.id, false, () => {
-            console.log("Extension disabled.");
-          });
-        });
-        return;
-      }
-      if (request.action === "editPatron") {
-        // Store patron barcode in local storage
-        chrome.storage.local.set(
-          { patronBarcode: request.patronBarcode },
-          () => {
-            console.log("Patron barcode stored");
-          }
-        );
-        // Open the patron page in a new tab
-        retrievePatron();
-        sendResponse({ success: true });
-        return;
-      }
-      if (request.command === "openCreateILL") {
-        calculateURL(URLS.CREATE_ILL);
-        return;
-      }
-      if (request.action === "isbnSearch") {
-        calculateURL(URLS.CATALOG + request.url);
-        return;
-      }
-
-      if (request.data === "copyWorldShareAddress") {
-        injectDymoFramework(activeTab.id);
-      }
-
-      if (request.action === "retrievePatron") {
-        const { patronBarcode, title, fee } = request;
-        console.log(request);
-        chrome.storage.local.set({ request }, () => {
-          console.log("Request Data stored", request);
-        });
-        retrievePatron();
-        return;
-      }
-
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: activeTab.id },
-          files: [`./scripts/${request.data}.js`],
-        },
-        () => {
-          sendResponse({ response: "Message received" });
-        }
-      );
+  const activeTab = await getActiveTab();
+  if (activeTab) {
+    if (!isAllowedHost(activeTab.url)) return;
+    if (request.command === "toggleExtension") {
+      chrome.storage.local.get("arePassiveToolsActive", (result) => {
+        arePassiveToolsActive = result.arePassiveToolsActive;
+      });
+      return;
     }
-  );
+    if (request.command === "disableButton") {
+      chrome.management.getSelf((extensionInfo) => {
+        chrome.tabs.reload(activeTab.id);
+        chrome.management.setEnabled(extensionInfo.id, false, () => {
+          console.log("Extension disabled.");
+        });
+      });
+      return;
+    }
+    if (request.action === "editPatron") {
+      // Store patron barcode in local storage
+      chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
+        console.log("Patron barcode stored");
+      });
+      // Open the patron page in a new tab
+      retrievePatron();
+      sendResponse({ success: true });
+      return;
+    }
+    if (request.command === "openCreateILL") {
+      calculateURL(URLS.CREATE_ILL);
+      return;
+    }
+    if (request.action === "isbnSearch") {
+      calculateURL(URLS.CATALOG + "/" + request.url);
+      return;
+    }
+
+    if (request.data === "copyWorldShareAddress") {
+      injectDymoFramework(activeTab.id);
+    }
+
+    if (request.action === "retrievePatron") {
+      const { patronBarcode, title, fee } = request;
+      console.log(request);
+      chrome.storage.local.set({ request }, () => {
+        console.log("Request Data stored", request);
+      });
+      retrievePatron();
+      return;
+    }
+
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: activeTab.id },
+        files: [`./scripts/${request.data}.js`],
+      },
+      () => {
+        sendResponse({ response: "Message received" });
+      }
+    );
+  }
   return true;
 });
 
@@ -309,12 +312,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
   }
 
-  // TODO: Feels like overkill and incredibly over complicated -- Simplify this
-  if (changeInfo.status === "complete" && tab.url.includes("/circ/patron/")) {
-    // Don't run it on patron registration page
-    if (!tab.url.includes("register")) {
-      executeScript(tabId, "courierHighlight");
-    }
+  if (
+    changeInfo.status === "complete" &&
+    tab.url.includes("/circ/patron/") &&
+    !tab.url.includes("register")
+  ) {
+    executeScript(tabId, "courierHighlight");
   }
   if (
     changeInfo.status === "complete" &&
