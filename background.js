@@ -83,43 +83,47 @@ const sessionLog = () => {
 // };
 
 // TODO: Break up calculateURL to use isEvgMobile
-const isEvgMobile = () => {
-  // Checks if any of the open tabs are Evergreen Mobile
-  return new Promise((resolve) => {
-    chrome.tabs.query({}, (tabs) => {
-      const isMobile = tabs.some((tab) => tab.url.includes("evgmobile"));
-      resolve(isMobile);
-    });
-  });
+const isEvgMobile = async () => {
+  const tabs = await chrome.tabs.query({});
+  return tabs.some((tab) => tab.url.includes("evgmobile"));
 };
 
-const calculateURL = (mobileURL, clientURL) => {
-  chrome.tabs.query({}, function (tabs) {
-    let mobile = false;
-    let evgClientTab = null;
-    for (let tab of tabs) {
-      if (tab.url.includes("evgmobile")) {
-        mobile = true;
-        evgClientTab = tab;
-        break;
-      } else if (tab.url.includes("evgclient")) {
-        evgClientTab = tab;
-        break;
-      }
+const evergreenTabId = async () => {
+  const tabs = await chrome.tabs.query({});
+  for (let tab of tabs) {
+    if (tab.url.includes("evgclient") || tab.url.includes("evgmobile")) {
+      return tab.id;
     }
-    let url = mobile ? mobileURL : clientURL;
-    if (evgClientTab) {
-      // Update the existing tab and bring it to the foreground
-      chrome.tabs.update(evgClientTab.id, { url: url, active: true }, () => {
-        chrome.windows.update(evgClientTab.windowId, { focused: true });
+  }
+  return null;
+};
+
+const calculateURL = async (urlSuffix) => {
+  const needsMobileUrl = await isEvgMobile();
+  const url = needsMobileUrl
+    ? URLS.MOBILE_BASE + urlSuffix
+    : URLS.CLIENT_BASE + urlSuffix;
+  const evergreenTab = await evergreenTabId();
+  if (evergreenTab) {
+    // Update the existing tab and bring it to the foreground
+    chrome.tabs.update(evergreenTab, { url: url, active: true }, () => {
+      chrome.tabs.get(evergreenTab, (tab) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "Error retrieving tab details:",
+            chrome.runtime.lastError.message
+          );
+          return;
+        }
+        chrome.windows.update(tab.windowId, { focused: true });
       });
-    } else {
-      // Create a new tab and bring it to the foreground
-      chrome.tabs.create({ url: url, active: true }, (newTab) => {
-        chrome.windows.update(newTab.windowId, { focused: true });
-      });
-    }
-  });
+    });
+  } else {
+    // Create a new tab and bring it to the foreground
+    chrome.tabs.create({ url: url, active: true }, (newTab) => {
+      chrome.windows.update(newTab.windowId, { focused: true });
+    });
+  }
 };
 
 const executeScript = (tabId, script) => {
@@ -219,76 +223,89 @@ const retrievePatron = async (editPatron = false) => {
 };
 
 // TODO: Using command and actions here is a bit confusing -- Maybe combine? Or at least have a justification for it
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  chrome.tabs.query({ active: true, currentWindow: true }, ([activeTab]) => {
-    if (!isAllowedHost(activeTab.url)) return;
-    if (request.command === "toggleExtension") {
-      chrome.storage.local.get("arePassiveToolsActive", (result) => {
-        arePassiveToolsActive = result.arePassiveToolsActive;
-      });
-      return;
-    }
-    if (request.command === "disableButton") {
-      chrome.management.getSelf((extensionInfo) => {
-        chrome.tabs.reload(activeTab.id);
-        chrome.management.setEnabled(extensionInfo.id, false, () => {
-          console.log("Extension disabled.");
+chrome.runtime.onMessage.addListener(async function (
+  request,
+  sender,
+  sendResponse
+) {
+  chrome.tabs.query(
+    { active: true, currentWindow: true },
+    async ([activeTab]) => {
+      if (!isAllowedHost(activeTab.url)) return;
+      if (request.command === "toggleExtension") {
+        chrome.storage.local.get("arePassiveToolsActive", (result) => {
+          arePassiveToolsActive = result.arePassiveToolsActive;
         });
-      });
-      return;
-    }
-    if (request.action === "editPatron") {
-      // Store patron barcode in local storage
-      chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
-        console.log("Patron barcode stored");
-      });
-      // Open the patron page in a new tab
-      retrievePatron();
-      return;
-    }
-    if (request.command === "openCreateILL") {
-      let mobileURL =
-        "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
-      let clientURL =
-        "https://evgclient.kcls.org/eg2/en-US/staff/cat/ill/track";
-      calculateURL(mobileURL, clientURL);
-      return;
-    }
-    // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
-    if (request.action === "isbnSearch") {
-      const urlSuffix = request.url;
-      let mobilePrefix =
-        "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
-      let clientPrefix =
-        "https://evgclient.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
-      calculateURL(mobilePrefix, clientPrefix);
-      return;
-    }
-
-    if (request.data === "copyWorldShareAddress") {
-      injectDymoFramework(activeTab.id);
-    }
-
-    if (request.action === "retrievePatron") {
-      const { patronBarcode, title, fee } = request;
-      console.log(request);
-      chrome.storage.local.set({ request }, () => {
-        console.log("Request Data stored", request);
-      });
-      retrievePatron();
-      return;
-    }
-
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: activeTab.id },
-        files: [`./scripts/${request.data}.js`],
-      },
-      () => {
-        sendResponse({ response: "Message received" });
+        return;
       }
-    );
-  });
+      if (request.command === "disableButton") {
+        chrome.management.getSelf((extensionInfo) => {
+          chrome.tabs.reload(activeTab.id);
+          chrome.management.setEnabled(extensionInfo.id, false, () => {
+            console.log("Extension disabled.");
+          });
+        });
+        return;
+      }
+      if (request.action === "editPatron") {
+        // Store patron barcode in local storage
+        chrome.storage.local.set(
+          { patronBarcode: request.patronBarcode },
+          () => {
+            console.log("Patron barcode stored");
+          }
+        );
+        // Open the patron page in a new tab
+        retrievePatron();
+        sendResponse({ success: true });
+        return;
+      }
+      if (request.command === "openCreateILL") {
+        // let mobileURL =
+        //   "https://evgmobile.kcls.org/eg2/en-US/staff/cat/ill/track";
+        // let clientURL =
+        //   "https://evgclient.kcls.org/eg2/en-US/staff/cat/ill/track";
+        calculateURL(URLS.CREATE_ILL);
+        // calculateURL(mobileURL, clientURL);
+        return;
+      }
+      // For isbnSearch, checks if Evergreen tab already open and updates URL -- Otherwise opens new tab
+      if (request.action === "isbnSearch") {
+        const urlSuffix = request.url;
+        // let mobilePrefix =
+        //   "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
+        // let clientPrefix =
+        //   "https://evgclient.kcls.org/eg2/en-US/staff/catalog/" + urlSuffix;
+        // calculateURL(mobilePrefix, clientPrefix);
+        calculateURL(URLS.CATALOG + urlSuffix);
+        return;
+      }
+
+      if (request.data === "copyWorldShareAddress") {
+        injectDymoFramework(activeTab.id);
+      }
+
+      if (request.action === "retrievePatron") {
+        const { patronBarcode, title, fee } = request;
+        console.log(request);
+        chrome.storage.local.set({ request }, () => {
+          console.log("Request Data stored", request);
+        });
+        retrievePatron();
+        return;
+      }
+
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: activeTab.id },
+          files: [`./scripts/${request.data}.js`],
+        },
+        () => {
+          sendResponse({ response: "Message received" });
+        }
+      );
+    }
+  );
   return true;
 });
 
