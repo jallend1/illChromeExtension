@@ -64,32 +64,53 @@ const sessionLog = async () => {
   });
 };
 
-const calculateURL = async (urlSuffix) => {
+const getBaseURL = async (urlSuffix) => {
   const needsMobileUrl = await isEvgMobile();
-  const url = needsMobileUrl
+  return needsMobileUrl
     ? URLS.MOBILE_BASE + urlSuffix
     : URLS.CLIENT_BASE + urlSuffix;
+};
+
+const focusOrCreateTab = async (url) => {
   const evergreenTab = await evergreenTabId();
   if (evergreenTab) {
-    // Update the existing tab and bring it to the foreground
-    chrome.tabs.update(evergreenTab, { url: url, active: true }, () => {
-      chrome.tabs.get(evergreenTab, (tab) => {
-        if (chrome.runtime.lastError) {
-          console.error(
-            "Error retrieving tab details:",
-            chrome.runtime.lastError.message
-          );
-          return;
-        }
-        chrome.windows.update(tab.windowId, { focused: true });
-      });
-    });
+    updateTab(evergreenTab, url);
   } else {
-    // Create a new tab and bring it to the foreground
-    chrome.tabs.create({ url: url, active: true }, (newTab) => {
-      chrome.windows.update(newTab.windowId, { focused: true });
-    });
+    createTab(url);
   }
+};
+
+const updateTab = (evergreenTab, url) => {
+  chrome.tabs.update(evergreenTab, { url: url, active: true }, () => {
+    chrome.tabs.get(evergreenTab, (tab) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "Error retrieving tab details:",
+          chrome.runtime.lastError.message
+        );
+        return;
+      }
+      chrome.windows.update(tab.windowId, { focused: true });
+    });
+  });
+};
+
+const createTab = (url) => {
+  chrome.tabs.create({ url: url, active: true }, (newTab) => {
+    if (chrome.runtime.lastError) {
+      console.error(
+        "Error creating new tab:",
+        chrome.runtime.lastError.message
+      );
+      return;
+    }
+    chrome.windows.update(newTab.windowId, { focused: true });
+  });
+};
+
+const calculateURL = async (urlSuffix) => {
+  const baseUrl = await getBaseURL(urlSuffix);
+  focusOrCreateTab(baseUrl);
 };
 
 const executeScript = (tabId, script) => {
