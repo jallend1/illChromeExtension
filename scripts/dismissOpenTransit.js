@@ -35,14 +35,12 @@
 
   // -- Dismisses open transit modal --
   function dismissOpenTransit() {
-    const modal = document.querySelector(".modal-body");
-    if (!modal) return;
-    if (modal.textContent.includes("open transit on item")) {
-      const modalFooterButton = document.querySelector(".modal-footer button");
-      if (modalFooterButton) modalFooterButton.click();
-      createMiniModal();
-    }
-  }
+  const modal = document.querySelector(".modal-body");
+  if (!modal || !modal.textContent.includes("open transit on item")) return;
+  const modalFooterButton = modal.querySelector(".modal-footer button");
+  if (modalFooterButton) modalFooterButton.click();
+  createMiniModal();
+}
 
   // -- Handles changes to holds field count --
   function handleHoldsMutation(oldValue, currentValue) {
