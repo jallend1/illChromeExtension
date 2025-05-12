@@ -7,6 +7,32 @@
   let holdCount = null;
   let listeningForBarcode = false;
 
+  // -- Displays a mini-modal saying Open Transit dialog is being dismissed --
+  function createMiniModal() {
+    const miniModal = document.createElement("div");
+    miniModal.className = "mini-modal";
+    miniModal.innerHTML = `
+      <div class="mini-modal-content">
+        <p>Dismissed open transit dialog.</p>
+      </div>
+    `;
+    miniModal.style.position = "fixed";
+    miniModal.style.top = "5%";
+    miniModal.style.right = "0%";
+    miniModal.style.zIndex = "9999";
+    miniModal.style.background = "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
+    miniModal.style.padding = "20px";
+    miniModal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+    miniModal.style.borderRadius = "8px";
+    miniModal.style.color = "#333";
+    miniModal.style.transition = "opacity 0.3s ease-in-out";
+    miniModal.style.opacity = "1";
+    document.body.appendChild(miniModal);
+    setTimeout(() => {
+        miniModal.remove();
+      }, 2000);
+  }
+
   // -- Dismisses open transit modal --
   function dismissOpenTransit() {
     const modal = document.querySelector(".modal-body");
@@ -14,6 +40,7 @@
     if (modal.textContent.includes("open transit on item")) {
       const modalFooterButton = document.querySelector(".modal-footer button");
       if (modalFooterButton) modalFooterButton.click();
+      createMiniModal();
     }
   }
 
