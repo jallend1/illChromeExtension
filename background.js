@@ -110,7 +110,7 @@ const createTab = (url) => {
 
 const calculateURL = async (urlSuffix) => {
   const baseUrl = await getBaseURL(urlSuffix);
-  focusOrCreateTab(baseUrl);
+  await focusOrCreateTab(baseUrl);
 };
 
 const executeScript = (tabId, script) => {
