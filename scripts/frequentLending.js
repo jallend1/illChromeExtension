@@ -115,6 +115,7 @@ async function loadFrequentLending() {
         marginTop: "35px",
         paddingTop: "1rem",
         paddingBottom: "0.75rem",
+        position: "relative",
       };
 
       Object.assign(frequentLibrariesDiv.style, divStyles);
@@ -122,6 +123,32 @@ async function loadFrequentLending() {
       for (const library in frequentLibraries) {
         generateButton(frequentLibrariesDiv, library);
       }
+
+      // Add an x to close the frequent lending buttons
+      const closeButton = document.createElement("button");
+      const closeButtonStyles = {
+        position: "absolute",
+        top: "0",
+        right: "0",
+        background: "none",
+        border: "none",
+        fontSize: ".5rem",
+        cursor: "pointer",
+        color: "#333",
+        padding: "0.5rem",
+        margin: "0.5rem",
+        zIndex: "9999",
+      };
+      Object.assign(closeButton.style, closeButtonStyles);
+      closeButton.textContent = "X";
+      closeButton.addEventListener("click", () => {
+        chrome.storage.local.set({
+          lendingMode: false,
+        });
+        frequentLibrariesDiv.remove();
+      });
+      frequentLibrariesDiv.appendChild(closeButton);
+
       navBar.insertAdjacentElement("afterend", frequentLibrariesDiv);
     };
 
