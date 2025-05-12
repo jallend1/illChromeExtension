@@ -2,6 +2,9 @@
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
+  const { waitForElementWithInterval } = await import(
+    chrome.runtime.getURL("modules/utils.js")
+  );
 
   const HOLDSREGEX = /\(\d+\s*\/\s*(\d+)\)/;
   let holdCount = null;
@@ -9,6 +12,10 @@
 
   // -- Displays a mini-modal saying Open Transit dialog is being dismissed --
   function createMiniModal() {
+    const existingModal = document.querySelector(".mini-modal");
+  if (existingModal) {
+    existingModal.remove(); // Remove the existing modal
+  }
     const miniModal = document.createElement("div");
     miniModal.className = "mini-modal";
     miniModal.innerHTML = `
@@ -34,12 +41,15 @@
   }
 
   // -- Dismisses open transit modal --
-  function dismissOpenTransit() {
+ async function dismissOpenTransit() {
   const modal = document.querySelector(".modal-body");
   if (!modal || !modal.textContent.includes("open transit on item")) return;
-  const modalFooterButton = modal.querySelector(".modal-footer button");
-  if (modalFooterButton) modalFooterButton.click();
-  createMiniModal();
+  const modalFooterButton = await waitForElementWithInterval(
+    ".modal-footer button");
+  if (modalFooterButton) {
+    modalFooterButton.click();
+    createMiniModal();
+  }
 }
 
   // -- Handles changes to holds field count --
@@ -50,7 +60,7 @@
       // If the value is 0, ignore this transitional mutation
       return;
     }
-    if (holdCount === 0) {
+    if (!holdCount) {
       // If stored hold variable is zero, set the value to current mutation
       holdCount = currentValue;
     } else if (currentValue === holdCount) {
@@ -77,12 +87,25 @@
   // -- Mutation Observer callback function --
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      if (mutation.type !== "characterData") return; // Ignore non-characterData mutations
-      if (listeningForBarcode) {
+      // If mutation is childList, check if the added node has a class of "modal-body"
+      if (mutation.type === "childList") {
+        const addedNodes = Array.from(mutation.addedNodes);
+        addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const modalBody = node.querySelector(".modal-body");
+            if (modalBody && modalBody.textContent.includes("open transit on item")) {
+              dismissOpenTransit();
+            }
+          }
+        });
+      }
+      // if (mutation.type !== "characterData") return; // Ignore non-characterData mutations
+      else if (mutation.type === "characterData" && listeningForBarcode) {
         const oldValue = extractHoldsCount(mutation.oldValue || ""); // Extracts the number in parentheses in nav field
         const currentValue = extractHoldsCount(
           mutation.target.textContent.trim()
         );
+
         if (oldValue !== null && currentValue !== null) {
           handleHoldsMutation(oldValue, currentValue);
         }
@@ -94,8 +117,6 @@
         }
       }
     });
-
-    dismissOpenTransit();
   });
 
   // -- Keydown listener on barcode input to listen for holds changes --
