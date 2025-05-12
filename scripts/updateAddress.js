@@ -17,16 +17,20 @@
   );
 
   // -- Constants for modal messages --
-  const SUCCESS_HEADING = "Success!";
   const ERROR_HEADING = "Something went wrong!";
-  const WORKING_HEADING = "Please wait...";
-  const SUCCESS_MSG = "Standard address fields have been applied!";
+  const ERROR_COLOR = "#e85e6a";
   const ERROR_MSG =
     "Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.";
+  const ERROR_IMG = chrome.runtime.getURL("images/kawaii-book-sad.png");
+  const WORKING_HEADING = "Please wait...";
+  const SUCCESS_HEADING = "Success!";
+  const SUCCESS_MSG = "Standard address fields have been applied!";
+  const SUCCESS_COLOR = "#4CAF50";
+  const SUCCESS_IMG = chrome.runtime.getURL("images/kawaii-dinosaur.png");
+
   const WORKING_MSG = "Attempting to fill standard address fields.";
   const WORKING_COLOR = "#ffc107";
-  const ERROR_COLOR = "#e85e6a";
-  const SUCCESS_COLOR = "#4CAF50";
+  const WORKING_IMG = chrome.runtime.getURL("images/beaver.png");
 
   //  -- Constants for text inputs --
   const textInputs = {
@@ -131,14 +135,14 @@
       ERROR_HEADING,
       ERROR_MSG,
       ERROR_COLOR,
-      chrome.runtime.getURL("images/kawaii-book-sad.png")
+      ERROR_IMG
     );
   };
 
   // -- Main Function --
   async function updateAddress() {
     try {
-      statusModal(WORKING_HEADING, WORKING_MSG, WORKING_COLOR, null, true);
+      statusModal(WORKING_HEADING, WORKING_MSG, WORKING_COLOR, WORKING_IMG);
       for (const {
         optionText,
         optionSelector,
@@ -157,7 +161,7 @@
         SUCCESS_HEADING,
         SUCCESS_MSG,
         SUCCESS_COLOR,
-        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+        SUCCESS_IMG
       );
     } catch (err) {
       console.error(err);
