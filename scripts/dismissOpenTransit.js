@@ -9,6 +9,19 @@
   const HOLDSREGEX = /\(\d+\s*\/\s*(\d+)\)/;
   let holdCount = null;
   let listeningForBarcode = false;
+  const miniModalStyles = {
+      position: "fixed",
+      top: "5%",
+      right: "0%",
+      zIndex: "9999",
+      background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
+      padding: "20px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+      borderRadius: "8px",
+      color: "#333",
+      transition: "opacity 0.3s ease-in-out",
+      opacity: "1",
+    }
 
   // -- Displays a mini-modal saying Open Transit dialog is being dismissed --
   function createMiniModal() {
@@ -23,17 +36,7 @@
         <p>Dismissed open transit dialog.</p>
       </div>
     `;
-    miniModal.style.position = "fixed";
-    miniModal.style.top = "5%";
-    miniModal.style.right = "0%";
-    miniModal.style.zIndex = "9999";
-    miniModal.style.background = "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
-    miniModal.style.padding = "20px";
-    miniModal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-    miniModal.style.borderRadius = "8px";
-    miniModal.style.color = "#333";
-    miniModal.style.transition = "opacity 0.3s ease-in-out";
-    miniModal.style.opacity = "1";
+    Object.assign(miniModal.style, miniModalStyles);
     document.body.appendChild(miniModal);
     setTimeout(() => {
         miniModal.remove();
