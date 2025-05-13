@@ -50,6 +50,43 @@ export const hoverStyles = {
   transform: "translateY(-2px) scale(1.04)",
 };
 
+// -- MiniModal --
+
+const miniModalStyles = {
+  position: "fixed",
+  top: "5%",
+  right: "0%",
+  zIndex: "9999",
+  background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
+  padding: "20px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  borderRadius: "8px",
+  color: "#333",
+  transition: "opacity 0.3s ease-in-out",
+  opacity: "1",
+};
+
+// -- Displays a mini-modal saying Open Transit dialog is being dismissed --
+export const createMiniModal = (message) => {
+  console.log("Creating mini modal with message:", message);
+  const existingModal = document.querySelector(".mini-modal");
+  if (existingModal) {
+    existingModal.remove(); // Remove the existing modal
+  }
+  const miniModal = document.createElement("div");
+  miniModal.className = "mini-modal";
+  miniModal.innerHTML = `
+      <div class="mini-modal-content">
+        <p>${message}</p>
+      </div>
+    `;
+  Object.assign(miniModal.style, miniModalStyles);
+  document.body.appendChild(miniModal);
+  setTimeout(() => {
+    miniModal.remove();
+  }, 2000);
+};
+
 // -- Background Script Functions --
 
 export const isAllowedHost = (url) => {

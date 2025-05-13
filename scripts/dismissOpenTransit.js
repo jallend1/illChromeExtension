@@ -2,58 +2,26 @@
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { waitForElementWithInterval } = await import(
+  const { waitForElementWithInterval, createMiniModal } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
   const HOLDSREGEX = /\(\d+\s*\/\s*(\d+)\)/;
   let holdCount = null;
   let listeningForBarcode = false;
-  const miniModalStyles = {
-      position: "fixed",
-      top: "5%",
-      right: "0%",
-      zIndex: "9999",
-      background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
-      padding: "20px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-      borderRadius: "8px",
-      color: "#333",
-      transition: "opacity 0.3s ease-in-out",
-      opacity: "1",
-    }
-
-  // -- Displays a mini-modal saying Open Transit dialog is being dismissed --
-  function createMiniModal() {
-    const existingModal = document.querySelector(".mini-modal");
-  if (existingModal) {
-    existingModal.remove(); // Remove the existing modal
-  }
-    const miniModal = document.createElement("div");
-    miniModal.className = "mini-modal";
-    miniModal.innerHTML = `
-      <div class="mini-modal-content">
-        <p>Dismissed open transit dialog.</p>
-      </div>
-    `;
-    Object.assign(miniModal.style, miniModalStyles);
-    document.body.appendChild(miniModal);
-    setTimeout(() => {
-        miniModal.remove();
-      }, 2000);
-  }
 
   // -- Dismisses open transit modal --
- async function dismissOpenTransit() {
-  const modal = document.querySelector(".modal-body");
-  if (!modal || !modal.textContent.includes("open transit on item")) return;
-  const modalFooterButton = await waitForElementWithInterval(
-    ".modal-footer button");
-  if (modalFooterButton) {
-    modalFooterButton.click();
-    createMiniModal();
+  async function dismissOpenTransit() {
+    const modal = document.querySelector(".modal-body");
+    if (!modal || !modal.textContent.includes("open transit on item")) return;
+    const modalFooterButton = await waitForElementWithInterval(
+      ".modal-footer button"
+    );
+    if (modalFooterButton) {
+      modalFooterButton.click();
+      createMiniModal("Dismissed open transit dialog.");
+    }
   }
-}
 
   // -- Handles changes to holds field count --
   function handleHoldsMutation(oldValue, currentValue) {
@@ -96,7 +64,10 @@
         addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             const modalBody = node.querySelector(".modal-body");
-            if (modalBody && modalBody.textContent.includes("open transit on item")) {
+            if (
+              modalBody &&
+              modalBody.textContent.includes("open transit on item")
+            ) {
               dismissOpenTransit();
             }
           }

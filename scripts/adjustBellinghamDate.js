@@ -1,5 +1,5 @@
 (async () => {
-  const { waitForElementWithInterval } = await import(
+  const { waitForElementWithInterval, createMiniModal } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
@@ -64,6 +64,7 @@
     }
   };
 
+  createMiniModal("Setting due date to 10 weeks from now.");
   clickDueDateOptions();
   clickSpecificDueDate();
   setDueDate();
