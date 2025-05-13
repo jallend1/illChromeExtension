@@ -21,7 +21,6 @@ export const waitForElementWithInterval = (selectorOrFunction) =>
         resolve(null);
       }
     }, 100);
-    // }
   });
 
 export const buttonStyles = {

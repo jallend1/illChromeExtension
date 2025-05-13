@@ -10,23 +10,6 @@
     BARCODE_INPUT: "#barcode-input",
   };
 
-  // TODO: Combine this with the waitForElementWithInterval function (Uses querySelectorAll instead of querySelector)
-  const waitForElements = (selector) =>
-    new Promise((resolve, reject) => {
-      const startTime = Date.now();
-      const intervalId = setInterval(() => {
-        const elements = document.querySelectorAll(selector);
-        if (elements.length > 0) {
-          clearInterval(intervalId); // Clears interval when element is found
-          resolve(elements);
-        } else if (Date.now() - startTime > 10000) {
-          clearInterval(intervalId);
-          // Resolves with null cuz we don't need to be throwing errors around willy nilly
-          resolve(null);
-        }
-      }, 100);
-    });
-
   const compileDueDate = () => {
     const date = new Date();
     date.setDate(date.getDate() + 70);
@@ -37,7 +20,9 @@
   };
 
   const clickDueDateOptions = async () => {
-    const dropDownButtons = await waitForElements(SELECTORS.DROPDOWN_TOGGLE);
+    const dropDownButtons = await waitForElementWithInterval(() =>
+      document.querySelectorAll(SELECTORS.DROPDOWN_TOGGLE)
+    );
     const dateOptionsButton = Array.from(dropDownButtons).find((button) =>
       button.textContent.includes("Date Options")
     );
@@ -45,9 +30,10 @@
       dateOptionsButton.click();
     }
   };
-
   const clickSpecificDueDate = async () => {
-    const dateOptions = await waitForElements(SELECTORS.DATE_OPTIONS);
+    const dateOptions = await waitForElementWithInterval(() =>
+      document.querySelectorAll(SELECTORS.DATE_OPTIONS)
+    );
     const specificDueDate = Array.from(dateOptions).find((option) =>
       option.textContent.includes("Specific Due Date")
     );
@@ -57,7 +43,9 @@
   };
 
   const setDueDate = async () => {
-    const dateInput = await waitForElementWithInterval(SELECTORS.DATE_INPUT);
+    const dateInput = await waitForElementWithInterval(() =>
+      document.querySelector(SELECTORS.DATE_INPUT)
+    );
     if (dateInput) {
       const formattedDate = compileDueDate();
       dateInput.value = formattedDate;
@@ -68,8 +56,8 @@
   };
 
   const focusBarcodeInput = async () => {
-    const barcodeInput = await waitForElementWithInterval(
-      SELECTORS.BARCODE_INPUT
+    const barcodeInput = await waitForElementWithInterval(() =>
+      document.querySelector(SELECTORS.BARCODE_INPUT)
     );
     if (barcodeInput) {
       barcodeInput.focus(); // Focus on the input field
