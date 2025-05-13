@@ -365,14 +365,15 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   let tabId = details.tabId;
   let currentUrl = details.url;
 
+  if (!isAllowedHost(currentUrl)) {
+    return;
+  }
+
   // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
   if (currentUrl.includes("/eg2/en-US/staff/")) {
     executeScript(tabId, "frequentLending");
   }
 
-  if (!isAllowedHost(currentUrl)) {
-    return;
-  }
   // -- Create ILL Page --
   if (currentUrl.includes("/cat/ill/track")) {
     chrome.scripting.executeScript({
@@ -399,8 +400,12 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       target: { tabId: tabId },
       files: ["./scripts/updateAddress.js"],
     });
+  } else if (currentUrl.includes("/circ/patron/2372046/checkout")) {
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/adjustBellinghamDate.js"],
+    });
   }
-
   if (!currentUrl.includes("catalog/hold/")) {
     // Remove the tooltip if the user navigates away from the hold page
     chrome.scripting.executeScript({
