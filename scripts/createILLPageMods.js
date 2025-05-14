@@ -8,8 +8,37 @@
 
   insertRequestToEvergreen();
 
-  function createILLPageMods() {
+  // TODO: If a patron note exists, render that note to the DOM
+  const getPatronNote = () => {
+    chrome.storage.local.get("requestData", (data) => {
+      if (data.requestData) {
+        const patronNote = JSON.parse(data.requestData).patronNote;
+        addNewColumn(patronNote);
+      }
+    });
+  };
 
+  const addNewColumn = (patronNote) => {
+    const row1 = document.querySelector(
+      ".form-validated .row.mt-2:nth-of-type(1)"
+    );
+
+    const newDiv = document.createElement("div");
+    newDiv.classList.add("col-lg-2");
+    newDiv.style.display = "flex";
+    newDiv.style.alignItems = "center";
+    newDiv.style.justifyContent = "center";
+
+    newDiv.style.fontWeight = "bold";
+    newDiv.style.color = "#701d9d";
+
+    newDiv.textContent = patronNote;
+    row1.appendChild(newDiv);
+  };
+
+  getPatronNote();
+
+  function createILLPageMods() {
     const createClearFormButton = () => {
       const clearFormButton = document.createElement("button");
       clearFormButton.textContent = "Clear Request Data";
