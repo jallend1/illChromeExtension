@@ -1,3 +1,5 @@
+// TODO: Oh lordy. This file has been untouched since it was brute forced and it shows :(
+
 (async () => {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
@@ -173,6 +175,7 @@
       const isSecondPatron = extractValueFromField(
         elementSelectors.patronNote
       )?.includes("2nd");
+      const patronNote = extractValueFromField(elementSelectors.patronNote);
 
       return {
         addressString,
@@ -182,6 +185,7 @@
         isLendingFee,
         patronName,
         isSecondPatron,
+        patronNote,
       };
     };
 
