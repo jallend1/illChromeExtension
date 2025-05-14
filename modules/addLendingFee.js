@@ -15,7 +15,9 @@
 
       feeInput.value = fee;
       titleInput.value = `Patron approved lending fee for "ILL Title - ${title}" sent out from ILL today.`;
-
+      const event = new Event("input", { bubbles: true, cancelable: true });
+      feeInput.dispatchEvent(event);
+      titleInput.dispatchEvent(event);
       const submitButton = billingModal.querySelector(".btn.btn-success");
       submitButton.focus();
     } catch (error) {
@@ -51,9 +53,19 @@
     }
   };
 
-export const addLendingFee = async (title, fee) => {
-    
-goToBillingTab();
+  const populateBarcode = (inputField, submitButton, patronBarcode) => {
+    inputField.value = patronBarcode;
+        const event = new Event("input", { bubbles: true, cancelable: true });
+        inputField.dispatchEvent(event);
+        submitButton.click();
+  }
+
+export const addLendingFee = async (inputField, submitButton, requestDetails) => {
+    const { patronBarcode, title, fee } = requestDetails;
+    populateBarcode(inputField, submitButton, patronBarcode);
+    goToBillingTab();
     clickAddBilling();
     addBillingNotes(title, fee);
   }
+
+  // TODO: Move inputField and submitButton into retrievePatron.js and create shared function for patronToedit
