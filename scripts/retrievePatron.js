@@ -25,14 +25,8 @@
         chrome.storage.local.remove("patronToEdit");
       } else if (result.request) {
         // Otherwise, handle fee
-        const { patronBarcode, title, fee } = result.request;
-        console.log("Handling fee for patron:", patronBarcode);
-        inputField.value = patronBarcode;
-        const event = new Event("input", { bubbles: true, cancelable: true });
-        inputField.dispatchEvent(event);
-        submitButton.click();
         // TODO: Provide some clarity to the user that the fee is being added
-        addLendingFee(title, fee);
+        addLendingFee(inputField, submitButton, result.request);
         chrome.storage.local.remove("request");
         return;
       } else {
