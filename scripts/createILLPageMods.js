@@ -2,12 +2,8 @@
   const { insertRequestToEvergreen, updateInputField } = await import(
     chrome.runtime.getURL("modules/insertRequestToEvergreen.js")
   );
-  const { applyStyles } = await import(
-    chrome.runtime.getURL("modules/utils.js")
-  );
 
   // -- Styles --
-
   const checkboxContainerStyles = {
     padding: "1rem",
     borderRadius: "5px",
@@ -53,7 +49,31 @@
     fontWeight: "bold",
   };
 
-  insertRequestToEvergreen();
+  // -- Event Listeners --
+  const checkboxListenerCallback = (e, textToPrepend) => {
+    const addressField = document.querySelector("textarea");
+    if (e.target.checked) {
+      addressField.value = textToPrepend + addressField.value;
+    } else {
+      addressField.value = addressField.value.replace(textToPrepend, "");
+    }
+    const inputEvent = new Event("input", {
+      bubbles: true,
+      cancelable: true,
+    });
+    addressField.dispatchEvent(inputEvent);
+  };
+
+  const textareaListener = (addressField) => {
+    const bagCheckbox = document.querySelector("#ill-bag-checkbox");
+    const boxCheckbox = document.querySelector("#ill-box-checkbox");
+    addressField.value.includes("**BAG**")
+      ? (bagCheckbox.checked = true)
+      : (bagCheckbox.checked = false);
+    addressField.value.includes("**RETURN IN BOX**")
+      ? (boxCheckbox.checked = true)
+      : (boxCheckbox.checked = false);
+  };
 
   const getPatronNote = async () => {
     return new Promise((resolve) => {
@@ -100,6 +120,7 @@
   const createLeftDiv = () => {
     const leftDiv = document.createElement("div");
     leftDiv.id = "ill-left-mods";
+
     leftDiv.appendChild(createCheckboxContainer());
     leftDiv.appendChild(createClearFormButton());
     return leftDiv;
@@ -116,6 +137,7 @@
   };
 
   const createILLPageModsContainer = async () => {
+    if (document.querySelector("#checkbox-container")) return;
     const container = document.createElement("div");
     container.id = "ill-page-mods-container";
     container.style.display = "flex";
@@ -127,8 +149,6 @@
   };
 
   const createCheckboxContainer = () => {
-    if (document.querySelector("#checkbox-container")) return;
-
     const checkboxContainer = document.createElement("div");
     checkboxContainer.id = "checkbox-container";
     Object.assign(checkboxContainer.style, checkboxContainerStyles);
@@ -147,7 +167,6 @@
   };
 
   const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
-    // Create container div for the checkbox and label
     const checkboxDiv = document.createElement("div");
     Object.assign(checkboxDiv.style, checkboxDivStyles);
 
@@ -156,21 +175,6 @@
     checkbox.type = "checkbox";
     checkbox.id = checkboxId;
     Object.assign(checkbox.style, checkboxStyles);
-
-    // Adds listener to the checkbox to prepend the text to the address field
-    checkbox.addEventListener("click", (e) => {
-      const addressField = document.querySelector("textarea");
-      if (e.target.checked) {
-        addressField.value = textToPrepend + addressField.value;
-      } else {
-        addressField.value = addressField.value.replace(textToPrepend, "");
-      }
-      const inputEvent = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      addressField.dispatchEvent(inputEvent);
-    });
 
     // Create the label
     const label = document.createElement("label");
@@ -181,38 +185,37 @@
     // Append checkbox and label to the div
     checkboxDiv.appendChild(checkbox);
     checkboxDiv.appendChild(label);
+
+    // Adds listener to the checkbox to prepend the text to the address field
+    checkbox.addEventListener("click", (e) =>
+      checkboxListenerCallback(e, textToPrepend)
+    );
     return checkboxDiv;
   };
 
-  async function createILLPageMods() {
-    // Creates a parent div for the ILL custom checkboxes
+  // Ensure textarea matches the checkbox values
+  const monitorTextarea = () => {
+    const addressField = document.querySelector("textarea");
+    if (!addressField) return;
+    addressField.addEventListener("input", () =>
+      textareaListener(addressField)
+    );
+  };
 
-    const checkForForm = setInterval(() => {
-      if (document.querySelector(".form-validated")) {
-        createCheckboxContainer();
-        monitorTextarea();
-        clearInterval(checkForForm);
+  // -- Main Function --
+  async function createILLPageMods() {
+    const checkForForm = setInterval(async () => {
+      const parentILLForm = document.querySelector(".form-validated");
+      if (parentILLForm) {
+        insertRequestToEvergreen();
+        const illModsDiv = await createILLPageModsContainer();
+        if (illModsDiv) {
+          parentILLForm.appendChild(illModsDiv);
+          monitorTextarea();
+          clearInterval(checkForForm);
+        }
       }
     }, 100);
-
-    const monitorTextarea = () => {
-      const addressField = document.querySelector("textarea");
-      if (!addressField) return;
-      addressField.addEventListener("input", () => {
-        const bagCheckbox = document.querySelector("#ill-bag-checkbox");
-        const boxCheckbox = document.querySelector("#ill-box-checkbox");
-        addressField.value.includes("**BAG**")
-          ? (bagCheckbox.checked = true)
-          : (bagCheckbox.checked = false);
-        addressField.value.includes("**RETURN IN BOX**")
-          ? (boxCheckbox.checked = true)
-          : (boxCheckbox.checked = false);
-      });
-    };
-
-    const illModsDiv = await createILLPageModsContainer();
-    const parentILLForm = document.querySelector(".form-validated");
-    parentILLForm.appendChild(illModsDiv);
   }
 
   const clearForm = () => {
