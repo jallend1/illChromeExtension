@@ -4,20 +4,36 @@
   );
 
   // -- Styles --
-  const checkboxContainerStyles = {
-    padding: "1rem",
-    borderRadius: "5px",
-    border: "1px solid #701d9d",
+  const illPageModStyles = {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  };
+
+  const checkboxContainerStyles = {
+    padding: "1.5rem 1.5rem",
+    borderRadius: "1rem",
+    border: "none",
+    background: "linear-gradient(90deg, #43b97f 0%, #b2f7cc 100%)", // Soft green gradient
+    boxShadow: "0 4px 24px 0 rgba(34, 139, 34, 0.10)", // Subtle green shadow
+    display: "flex",
     flexDirection: "column",
-    marginTop: "1rem",
+    justifyContent: "center",
+    alignItems: "stretch",
+    gap: "1.25rem",
+    marginTop: "1.5rem",
+    marginBottom: "1.5rem",
+    maxWidth: "400px",
+    transition: "box-shadow 0.2s",
   };
 
   const checkboxStyles = {
-    marginLeft: "10px",
-    marginRight: "5px",
+    accentColor: "#701d9d",
+    width: "1.25em",
+    height: "1.25em",
+    marginRight: "1em",
+    marginLeft: "0",
+    cursor: "pointer",
   };
 
   const clearFormButtonStyles = {
@@ -32,21 +48,49 @@
   const checkboxDivStyles = {
     display: "flex",
     alignItems: "center",
+    background: "#fff",
+    borderRadius: "0.5rem",
+    padding: "0.5rem 1rem",
+    boxShadow: "0 1px 4px 0 rgba(112, 29, 157, 0.06)",
+    transition: "background 0.2s",
+  };
+
+  const labelStyles = {
+    fontSize: "1.1em",
+    color: "#3a2352",
+    fontWeight: "500",
+    cursor: "pointer",
   };
 
   const alertDivStyles = {
-    backgroundColor: "#f8d7da",
-    color: "#721c24",
-    padding: "1rem",
-    borderRadius: "5px",
+    background: "linear-gradient(90deg, #ff7b7b 0%, #dc3545 50%, #ff7b7b 100%)",
+    color: "white",
+    padding: "1.25rem 1.5rem",
+    borderRadius: "8px",
     border: "1px solid #f5c6cb",
     marginTop: "1rem",
     marginLeft: "1rem",
     display: "flex",
-    justifyContent: "center",
+    flexDirection: "column",
     alignItems: "center",
-    fontSize: "1.2em",
     fontWeight: "bold",
+    boxShadow: "0 2px 8px rgba(220, 53, 69, 0.08)",
+    borderLeft: "8px solid #dc3545",
+    borderRight: "8px solid #dc3545",
+  };
+
+  const smallHeaderStyles = {
+    fontSize: "1.25em",
+    color: "#fff",
+    textAlign: "center",
+    textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
+  };
+
+  const alertIconStyles = {
+    fontSize: "2em",
+    marginRight: "0.75rem",
+    flexShrink: "0",
+    filter: "drop-shadow(0 1px 2px rgba(220,53,69,0.15))",
   };
 
   // -- Event Listeners --
@@ -91,7 +135,7 @@
   // -- DOM Element Creation --
   const createClearFormButton = () => {
     const clearFormButton = document.createElement("button");
-    clearFormButton.textContent = "Clear Request Data";
+    clearFormButton.textContent = "Erase the Request Data";
     Object.assign(clearFormButton.style, clearFormButtonStyles);
     clearFormButton.addEventListener("click", () => {
       clearForm();
@@ -101,7 +145,7 @@
 
   const cleanMessage = (message) => {
     if (message.includes("NTP--")) {
-      message = message.replace("NTP--", "Note to Patron:");
+      message = message.replace("NTP--", "Note to Patron: ");
     }
     return message;
   };
@@ -109,11 +153,47 @@
   const createAlertDiv = (message) => {
     const alertDiv = document.createElement("div");
     alertDiv.id = "ill-alert-div";
+    Object.assign(alertDiv.style, alertDivStyles);
+
+    // Create a little header
+    const smallHeader = document.createElement("h2");
+    smallHeader.textContent = "Please write on the sticker:";
+    Object.assign(smallHeader.style, smallHeaderStyles);
+
+    const headerDiv = document.createElement("div");
+    headerDiv.style.textAlign = "center";
+    headerDiv.style.marginBottom = "1rem";
+    headerDiv.appendChild(smallHeader);
+
+    // Create a main body div
+    const bodyDiv = document.createElement("div");
+    bodyDiv.style.textAlign = "center";
+    bodyDiv.style.display = "flex";
+    bodyDiv.style.alignItems = "center";
+    bodyDiv.style.justifyContent = "space-between";
+
+    // Create left icon
+    const leftIcon = document.createElement("span");
+    leftIcon.textContent = "⚠️";
+    Object.assign(leftIcon.style, alertIconStyles);
+
+    // Create right icon
+    const rightIcon = document.createElement("span");
+    rightIcon.textContent = "⚠️";
+    Object.assign(rightIcon.style, alertIconStyles);
+
     const alertText = document.createElement("p");
     alertText.id = "ill-alert-text";
     alertText.textContent = cleanMessage(message);
-    Object.assign(alertDiv.style, alertDivStyles);
-    alertDiv.appendChild(alertText);
+    alertText.style.margin = "0";
+
+    bodyDiv.appendChild(leftIcon);
+    bodyDiv.appendChild(alertText);
+    bodyDiv.appendChild(rightIcon);
+
+    alertDiv.appendChild(headerDiv);
+    alertDiv.appendChild(bodyDiv);
+
     return alertDiv;
   };
 
@@ -140,7 +220,7 @@
     if (document.querySelector("#checkbox-container")) return;
     const container = document.createElement("div");
     container.id = "ill-page-mods-container";
-    container.style.display = "flex";
+    Object.assign(container.style, illPageModStyles);
     const leftDiv = createLeftDiv();
     const rightDiv = await createRightDiv();
     container.appendChild(leftDiv);
@@ -178,7 +258,8 @@
 
     // Create the label
     const label = document.createElement("label");
-    label.style.fontSize = "1.5em";
+
+    Object.assign(label.style, labelStyles);
     label.htmlFor = checkboxId;
     label.appendChild(document.createTextNode(labelText));
 
