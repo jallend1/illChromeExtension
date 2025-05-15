@@ -14,8 +14,8 @@
     padding: "1.5rem 1.5rem",
     borderRadius: "1rem",
     border: "none",
-    background: "linear-gradient(90deg, #43b97f 0%, #b2f7cc 100%)", // Soft green gradient
-    boxShadow: "0 4px 24px 0 rgba(34, 139, 34, 0.10)", // Subtle green shadow
+    background: "linear-gradient(90deg, #43b97f 0%, #b2f7cc 100%)",
+    boxShadow: "0 4px 24px 0 rgba(34, 139, 34, 0.10)",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -283,6 +283,21 @@
     );
   };
 
+  const monitorBarcodeInput = () => {
+    const itemBarcodeInput = document.querySelector("#item-barcode-input");
+    if (itemBarcodeInput) {
+      itemBarcodeInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const submitButton = document.querySelector(".btn.btn-success");
+          if (submitButton) {
+            submitButton.focus();
+          }
+        }
+      });
+    }
+  };
+
   // -- Main Function --
   async function createILLPageMods() {
     const checkForForm = setInterval(async () => {
@@ -293,6 +308,7 @@
         if (illModsDiv) {
           parentILLForm.appendChild(illModsDiv);
           monitorTextarea();
+          monitorBarcodeInput();
           clearInterval(checkForForm);
         }
       }
