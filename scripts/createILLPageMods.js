@@ -79,35 +79,50 @@
     return clearFormButton;
   };
 
+  const cleanMessage = (message) => {
+    if (message.includes("NTP--")) {
+      message = message.replace("NTP--", "Note to Patron:");
+    }
+    return message;
+  };
+
   const createAlertDiv = (message) => {
     const alertDiv = document.createElement("div");
     alertDiv.id = "ill-alert-div";
     const alertText = document.createElement("p");
     alertText.id = "ill-alert-text";
-    alertText.textContent = message;
+    alertText.textContent = cleanMessage(message);
     Object.assign(alertDiv.style, alertDivStyles);
     alertDiv.appendChild(alertText);
     return alertDiv;
+  };
+
+  const createLeftDiv = () => {
+    const leftDiv = document.createElement("div");
+    leftDiv.id = "ill-left-mods";
+    leftDiv.appendChild(createCheckboxContainer());
+    leftDiv.appendChild(createClearFormButton());
+    return leftDiv;
+  };
+
+  const createRightDiv = async () => {
+    const rightDiv = document.createElement("div");
+    rightDiv.id = "ill-right-mods";
+    const patronNote = await getPatronNote();
+    if (patronNote) {
+      rightDiv.appendChild(createAlertDiv(patronNote));
+    }
+    return rightDiv;
   };
 
   const createILLPageModsContainer = async () => {
     const container = document.createElement("div");
     container.id = "ill-page-mods-container";
     container.style.display = "flex";
-    const leftDiv = document.createElement("div");
-    leftDiv.id = "ill-left-mods";
-    leftDiv.appendChild(createCheckboxContainer());
-    leftDiv.appendChild(createClearFormButton());
-    const rightDiv = document.createElement("div");
-    rightDiv.id = "ill-right-mods";
-    const patronNote = await getPatronNote();
-
-    if (patronNote) {
-      rightDiv.appendChild(createAlertDiv(patronNote));
-    }
+    const leftDiv = createLeftDiv();
+    const rightDiv = await createRightDiv();
     container.appendChild(leftDiv);
     container.appendChild(rightDiv);
-
     return container;
   };
 
