@@ -380,6 +380,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       target: { tabId: tabId },
       files: ["./scripts/createILLPageMods.js"],
     });
+    chrome.scripting.insertCSS({
+      target: { tabId: tabId },
+      files: ["./styles/createILLPage.css"],
+    });
   } else if (currentUrl.includes("catalog/hold/")) {
     // Inject a CSS file to style the warning when placing a hold is unsuccessful
     chrome.scripting.insertCSS({

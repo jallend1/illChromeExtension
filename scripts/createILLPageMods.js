@@ -3,97 +3,6 @@
     chrome.runtime.getURL("modules/insertRequestToEvergreen.js")
   );
 
-  // -- Styles --
-  const illPageModStyles = {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    maxWidth: "1000px",
-  };
-
-  const checkboxContainerStyles = {
-    padding: "1.5rem 1.5rem",
-    borderRadius: "1rem",
-    border: "none",
-    background: "linear-gradient(90deg, #43b97f 0%, #b2f7cc 100%)",
-    boxShadow: "0 4px 24px 0 rgba(34, 139, 34, 0.10)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "stretch",
-    gap: "1.25rem",
-    marginTop: "1.5rem",
-    marginBottom: "1.5rem",
-    maxWidth: "400px",
-    transition: "box-shadow 0.2s",
-  };
-
-  const checkboxStyles = {
-    accentColor: "#701d9d",
-    width: "1.25em",
-    height: "1.25em",
-    marginRight: "1em",
-    marginLeft: "0",
-    cursor: "pointer",
-  };
-
-  const clearFormButtonStyles = {
-    marginTop: "1rem",
-    padding: "0.5rem 1rem",
-    border: "solid 1px #701d9d",
-    borderRadius: "0.5rem",
-    backgroundColor: "#701d9d",
-    color: "#fff",
-  };
-
-  const checkboxDivStyles = {
-    display: "flex",
-    alignItems: "center",
-    background: "#fff",
-    borderRadius: "0.5rem",
-    padding: "0.5rem 1rem",
-    boxShadow: "0 1px 4px 0 rgba(112, 29, 157, 0.06)",
-    transition: "background 0.2s",
-  };
-
-  const labelStyles = {
-    fontSize: "1.1em",
-    color: "#3a2352",
-    fontWeight: "500",
-    cursor: "pointer",
-  };
-
-  const alertDivStyles = {
-    background: "linear-gradient(90deg, #ff7b7b 0%, #dc3545 50%, #ff7b7b 100%)",
-    color: "white",
-    padding: "1.25rem 1.5rem",
-    borderRadius: "8px",
-    border: "1px solid #f5c6cb",
-    marginTop: "1rem",
-    marginLeft: "1rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    fontWeight: "bold",
-    boxShadow: "0 2px 8px rgba(220, 53, 69, 0.08)",
-    borderLeft: "8px solid #dc3545",
-    borderRight: "8px solid #dc3545",
-  };
-
-  const smallHeaderStyles = {
-    fontSize: "1.25em",
-    color: "#fff",
-    textAlign: "center",
-    textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
-  };
-
-  const alertIconStyles = {
-    fontSize: "2em",
-    marginRight: "0.75rem",
-    flexShrink: "0",
-    filter: "drop-shadow(0 1px 2px rgba(220,53,69,0.15))",
-  };
-
   // -- Event Listeners --
   const checkboxListenerCallback = (e, textToPrepend) => {
     const addressField = document.querySelector("textarea");
@@ -133,16 +42,7 @@
     });
   };
 
-  // -- DOM Element Creation --
-  const createClearFormButton = () => {
-    const clearFormButton = document.createElement("button");
-    clearFormButton.textContent = "Erase the Request Data";
-    Object.assign(clearFormButton.style, clearFormButtonStyles);
-    clearFormButton.addEventListener("click", () => {
-      clearForm();
-    });
-    return clearFormButton;
-  };
+  // -- Helper Functions --
 
   const cleanMessage = (message) => {
     if (message.includes("NTP--")) {
@@ -151,11 +51,22 @@
     return message;
   };
 
+  // -- DOM Element Creation --
+
+  const createClearFormButton = () => {
+    const clearFormButton = document.createElement("button");
+    clearFormButton.id = "clear-form-button";
+    clearFormButton.textContent = "Erase the Request Data";
+    clearFormButton.addEventListener("click", () => {
+      clearForm();
+    });
+    return clearFormButton;
+  };
+
   const createAlertDiv = (message) => {
     const alertDiv = document.createElement("div");
     alertDiv.id = "ill-alert-div";
-    Object.assign(alertDiv.style, alertDivStyles);
-    // If message doesn't include "NTP" instead of a red gradient, use a blue one
+    // If message doesn't include "NTP" use a blue gradient because things are chill
     if (!message.includes("NTP")) {
       alertDiv.style.background =
         "linear-gradient(90deg, #007bff 0%, #0056b3 50%, #007bff 100%)";
@@ -168,39 +79,33 @@
     smallHeader.textContent = message.includes("NTP")
       ? "Please write on the sticker:"
       : "Verification needed!";
-    Object.assign(smallHeader.style, smallHeaderStyles);
 
     const headerDiv = document.createElement("div");
-    headerDiv.style.textAlign = "center";
-    headerDiv.style.marginBottom = "1rem";
     headerDiv.appendChild(smallHeader);
 
     // Create a main body div
     const bodyDiv = document.createElement("div");
-    bodyDiv.style.textAlign = "center";
-    bodyDiv.style.display = "flex";
-    bodyDiv.style.alignItems = "center";
-    bodyDiv.style.justifyContent = "space-between";
+    bodyDiv.classList.add("alert-body");
 
-    // Create left icon
+    // Create icons
     const leftIcon = document.createElement("span");
     leftIcon.textContent = "⚠️";
-    Object.assign(leftIcon.style, alertIconStyles);
-
-    // Create right icon
+    leftIcon.classList.add("ill-alert-icon");
     const rightIcon = document.createElement("span");
     rightIcon.textContent = "⚠️";
-    Object.assign(rightIcon.style, alertIconStyles);
+    rightIcon.classList.add("ill-alert-icon");
 
+    // Create the alert text
     const alertText = document.createElement("p");
     alertText.id = "ill-alert-text";
     alertText.textContent = cleanMessage(message);
-    alertText.style.margin = "0";
 
+    // Append everything to the body div
     bodyDiv.appendChild(leftIcon);
     bodyDiv.appendChild(alertText);
     bodyDiv.appendChild(rightIcon);
 
+    // Append the header and body divs to the alert div
     alertDiv.appendChild(headerDiv);
     alertDiv.appendChild(bodyDiv);
 
@@ -210,7 +115,6 @@
   const createLeftDiv = () => {
     const leftDiv = document.createElement("div");
     leftDiv.id = "ill-left-mods";
-
     leftDiv.appendChild(createCheckboxContainer());
     leftDiv.appendChild(createClearFormButton());
     return leftDiv;
@@ -230,7 +134,6 @@
     if (document.querySelector("#checkbox-container")) return;
     const container = document.createElement("div");
     container.id = "ill-page-mods-container";
-    Object.assign(container.style, illPageModStyles);
     const leftDiv = createLeftDiv();
     const rightDiv = await createRightDiv();
     container.appendChild(leftDiv);
@@ -241,7 +144,6 @@
   const createCheckboxContainer = () => {
     const checkboxContainer = document.createElement("div");
     checkboxContainer.id = "checkbox-container";
-    Object.assign(checkboxContainer.style, checkboxContainerStyles);
 
     checkboxContainer.appendChild(
       addILLCheckboxes("ill-bag-checkbox", "ILL came with a bag", "**BAG**\n")
@@ -258,20 +160,19 @@
 
   const addILLCheckboxes = (checkboxId, labelText, textToPrepend) => {
     const checkboxDiv = document.createElement("div");
-    Object.assign(checkboxDiv.style, checkboxDivStyles);
+    checkboxDiv.classList.add("checkbox-div");
 
     // Create the checkbox element
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.id = checkboxId;
-    Object.assign(checkbox.style, checkboxStyles);
+    checkbox.classList.add("ill-checkbox");
 
     // Create the label
     const label = document.createElement("label");
-
-    Object.assign(label.style, labelStyles);
     label.htmlFor = checkboxId;
     label.appendChild(document.createTextNode(labelText));
+    label.classList.add("ill-checkbox-label");
 
     // Append checkbox and label to the div
     checkboxDiv.appendChild(checkbox);

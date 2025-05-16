@@ -1,0 +1,112 @@
+/* Main container for the page mods */
+#ill-page-mods-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-width: 1000px;
+}
+
+/* Checkbox container */
+#checkbox-container {
+  padding: 1.5rem 1.5rem;
+  border-radius: 1rem;
+  border: none;
+  background: linear-gradient(90deg, #43b97f 0%, #b2f7cc 100%);
+  box-shadow: 0 4px 24px 0 rgba(34, 139, 34, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  transition: box-shadow 0.2s;
+}
+
+/* Checkbox row */
+.checkbox-div {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 1px 4px 0 rgba(112, 29, 157, 0.06);
+  transition: background 0.2s;
+}
+
+/* Checkbox input */
+input[type="checkbox"].ill-checkbox {
+  accent-color: #701d9d;
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 1em;
+  margin-left: 0;
+  cursor: pointer;
+}
+
+/* Checkbox label */
+.ill-checkbox-label {
+  font-size: 1.1em;
+  color: #3a2352;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Clear form button */
+#clear-form-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: solid 1px #701d9d;
+  border-radius: 0.5rem;
+  background-color: #701d9d;
+  color: #fff;
+}
+
+/* Alert styles */
+#ill-alert-div {
+  background: linear-gradient(90deg, #ff7b7b 0%, #dc3545 50%, #ff7b7b 100%);
+  color: white;
+  padding: 1.25rem 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.08);
+  border-left: 8px solid #dc3545;
+  border-right: 8px solid #dc3545;
+}
+
+/* Alert header */
+#ill-alert-div h2 {
+  font-size: 2rem;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1rem;
+}
+
+/* Alert icon */
+.ill-alert-icon {
+  font-size: 2em;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(220, 53, 69, 0.15));
+}
+
+/* Alert body */
+#ill-alert-div .alert-body {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Alert text */
+#ill-alert-text {
+  margin: 0;
+}
