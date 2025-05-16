@@ -8,6 +8,7 @@
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    maxWidth: "1000px",
   };
 
   const checkboxContainerStyles = {
@@ -154,10 +155,19 @@
     const alertDiv = document.createElement("div");
     alertDiv.id = "ill-alert-div";
     Object.assign(alertDiv.style, alertDivStyles);
+    // If message doesn't include "NTP" instead of a red gradient, use a blue one
+    if (!message.includes("NTP")) {
+      alertDiv.style.background =
+        "linear-gradient(90deg, #007bff 0%, #0056b3 50%, #007bff 100%)";
+      alertDiv.style.borderLeft = "8px solid #0056b3";
+      alertDiv.style.borderRight = "8px solid #0056b3";
+    }
 
     // Create a little header
     const smallHeader = document.createElement("h2");
-    smallHeader.textContent = "Please write on the sticker:";
+    smallHeader.textContent = message.includes("NTP")
+      ? "Please write on the sticker:"
+      : "Verification needed!";
     Object.assign(smallHeader.style, smallHeaderStyles);
 
     const headerDiv = document.createElement("div");
