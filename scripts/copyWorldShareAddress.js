@@ -12,6 +12,7 @@
   const { printLabel } = await chrome.storage.local.get("printLabel");
 
   function copyWorldShareAddress() {
+    console.log("Copying address...");
     let addressObject = {
       attention: null,
       line1: null,
@@ -180,6 +181,7 @@
       );
       return;
     }
+    console.log(createAddressString());
   }
 
   const autoReturnILL = () => {
