@@ -20,25 +20,47 @@
       postal: null,
     };
 
+    function buildSelector({ tag, dataAttr, className }) {
+      if (className) {
+        return `div:not(.yui3-default-hidden) ${tag}.${className}:not(div.yui3-default-hidden ${tag})`;
+      }
+      return `div:not(.yui3-default-hidden) ${tag}[data="${dataAttr}"]:not(div.yui3-default-hidden ${tag})`;
+    }
+
     const elementSelectors = {
-      title:
-        'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
-      requestNumber:
-        "div:not(.yui3-default-hidden) span.accordionRequestDetailsRequestId:not(div.yui3-default-hidden span)",
-      patronID:
-        'div:not(.yui3-default-hidden) input[data="requester.patron.userId"]:not(div.yui3-default-hidden input)',
-      lendingFee:
-        'div:not(.yui3-default-hidden) span[data="billing.charges.amountAsString"]:not(div.yui3-default-hidden span)',
-      dueDate:
-        'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-      currentLender:
-        'div:not(.yui3-default-hidden) span[data="lenderString.currentSupplier.symbol"]:not(div.yui3-default-hidden span)',
-      region:
-        'div:not(.yui3-default-hidden) span[data="returning.address.region"]:not(div.yui3-default-hidden span)',
-      patronName:
-        'div:not(.yui3-default-hidden) input[data="requester.patron.name"]:not(div.yui3-default-hidden input)',
-      patronNote:
-        'div:not(.yui3-default-hidden) textarea[data="requester.patron.note"]:not(div.yui3-default-hidden textarea)',
+      title: buildSelector({ tag: "span", dataAttr: "resource.title" }),
+      requestNumber: buildSelector({
+        tag: "span",
+        className: "accordionRequestDetailsRequestId",
+      }),
+      patronID: buildSelector({
+        tag: "input",
+        dataAttr: "requester.patron.userId",
+      }),
+      lendingFee: buildSelector({
+        tag: "span",
+        dataAttr: "billing.charges.amountAsString",
+      }),
+      dueDate: buildSelector({
+        tag: "span",
+        dataAttr: "returning.originalDueToSupplier",
+      }),
+      currentLender: buildSelector({
+        tag: "span",
+        dataAttr: "lenderString.currentSupplier.symbol",
+      }),
+      region: buildSelector({
+        tag: "span",
+        dataAttr: "returning.address.region",
+      }),
+      patronName: buildSelector({
+        tag: "input",
+        dataAttr: "requester.patron.name",
+      }),
+      patronNote: buildSelector({
+        tag: "textarea",
+        dataAttr: "requester.patron.note",
+      }),
     };
 
     const extractValueFromField = (selector) => {
