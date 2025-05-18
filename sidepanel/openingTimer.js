@@ -13,63 +13,55 @@ const branchHours = {
   6: { system: 11, bellevue: 11 },
 };
 
-const updateCountdownElement = (element, text, isAlert = false) => {
-  element.textContent = text;
-  if (isAlert) {
-    element.classList.add("countdown-alert");
-  } else {
-    element.classList.remove("countdown-alert");
-  }
-};
+function formatTime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return [hours, minutes, seconds]
+    .map((n) => String(n).padStart(2, "0"))
+    .join(":");
+}
 
-const getFormattedTimeDifference = (openingTime, currentTime) => {
-  const timeDifference = openingTime - currentTime;
-  return calculateTime(timeDifference);
-};
+function updateCountdown(mainText, subText = "", isAlert = false) {
+  countdownElements.countdownTimerElement.textContent = mainText;
+  countdownElements.countdownTextElement.textContent = subText;
+  countdownElements.countdownTimerElement.classList.toggle(
+    "countdown-alert",
+    isAlert
+  );
+}
 
-const countdownTimer = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const { system, bellevue } = branchHours[dayOfWeek];
-
+function countdownTimer() {
+  const now = new Date();
+  const { system, bellevue } = branchHours[now.getDay()];
   const openingTime = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
     system,
     0,
     0
   );
   const bellevueOpeningTime = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
     bellevue,
     0,
     0
   );
 
-  if (today >= openingTime) {
-    // All branches have opened
-    updateCountdownElement(
-      countdownElements.countdownTimerElement,
-      "All branches have opened for the day."
-    );
-    updateCountdownElement(countdownElements.countdownTextElement, "", false);
+  if (now >= openingTime) {
+    updateCountdown("All branches have opened for the day.");
     clearInterval(intervalID);
     return;
   }
 
-  if (today >= bellevueOpeningTime) {
-    // Bellevue has opened, others not yet
-    const branchOpeningTime = getFormattedTimeDifference(openingTime, today);
-    updateCountdownElement(
-      countdownElements.countdownTimerElement,
+  if (now >= bellevueOpeningTime) {
+    const branchOpeningTime = formatTime(openingTime - now);
+    updateCountdown(
       "Bellevue has opened.",
-      false
-    );
-    updateCountdownElement(
-      countdownElements.countdownTextElement,
       `Other branches: ${branchOpeningTime}`,
       branchOpeningTime.startsWith("00")
     );
@@ -77,41 +69,22 @@ const countdownTimer = () => {
   }
 
   // No branches have opened yet
-  const bellevueTimeRemaining = getFormattedTimeDifference(
-    bellevueOpeningTime,
-    today
-  );
-  const systemTimeRemaining = getFormattedTimeDifference(openingTime, today);
+  const bellevueTimeRemaining = formatTime(bellevueOpeningTime - now);
+  const systemTimeRemaining = formatTime(openingTime - now);
+
   if (bellevue === system) {
-    // Everybody opens at the same time
-    updateCountdownElement(
-      countdownElements.countdownTimerElement,
+    updateCountdown(
       `Branches open in ${bellevueTimeRemaining}`,
+      "",
       bellevueTimeRemaining.startsWith("00")
     );
   } else {
-    // Bellevue and branches open at different times
-    updateCountdownElement(
-      countdownElements.countdownTimerElement,
+    updateCountdown(
       `Bellevue opens in ${bellevueTimeRemaining}`,
+      `Other branches: ${systemTimeRemaining}`,
       bellevueTimeRemaining.startsWith("00")
     );
-    updateCountdownElement(
-      countdownElements.countdownTextElement,
-      `Other branches: ${systemTimeRemaining}`,
-      systemTimeRemaining.startsWith("00")
-    );
   }
-};
+}
 
 const intervalID = setInterval(countdownTimer, 1000);
-
-const calculateTime = (timeDifference) => {
-  const totalSeconds = Math.floor(timeDifference / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const formatTime = (timeStr) => String(timeStr).padStart(2, "0");
-  return `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
-};
