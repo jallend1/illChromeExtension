@@ -245,12 +245,17 @@ chrome.runtime.onMessage.addListener(async function (
       return;
     }
     if (request.action === "isbnSearch") {
-      calculateURL(URLS.CATALOG + "/" + request.url);
-      return;
+      console.log("ISBN Search");
+      (async () => {
+        await calculateURL(URLS.CATALOG + "/" + request.url);
+        sendResponse({ success: true });
+      })();
+      return true; // <-- Keeps the message port open for async response
     }
 
     if (request.data === "copyWorldShareAddress") {
       injectDymoFramework(activeTab.id);
+      sendResponse({ success: true });
     }
 
     if (request.action === "retrievePatron") {

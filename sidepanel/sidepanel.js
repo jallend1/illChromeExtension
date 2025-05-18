@@ -150,19 +150,26 @@ const initiateScript = (scriptName) => {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     var currentTab = tabs[0];
     chrome.tabs.update(currentTab.id, { active: true });
-    chrome.runtime.sendMessage(
-      { command: scriptName, data: scriptName },
-      async (response) => {
-        // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
-        if (scriptName === "copyWorldShareAddress") {
-          await navigator.clipboard.writeText("");
-          await extractFromStorage("addressString");
-        } else if (scriptName === "overdueNotice") {
-          await navigator.clipboard.writeText("");
-          await extractFromStorage("overdueNotice");
+    // TODO: Navigating to a new URL in isbnSearch closes the port before a message can be sent
+    // A callback causes an error, so calling it specifically for isbnSearch. Would like to clean up
+    if (scriptName === "isbnSearch") {
+      chrome.runtime.sendMessage({ command: "isbnSearch", data: "isbnSearch" });
+      return;
+    } else {
+      chrome.runtime.sendMessage(
+        { command: scriptName, data: scriptName },
+        async (response) => {
+          // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
+          if (scriptName === "copyWorldShareAddress") {
+            await navigator.clipboard.writeText("");
+            await extractFromStorage("addressString");
+          } else if (scriptName === "overdueNotice") {
+            await navigator.clipboard.writeText("");
+            await extractFromStorage("overdueNotice");
+          }
         }
-      }
-    );
+      );
+    }
   });
 };
 
@@ -173,6 +180,7 @@ const extractFromStorage = async (key) => {
   if (result[key]) {
     try {
       await navigator.clipboard.writeText(result[key]);
+      console.log(`Copied ${key} to clipboard: ${result[key]}`);
       chrome.storage.local.remove(key);
     } catch (error) {
       console.error(`Failed to copy ${key} to clipboard`, error);
