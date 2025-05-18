@@ -86,29 +86,3 @@ export const createMiniModal = (message) => {
     miniModal.remove();
   }, 2000);
 };
-
-// -- Background Script Functions --
-
-export const isAllowedHost = (url) => {
-  const manifest = chrome.runtime.getManifest();
-  const allowedHosts = manifest.host_permissions || [];
-  return allowedHosts.some((pattern) => {
-    const urlPattern = new URLPattern(pattern);
-    return urlPattern.test(url);
-  });
-};
-
-export const isEvgMobile = async () => {
-  const tabs = await chrome.tabs.query({});
-  return tabs.some((tab) => tab.url.includes("evgmobile"));
-};
-
-export const evergreenTabId = async () => {
-  const tabs = await chrome.tabs.query({});
-  for (let tab of tabs) {
-    if (tab.url.includes("evgclient") || tab.url.includes("evgmobile")) {
-      return tab.id;
-    }
-  }
-  return null;
-};

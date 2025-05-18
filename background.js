@@ -1,18 +1,16 @@
-import { isEvgMobile, evergreenTabId, isAllowedHost } from "./modules/utils.js";
+import {
+  getBaseURL,
+  focusOrCreateTab,
+  isEvgMobile,
+  isAllowedHost,
+  URLS,
+} from "./background-utils.js";
 
 const currentOptions = [
   { id: "copyWorldShareAddress", title: "Copy Address from WorldShare" },
   { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
   { id: "overdueNotice", title: "Generate Overdue Notice" },
 ];
-
-const URLS = {
-  CLIENT_BASE: "https://evgclient.kcls.org",
-  MOBILE_BASE: "https://evgmobile.kcls.org",
-  PATRON_SEARCH: "/eg2/en-US/staff/circ/patron/bcsearch",
-  CREATE_ILL: "/eg2/en-US/staff/cat/ill/track",
-  CATALOG: "/eg2/en-US/staff/catalog",
-};
 
 let arePassiveToolsActive;
 chrome.storage.local.get("arePassiveToolsActive", (result) => {
@@ -61,50 +59,6 @@ const sessionLog = async () => {
       }
       chrome.storage.session.set({ logged: true });
     }
-  });
-};
-
-const getBaseURL = async (urlSuffix) => {
-  const needsMobileUrl = await isEvgMobile();
-  return needsMobileUrl
-    ? URLS.MOBILE_BASE + urlSuffix
-    : URLS.CLIENT_BASE + urlSuffix;
-};
-
-const focusOrCreateTab = async (url) => {
-  const evergreenTab = await evergreenTabId();
-  if (evergreenTab) {
-    updateTab(evergreenTab, url);
-  } else {
-    createTab(url);
-  }
-};
-
-const updateTab = (evergreenTab, url) => {
-  chrome.tabs.update(evergreenTab, { url: url, active: true }, () => {
-    chrome.tabs.get(evergreenTab, (tab) => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Error retrieving tab details:",
-          chrome.runtime.lastError.message
-        );
-        return;
-      }
-      chrome.windows.update(tab.windowId, { focused: true });
-    });
-  });
-};
-
-const createTab = (url) => {
-  chrome.tabs.create({ url: url, active: true }, (newTab) => {
-    if (chrome.runtime.lastError) {
-      console.error(
-        "Error creating new tab:",
-        chrome.runtime.lastError.message
-      );
-      return;
-    }
-    chrome.windows.update(newTab.windowId, { focused: true });
   });
 };
 
@@ -245,11 +199,7 @@ chrome.runtime.onMessage.addListener(async function (
       return;
     }
     if (request.action === "isbnSearch") {
-      console.log("ISBN Search");
-      (async () => {
-        await calculateURL(URLS.CATALOG + "/" + request.url);
-        sendResponse({ success: true });
-      })();
+      await calculateURL(URLS.CATALOG + "/" + request.url);
       return true; // <-- Keeps the message port open for async response
     }
 
@@ -259,8 +209,6 @@ chrome.runtime.onMessage.addListener(async function (
     }
 
     if (request.action === "retrievePatron") {
-      const { patronBarcode, title, fee } = request;
-      console.log(request);
       chrome.storage.local.set({ request }, () => {
         console.log("Request Data stored", request);
       });
