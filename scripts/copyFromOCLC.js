@@ -89,10 +89,6 @@
           ? (addressObject[key] = convertStateNameToAbbreviation(region))
           : (addressObject[key] = "NONE");
       } else {
-        // let element = extractValueFromField(
-        //   `#requests > div:not([class*="hidden"]) input[data="returning.address.${key}"]`
-        // );
-        // `input[data="returning.address.${key}"]`
         let element = extractValueFromField(
           `div:not(.yui3-default-hidden) input[data="returning.address.${key}"]:not(div.yui3-default-hidden input)`
         );
