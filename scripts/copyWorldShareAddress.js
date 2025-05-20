@@ -151,7 +151,10 @@
       // TODO: This isn't actually happening??
       // If sidePanel click is used, the address is stored and extracted in sidepanel.js
       else {
-        chrome.storage.local.set({ addressString: addressString });
+        chrome.storage.local.set({ addressString: addressString }, () => {
+          // Send message to sidepanel.js to extract address
+          chrome.runtime.sendMessage({ type: "addressReady" });
+        });
       }
 
       if (printLabel) {

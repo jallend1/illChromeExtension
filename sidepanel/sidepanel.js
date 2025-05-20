@@ -46,8 +46,15 @@ const initiateScript = (scriptName) => {
         async (response) => {
           // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
           if (scriptName === "copyWorldShareAddress") {
-            await navigator.clipboard.writeText("");
-            await extractFromStorage("addressString");
+            chrome.runtime.onMessage.addListener(async function handler(msg) {
+              if (msg.type === "addressReady") {
+                await navigator.clipboard.writeText("");
+                await extractFromStorage("addressString");
+                extractFromStorage("addressString");
+                chrome.runtime.onMessage.removeListener(handler);
+              }
+            });
+            return;
           } else if (scriptName === "overdueNotice") {
             await navigator.clipboard.writeText("");
             await extractFromStorage("overdueNotice");
