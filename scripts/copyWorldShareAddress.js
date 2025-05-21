@@ -12,7 +12,6 @@
   const { printLabel } = await chrome.storage.local.get("printLabel");
 
   function copyWorldShareAddress() {
-    console.log("Copying address...");
     let addressObject = {
       attention: null,
       line1: null,
@@ -103,7 +102,7 @@
           case "locality":
             if (!value) {
               const city = prompt(
-                "City not listed in WorldShare. Please enter city name."
+                "City not listed in WorldShare. Please enter city name or press enter to dismiss."
               );
               return city ? `${city}, ` : "NOT LISTED, ";
             }
@@ -111,7 +110,7 @@
           case "region":
             if (!value) {
               const state = prompt(
-                "State not listed in WorldShare. Please enter state two-letter abbreviation."
+                "State not listed in WorldShare. Please enter state two-letter abbreviation or press enter to dismiss."
               );
               return state ? `${state.toUpperCase()} ` : "NOT LISTED ";
             }
@@ -134,7 +133,7 @@
       ) {
         statusModal(
           "Error!",
-          "No valid address found on this page.",
+          "Couldn't find a valid address found on this page.",
           "#e85e6a",
           chrome.runtime.getURL("images/kawaii-book-sad.png")
         );
@@ -148,7 +147,6 @@
 
       // If keyboard shortcut is used, the address is copied to clipboard
       if (document.hasFocus()) navigator.clipboard.writeText(addressString);
-      // TODO: This isn't actually happening??
       // If sidePanel click is used, the address is stored and extracted in sidepanel.js
       else {
         chrome.storage.local.set({ addressString: addressString }, () => {
@@ -184,7 +182,6 @@
       );
       return;
     }
-    console.log(createAddressString());
   }
 
   const autoReturnILL = () => {
