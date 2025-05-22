@@ -1,3 +1,5 @@
+const { statusModal } = await import(chrome.runtime.getURL("modules/modal.js"));
+
 export const dymoFunctions = {
   // Generate XML for Dymo label
   generateLabelXML: (address) => {
@@ -72,16 +74,6 @@ export const dymoFunctions = {
     return true;
   },
   printDymoLabel: (address) => {
-    if (!dymoFunctions.isSuitableToPrint(address)) {
-      statusModal(
-        "Error!",
-        "Address is not suitable for printing.",
-        "#e85e6a",
-        chrome.runtime.getURL("images/kawaii-book-sad.png")
-      );
-      return;
-    }
-
     if (typeof dymo !== "undefined" && dymo.label.framework) {
       dymo.label.framework.init(() => {
         const sanitizedAddress = dymoFunctions.sanitizeForXML(address);

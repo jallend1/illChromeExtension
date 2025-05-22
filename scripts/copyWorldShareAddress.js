@@ -157,13 +157,23 @@
 
       if (printLabel) {
         // Prints the Dymo label and indicates as much in status modal
-        dymoFunctions.printDymoLabel(addressString);
-        statusModal(
-          "Printing label!",
-          "The address has also been copied to your clipboard.",
-          "#4CAF50",
-          chrome.runtime.getURL("images/kawaii-dinosaur.png")
-        );
+        if (dymoFunctions.isSuitableToPrint(addressString)) {
+          dymoFunctions.printDymoLabel(addressString);
+          statusModal(
+            "Printing label!",
+            "The address has also been copied to your clipboard.",
+            "#4CAF50",
+            chrome.runtime.getURL("images/kawaii-dinosaur.png")
+          );
+        } else {
+          statusModal(
+            "Error!",
+            "Address is not suitable for printing.",
+            "#e85e6a",
+            chrome.runtime.getURL("images/kawaii-book-sad.png")
+          );
+          return;
+        }
       } else {
         // Displays a success modal indicating the address has been copied
         statusModal(
