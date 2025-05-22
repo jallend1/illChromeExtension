@@ -287,6 +287,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     !tab.url.includes("register")
   ) {
     injectDymoFramework(tabId);
+    chrome.scripting.insertCSS({
+      target: { tabId: tabId },
+      files: ["./styles/evergreen-patron.css"],
+    });
     executeScript(tabId, "courierHighlight");
     executeScript(tabId, "injectPrintAddressButton");
   }
