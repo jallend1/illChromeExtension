@@ -131,16 +131,12 @@
   };
 
   const showErrorModal = () => {
-    statusModal(
-      ERROR_HEADING,
-      ERROR_MSG,
-      ERROR_COLOR,
-      ERROR_IMG
-    );
+    statusModal(ERROR_HEADING, ERROR_MSG, ERROR_COLOR, ERROR_IMG);
   };
 
   // -- Main Function --
   async function updateAddress() {
+    const currentUrl = window.location.href;
     try {
       statusModal(WORKING_HEADING, WORKING_MSG, WORKING_COLOR, WORKING_IMG);
       for (const {
@@ -157,13 +153,12 @@
 
       await fillUniversalSettings();
 
-      statusModal(
-        SUCCESS_HEADING,
-        SUCCESS_MSG,
-        SUCCESS_COLOR,
-        SUCCESS_IMG
-      );
+      statusModal(SUCCESS_HEADING, SUCCESS_MSG, SUCCESS_COLOR, SUCCESS_IMG);
     } catch (err) {
+      // If the user navigates away from the page, cut our losses and don't show an error
+      if (window.location.href !== currentUrl) {
+        return;
+      }
       console.error(err);
       showErrorModal();
     }
