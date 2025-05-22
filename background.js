@@ -273,7 +273,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
   }
 
-  // TODO: Add a modal informing user that transit was clicked
   // Dismisses 'Open Transit on item' modal when checking out items
   if (tab.url.includes("/checkout") && changeInfo.status === "complete") {
     chrome.scripting.executeScript({
@@ -287,7 +286,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     tab.url.includes("/circ/patron/") &&
     !tab.url.includes("register")
   ) {
+    injectDymoFramework(tabId);
     executeScript(tabId, "courierHighlight");
+    executeScript(tabId, "injectPrintAddressButton");
   }
   if (
     changeInfo.status === "complete" &&
