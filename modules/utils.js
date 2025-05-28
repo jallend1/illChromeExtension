@@ -62,7 +62,6 @@ const miniModalStyles = {
 
 // -- Displays a mini-modal saying Open Transit dialog is being dismissed --
 export const createMiniModal = (message) => {
-  console.log("Creating mini modal with message:", message);
   const existingModal = document.querySelector(".mini-modal");
   if (existingModal) {
     existingModal.remove(); // Remove the existing modal

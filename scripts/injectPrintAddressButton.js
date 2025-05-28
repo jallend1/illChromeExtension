@@ -1,6 +1,7 @@
 (async () => {
-  const { waitForElementWithInterval, buttonStyles, hoverStyles } =
-    await import(chrome.runtime.getURL("modules/utils.js"));
+  const { waitForElementWithInterval, createMiniModal } = await import(
+    chrome.runtime.getURL("modules/utils.js")
+  );
 
   const { dymoFunctions } = await import(
     chrome.runtime.getURL("modules/dymoFunctions.js")
@@ -41,7 +42,7 @@
       const address = await waitForElementWithInterval(
         '[id^="patron-address-copy-"]'
       );
-      console.log(address.textContent);
+      createMiniModal("Printing address label...");
       dymoFunctions.printDymoLabel(address.textContent);
     });
   };
