@@ -96,13 +96,15 @@ const toggleSection = (toggle, mainSection) => {
     requestAnimationFrame(() => {
       mainSection.classList.remove("collapsed");
     });
-    toggle.src = chrome.runtime.getURL("images/collapse.svg");
+    // toggle.src = chrome.runtime.getURL("images/collapse.svg");
+    toggle.classList.add("rotated");
   } else {
     mainSection.classList.add("collapsed");
     setTimeout(() => {
       mainSection.classList.add("hidden");
     }, 300);
-    toggle.src = chrome.runtime.getURL("images/expand.svg");
+    // toggle.src = chrome.runtime.getURL("images/expand.svg");
+    toggle.classList.remove("rotated");
   }
 };
 

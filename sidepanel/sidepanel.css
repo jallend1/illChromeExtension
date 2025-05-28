@@ -183,6 +183,16 @@ button:active {
   display: flex;
 }
 
+img.collapsible {
+  cursor: pointer;
+  transform: rotate(90deg);
+  transition: transform 300ms ease-in-out;
+}
+
+img.collapsible.rotated {
+  transform: rotate(180deg);
+}
+
 .collapsible.collapsed {
   max-height: 0;
   opacity: 0;
