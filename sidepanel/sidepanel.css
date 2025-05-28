@@ -171,6 +171,14 @@ button:active {
   transform: translateY(1px);
 }
 
+button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
 /* ******************** */
 /* * Section Collapse * */
 /* ******************** */

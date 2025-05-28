@@ -20,6 +20,61 @@ const storageKeys = [
   { key: "autoReturnILL", element: elements.autoReturnILL },
 ];
 
+const evergreenButtonIds = ["updateAddress", "overdueNotice"];
+const worldShareButtonIds = [
+  "copyFromOCLC",
+  "copyWorldShareAddress",
+  "isbnSearch",
+];
+
+let currentTabUrl = "";
+
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  const currentTab = tabs[0];
+  currentTabUrl = currentTab.url;
+  handleURLChange(currentTabUrl);
+});
+
+const handleURLChange = (url) => {
+  if (url.includes(".kcls.org/eg2/en-US/staff/")) {
+    enableButtons(evergreenButtonIds);
+  } else {
+    disableButtons(evergreenButtonIds);
+  }
+  if (url.includes("https://kingcountylibrarysystem.share.worldcat.org/")) {
+    enableButtons(worldShareButtonIds);
+  } else {
+    disableButtons(worldShareButtonIds);
+  }
+};
+
+// Update the URL whenever the active tab changes
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  chrome.tabs.get(activeInfo.tabId, (tab) => {
+    currentTabUrl = tab.url;
+    console.log("Updated Current URL:", currentTabUrl);
+    handleURLChange(currentTabUrl);
+  });
+});
+
+const enableButtons = (buttonIds) => {
+  buttonIds.forEach((buttonId) => {
+    const button = document.querySelector(`#${buttonId}`);
+    if (button) {
+      button.disabled = false;
+    }
+  });
+};
+
+const disableButtons = (buttonIds) => {
+  buttonIds.forEach((buttonId) => {
+    const button = document.querySelector(`#${buttonId}`);
+    if (button) {
+      button.disabled = true;
+    }
+  });
+};
+
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {
     element.checked = result[key];
