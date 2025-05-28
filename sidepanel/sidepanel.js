@@ -27,35 +27,36 @@ const worldShareButtonIds = [
   "isbnSearch",
 ];
 
-let currentTabUrl = "";
+// const handleURLChange = (url) => {
+//   console.log("Current URL:", url);
+//   if (url.includes(".kcls.org/eg2/en-US/staff/")) {
+//     enableButtons(evergreenButtonIds);
+//   } else {
+//     disableButtons(evergreenButtonIds);
+//   }
+//   if (url.includes("kingcountylibrarysystem.share.worldcat.org")) {
+//     enableButtons(worldShareButtonIds);
+//   } else {
+//     disableButtons(worldShareButtonIds);
+//   }
+// };
 
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  const currentTab = tabs[0];
-  currentTabUrl = currentTab.url;
-  handleURLChange(currentTabUrl);
-});
+// let currentTabUrl = "";
 
-const handleURLChange = (url) => {
-  if (url.includes(".kcls.org/eg2/en-US/staff/")) {
-    enableButtons(evergreenButtonIds);
-  } else {
-    disableButtons(evergreenButtonIds);
-  }
-  if (url.includes("https://kingcountylibrarysystem.share.worldcat.org/")) {
-    enableButtons(worldShareButtonIds);
-  } else {
-    disableButtons(worldShareButtonIds);
-  }
-};
+// chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+//   const currentTab = tabs[0];
+//   currentTabUrl = currentTab.url;
+//   handleURLChange(currentTabUrl);
+// });
 
-// Update the URL whenever the active tab changes
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  chrome.tabs.get(activeInfo.tabId, (tab) => {
-    currentTabUrl = tab.url;
-    console.log("Updated Current URL:", currentTabUrl);
-    handleURLChange(currentTabUrl);
-  });
-});
+// // Update the URL whenever the active tab changes
+// chrome.tabs.onActivated.addListener((activeInfo) => {
+//   chrome.tabs.get(activeInfo.tabId, (tab) => {
+//     currentTabUrl = tab.url;
+//     console.log("Updated Current URL:", currentTabUrl);
+//     handleURLChange(currentTabUrl);
+//   });
+// });
 
 const enableButtons = (buttonIds) => {
   buttonIds.forEach((buttonId) => {
