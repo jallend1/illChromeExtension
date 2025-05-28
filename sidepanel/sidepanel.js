@@ -23,12 +23,13 @@ const storageKeys = [
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {
     element.checked = result[key];
-    if(key === "printLabel"){
-      const copyWorldShareAddress = document.querySelector("#copyWorldshareAddress");
-      if(result[key]){
+    if (key === "printLabel") {
+      const copyWorldShareAddress = document.querySelector(
+        "#copyWorldshareAddress"
+      );
+      if (result[key]) {
         copyWorldShareAddress.textContent = "Print Label";
-      }
-      else{
+      } else {
         copyWorldShareAddress.textContent = "Copy WorldShare Address";
       }
     }
@@ -152,16 +153,16 @@ const addEventListeners = () => {
   const addCheckboxListener = (checkbox, key) => {
     checkbox.addEventListener("click", () => {
       chrome.storage.local.set({ [key]: checkbox.checked });
-      if(key === "printLabel"){  
-        const copyWorldShareAddress = document.querySelector("#copyWorldshareAddress");
-          if(checkbox.checked){
-            copyWorldShareAddress.textContent = "Print Label";
-          }
-          else{
-            copyWorldShareAddress.textContent = "Copy WorldShare Address";
-          }
+      if (key === "printLabel") {
+        const copyWorldShareAddress = document.querySelector(
+          "#copyWorldshareAddress"
+        );
+        if (checkbox.checked) {
+          copyWorldShareAddress.textContent = "Print Label";
+        } else {
+          copyWorldShareAddress.textContent = "Copy WorldShare Address";
         }
-      
+      }
     });
   };
 
