@@ -77,8 +77,9 @@ const executeScript = (tabId, script) => {
       files: [`./scripts/${script}.js`],
     },
     () => {
-      // No message handling needed for frequentLending script
-      if (script === "frequentLending") return;
+      // No message handling needed for frequentLending or injectPrintAddressButton scripts
+      if (script === "frequentLending" || script === "injectPrintAddressButton")
+        return;
       chrome.tabs.sendMessage(tabId, { data: script }, (response) => {
         if (chrome.runtime.lastError) {
           console.error(
