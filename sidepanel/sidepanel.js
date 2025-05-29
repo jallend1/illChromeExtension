@@ -116,7 +116,7 @@ const initiateScript = (scriptName) => {
               if (msg.type === "addressReady") {
                 await navigator.clipboard.writeText("");
                 await extractFromStorage("addressString");
-                extractFromStorage("addressString");
+                // extractFromStorage("addressString");
                 chrome.runtime.onMessage.removeListener(handler);
               }
             });
@@ -132,6 +132,7 @@ const initiateScript = (scriptName) => {
 };
 
 const extractFromStorage = async (key) => {
+  console.log(`Extracting ${key} from storage...`);
   const result = await new Promise((resolve) =>
     chrome.storage.local.get(key, resolve)
   );
