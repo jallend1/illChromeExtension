@@ -139,6 +139,7 @@ const extractFromStorage = async (key) => {
   if (result[key]) {
     try {
       await navigator.clipboard.writeText(result[key]);
+      console.log(`Copied ${key} to clipboard:`);
       chrome.storage.local.remove(key);
     } catch (error) {
       console.error(`Failed to copy ${key} to clipboard`, error);
