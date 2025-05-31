@@ -49,15 +49,6 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   handleURLChange(currentTabUrl);
 });
 
-// // Update the URL whenever the active tab changes
-// chrome.tabs.onActivated.addListener((activeInfo) => {
-//   chrome.tabs.get(activeInfo.tabId, (tab) => {
-//     currentTabUrl = tab.url;
-//     console.log("Updated Current URL:", currentTabUrl);
-//     handleURLChange(currentTabUrl);
-//   });
-// });
-
 const enableButtons = (buttonIds) => {
   buttonIds.forEach((buttonId) => {
     const button = document.querySelector(`#${buttonId}`);
@@ -81,7 +72,6 @@ chrome.windows.getCurrent((currentWindow) => {
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
-      // Update your UI based on message.url
       handleURLChange(message.url);
     }
   });
@@ -165,14 +155,12 @@ const toggleSection = (toggle, mainSection) => {
     requestAnimationFrame(() => {
       mainSection.classList.remove("collapsed");
     });
-    // toggle.src = chrome.runtime.getURL("images/collapse.svg");
     toggle.classList.add("rotated");
   } else {
     mainSection.classList.add("collapsed");
     setTimeout(() => {
       mainSection.classList.add("hidden");
     }, 300);
-    // toggle.src = chrome.runtime.getURL("images/expand.svg");
     toggle.classList.remove("rotated");
   }
 };

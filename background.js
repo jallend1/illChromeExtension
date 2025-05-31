@@ -261,6 +261,17 @@ chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error(error));
 
+// When a different tab is activated, send the new tab's URL to the side panel so it can update buttons
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  const tab = await chrome.tabs.get(activeInfo.tabId);
+  chrome.runtime.sendMessage({
+    type: "tab-url-updated",
+    tabId: tab.id,
+    url: tab.url,
+    windowId: tab.windowId,
+  });
+});
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
