@@ -282,18 +282,20 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       url: tab.url,
       windowId: tab.windowId,
     },
-    (response) => {
+    () => {
+      // TODO: Duplicative logic here!
+      // If error is because the side panel is not open, ignore it
       if (chrome.runtime.lastError) {
-        // Ignore error if the sidepanel is not open
+        const msg = chrome.runtime.lastError.message;
+        // console.log(msg);
         if (
-          !chrome.runtime.lastError.message.includes(
-            "Receiving end does not exist"
-          )
+          !msg.includes(
+            "The message port closed before a response was received."
+          ) &&
+          !msg.includes("Receiving end does not exist")
         ) {
-          console.error(
-            "Error sending tab URL update:",
-            chrome.runtime.lastError.message
-          );
+          console.log("Inside the error handler");
+          console.error("Error sending tab URL update:", msg);
         }
       }
     }
@@ -305,11 +307,29 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (arePassiveToolsActive === false) return;
   // Updates button status in the side panel when the tab URL changes
   if (changeInfo.status === "complete" && tab.active) {
-    chrome.runtime.sendMessage({
-      type: "tab-url-updated",
-      url: tab.url,
-      windowId: tab.windowId,
-    });
+    chrome.runtime.sendMessage(
+      {
+        type: "tab-url-updated",
+        url: tab.url,
+        windowId: tab.windowId,
+      },
+      () => {
+        // If error is because the side panel is not open, ignore it
+        if (chrome.runtime.lastError) {
+          const msg = chrome.runtime.lastError.message;
+          // console.log(msg);
+          if (
+            !msg.includes(
+              "The message port closed before a response was received."
+            ) &&
+            !msg.includes("Receiving end does not exist")
+          ) {
+            console.log("Inside the error handler");
+            console.error("Error sending tab URL update:", msg);
+          }
+        }
+      }
+    );
   }
   if (
     changeInfo.status === "complete" &&
