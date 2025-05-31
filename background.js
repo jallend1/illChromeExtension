@@ -103,6 +103,15 @@ chrome.storage.local.get("lendingMode", async (result) => {
   }
 });
 
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local") {
+    chrome.runtime.sendMessage({
+      type: "storage-updated",
+      changes: changes,
+    });
+  }
+});
+
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
   currentOptions.forEach(async (option) => {

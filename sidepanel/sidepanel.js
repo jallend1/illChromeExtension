@@ -165,6 +165,27 @@ const toggleSection = (toggle, mainSection) => {
   }
 };
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "storage-updated") {
+    for (const [key, { newValue }] of Object.entries(message.changes)) {
+      const storageKey = storageKeys.find((sk) => sk.key === key);
+      if (storageKey && storageKey.element) {
+        storageKey.element.checked = newValue;
+        if (key === "printLabel") {
+          const copyWorldShareAddress = document.querySelector(
+            "#copyWorldshareAddress"
+          );
+          if (copyWorldShareAddress) {
+            copyWorldShareAddress.textContent = newValue
+              ? "Print Label"
+              : "Copy WorldShare Address";
+          }
+        }
+      }
+    }
+  }
+});
+
 const addEventListeners = () => {
   elements.passiveTools.addEventListener("click", () => {
     chrome.storage.local.get("arePassiveToolsActive", (result) => {
