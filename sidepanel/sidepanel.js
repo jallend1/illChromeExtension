@@ -27,27 +27,27 @@ const worldShareButtonIds = [
   "isbnSearch",
 ];
 
-// const handleURLChange = (url) => {
-//   console.log("Current URL:", url);
-//   if (url.includes(".kcls.org/eg2/en-US/staff/")) {
-//     enableButtons(evergreenButtonIds);
-//   } else {
-//     disableButtons(evergreenButtonIds);
-//   }
-//   if (url.includes("kingcountylibrarysystem.share.worldcat.org")) {
-//     enableButtons(worldShareButtonIds);
-//   } else {
-//     disableButtons(worldShareButtonIds);
-//   }
-// };
+const handleURLChange = (url) => {
+  console.log("Current URL:", url);
+  if (url.includes(".kcls.org/eg2/en-US/staff/")) {
+    enableButtons(evergreenButtonIds);
+  } else {
+    disableButtons(evergreenButtonIds);
+  }
+  if (url.includes("kingcountylibrarysystem.share.worldcat.org")) {
+    enableButtons(worldShareButtonIds);
+  } else {
+    disableButtons(worldShareButtonIds);
+  }
+};
 
-// let currentTabUrl = "";
+let currentTabUrl = "";
 
-// chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-//   const currentTab = tabs[0];
-//   currentTabUrl = currentTab.url;
-//   handleURLChange(currentTabUrl);
-// });
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  const currentTab = tabs[0];
+  currentTabUrl = currentTab.url;
+  handleURLChange(currentTabUrl);
+});
 
 // // Update the URL whenever the active tab changes
 // chrome.tabs.onActivated.addListener((activeInfo) => {
@@ -75,6 +75,17 @@ const disableButtons = (buttonIds) => {
     }
   });
 };
+
+chrome.windows.getCurrent((currentWindow) => {
+  const myWindowId = currentWindow.id;
+
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
+      // Update your UI based on message.url
+      handleURLChange(message.url);
+    }
+  });
+});
 
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {

@@ -264,6 +264,14 @@ chrome.sidePanel
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (!isAllowedHost(tab.url)) return;
   if (arePassiveToolsActive === false) return;
+  // Updates button status in the side panel when the tab URL changes
+  if (changeInfo.status === "complete" && tab.active) {
+    chrome.runtime.sendMessage({
+      type: "tab-url-updated",
+      url: tab.url,
+      windowId: tab.windowId,
+    });
+  }
   if (
     changeInfo.status === "complete" &&
     tab.url.includes("share.worldcat.org")
@@ -327,6 +335,13 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   if (!isAllowedHost(currentUrl)) {
     return;
   }
+  // Alerts sidepanel of the URL change
+  chrome.runtime.sendMessage({
+    type: "tab-url-updated",
+    tabId: details.tabId,
+    url: details.url,
+    windowId: details.windowId,
+  });
 
   // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
   if (currentUrl.includes("/eg2/en-US/staff/")) {
