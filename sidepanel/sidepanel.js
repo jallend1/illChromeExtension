@@ -1,3 +1,33 @@
+chrome.windows.getCurrent((currentWindow) => {
+  const myWindowId = currentWindow.id;
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
+      handleURLChange(message.url);
+    }
+  });
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "storage-updated") {
+    for (const [key, { newValue }] of Object.entries(message.changes)) {
+      const storageKey = storageKeys.find((sk) => sk.key === key);
+      if (storageKey && storageKey.element) {
+        storageKey.element.checked = newValue;
+        if (key === "printLabel") {
+          const copyWorldShareAddress = document.querySelector(
+            "#copyWorldshareAddress"
+          );
+          if (copyWorldShareAddress) {
+            copyWorldShareAddress.textContent = newValue
+              ? "Print Label"
+              : "Copy WorldShare Address";
+          }
+        }
+      }
+    }
+  }
+});
+
 const elements = {
   collapseToggle: document.querySelectorAll("img.collapsible"),
   illActions: document.querySelectorAll(".ill-actions"),
@@ -66,16 +96,6 @@ const disableButtons = (buttonIds) => {
     }
   });
 };
-
-chrome.windows.getCurrent((currentWindow) => {
-  const myWindowId = currentWindow.id;
-
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
-      handleURLChange(message.url);
-    }
-  });
-});
 
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {
@@ -164,27 +184,6 @@ const toggleSection = (toggle, mainSection) => {
     toggle.classList.remove("rotated");
   }
 };
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "storage-updated") {
-    for (const [key, { newValue }] of Object.entries(message.changes)) {
-      const storageKey = storageKeys.find((sk) => sk.key === key);
-      if (storageKey && storageKey.element) {
-        storageKey.element.checked = newValue;
-        if (key === "printLabel") {
-          const copyWorldShareAddress = document.querySelector(
-            "#copyWorldshareAddress"
-          );
-          if (copyWorldShareAddress) {
-            copyWorldShareAddress.textContent = newValue
-              ? "Print Label"
-              : "Copy WorldShare Address";
-          }
-        }
-      }
-    }
-  }
-});
 
 const addEventListeners = () => {
   elements.passiveTools.addEventListener("click", () => {

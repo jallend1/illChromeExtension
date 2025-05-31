@@ -80,6 +80,7 @@ const executeScript = (tabId, script) => {
       // No message handling needed for frequentLending or injectPrintAddressButton scripts
       if (script === "frequentLending" || script === "injectPrintAddressButton")
         return;
+      console.log("Sending message to content script:", script);
       chrome.tabs.sendMessage(tabId, { data: script }, (response) => {
         if (chrome.runtime.lastError) {
           console.error(
@@ -105,6 +106,7 @@ chrome.storage.local.get("lendingMode", async (result) => {
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local") {
+    console.log("Sending storage changes to side panel:", changes);
     chrome.runtime.sendMessage({
       type: "storage-updated",
       changes: changes,
@@ -273,12 +275,29 @@ chrome.sidePanel
 // When a different tab is activated, send the new tab's URL to the side panel so it can update buttons
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   const tab = await chrome.tabs.get(activeInfo.tabId);
-  chrome.runtime.sendMessage({
-    type: "tab-url-updated",
-    tabId: tab.id,
-    url: tab.url,
-    windowId: tab.windowId,
-  });
+  chrome.runtime.sendMessage(
+    {
+      type: "tab-url-updated",
+      tabId: tab.id,
+      url: tab.url,
+      windowId: tab.windowId,
+    },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        // Ignore error if the sidepanel is not open
+        if (
+          !chrome.runtime.lastError.message.includes(
+            "Receiving end does not exist"
+          )
+        ) {
+          console.error(
+            "Error sending tab URL update:",
+            chrome.runtime.lastError.message
+          );
+        }
+      }
+    }
+  );
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
