@@ -1,8 +1,13 @@
 :root {
-  --body-background: linear-gradient(135deg, #e3f2fd 0%, #f4f4f9 100%);
+  --body-background: linear-gradient(120deg, #fdf6e3 0%, #ffffff 100%);
   --header-background: linear-gradient(135deg, #00593d, #007a54);
   --header-text-color: #fff;
-  --section-header-background: #d4edda;
+  --section-header-background: linear-gradient(
+    90deg,
+    #e6f9f3 0%,
+    #b2f2e5 60%,
+    #00b894 100%
+  );
   --button-background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   --toggle-bg-active: #4cd137;
   --toggle-inactive-bg: #ccc;
@@ -115,7 +120,8 @@ section header {
   justify-content: center;
   align-items: center;
   width: 100%;
-  background-color: var(--section-header-background);
+  /* background-color: var(--section-header-background); */
+  background: var(--section-header-background);
   padding: 0;
 }
 
