@@ -151,11 +151,6 @@
     );
   };
 
-  // ***********************************
-  // * Adds Edit Patron Button, but    *
-  // * unable to get patron ID through *
-  // * barcode at this time            *
-  // ***********************************
   const createEditPatronButton = () => {
     const searchButton = document.querySelector(
       "button > span.align-middle"
@@ -241,7 +236,7 @@
               const smallTags = addedNodes.filter(
                 (node) => node.tagName === "SMALL"
               );
-              const evgLastName = smallTags[0].textContent;
+              const evgLastName = smallTags[0]?.textContent;
 
               chrome.storage.local.get("requestData").then((result) => {
                 // TODO: Checking storage twice is not the way to live your life -- Lift it to global?
