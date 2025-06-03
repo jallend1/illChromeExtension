@@ -116,6 +116,19 @@ chrome.storage.onChanged.addListener((changes, area) => {
       type: "storage-updated",
       changes: changes,
     });
+    // If changes include lendingMode, update it on all open tabs
+    if (changes.lendingMode) {
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab) => {
+          if (isAllowedHost(tab.url)) {
+            chrome.scripting.executeScript({
+              target: { tabId: tab.id },
+              files: ["./scripts/frequentLending.js"],
+            });
+          }
+        });
+      });
+    }
   }
 });
 
