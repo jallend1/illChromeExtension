@@ -3,7 +3,19 @@ chrome.windows.getCurrent((currentWindow) => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
       handleURLChange(message.url);
+      sendResponse({ status: "URL handled" });
     }
+    chrome.runtime.sendMessage({
+      type: "sidepanel-open",
+      windowId: currentWindow.id,
+    });
+
+    window.addEventListener("unload", () => {
+      chrome.runtime.sendMessage({
+        type: "sidepanel-close",
+        windowId: currentWindow.id,
+      });
+    });
   });
 });
 

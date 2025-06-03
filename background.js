@@ -6,6 +6,8 @@ import {
   URLS,
 } from "./background-utils.js";
 
+let openSidepanels = {};
+
 const currentOptions = [
   { id: "copyWorldShareAddress", title: "Copy Address from WorldShare" },
   { id: "copyFromOCLC", title: "Copy Request Data from WorldShare" },
@@ -61,6 +63,10 @@ const sessionLog = async () => {
     }
   });
 };
+
+function isAnySidepanelOpen() {
+  return Object.keys(openSidepanels).length > 0;
+}
 
 const calculateURL = async (urlSuffix) => {
   const baseUrl = await getBaseURL(urlSuffix);
@@ -176,6 +182,14 @@ chrome.runtime.onMessage.addListener(async function (
   sender,
   sendResponse
 ) {
+  if (request.type === "sidepanel-open") {
+    openSidepanels[request.windowId] = true;
+    return;
+  }
+  if (request.type === "sidepanel-close") {
+    delete openSidepanels[request.windowId];
+    return;
+  }
   const activeTab = await getActiveTab();
   if (activeTab) {
     if (!isAllowedHost(activeTab.url)) return;
@@ -273,6 +287,10 @@ chrome.sidePanel
 
 // When a different tab is activated, send the new tab's URL to the side panel so it can update buttons
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  // If the window ID is not in openSidepanels, ignore the event
+  if (!isAnySidepanelOpen() || !openSidepanels[activeInfo.windowId]) {
+    return;
+  }
   const tab = await chrome.tabs.get(activeInfo.tabId);
   chrome.runtime.sendMessage(
     {
@@ -282,18 +300,11 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       windowId: tab.windowId,
     },
     () => {
-      // TODO: Duplicative logic here!
-      // If error is because the side panel is not open, ignore it
       if (chrome.runtime.lastError) {
-        const msg = chrome.runtime.lastError.message;
-        if (
-          !msg.includes(
-            "The message port closed before a response was received."
-          ) &&
-          !msg.includes("Receiving end does not exist")
-        ) {
-          console.error("Error sending tab URL update:", msg);
-        }
+        console.error(
+          "Error sending tab URL update:",
+          chrome.runtime.lastError
+        );
       }
     }
   );
@@ -304,6 +315,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (arePassiveToolsActive === false) return;
   // Updates button status in the side panel when the tab URL changes
   if (changeInfo.status === "complete" && tab.active) {
+    // If the window ID is not in openSidepanels, ignore the event
+    if (!isAnySidepanelOpen() || !openSidepanels[tab.windowId]) {
+      return;
+    }
     chrome.runtime.sendMessage(
       {
         type: "tab-url-updated",
@@ -311,19 +326,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         windowId: tab.windowId,
       },
       () => {
-        // If error is because the side panel is not open, ignore it
         if (chrome.runtime.lastError) {
-          const msg = chrome.runtime.lastError.message;
-          // console.log(msg);
-          if (
-            !msg.includes(
-              "The message port closed before a response was received."
-            ) &&
-            !msg.includes("Receiving end does not exist")
-          ) {
-            console.log("Inside the error handler");
-            console.error("Error sending tab URL update:", msg);
-          }
+          console.error(
+            "Error sending tab URL update:",
+            chrome.runtime.lastError
+          );
         }
       }
     );
@@ -391,13 +398,25 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   if (!isAllowedHost(currentUrl)) {
     return;
   }
-  // Alerts sidepanel of the URL change
-  chrome.runtime.sendMessage({
-    type: "tab-url-updated",
-    tabId: details.tabId,
-    url: details.url,
-    windowId: details.windowId,
-  });
+  // If side panel is open, send the updated URL to the side panel
+  if (isAnySidepanelOpen() && openSidepanels[details.windowId]) {
+    chrome.runtime.sendMessage(
+      {
+        type: "tab-url-updated",
+        tabId: details.tabId,
+        url: details.url,
+        windowId: details.windowId,
+      },
+      () => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "Error sending tab URL update:",
+            chrome.runtime.lastError
+          );
+        }
+      }
+    );
+  }
 
   // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
   if (currentUrl.includes("/eg2/en-US/staff/")) {
