@@ -33,7 +33,6 @@ const elements = {
   illActions: document.querySelectorAll(".ill-actions"),
   isbnSearch: document.querySelector("#isbn-search"),
   disableButton: document.querySelector("#disable-extension"),
-  // openCreateILL: document.querySelector("#open-create-ill"),
   autoReceiveRequestButton: document.querySelector("#auto-receive-request"),
   lendingMode: document.querySelector("#lending-tools"),
   passiveTools: document.querySelector("#passive-tools"),
@@ -41,7 +40,6 @@ const elements = {
   autoReturnILL: document.querySelector("#auto-return-ill"),
 };
 
-// { key: "openCreateILL", element: elements.openCreateILL },
 const storageKeys = [
   { key: "autoReceiveRequest", element: elements.autoReceiveRequestButton },
   { key: "lendingMode", element: elements.lendingMode },
@@ -58,7 +56,6 @@ const worldShareButtonIds = [
 ];
 
 const handleURLChange = (url) => {
-  console.log("Current URL:", url);
   if (url.includes(".kcls.org/eg2/en-US/staff/")) {
     enableButtons(evergreenButtonIds);
   } else {
@@ -245,7 +242,6 @@ const addEventListeners = () => {
     });
   };
 
-  // addCheckboxListener(elements.openCreateILL, "openCreateILL");
   addCheckboxListener(elements.autoReceiveRequestButton, "autoReceiveRequest");
   addCheckboxListener(elements.printLabel, "printLabel");
   addCheckboxListener(elements.autoReturnILL, "autoReturnILL");
