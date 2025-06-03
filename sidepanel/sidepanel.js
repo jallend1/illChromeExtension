@@ -140,8 +140,15 @@ const initiateScript = (scriptName) => {
             });
             return;
           } else if (scriptName === "overdueNotice") {
-            await navigator.clipboard.writeText("");
-            await extractFromStorage("overdueNotice");
+            chrome.runtime.onMessage.addListener(async function handler(msg) {
+              if (msg.type === "overdueNoticeReady") {
+                await navigator.clipboard.writeText("");
+                await extractFromStorage("overdueNotice");
+                chrome.runtime.onMessage.removeListener(handler);
+              }
+            });
+            // await navigator.clipboard.writeText("");
+            // await extractFromStorage("overdueNotice");
           }
         }
       );
@@ -150,9 +157,11 @@ const initiateScript = (scriptName) => {
 };
 
 const extractFromStorage = async (key) => {
+  console.log(`Extracting ${key} from storage...`);
   const result = await new Promise((resolve) =>
     chrome.storage.local.get(key, resolve)
   );
+  console.log(`Extracted ${key} from storage:`, result[key]);
   if (result[key]) {
     try {
       await navigator.clipboard.writeText(result[key]);
