@@ -283,13 +283,14 @@
     copyToStorage(stringifiedData, compiledData.requestNumber);
     chrome.storage.local.get("autoReceiveRequest", (result) => {
       if (result.autoReceiveRequest) markReceived();
+      chrome.runtime.sendMessage({ command: "openCreateILL" });
     });
+
     // If autoOpenCreateILL is true, send a message to the background script to open the tab
-    chrome.storage.local.get("openCreateILL", (result) => {
-      if (result.openCreateILL) {
-        chrome.runtime.sendMessage({ command: "openCreateILL" });
-      }
-    });
+    // chrome.storage.local.get("openCreateILL", (result) => {
+    //   if (result.openCreateILL) {
+    //   }
+    // });
   }
 
   const currentURL = window.location.href;

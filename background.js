@@ -80,7 +80,7 @@ const executeScript = (tabId, script) => {
       // No message handling needed for frequentLending or injectPrintAddressButton scripts
       if (script === "frequentLending" || script === "injectPrintAddressButton")
         return;
-      console.log("Sending message to content script:", script);
+
       chrome.tabs.sendMessage(tabId, { data: script }, (response) => {
         if (chrome.runtime.lastError) {
           console.error(
@@ -106,7 +106,6 @@ chrome.storage.local.get("lendingMode", async (result) => {
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local") {
-    console.log("Sending storage changes to side panel:", changes);
     chrome.runtime.sendMessage({
       type: "storage-updated",
       changes: changes,
@@ -132,8 +131,7 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
-// TODO: Function to open a new tab to the desired patron (e.g. NoCKO)
-const retrievePatron = async (editPatron = false) => {
+const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
@@ -207,6 +205,7 @@ chrome.runtime.onMessage.addListener(async function (
       return;
     }
     if (request.command === "openCreateILL") {
+      // Coming from copyFromOCLC
       calculateURL(URLS.CREATE_ILL);
       return;
     }
@@ -287,14 +286,12 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       // If error is because the side panel is not open, ignore it
       if (chrome.runtime.lastError) {
         const msg = chrome.runtime.lastError.message;
-        // console.log(msg);
         if (
           !msg.includes(
             "The message port closed before a response was received."
           ) &&
           !msg.includes("Receiving end does not exist")
         ) {
-          console.log("Inside the error handler");
           console.error("Error sending tab URL update:", msg);
         }
       }
