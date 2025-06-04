@@ -1,22 +1,26 @@
-chrome.windows.getCurrent((currentWindow) => {
-  const myWindowId = currentWindow.id;
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
-      handleURLChange(message.url);
-      sendResponse({ status: "URL handled" });
-    }
-    chrome.runtime.sendMessage({
-      type: "sidepanel-open",
-      windowId: currentWindow.id,
-    });
+let myWindowId = null;
 
-    window.addEventListener("unload", () => {
-      chrome.runtime.sendMessage({
-        type: "sidepanel-close",
-        windowId: currentWindow.id,
-      });
+chrome.windows.getCurrent((currentWindow) => {
+  myWindowId = currentWindow.id;
+  chrome.runtime.sendMessage({
+    type: "sidepanel-open",
+    windowId: myWindowId,
+  });
+
+  window.addEventListener("unload", () => {
+    chrome.runtime.sendMessage({
+      type: "sidepanel-close",
+      windowId: myWindowId,
     });
   });
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
+    currentTabUrl = message.url; // Update the current tab URL
+    handleURLChange(message.url); // Update the buttons
+    sendResponse({ status: "URL handled" });
+  }
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
