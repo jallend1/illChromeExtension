@@ -1,4 +1,4 @@
-const { waitForElementWithInterval } = await import(
+const { waitForElementWithInterval, miniModalStyles } = await import(
   chrome.runtime.getURL("modules/utils.js")
 );
 
@@ -87,20 +87,6 @@ export const packageFrequency = () => {
 };
 
 // Import all this from utils once timeout is removed
-const miniModalStyles = {
-  position: "fixed",
-  top: "5%",
-  right: "0%",
-  zIndex: "9999",
-  background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
-  padding: "20px",
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-  borderRadius: "8px",
-  color: "#333",
-  transition: "opacity 0.3s ease-in-out",
-  opacity: "1",
-};
-
 const createMiniModal = (message) => {
   const existingModal = document.querySelector(".mini-modal");
   if (existingModal) {
