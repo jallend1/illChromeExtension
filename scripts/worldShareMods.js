@@ -1,13 +1,9 @@
 (async () => {
   if (!window.worldShareModsInjected) {
-    try {
-      const { packageFrequency } = await import(
-        chrome.runtime.getURL("modules/packageFrequency.js")
-      );
-      packageFrequency();
-    } catch (e) {
-      console.error("Failed to load or run packageFrequency:", e);
-    }
+    const { packageFrequency } = await import(
+      chrome.runtime.getURL("modules/packageFrequency.js")
+    );
+
     const { waitForElementWithInterval } = await import(
       chrome.runtime.getURL("modules/utils.js")
     );
@@ -150,6 +146,7 @@
 
       await highlightDueDate(elements);
       await highlightRequestStatus(elements);
+      packageFrequency();
     };
 
     // --- Lending Mod Functions ---
