@@ -1,10 +1,5 @@
 (async () => {
-  console.log("WorldShare Mods script loaded");
   if (!window.worldShareModsInjected) {
-    console.log("Injecting WorldShare Mods script");
-    // const { packageFrequency } = await import(
-    //   chrome.runtime.getURL("modules/packageFrequency.js")
-    // );
     try {
       const { packageFrequency } = await import(
         chrome.runtime.getURL("modules/packageFrequency.js")
@@ -13,8 +8,6 @@
     } catch (e) {
       console.error("Failed to load or run packageFrequency:", e);
     }
-
-    console.log("Package Frequency script loaded");
     const { waitForElementWithInterval } = await import(
       chrome.runtime.getURL("modules/utils.js")
     );

@@ -350,12 +350,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       );
     }
   }
-  console.log("Here we are!");
   if (
     changeInfo.status === "complete" &&
     tab.url.includes("share.worldcat.org")
   ) {
-    console.log("WorldShare page detected, injecting mods...");
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/worldShareMods.js"],

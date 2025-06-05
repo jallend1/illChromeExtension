@@ -22,12 +22,100 @@ const extractElements = async (selectors) => {
   return elements;
 };
 
+const zipCodeExistsInStorage = async (zipCode) => {
+  const { mailData } = await chrome.storage.local.get("mailData");
+
+  const matchingZipCodes = mailData.filter((data) => {
+    return (
+      data["Recipient Address"] && data["Recipient Address"].includes(zipCode)
+    );
+  });
+
+  const appearances = parseInt(
+    matchingZipCodes[0] ? matchingZipCodes[0]["Appearances"] : 0,
+    10
+  );
+  if (appearances > 0) {
+    const averageDays = 365 / appearances;
+    // Round to 2 decimal places
+    const roundedAverageDays = Math.round(averageDays * 100) / 100;
+    createMiniModal(
+      `A package was sent to this ZIP code every ${roundedAverageDays} days in 2024.`
+    );
+  }
+  console.log("Appearances:", appearances);
+
+  console.log(matchingZipCodes[0]["Appearances"]);
+
+  console.log("Matching Zip Codes:", matchingZipCodes);
+
+  console.log("Zip Code to check:", zipCode);
+  console.log("Mail Data:", mailData[0]["Recipient Address"]);
+  return mailData.some((data) => {
+    return (
+      data["Recipient Address"] && data["Recipient Address"].includes(zipCode)
+    );
+  });
+};
+
 export const packageFrequency = () => {
   extractElements(borrowingSelectors)
     .then((elements) => {
       console.log("Extracted Elements:", elements);
+
+      // Only take the first 5 digits of the postal code
+      if (elements.postal && elements.postal.length > 5) {
+        elements.postal = elements.postal.slice(0, 5);
+      }
+      zipCodeExistsInStorage(elements.postal)
+        .then((exists) => {
+          if (exists) {
+            console.log(`Zip code ${elements.postal} exists in storage.`);
+          } else {
+            console.log(
+              `Zip code ${elements.postal} does not exist in storage.`
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking zip code existence:", error);
+        });
     })
     .catch((error) => {
       console.error("Error extracting elements:", error);
     });
+};
+
+// Import all this from utils once timeout is removed
+const miniModalStyles = {
+  position: "fixed",
+  top: "5%",
+  right: "0%",
+  zIndex: "9999",
+  background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
+  padding: "20px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  borderRadius: "8px",
+  color: "#333",
+  transition: "opacity 0.3s ease-in-out",
+  opacity: "1",
+};
+
+const createMiniModal = (message) => {
+  const existingModal = document.querySelector(".mini-modal");
+  if (existingModal) {
+    existingModal.remove(); // Remove the existing modal
+  }
+  const miniModal = document.createElement("div");
+  miniModal.className = "mini-modal";
+  miniModal.innerHTML = `
+      <div class="mini-modal-content">
+        <p>${message}</p>
+      </div>
+    `;
+  Object.assign(miniModal.style, miniModalStyles);
+  document.body.appendChild(miniModal);
+  setTimeout(() => {
+    miniModal.remove();
+  }, 10000);
 };
