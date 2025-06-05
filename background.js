@@ -332,29 +332,30 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // Updates button status in the side panel when the tab URL changes
   if (changeInfo.status === "complete" && tab.active) {
     // If the window ID is not in openSidepanels, ignore the event
-    if (!isAnySidepanelOpen() || !openSidepanels[tab.windowId]) {
-      return;
-    }
-    chrome.runtime.sendMessage(
-      {
-        type: "tab-url-updated",
-        url: tab.url,
-        windowId: tab.windowId,
-      },
-      () => {
-        if (chrome.runtime.lastError) {
-          console.error(
-            "Error sending tab URL update:",
-            chrome.runtime.lastError
-          );
+    if (!isAnySidepanelOpen() && openSidepanels[tab.windowId]) {
+      chrome.runtime.sendMessage(
+        {
+          type: "tab-url-updated",
+          url: tab.url,
+          windowId: tab.windowId,
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            console.error(
+              "Error sending tab URL update:",
+              chrome.runtime.lastError
+            );
+          }
         }
-      }
-    );
+      );
+    }
   }
+  console.log("Here we are!");
   if (
     changeInfo.status === "complete" &&
     tab.url.includes("share.worldcat.org")
   ) {
+    console.log("WorldShare page detected, injecting mods...");
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/worldShareMods.js"],

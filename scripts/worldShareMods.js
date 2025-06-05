@@ -1,5 +1,20 @@
 (async () => {
+  console.log("WorldShare Mods script loaded");
   if (!window.worldShareModsInjected) {
+    console.log("Injecting WorldShare Mods script");
+    // const { packageFrequency } = await import(
+    //   chrome.runtime.getURL("modules/packageFrequency.js")
+    // );
+    try {
+      const { packageFrequency } = await import(
+        chrome.runtime.getURL("modules/packageFrequency.js")
+      );
+      packageFrequency();
+    } catch (e) {
+      console.error("Failed to load or run packageFrequency:", e);
+    }
+
+    console.log("Package Frequency script loaded");
     const { waitForElementWithInterval } = await import(
       chrome.runtime.getURL("modules/utils.js")
     );
@@ -157,7 +172,7 @@
     // --- Page Analysis Functions ---
     const isRequestUrl = (url) => {
       // Return false if request is being updated in OCLC with URL parameters
-      if(url.includes("?message")) return false;
+      if (url.includes("?message")) return false;
       const requestUrlRegEx = /(\d{8,10})/;
       return url.match(requestUrlRegEx);
     };
@@ -221,5 +236,6 @@
     // Sets up a MutationObserver to monitor URL changes
     // and reruns the script when we got a new URL
     monitorUrlChanges();
+    // packageFrequency();
   }
 })();
