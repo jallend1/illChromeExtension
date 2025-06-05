@@ -54,6 +54,7 @@ const elements = {
   passiveTools: document.querySelector("#passive-tools"),
   printLabel: document.querySelector("#print-label"),
   autoReturnILL: document.querySelector("#auto-return-ill"),
+  importMailroomData: document.querySelector("#import-mailroom-data"),
 };
 
 const storageKeys = [
@@ -62,7 +63,28 @@ const storageKeys = [
   { key: "arePassiveToolsActive", element: elements.passiveTools },
   { key: "printLabel", element: elements.printLabel },
   { key: "autoReturnILL", element: elements.autoReturnILL },
+  { key: "mailData", element: elements.importMailroomData },
 ];
+
+// Parses mailData CSV file and returns the parsed data
+const parseMailData = async () => {
+  const mailDataUrl = chrome.runtime.getURL("data/mailData.csv");
+  try {
+    const response = await fetch(mailDataUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const csvText = await response.text();
+    const parsedData = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true,
+    });
+    return parsedData;
+  } catch (error) {
+    console.error("Error fetching or parsing mailData:", error);
+    return null;
+  }
+};
 
 const evergreenButtonIds = ["updateAddress", "overdueNotice"];
 const worldShareButtonIds = [
@@ -246,6 +268,16 @@ const addEventListeners = () => {
     elements.lendingMode.checked
       ? chrome.storage.local.set({ lendingMode: true })
       : chrome.storage.local.set({ lendingMode: false });
+  });
+
+  elements.importMailroomData.addEventListener("click", async () => {
+    const mailData = await parseMailData();
+    if (mailData) {
+      chrome.storage.local.set({ mailData: mailData.data });
+      alert("Mailroom data imported successfully!");
+    } else {
+      alert("Failed to import mailroom data.");
+    }
   });
 
   const addCheckboxListener = (checkbox, key) => {

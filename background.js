@@ -6,7 +6,8 @@ import {
   URLS,
 } from "./background-utils.js";
 
-import Papa from "./libs/papaparse.min.js";
+// import Papa from "./libs/papaparse.min.js";
+// import Papa from "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js";
 
 let openSidepanels = {};
 
