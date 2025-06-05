@@ -2,6 +2,7 @@ const { waitForElementWithInterval, miniModalStyles } = await import(
   chrome.runtime.getURL("modules/utils.js")
 );
 
+// TODO: Update selectors to account for multiple open requests
 const borrowingSelectors = {
   attention: 'input[data="returning.address.attention"]',
   line1: 'input[data="returning.address.line1"]',
@@ -23,13 +24,19 @@ const extractElements = async (selectors) => {
 };
 
 const zipCodeExistsInStorage = async (zipCode) => {
+  console.log("Zip Code to check:", zipCode);
   const { mailData } = await chrome.storage.local.get("mailData");
-
   const matchingZipCodes = mailData.filter((data) => {
     return (
       data["Recipient Address"] && data["Recipient Address"].includes(zipCode)
     );
   });
+
+  if (matchingZipCodes.length === 0) {
+    return false;
+  }
+
+  // TODO: Additional filtering for multiple libraries inside the same zip code
 
   const appearances = parseInt(
     matchingZipCodes[0] ? matchingZipCodes[0]["Appearances"] : 0,
@@ -37,20 +44,13 @@ const zipCodeExistsInStorage = async (zipCode) => {
   );
   if (appearances > 0) {
     const averageDays = 365 / appearances;
-    // Round to 2 decimal places
     const roundedAverageDays = Math.round(averageDays * 100) / 100;
+    console.log("Average Days:", roundedAverageDays);
     createMiniModal(
       `A package was sent to this ZIP code every ${roundedAverageDays} days in 2024.`
     );
   }
-  console.log("Appearances:", appearances);
 
-  console.log(matchingZipCodes[0]["Appearances"]);
-
-  console.log("Matching Zip Codes:", matchingZipCodes);
-
-  console.log("Zip Code to check:", zipCode);
-  console.log("Mail Data:", mailData[0]["Recipient Address"]);
   return mailData.some((data) => {
     return (
       data["Recipient Address"] && data["Recipient Address"].includes(zipCode)
@@ -63,6 +63,7 @@ export const packageFrequency = () => {
     .then((elements) => {
       console.log("Extracted Elements:", elements);
 
+      // TODO: Only took first five because active request had text...Maybe take full 9 digits if a hyphen is detected?
       // Only take the first 5 digits of the postal code
       if (elements.postal && elements.postal.length > 5) {
         elements.postal = elements.postal.slice(0, 5);
@@ -88,6 +89,7 @@ export const packageFrequency = () => {
 
 // Import all this from utils once timeout is removed
 const createMiniModal = (message) => {
+  console.log("Creating mini modal with message:", message);
   const existingModal = document.querySelector(".mini-modal");
   if (existingModal) {
     existingModal.remove(); // Remove the existing modal

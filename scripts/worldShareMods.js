@@ -91,6 +91,7 @@
         }
       }
     };
+
     const highlightDueDate = async (elements) => {
       const {
         dueDateElement,
@@ -121,6 +122,7 @@
         console.error("Error parsing due date:", error);
       }
     };
+
     const runBorrowingMods = async (activeSelectors) => {
       const elements = {
         requestHeader: await waitForElementWithInterval(
@@ -226,6 +228,5 @@
     // Sets up a MutationObserver to monitor URL changes
     // and reruns the script when we got a new URL
     monitorUrlChanges();
-    // packageFrequency();
   }
 })();

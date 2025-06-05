@@ -46,7 +46,7 @@ export const hoverStyles = {
 
 // -- MiniModal --
 
-const miniModalStyles = {
+export const miniModalStyles = {
   position: "fixed",
   top: "5%",
   right: "0%",
