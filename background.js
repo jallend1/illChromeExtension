@@ -6,6 +6,8 @@ import {
   URLS,
 } from "./background-utils.js";
 
+import Papa from "./libs/papaparse.min.js";
+
 let openSidepanels = {};
 
 const currentOptions = [

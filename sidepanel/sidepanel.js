@@ -17,8 +17,8 @@ chrome.windows.getCurrent((currentWindow) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
-    currentTabUrl = message.url; // Update the current tab URL
-    handleURLChange(message.url); // Update the buttons
+    currentTabUrl = message.url;
+    handleURLChange(message.url);
     sendResponse({ status: "URL handled" });
   }
 });
@@ -163,8 +163,6 @@ const initiateScript = (scriptName) => {
                 chrome.runtime.onMessage.removeListener(handler);
               }
             });
-            // await navigator.clipboard.writeText("");
-            // await extractFromStorage("overdueNotice");
           }
         }
       );
