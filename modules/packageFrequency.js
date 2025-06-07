@@ -71,6 +71,7 @@ export const packageFrequency = () => {
       zipCodeExistsInStorage(elements.postal)
         .then((exists) => {
           if (exists) {
+            // TODO: Launch modal from here? Or break up zipCodeExistsInStorage into smaller functions
             console.log(`Zip code ${elements.postal} exists in storage.`);
           } else {
             console.log(
