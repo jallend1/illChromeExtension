@@ -52,6 +52,12 @@ const searchForZipCode = async (zipCodeField) => {
   if (zipCodeField && fullPostalCodeRegex.test(zipCodeField)) {
     // If the postal code matches #####-####, take the full value
     matchingZipCodes = await returnArrayOfMatches(zipCodeField);
+    // If no matches found, try the first 5 digits
+    if (matchingZipCodes.length === 0) {
+      console.log("No matches found for full postal code:", zipCodeField);
+      const partialPostalCode = zipCodeField.slice(0, 5);
+      matchingZipCodes = await returnArrayOfMatches(partialPostalCode);
+    }
   } else if (zipCodeField && partialPostalCodeRegex.test(zipCodeField)) {
     // If the postal code matches #####, take only the first 5 digits
     const partialPostalCode = zipCodeField.slice(0, 5);
