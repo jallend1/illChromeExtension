@@ -4,9 +4,8 @@
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
 
-    const { waitForElementWithInterval } = await import(
-      chrome.runtime.getURL("modules/utils.js")
-    );
+    const { waitForElementWithInterval, buttonStyles, hoverStyles } =
+      await import(chrome.runtime.getURL("modules/utils.js"));
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;
     window.currentUrl = window.location.href;
@@ -205,10 +204,38 @@
       }
     };
 
+    // -- Virtual Bookshelf Logic --
+    const createAddToBookshelfButton = async () => {
+      console.log("Creating Add to Virtual Bookshelf button");
+      const parentElement = await waitForElementWithInterval(
+        "#sidebar-nd > div"
+      );
+      if (!document.querySelector("#add-to-bookshelf-button")) {
+        const button = document.createElement("button");
+        button.innerText = "Add to Virtual Bookshelf";
+        button.id = "add-to-bookshelf-button";
+        Object.assign(button.style, buttonStyles);
+        button.style.fontSize = "1rem";
+        button.addEventListener("mouseover", () => {
+          Object.assign(button.style, hoverStyles);
+          button.style.fontSize = "1rem";
+        });
+        button.addEventListener("mouseout", () => {
+          Object.assign(button.style, buttonStyles);
+          button.style.fontSize = "1rem";
+        });
+        button.addEventListener("click", () => {
+          console.log("Here we are, bois!!!");
+        });
+        parentElement.appendChild(button);
+      }
+    };
+
     // --- URL Change Monitoring ---
     const monitorUrlChanges = () => {
       const observer = new MutationObserver(() => {
         if (window.location.href !== window.currentUrl) {
+          createAddToBookshelfButton();
           window.currentUrl = window.location.href; // Update the current URL
           if (isRequestUrl(window.currentUrl)) {
             determineMods();
@@ -224,6 +251,7 @@
 
     // Runs the script initially when the page loads
     if (isRequestUrl(window.currentUrl)) determineMods();
+    createAddToBookshelfButton();
 
     // Sets up a MutationObserver to monitor URL changes
     // and reruns the script when we got a new URL
