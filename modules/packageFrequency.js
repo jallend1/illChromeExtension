@@ -44,42 +44,23 @@ const returnArrayOfMatches = async (zipCode) => {
   });
 };
 
+const sanitizePostalCode = (postalCode) => {
+  if (!postalCode) return null;
+  const match = postalCode.match(/^(\d{5})(-\d{4})?$/);
+  // Return the match if it exists, otherwise return the first 5 digits
+  return match ? match[0] : postalCode.slice(0, 5);
+};
+
 const searchForZipCode = async (zipCodeField) => {
-  let matchingZipCodes;
-  const fullPostalCodeRegex = /^\d{5}(-\d{4})$/;
-  const partialPostalCodeRegex = /^\d{5}$/;
-  // If the postal code matches #####-####, search the full value
-  if (zipCodeField && fullPostalCodeRegex.test(zipCodeField)) {
-    matchingZipCodes = await returnArrayOfMatches(zipCodeField);
-    // If matches are found, we're all done
-    if (matchingZipCodes.length > 0) {
-      return matchingZipCodes;
-    }
-  }
-  // Otherwise, if the postal code matches partial format, search for that
-  if (zipCodeField && partialPostalCodeRegex.test(zipCodeField)) {
-    matchingZipCodes = await returnArrayOfMatches(zipCodeField);
-    // If matches are found, we're all done
-    if (matchingZipCodes.length > 0) {
-      return matchingZipCodes;
-    }
-  }
-  // If the postal code is not in a valid format, truncate it to the first 5 digits
-  if (zipCodeField && zipCodeField.length > 5) {
-    const truncatedPostalCode = zipCodeField.slice(0, 5);
-    matchingZipCodes = await returnArrayOfMatches(truncatedPostalCode);
-    // If matches are found, we're all done
-    if (matchingZipCodes.length > 0) {
-      return matchingZipCodes;
-    }
-  } else {
-    return []; // Exit if no valid postal code is found
-  }
+  const sanitizedPostalCode = sanitizePostalCode(zipCodeField);
+  console.log(sanitizedPostalCode);
+  let matchingZipCodes = await returnArrayOfMatches(sanitizedPostalCode);
+  return matchingZipCodes;
 };
 
 const calculateAverageDays = (appearances) => {
   if (appearances <= 0) {
-    return 0; // Avoid division by zero
+    return 0;
   }
   const averageDays = 365 / appearances;
   return Math.round(averageDays * 100) / 100; // Round to two decimal places
