@@ -48,29 +48,33 @@ const searchForZipCode = async (zipCodeField) => {
   let matchingZipCodes;
   const fullPostalCodeRegex = /^\d{5}(-\d{4})$/;
   const partialPostalCodeRegex = /^\d{5}$/;
-  // TODO: A LOT of if statements here, refactor to be more readable
+  // If the postal code matches #####-####, search the full value
   if (zipCodeField && fullPostalCodeRegex.test(zipCodeField)) {
-    // If the postal code matches #####-####, take the full value
     matchingZipCodes = await returnArrayOfMatches(zipCodeField);
-    // If no matches found, try the first 5 digits
-    if (matchingZipCodes.length === 0) {
-      console.log("No matches found for full postal code:", zipCodeField);
-      const partialPostalCode = zipCodeField.slice(0, 5);
-      matchingZipCodes = await returnArrayOfMatches(partialPostalCode);
+    // If matches are found, we're all done
+    if (matchingZipCodes.length > 0) {
+      return matchingZipCodes;
     }
-  } else if (zipCodeField && partialPostalCodeRegex.test(zipCodeField)) {
-    // If the postal code matches #####, take only the first 5 digits
-    const partialPostalCode = zipCodeField.slice(0, 5);
-    matchingZipCodes = await returnArrayOfMatches(partialPostalCode);
-  } else if (zipCodeField && zipCodeField.length > 5) {
-    // If the postal code is longer than 5 digits, take only the first 5 digits
+  }
+  // Otherwise, if the postal code matches partial format, search for that
+  if (zipCodeField && partialPostalCodeRegex.test(zipCodeField)) {
+    matchingZipCodes = await returnArrayOfMatches(zipCodeField);
+    // If matches are found, we're all done
+    if (matchingZipCodes.length > 0) {
+      return matchingZipCodes;
+    }
+  }
+  // If the postal code is not in a valid format, truncate it to the first 5 digits
+  if (zipCodeField && zipCodeField.length > 5) {
     const truncatedPostalCode = zipCodeField.slice(0, 5);
     matchingZipCodes = await returnArrayOfMatches(truncatedPostalCode);
+    // If matches are found, we're all done
+    if (matchingZipCodes.length > 0) {
+      return matchingZipCodes;
+    }
   } else {
-    console.log("No valid postal code detected:", zipCodeField);
-    return; // Exit if no valid postal code is found
+    return []; // Exit if no valid postal code is found
   }
-  return matchingZipCodes;
 };
 
 const calculateAverageDays = (appearances) => {
@@ -87,7 +91,6 @@ export const packageFrequency = async () => {
   console.log("Matching Zip Codes:", matchingZipCodes);
   // TODO: Add meaningful handling for ZIP codes that return multiple matches
   if (!matchingZipCodes || matchingZipCodes.length === 0) {
-    console.log("No matching ZIP codes found.");
     createMiniModal("No matching ZIP codes found.");
     return;
   }
@@ -97,7 +100,6 @@ export const packageFrequency = async () => {
       10
     );
     const averageDays = calculateAverageDays(appearances);
-    console.log("Average Days:", averageDays);
     createMiniModal(
       `A package was sent to this ZIP code every ${averageDays} days in 2024.`
     );
@@ -106,7 +108,6 @@ export const packageFrequency = async () => {
 
 // Import all this from utils once timeout is removed
 const createMiniModal = (message) => {
-  console.log("Creating mini modal with message:", message);
   const existingModal = document.querySelector(".mini-modal");
   if (existingModal) {
     existingModal.remove(); // Remove the existing modal
