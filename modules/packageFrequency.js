@@ -32,12 +32,18 @@ const returnArrayOfMatches = async (zipCode) => {
         reject(chrome.runtime.lastError);
       } else {
         const mailData = result.mailData || [];
+        if (mailData.length === 0) {
+          console.warn("No mail data found in storage.");
+          resolve([]);
+          return;
+        }
         const matchingZipCodes = mailData.filter((data) => {
           return (
             data["Recipient Address"] &&
             data["Recipient Address"].includes(zipCode)
           );
         });
+
         resolve(matchingZipCodes);
       }
     });
@@ -66,23 +72,65 @@ const calculateAverageDays = (appearances) => {
   return Math.round(averageDays * 100) / 100; // Round to two decimal places
 };
 
+// export const packageFrequency = async () => {
+//   const elements = await extractElements(borrowingSelectors);
+//   const matchingZipCodes = await searchForZipCode(elements.postal);
+//   console.log("Matching Zip Codes:", matchingZipCodes);
+//   // TODO: Add meaningful handling for ZIP codes that return multiple matches
+//   if (!matchingZipCodes || matchingZipCodes.length === 0) {
+//     createMiniModal("No matching ZIP codes found.");
+//     return;
+//   }
+//   if (matchingZipCodes && matchingZipCodes.length > 0) {
+//     const appearances = parseInt(
+//       matchingZipCodes[0] ? matchingZipCodes[0]["Appearances"] : 0,
+//       10
+//     );
+//     const libraryName =
+//       matchingZipCodes[0]["Recipient Company"] +
+//       "\n" +
+//       matchingZipCodes[0]["Recipient Name"];
+//     console.log("Library Name:", libraryName);
+//     const averageDays = calculateAverageDays(appearances);
+//     createMiniModal(
+//       `A package was sent to ${libraryName} every ${averageDays} days in 2024.`
+//     );
+//   }
+// };
+
 export const packageFrequency = async () => {
   const elements = await extractElements(borrowingSelectors);
   const matchingZipCodes = await searchForZipCode(elements.postal);
   console.log("Matching Zip Codes:", matchingZipCodes);
-  // TODO: Add meaningful handling for ZIP codes that return multiple matches
+
   if (!matchingZipCodes || matchingZipCodes.length === 0) {
     createMiniModal("No matching ZIP codes found.");
     return;
   }
-  if (matchingZipCodes && matchingZipCodes.length > 0) {
-    const appearances = parseInt(
-      matchingZipCodes[0] ? matchingZipCodes[0]["Appearances"] : 0,
-      10
-    );
+
+  if (matchingZipCodes.length === 1) {
+    const appearances = parseInt(matchingZipCodes[0]["Appearances"] || 0, 10);
+    const libraryName =
+      matchingZipCodes[0]["Recipient Company"] +
+      "\n" +
+      matchingZipCodes[0]["Recipient Name"];
+    console.log("Library Name:", libraryName);
     const averageDays = calculateAverageDays(appearances);
     createMiniModal(
-      `A package was sent to this ZIP code every ${averageDays} days in 2024.`
+      `A package was sent to ${libraryName} every ${averageDays} days in 2024.`
+    );
+  } else {
+    // Multiple matches: list names and appearances
+    const list = matchingZipCodes
+      .map(
+        (library) =>
+          `<li><strong>${library["Recipient Company"] || ""}</strong> (${
+            library["Recipient Name"] || ""
+          }): ${calculateAverageDays(library["Appearances"])} appearances</li>`
+      )
+      .join("");
+    createMiniModal(
+      `<div>Multiple matches for this ZIP code:<ul>${list}</ul></div>`
     );
   }
 };
