@@ -46,6 +46,16 @@
       },
     };
 
+    // TODO: Update selectors to account for multiple open requests
+    const borrowingAddressSelectors = {
+      attention: 'input[data="returning.address.attention"]',
+      line1: 'input[data="returning.address.line1"]',
+      line2: 'input[data="returning.address.line2"]',
+      locality: 'input[data="returning.address.locality"]',
+      region: 'span[data="returning.address.region"]',
+      postal: 'input[data="returning.address.postal"]',
+    };
+
     // --- Utility Functions --
     const calculateTimeDiff = (dueDateString) => {
       const dueDate = new Date(dueDateString);
@@ -226,18 +236,43 @@
         });
         button.addEventListener("click", () => {
           console.log("Here we are, bois!!!");
+          virtualBookShelfClick();
         });
         parentElement.appendChild(button);
       }
+    };
+
+    // Extract borrowing address elements
+    const extractBorrowingAddressElements = async () => {
+      const elements = {};
+      for (const [key, selector] of Object.entries(borrowingAddressSelectors)) {
+        elements[key] = await waitForElementWithInterval(selector);
+      }
+      return elements;
+    };
+
+    const virtualBookShelfClick = async () => {
+      console.log("Virtual Bookshelf button clicked");
+      const borrowingAddressElements = await extractBorrowingAddressElements();
+      const addressData = {
+        attention: borrowingAddressElements.attention.value,
+        line1: borrowingAddressElements.line1.value,
+        line2: borrowingAddressElements.line2.value,
+        locality: borrowingAddressElements.locality.value,
+        region: borrowingAddressElements.region.textContent.trim(),
+        postal: borrowingAddressElements.postal.value,
+      };
+      console.log("Borrowing Address Data:", addressData);
+      // TODO: Extract title and due date from the page
     };
 
     // --- URL Change Monitoring ---
     const monitorUrlChanges = () => {
       const observer = new MutationObserver(() => {
         if (window.location.href !== window.currentUrl) {
-          createAddToBookshelfButton();
           window.currentUrl = window.location.href; // Update the current URL
           if (isRequestUrl(window.currentUrl)) {
+            createAddToBookshelfButton();
             determineMods();
           }
         }

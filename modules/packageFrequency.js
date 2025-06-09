@@ -114,12 +114,13 @@ export const packageFrequency = async () => {
       matchingZipCodes[0]["Recipient Company"] +
       "\n" +
       matchingZipCodes[0]["Recipient Name"];
-    console.log("Library Name:", libraryName);
     const averageDays = calculateAverageDays(appearances);
     createMiniModal(
       `A package was sent to ${libraryName} every ${averageDays} days in 2024.`
     );
   } else {
+    // TODO: Needs more testing! Unable to locate a ZIP code with multiple matches
+    console.warn("Multiple matches found for ZIP code:", elements.postal);
     // Multiple matches: list names and appearances
     const list = matchingZipCodes
       .map(
