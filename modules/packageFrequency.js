@@ -86,6 +86,11 @@ export const packageFrequency = async () => {
   const matchingZipCodes = await searchForZipCode(elements.postal);
   console.log("Matching Zip Codes:", matchingZipCodes);
   // TODO: Add meaningful handling for ZIP codes that return multiple matches
+  if (!matchingZipCodes || matchingZipCodes.length === 0) {
+    console.log("No matching ZIP codes found.");
+    createMiniModal("No matching ZIP codes found.");
+    return;
+  }
   if (matchingZipCodes && matchingZipCodes.length > 0) {
     const appearances = parseInt(
       matchingZipCodes[0] ? matchingZipCodes[0]["Appearances"] : 0,
