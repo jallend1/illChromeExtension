@@ -95,13 +95,17 @@ const worldShareButtonIds = [
 
 const handleURLChange = (url) => {
   if (url.includes(".kcls.org/eg2/en-US/staff/")) {
+    console.log("Enabling Evergreen buttons. Current URL:", url);
     enableButtons(evergreenButtonIds);
   } else {
+    console.log("Disabling Evergreen buttons. Current URL:", url);
     disableButtons(evergreenButtonIds);
   }
   if (url.includes("kingcountylibrarysystem.share.worldcat.org")) {
+    console.log("Enabling WorldShare buttons. Current URL:", url);
     enableButtons(worldShareButtonIds);
   } else {
+    console.log("Disabling WorldShare buttons. Current URL:", url);
     disableButtons(worldShareButtonIds);
   }
 };
