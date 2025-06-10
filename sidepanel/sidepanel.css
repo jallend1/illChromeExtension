@@ -15,6 +15,7 @@
 
 html,
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -25,11 +26,12 @@ body {
 /* ************** */
 
 body {
-  height: 100%;
+  height: 100vh;
   font-family: "Roboto", sans-serif;
   background: #fff;
   color: #000;
   background: var(--body-background);
+  overflow: hidden;
 }
 
 h1 {
@@ -104,9 +106,8 @@ section {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
   border-top: solid 1px #fff;
-  padding: 0;
+  padding-bottom: 0.5rem;
 }
 
 /* Only applicable image so far is the collapse toggle */
@@ -128,11 +129,12 @@ section header {
 section h2 {
   margin-bottom: 1rem;
   color: rgb(13, 119, 100);
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 section img {
   filter: invert(1);
+  height: 13px;
 }
 
 section main {
@@ -140,8 +142,6 @@ section main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 0 1rem 0;
-  /* background-color: #fff; */
   background: var(--body-background);
 }
 
@@ -151,9 +151,9 @@ section main {
 
 button {
   cursor: pointer;
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.7rem;
   border-radius: 6px;
   border: 1px solid #ccc;
   background: var(--button-background);
@@ -312,6 +312,12 @@ img.collapsible.rotated {
   align-items: center;
   margin-top: 1rem;
 }
+/* .toggles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
 
 .toggle-container {
   display: flex;
@@ -367,6 +373,59 @@ img.collapsible.rotated {
   margin-top: 0.5rem;
   max-width: 100px;
   text-align: center;
+} */
+
+.toggle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.2rem 0;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 0.4rem;
+}
+
+.toggle-switch {
+  appearance: none;
+  width: 28px;
+  height: 16px;
+  background: var(--toggle-inactive-bg, #ccc);
+  border-radius: 16px;
+  position: relative;
+  outline: none;
+  transition: background 0.2s;
+  margin: 0;
+  cursor: pointer;
+}
+
+.toggle-switch:checked {
+  background: var(--toggle-bg-active, #4cd137);
+}
+
+.toggle-switch::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch:checked::before {
+  transform: translateX(12px);
+}
+
+.toggle-text {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
 }
 
 /* ******************* */
