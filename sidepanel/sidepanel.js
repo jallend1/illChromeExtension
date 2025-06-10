@@ -17,9 +17,9 @@ chrome.windows.getCurrent((currentWindow) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
-    currentTabUrl = message.url;
-    handleURLChange(message.url);
-    sendResponse({ status: "URL handled" });
+    currentTabUrl = message.url || "";
+    handleURLChange(currentTabUrl);
+    sendResponse && sendResponse({ status: "URL handled" });
   }
 });
 
@@ -94,19 +94,22 @@ const worldShareButtonIds = [
 ];
 
 const handleURLChange = (url) => {
-  if (url.includes(".kcls.org/eg2/en-US/staff/")) {
+  // Always disable all buttons first
+  console.log("Disabling all buttons. Current URL:", url);
+  disableButtons(evergreenButtonIds);
+  disableButtons(worldShareButtonIds);
+
+  // Only enable if the URL matches
+  if (typeof url === "string" && url.includes(".kcls.org/eg2/en-US/staff/")) {
     console.log("Enabling Evergreen buttons. Current URL:", url);
     enableButtons(evergreenButtonIds);
-  } else {
-    console.log("Disabling Evergreen buttons. Current URL:", url);
-    disableButtons(evergreenButtonIds);
   }
-  if (url.includes("kingcountylibrarysystem.share.worldcat.org")) {
+  if (
+    typeof url === "string" &&
+    url.includes("kingcountylibrarysystem.share.worldcat.org")
+  ) {
     console.log("Enabling WorldShare buttons. Current URL:", url);
     enableButtons(worldShareButtonIds);
-  } else {
-    console.log("Disabling WorldShare buttons. Current URL:", url);
-    disableButtons(worldShareButtonIds);
   }
 };
 

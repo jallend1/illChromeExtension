@@ -217,6 +217,25 @@ img.collapsible.rotated {
   display: none;
 }
 
+#resources-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem;
+}
+
+#resources-list li {
+  margin-bottom: 0.5rem;
+}
+
+#resources-list a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+#resources-list a:hover {
+  text-decoration: underline;
+}
+
 /* ******************* */
 /* *     Footer      * */
 /* ******************* */

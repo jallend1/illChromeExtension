@@ -167,21 +167,28 @@ const retrievePatron = async () => {
         console.error("Failed to create a new tab.");
         return;
       }
-
-      const onTabUpdated = (tabId, changeInfo) => {
+      const onTabUpdated = (tabId, changeInfo, tab) => {
         if (tabId === newTab.id && changeInfo.status === "complete") {
           chrome.scripting.executeScript(
             {
               target: { tabId: newTab.id },
               files: ["./scripts/retrievePatron.js"],
             },
-            () => {
+            async () => {
               if (chrome.runtime.lastError) {
                 console.error(
                   "Error executing script:",
                   chrome.runtime.lastError.message
                 );
               }
+              // Get the latest tab info to ensure correct URL and windowId
+              const updatedTab = await chrome.tabs.get(newTab.id);
+              chrome.runtime.sendMessage({
+                type: "tab-url-updated",
+                tabId: updatedTab.id,
+                url: updatedTab.url,
+                windowId: updatedTab.windowId,
+              });
             }
           );
           chrome.tabs.onUpdated.removeListener(onTabUpdated);
