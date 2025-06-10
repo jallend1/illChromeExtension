@@ -142,7 +142,21 @@ section main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: var(--body-background);
+}
+
+/* ******************* */
+/* *    Settings     * */
+/* ******************* */
+
+#settings main .toggles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .toggle-container {
+    margin: 0.5rem 0;
+  }
 }
 
 /* ******************* */
@@ -185,6 +199,10 @@ button:disabled {
   transform: none;
 }
 
+#open-product-page a {
+  color: #000;
+}
+
 /* ******************** */
 /* * Section Collapse * */
 /* ******************** */
@@ -225,6 +243,7 @@ img.collapsible.rotated {
 
 #resources-list li {
   margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 #resources-list a {
@@ -311,71 +330,11 @@ img.collapsible.rotated {
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
-}
-/* .toggles {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1rem;
+  background-color: transparent;
 }
 
 .toggle-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.toggle-switch {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-label {
-  width: 40px;
-  height: 20px;
-  background-color: var(--toggle-inactive-bg);
-  border-radius: 20px;
-  position: relative;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.toggle-label:after {
-  content: "";
-  width: 16px;
-  height: 16px;
-  background-color: #fff;
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: transform 0.3s ease;
-}
-
-.toggle-switch:checked + .toggle-label {
-  background-color: var(--toggle-bg-active);
-}
-
-.toggle-switch:checked + .toggle-label:after {
-  transform: translateX(20px);
-}
-
-.toggle-label:active {
-  background-color: var(--toggle-bg-active);
-}
-
-.toggle-text {
-  font-size: 0.8rem;
-  margin-left: 0.5rem;
-  margin-top: 0.5rem;
-  max-width: 100px;
-  text-align: center;
-} */
-
-.toggle-container {
+  background-color: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -425,7 +384,7 @@ img.collapsible.rotated {
 
 .toggle-text {
   font-size: 0.7rem;
-  margin-left: 0.2rem;
+  margin: 0.2rem 0 0 0.2rem;
 }
 
 /* ******************* */
