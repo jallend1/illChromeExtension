@@ -12,10 +12,25 @@ const borrowingSelectors = {
   postal: 'input[data="returning.address.postal"]',
 };
 
+const ignoreHiddenElements = (selector) => {
+  const elements = document.querySelectorAll(selector);
+  console.log(elements);
+  for (const el of elements) {
+    // Check if the element is inside a hidden container
+    if (!el.closest(".yui3-cardpanel-hidden, .yui3-default-hidden")) {
+      return el;
+    }
+  }
+  return null;
+};
+
 const extractElements = async (selectors) => {
   const elements = {};
   for (const key in selectors) {
-    const element = await waitForElementWithInterval(selectors[key]);
+    // const element = await waitForElementWithInterval(selectors[key]);
+    const element = await waitForElementWithInterval(() =>
+      ignoreHiddenElements(selectors[key])
+    );
     if (element) {
       elements[key] = element.value || element.textContent.trim();
     }
