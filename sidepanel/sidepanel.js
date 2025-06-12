@@ -29,16 +29,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const storageKey = storageKeys.find((sk) => sk.key === key);
       if (storageKey && storageKey.element) {
         storageKey.element.checked = newValue;
-        if (key === "printLabel") {
-          const copyWorldShareAddress = document.querySelector(
-            "#copyWorldshareAddress"
-          );
-          if (copyWorldShareAddress) {
-            copyWorldShareAddress.textContent = newValue
-              ? "Print Label"
-              : "Copy WorldShare Address";
-          }
-        }
       }
     }
   }
@@ -142,16 +132,6 @@ const disableButtons = (buttonIds) => {
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {
     element.checked = result[key];
-    if (key === "printLabel") {
-      const copyWorldShareAddress = document.querySelector(
-        "#copyWorldshareAddress"
-      );
-      if (result[key]) {
-        copyWorldShareAddress.textContent = "Print Label";
-      } else {
-        copyWorldShareAddress.textContent = "Copy WorldShare Address";
-      }
-    }
   });
 };
 
@@ -290,16 +270,6 @@ const addEventListeners = () => {
   const addCheckboxListener = (checkbox, key) => {
     checkbox.addEventListener("click", () => {
       chrome.storage.local.set({ [key]: checkbox.checked });
-      if (key === "printLabel") {
-        const copyWorldShareAddress = document.querySelector(
-          "#copyWorldshareAddress"
-        );
-        if (checkbox.checked) {
-          copyWorldShareAddress.textContent = "Print Label";
-        } else {
-          copyWorldShareAddress.textContent = "Copy WorldShare Address";
-        }
-      }
     });
   };
 
@@ -311,30 +281,11 @@ const addEventListeners = () => {
 addEventListeners();
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (!chrome.commands) return; // Not available in all contexts
-
+  if (!chrome.commands) return;
   chrome.commands.getAll((commands) => {
     commands.forEach((cmd) => {
-      console.log(`Command: ${cmd.name}, Shortcut: ${cmd.shortcut}`);
-      // Find the button or tooltip for this command
-      // Example: for "copyFromOCLC", find the tooltip span
-      if (cmd.name === "copyFromOCLC" && cmd.shortcut) {
-        const tooltip = document.querySelector("#copyFromOCLC .tooltiptext");
-        if (tooltip) {
-          tooltip.textContent = `Press ${cmd.shortcut}`;
-        }
-      }
-      // Repeat for other commands as needed
-      if (cmd.name === "copyWorldShareAddress" && cmd.shortcut) {
-        const tooltip = document.querySelector(
-          "#copyWorldShareAddress .tooltiptext"
-        );
-        if (tooltip) {
-          tooltip.textContent = `Press ${cmd.shortcut}`;
-        }
-      }
-      if (cmd.name === "overdueNotice" && cmd.shortcut) {
-        const tooltip = document.querySelector("#overdueNotice .tooltiptext");
+      if (cmd.shortcut) {
+        const tooltip = document.querySelector(`#${cmd.name} .tooltiptext`);
         if (tooltip) {
           tooltip.textContent = `Press ${cmd.shortcut}`;
         }
