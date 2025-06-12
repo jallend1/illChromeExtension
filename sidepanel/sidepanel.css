@@ -145,13 +145,6 @@ section main {
   align-items: center;
 }
 
-section main .toggles {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 /* ******************* */
 /* *    Settings     * */
 /* ******************* */
@@ -335,6 +328,7 @@ img.collapsible.rotated {
 
 .toggles {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
@@ -344,9 +338,10 @@ img.collapsible.rotated {
 .toggle-container {
   background-color: transparent;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  justify-content: flex-start;
   margin: 0.2rem 0;
+  width: 150px;
 }
 
 .toggle-label {
