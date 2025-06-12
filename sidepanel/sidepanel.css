@@ -209,7 +209,7 @@ button:disabled {
 /* ******************** */
 
 .collapsible {
-  overflow: hidden;
+  /* overflow: hidden; */
   transition: max-height 300ms ease-out, opacity 300ms ease-out;
   opacity: 1;
   max-height: 1000px;
@@ -397,7 +397,6 @@ img.collapsible.rotated {
 .tooltip {
   position: relative;
   display: inline-block;
-  z-index: 1000;
 }
 
 .tooltip .tooltiptext {
@@ -412,6 +411,8 @@ img.collapsible.rotated {
   left: 50%;
   opacity: 0;
   transition: opacity 0.3s;
+  z-index: 1000;
+  transform: translateX(-50%);
 }
 
 .tooltip:hover .tooltiptext {
