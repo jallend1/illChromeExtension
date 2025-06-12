@@ -263,10 +263,10 @@
     }
   };
 
+  createEditPatronButton();
+  monitorPatronName();
+
   window.addEventListener("unload", () => {
     mainObserver.disconnect();
   });
-
-  createEditPatronButton();
-  monitorPatronName();
 })();

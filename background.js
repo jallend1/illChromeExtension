@@ -79,6 +79,7 @@ const calculateURL = async (urlSuffix) => {
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
+  console.log(`Executing script: ${script} on tabId: ${tabId}`);
 
   chrome.scripting.executeScript(
     {
@@ -137,20 +138,24 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 // Add keyboard shortcuts for each option
 chrome.commands.onCommand.addListener((command) => {
-  currentOptions.forEach(async (option) => {
-    if (command === option.id) {
-      const activeTab = await getActiveTab();
-      if (activeTab) {
-        if (option.id === "copyWorldShareAddress") {
-          injectDymoFramework(activeTab.id);
-        }
-        chrome.scripting.executeScript({
-          target: { tabId: activeTab.id },
-          files: [`./scripts/${option.id}.js`],
-        });
+  const option = currentOptions.find((opt) => opt.id === command);
+  if (!option) {
+    console.warn(`No option found for command: ${command}`);
+    // Unknown command, do nothing
+    return;
+  }
+  (async () => {
+    const activeTab = await getActiveTab();
+    if (activeTab) {
+      if (option.id === "copyWorldShareAddress") {
+        injectDymoFramework(activeTab.id);
       }
+      chrome.scripting.executeScript({
+        target: { tabId: activeTab.id },
+        files: [`./scripts/${option.id}.js`],
+      });
     }
-  });
+  })();
 });
 
 const retrievePatron = async () => {
