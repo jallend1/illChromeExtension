@@ -139,6 +139,14 @@ section img {
 
 section main {
   display: flex;
+  /* flex-direction: column; */
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+section main .toggles {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
