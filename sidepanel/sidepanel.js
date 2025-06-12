@@ -309,3 +309,36 @@ const addEventListeners = () => {
 };
 
 addEventListeners();
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!chrome.commands) return; // Not available in all contexts
+
+  chrome.commands.getAll((commands) => {
+    commands.forEach((cmd) => {
+      console.log(`Command: ${cmd.name}, Shortcut: ${cmd.shortcut}`);
+      // Find the button or tooltip for this command
+      // Example: for "copyFromOCLC", find the tooltip span
+      if (cmd.name === "copyFromOCLC" && cmd.shortcut) {
+        const tooltip = document.querySelector("#copyFromOCLC .tooltiptext");
+        if (tooltip) {
+          tooltip.textContent = `Press ${cmd.shortcut}`;
+        }
+      }
+      // Repeat for other commands as needed
+      if (cmd.name === "copyWorldShareAddress" && cmd.shortcut) {
+        const tooltip = document.querySelector(
+          "#copyWorldShareAddress .tooltiptext"
+        );
+        if (tooltip) {
+          tooltip.textContent = `Press ${cmd.shortcut}`;
+        }
+      }
+      if (cmd.name === "overdueNotice" && cmd.shortcut) {
+        const tooltip = document.querySelector("#overdueNotice .tooltiptext");
+        if (tooltip) {
+          tooltip.textContent = `Press ${cmd.shortcut}`;
+        }
+      }
+    });
+  });
+});

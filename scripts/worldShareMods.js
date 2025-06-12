@@ -263,7 +263,7 @@
         postal: borrowingAddressElements.postal.value,
       };
       console.log("Borrowing Address Data:", addressData);
-      // TODO: Extract title and due date from the page
+      // TODO: Extract title and due data
     };
 
     // --- URL Change Monitoring ---

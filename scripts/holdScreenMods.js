@@ -7,6 +7,8 @@
     chrome.runtime.getURL("modules/modal.js")
   );
 
+  let mainObserver;
+
   function holdScreenMods() {
     keyboardCowboy(
       `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`
@@ -130,9 +132,9 @@
       ".hold-records-list.common-form.striped-even"
     );
 
-    const observer = new MutationObserver(handleHoldStatusMutation);
+    mainObserver = new MutationObserver(handleHoldStatusMutation);
     const config = { childList: true, subtree: true };
-    observer.observe(targetNode, config);
+    mainObserver.observe(targetNode, config);
   }
 
   holdScreenMods();
@@ -262,7 +264,7 @@
   };
 
   window.addEventListener("unload", () => {
-    observer.disconnect();
+    mainObserver.disconnect();
   });
 
   createEditPatronButton();
