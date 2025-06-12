@@ -1,8 +1,6 @@
-const { waitForElementWithInterval, miniModalStyles } = await import(
-  chrome.runtime.getURL("modules/utils.js")
-);
+const { waitForElementWithInterval, ignoreHiddenElements, miniModalStyles } =
+  await import(chrome.runtime.getURL("modules/utils.js"));
 
-// TODO: Update selectors to account for multiple open requests
 const borrowingSelectors = {
   attention: 'input[data="returning.address.attention"]',
   line1: 'input[data="returning.address.line1"]',
@@ -12,22 +10,9 @@ const borrowingSelectors = {
   postal: 'input[data="returning.address.postal"]',
 };
 
-const ignoreHiddenElements = (selector) => {
-  const elements = document.querySelectorAll(selector);
-  console.log(elements);
-  for (const el of elements) {
-    // Check if the element is inside a hidden container
-    if (!el.closest(".yui3-cardpanel-hidden, .yui3-default-hidden")) {
-      return el;
-    }
-  }
-  return null;
-};
-
 const extractElements = async (selectors) => {
   const elements = {};
   for (const key in selectors) {
-    // const element = await waitForElementWithInterval(selectors[key]);
     const element = await waitForElementWithInterval(() =>
       ignoreHiddenElements(selectors[key])
     );
@@ -74,7 +59,6 @@ const sanitizePostalCode = (postalCode) => {
 
 const searchForZipCode = async (zipCodeField) => {
   const sanitizedPostalCode = sanitizePostalCode(zipCodeField);
-  console.log(sanitizedPostalCode);
   let matchingZipCodes = await returnArrayOfMatches(sanitizedPostalCode);
   return matchingZipCodes;
 };
@@ -86,32 +70,6 @@ const calculateAverageDays = (appearances) => {
   const averageDays = 365 / appearances;
   return Math.round(averageDays * 100) / 100; // Round to two decimal places
 };
-
-// export const packageFrequency = async () => {
-//   const elements = await extractElements(borrowingSelectors);
-//   const matchingZipCodes = await searchForZipCode(elements.postal);
-//   console.log("Matching Zip Codes:", matchingZipCodes);
-//   // TODO: Add meaningful handling for ZIP codes that return multiple matches
-//   if (!matchingZipCodes || matchingZipCodes.length === 0) {
-//     createMiniModal("No matching ZIP codes found.");
-//     return;
-//   }
-//   if (matchingZipCodes && matchingZipCodes.length > 0) {
-//     const appearances = parseInt(
-//       matchingZipCodes[0] ? matchingZipCodes[0]["Appearances"] : 0,
-//       10
-//     );
-//     const libraryName =
-//       matchingZipCodes[0]["Recipient Company"] +
-//       "\n" +
-//       matchingZipCodes[0]["Recipient Name"];
-//     console.log("Library Name:", libraryName);
-//     const averageDays = calculateAverageDays(appearances);
-//     createMiniModal(
-//       `A package was sent to ${libraryName} every ${averageDays} days in 2024.`
-//     );
-//   }
-// };
 
 export const packageFrequency = async () => {
   const elements = await extractElements(borrowingSelectors);

@@ -4,8 +4,12 @@
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
 
-    const { waitForElementWithInterval, buttonStyles, hoverStyles } =
-      await import(chrome.runtime.getURL("modules/utils.js"));
+    const {
+      waitForElementWithInterval,
+      ignoreHiddenElements,
+      buttonStyles,
+      hoverStyles,
+    } = await import(chrome.runtime.getURL("modules/utils.js"));
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;
     window.currentUrl = window.location.href;
@@ -246,7 +250,9 @@
     const extractBorrowingAddressElements = async () => {
       const elements = {};
       for (const [key, selector] of Object.entries(borrowingAddressSelectors)) {
-        elements[key] = await waitForElementWithInterval(selector);
+        elements[key] = await waitForElementWithInterval(() =>
+          ignoreHiddenElements(selector)
+        );
       }
       return elements;
     };

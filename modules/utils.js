@@ -79,3 +79,15 @@ export const createMiniModal = (message) => {
     miniModal.remove();
   }, 2000);
 };
+
+export const ignoreHiddenElements = (selector) => {
+  const elements = document.querySelectorAll(selector);
+  console.log(elements);
+  for (const el of elements) {
+    // Ignore elements inside a hidden container
+    if (!el.closest(".yui3-cardpanel-hidden, .yui3-default-hidden")) {
+      return el;
+    }
+  }
+  return null;
+};
