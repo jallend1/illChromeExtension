@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ".patron-status-color h4"
         );
 
-        if (processName(patronNameElement.textContent)) {
+        if (processName(patronNameElement?.textContent)) {
           insertCourierAlert();
           sendResponse({ response: "Courier library detected and highlighted" });
         } else {
