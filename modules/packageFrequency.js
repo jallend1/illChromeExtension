@@ -32,6 +32,11 @@ const returnArrayOfMatches = async (zipCode) => {
         reject(chrome.runtime.lastError);
       } else {
         const mailData = result.mailData || [];
+        if (!zipCode || typeof zipCode !== "string" || zipCode.trim() === "") {
+          console.warn("Invalid or missing zipCode in returnArrayOfMatches:", zipCode);
+          resolve([]);
+          return;
+        }
         if (mailData.length === 0) {
           console.warn("No mail data found in storage.");
           resolve([]);
