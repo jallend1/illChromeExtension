@@ -65,6 +65,11 @@ const sanitizePostalCode = (postalCode) => {
 const searchForZipCode = async (zipCodeField) => {
   const sanitizedPostalCode = sanitizePostalCode(zipCodeField);
   let matchingZipCodes = await returnArrayOfMatches(sanitizedPostalCode);
+  // If no results are found and it's a full 9-digit ZIP code, try the first 5 digits
+  if (matchingZipCodes.length === 0 && sanitizedPostalCode.length > 5) {
+    const firstFiveDigits = sanitizedPostalCode.slice(0, 5);
+    matchingZipCodes = await returnArrayOfMatches(firstFiveDigits);
+  }
   return matchingZipCodes;
 };
 
@@ -105,7 +110,7 @@ export const packageFrequency = async () => {
         (library) =>
           `<li><strong>${library["Recipient Company"] || ""}</strong> (${
             library["Recipient Name"] || ""
-          }): ${calculateAverageDays(library["Appearances"])} appearances</li>`
+          }): ${calculateAverageDays(library["Appearances"])} days between packages.</li>`
       )
       .join("");
     createMiniModal(
