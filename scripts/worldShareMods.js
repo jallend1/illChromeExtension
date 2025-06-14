@@ -4,12 +4,15 @@
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
 
+    const { borrowingAddressSelectors } = await import(
+      chrome.runtime.getURL("modules/constants.js")
+    );
+
     const {
       waitForElementWithInterval,
       ignoreHiddenElements,
       buttonStyles,
       hoverStyles,
-      borrowingAddressSelectors,
     } = await import(chrome.runtime.getURL("modules/utils.js"));
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;

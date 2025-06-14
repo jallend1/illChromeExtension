@@ -1,9 +1,9 @@
-const {
-  waitForElementWithInterval,
-  ignoreHiddenElements,
-  miniModalStyles,
-  borrowingAddressSelectors,
-} = await import(chrome.runtime.getURL("modules/utils.js"));
+const { waitForElementWithInterval, ignoreHiddenElements, miniModalStyles } =
+  await import(chrome.runtime.getURL("modules/utils.js"));
+
+const { borrowingAddressSelectors } = await import(
+  chrome.runtime.getURL("modules/constants.js")
+);
 
 const extractElements = async (selectors) => {
   const elements = {};
