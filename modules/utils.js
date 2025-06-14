@@ -17,15 +17,6 @@ export const waitForElementWithInterval = (selectorOrFunction) =>
     }, 100);
   });
 
-export const borrowingAddressSelectors = {
-  attention: 'input[data="returning.address.attention"]',
-  line1: 'input[data="returning.address.line1"]',
-  line2: 'input[data="returning.address.line2"]',
-  locality: 'input[data="returning.address.locality"]',
-  region: 'span[data="returning.address.region"]',
-  postal: 'input[data="returning.address.postal"]',
-};
-
 export const buttonStyles = {
   background: "linear-gradient(135deg, #f5f7fa 0%, #e2e6ea 100%)",
   color: "#222",
@@ -91,7 +82,6 @@ export const createMiniModal = (message) => {
 
 export const ignoreHiddenElements = (selector) => {
   const elements = document.querySelectorAll(selector);
-  console.log(elements);
   for (const el of elements) {
     // Ignore elements inside a hidden container
     if (!el.closest(".yui3-cardpanel-hidden, .yui3-default-hidden")) {

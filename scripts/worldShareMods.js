@@ -202,6 +202,7 @@
           ));
       return !borrowingLibrary.textContent.includes("NTG");
     };
+
     const determineMods = async () => {
       const isLending = await isLendingRequestPage();
       const activeSelectors = determineSelectors(isLending);
@@ -214,7 +215,6 @@
 
     // -- Virtual Bookshelf Logic --
     const createAddToBookshelfButton = async () => {
-      console.log("Creating Add to Virtual Bookshelf button");
       const parentElement = await waitForElementWithInterval(
         "#sidebar-nd > div"
       );
@@ -253,6 +253,11 @@
 
     const virtualBookShelfClick = async () => {
       console.log("Virtual Bookshelf button clicked");
+      const bookObject = {
+        title: "",
+        dueDate: "",
+        borrowingAddress: {},
+      };
       const borrowingAddressElements = await extractBorrowingAddressElements();
       const addressData = {
         attention: borrowingAddressElements.attention.value,
@@ -262,6 +267,12 @@
         region: borrowingAddressElements.region.textContent.trim(),
         postal: borrowingAddressElements.postal.value,
       };
+      // TODO: Breakup determineMods into smaller functions
+      // TODO: And use it here to determine if queue or direct
+      // const dueDate = await waitForElementWithInterval(
+      //   activeSelectors.dueDateElement
+      // );
+      // console.log("Due Date Element:", dueDate);
       console.log("Borrowing Address Data:", addressData);
       // TODO: Extract title and due data
     };
