@@ -4,9 +4,8 @@
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
 
-    const { borrowingAddressSelectors } = await import(
-      chrome.runtime.getURL("modules/constants.js")
-    );
+    const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
+      await import(chrome.runtime.getURL("modules/constants.js"));
 
     const {
       waitForElementWithInterval,
@@ -17,48 +16,6 @@
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;
     window.currentUrl = window.location.href;
-
-    // TODO: Refactor this because hot damn is it a mess
-    // TODO: Move this to constants.js once cleaned up
-    // --- Selectors ---
-    const borrowingSelectors = {
-      queue: {
-        requestHeader:
-          "#requests > div:not([class*='hidden']) .nd-request-header",
-        requestStatus:
-          "#requests > div:not([class*='hidden']) span[data='requestStatus']",
-        dispositionElement:
-          "#requests > div:not([class*='hidden']) span[data='disposition']",
-        dueDateElement:
-          '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
-        renewalDueDateElement:
-          '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
-        titleElement:
-          '#requests > div:not([class*="hidden"]) span[data="resource.title"]',
-      },
-      direct: {
-        requestHeader:
-          "div:not(.yui3-default-hidden) .nd-request-header:not(div.yui3-default-hidden .nd-request-header)",
-        requestStatus:
-          "div:not(.yui3-default-hidden) span[data='requestStatus']:not(div.yui3-default-hidden span)",
-        dispositionElement:
-          "div:not(.yui3-default-hidden) span[data='disposition']:not(div.yui3-default-hidden span)",
-        dueDateElement:
-          'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
-        renewalDueDateElement:
-          'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
-        titleElement:
-          'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
-      },
-    };
-    const lendingSelectors = {
-      queue: {
-        borrowingNotes: `#requests > div:not([class*="hidden"]) span[data="requester.note"]`,
-      },
-      direct: {
-        borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
-      },
-    };
 
     // --- Utility Functions --
     const calculateTimeDiff = (dueDateString) => {
@@ -195,6 +152,7 @@
         return activeSelectors;
       }
     };
+
     const isLendingRequestPage = async () => {
       if (window.location.href.includes("lendingSubmittedLoan")) return true;
       const isQueueUrl = window.currentUrl.includes("queue");
