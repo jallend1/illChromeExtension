@@ -18,6 +18,8 @@
     window.worldShareModsInjected = true;
     window.currentUrl = window.location.href;
 
+    // TODO: Refactor this because hot damn is it a mess
+    // TODO: Move this to constants.js once cleaned up
     // --- Selectors ---
     const borrowingSelectors = {
       queue: {
@@ -31,6 +33,8 @@
           '#requests > div:not([class*="hidden"]) span[data="returning.originalDueToSupplier"]',
         renewalDueDateElement:
           '#requests > div:not([class*="hidden"]) span[data="returning.dueToSupplier"]',
+        titleElement:
+          '#requests > div:not([class*="hidden"]) span[data="resource.title"]',
       },
       direct: {
         requestHeader:
@@ -43,6 +47,8 @@
           'div:not(.yui3-default-hidden) span[data="returning.originalDueToSupplier"]:not(div.yui3-default-hidden span)',
         renewalDueDateElement:
           'div:not(.yui3-default-hidden) span[data="returning.dueToSupplier"]:not(div.yui3-default-hidden span)',
+        titleElement:
+          'div:not(.yui3-default-hidden) span[data="resource.title"]:not(div.yui3-default-hidden span)',
       },
     };
     const lendingSelectors = {
@@ -253,6 +259,10 @@
 
     const virtualBookShelfClick = async () => {
       console.log("Virtual Bookshelf button clicked");
+      const isQueueUrl = window.currentUrl.includes("queue");
+      const activeSelectors = isQueueUrl
+        ? borrowingSelectors.queue
+        : borrowingSelectors.direct;
       const bookObject = {
         title: "",
         dueDate: "",
@@ -267,14 +277,18 @@
         region: borrowingAddressElements.region.textContent.trim(),
         postal: borrowingAddressElements.postal.value,
       };
-      // TODO: Breakup determineMods into smaller functions
-      // TODO: And use it here to determine if queue or direct
-      // const dueDate = await waitForElementWithInterval(
-      //   activeSelectors.dueDateElement
-      // );
-      // console.log("Due Date Element:", dueDate);
-      console.log("Borrowing Address Data:", addressData);
-      // TODO: Extract title and due data
+      const dueDateElement = await waitForElementWithInterval(
+        activeSelectors.dueDateElement
+      );
+      const dueDate = dueDateElement?.textContent.trim() || "";
+      const titleElement = await waitForElementWithInterval(
+        activeSelectors.titleElement
+      );
+      const title = titleElement?.textContent.trim() || "";
+      bookObject.title = title;
+      bookObject.dueDate = dueDate;
+      bookObject.borrowingAddress = addressData;
+      console.log("Book Object:", bookObject);
     };
 
     // --- URL Change Monitoring ---
