@@ -4,15 +4,18 @@
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
 
-    const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
-      await import(chrome.runtime.getURL("modules/constants.js"));
+    const { borrowingSelectors, lendingSelectors } = await import(
+      chrome.runtime.getURL("modules/constants.js")
+    );
 
-    const {
-      waitForElementWithInterval,
-      ignoreHiddenElements,
-      buttonStyles,
-      hoverStyles,
-    } = await import(chrome.runtime.getURL("modules/utils.js"));
+    const { createAddToBookshelfButton } = await import(
+      chrome.runtime.getURL("modules/virtualBookShelf.js")
+    );
+
+    const { waitForElementWithInterval } = await import(
+      chrome.runtime.getURL("modules/utils.js")
+    );
+
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;
     window.currentUrl = window.location.href;
@@ -138,6 +141,7 @@
       const requestUrlRegEx = /(\d{8,10})/;
       return url.match(requestUrlRegEx);
     };
+
     const determineSelectors = (isLending) => {
       const isQueueUrl = window.currentUrl.includes("queue");
       if (isLending) {
@@ -175,78 +179,6 @@
       } else {
         runBorrowingMods(activeSelectors);
       }
-    };
-
-    // -- Virtual Bookshelf Logic --
-    const createAddToBookshelfButton = async () => {
-      const parentElement = await waitForElementWithInterval(
-        "#sidebar-nd > div"
-      );
-      if (!document.querySelector("#add-to-bookshelf-button")) {
-        const button = document.createElement("button");
-        button.innerText = "Add to Virtual Bookshelf";
-        button.id = "add-to-bookshelf-button";
-        Object.assign(button.style, buttonStyles);
-        button.style.fontSize = "1rem";
-        button.addEventListener("mouseover", () => {
-          Object.assign(button.style, hoverStyles);
-          button.style.fontSize = "1rem";
-        });
-        button.addEventListener("mouseout", () => {
-          Object.assign(button.style, buttonStyles);
-          button.style.fontSize = "1rem";
-        });
-        button.addEventListener("click", () => {
-          console.log("Here we are, bois!!!");
-          virtualBookShelfClick();
-        });
-        parentElement.appendChild(button);
-      }
-    };
-
-    // Extract borrowing address elements
-    const extractBorrowingAddressElements = async () => {
-      const elements = {};
-      for (const [key, selector] of Object.entries(borrowingAddressSelectors)) {
-        elements[key] = await waitForElementWithInterval(() =>
-          ignoreHiddenElements(selector)
-        );
-      }
-      return elements;
-    };
-
-    const virtualBookShelfClick = async () => {
-      console.log("Virtual Bookshelf button clicked");
-      const isQueueUrl = window.currentUrl.includes("queue");
-      const activeSelectors = isQueueUrl
-        ? borrowingSelectors.queue
-        : borrowingSelectors.direct;
-      const bookObject = {
-        title: "",
-        dueDate: "",
-        borrowingAddress: {},
-      };
-      const borrowingAddressElements = await extractBorrowingAddressElements();
-      const addressData = {
-        attention: borrowingAddressElements.attention.value,
-        line1: borrowingAddressElements.line1.value,
-        line2: borrowingAddressElements.line2.value,
-        locality: borrowingAddressElements.locality.value,
-        region: borrowingAddressElements.region.textContent.trim(),
-        postal: borrowingAddressElements.postal.value,
-      };
-      const dueDateElement = await waitForElementWithInterval(
-        activeSelectors.dueDateElement
-      );
-      const dueDate = dueDateElement?.textContent.trim() || "";
-      const titleElement = await waitForElementWithInterval(
-        activeSelectors.titleElement
-      );
-      const title = titleElement?.textContent.trim() || "";
-      bookObject.title = title;
-      bookObject.dueDate = dueDate;
-      bookObject.borrowingAddress = addressData;
-      console.log("Book Object:", bookObject);
     };
 
     // --- URL Change Monitoring ---
