@@ -12,29 +12,15 @@ const {
 const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
   await import(chrome.runtime.getURL("modules/constants.js"));
 
-// -- Virtual Bookshelf Logic --
-export const createAddToBookshelfButton = async () => {
-  const parentElement = await waitForElementWithInterval("#sidebar-nd > div");
-  if (!document.querySelector("#add-to-bookshelf-button")) {
-    const button = document.createElement("button");
-    button.innerText = "Add to Virtual Bookshelf";
-    button.id = "add-to-bookshelf-button";
-    Object.assign(button.style, buttonStyles);
-    button.style.fontSize = "1rem";
-    button.addEventListener("mouseover", () => {
-      Object.assign(button.style, hoverStyles);
-      button.style.fontSize = "1rem";
-    });
-    button.addEventListener("mouseout", () => {
-      Object.assign(button.style, buttonStyles);
-      button.style.fontSize = "1rem";
-    });
-    button.addEventListener("click", () => {
-      console.log("Here we are, bois!!!");
-      virtualBookShelfClick();
-    });
-    parentElement.appendChild(button);
+// Extract borrowing address elements
+const extractBorrowingAddressElements = async () => {
+  const elements = {};
+  for (const [key, selector] of Object.entries(borrowingAddressSelectors)) {
+    elements[key] = await waitForElementWithInterval(() =>
+      ignoreHiddenElements(selector)
+    );
   }
+  return elements;
 };
 
 const virtualBookShelfClick = async () => {
@@ -71,13 +57,33 @@ const virtualBookShelfClick = async () => {
   console.log("Book Object:", bookObject);
 };
 
-// Extract borrowing address elements
-const extractBorrowingAddressElements = async () => {
-  const elements = {};
-  for (const [key, selector] of Object.entries(borrowingAddressSelectors)) {
-    elements[key] = await waitForElementWithInterval(() =>
-      ignoreHiddenElements(selector)
-    );
+export const createAddToBookshelfButton = async () => {
+  const parentElement = await waitForElementWithInterval("#sidebar-nd > div");
+  if (!document.querySelector("#add-to-bookshelf-button")) {
+    const button = document.createElement("button");
+    button.innerText = "Add to Virtual Bookshelf";
+    button.id = "add-to-bookshelf-button";
+    Object.assign(button.style, buttonStyles);
+    button.style.fontSize = "1rem";
+    button.addEventListener("mouseover", () => {
+      Object.assign(button.style, hoverStyles);
+      button.style.fontSize = "1rem";
+    });
+    button.addEventListener("mouseout", () => {
+      Object.assign(button.style, buttonStyles);
+      button.style.fontSize = "1rem";
+    });
+    button.addEventListener("click", () => {
+      console.log("Here we are, bois!!!");
+      virtualBookShelfClick();
+    });
+    parentElement.appendChild(button);
   }
-  return elements;
 };
+
+// TODO: Next Steps
+// 1) Store the book object in local storage
+// 2) Create a modal to confirm the addition of the book
+// 3) Add Sidepanel to view the virtual bookshelf
+// 4) Implement functionality to view, edit, and delete books from the virtual bookshelf
+// 5) Add functionality to export the virtual bookshelf to a file (JSON?)
