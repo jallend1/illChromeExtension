@@ -9,6 +9,7 @@
       ignoreHiddenElements,
       buttonStyles,
       hoverStyles,
+      borrowingAddressSelectors,
     } = await import(chrome.runtime.getURL("modules/utils.js"));
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;
@@ -48,16 +49,6 @@
       direct: {
         borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
       },
-    };
-
-    // TODO: Update selectors to account for multiple open requests
-    const borrowingAddressSelectors = {
-      attention: 'input[data="returning.address.attention"]',
-      line1: 'input[data="returning.address.line1"]',
-      line2: 'input[data="returning.address.line2"]',
-      locality: 'input[data="returning.address.locality"]',
-      region: 'span[data="returning.address.region"]',
-      postal: 'input[data="returning.address.postal"]',
     };
 
     // --- Utility Functions --

@@ -1,14 +1,9 @@
-const { waitForElementWithInterval, ignoreHiddenElements, miniModalStyles } =
-  await import(chrome.runtime.getURL("modules/utils.js"));
-
-const borrowingSelectors = {
-  attention: 'input[data="returning.address.attention"]',
-  line1: 'input[data="returning.address.line1"]',
-  line2: 'input[data="returning.address.line2"]',
-  locality: 'input[data="returning.address.locality"]',
-  region: 'span[data="returning.address.region"]',
-  postal: 'input[data="returning.address.postal"]',
-};
+const {
+  waitForElementWithInterval,
+  ignoreHiddenElements,
+  miniModalStyles,
+  borrowingAddressSelectors,
+} = await import(chrome.runtime.getURL("modules/utils.js"));
 
 const extractElements = async (selectors) => {
   const elements = {};
@@ -33,7 +28,10 @@ const returnArrayOfMatches = async (zipCode) => {
       } else {
         const mailData = result.mailData || [];
         if (!zipCode || typeof zipCode !== "string" || zipCode.trim() === "") {
-          console.warn("Invalid or missing zipCode in returnArrayOfMatches:", zipCode);
+          console.warn(
+            "Invalid or missing zipCode in returnArrayOfMatches:",
+            zipCode
+          );
           resolve([]);
           return;
         }
@@ -82,7 +80,7 @@ const calculateAverageDays = (appearances) => {
 };
 
 export const packageFrequency = async () => {
-  const elements = await extractElements(borrowingSelectors);
+  const elements = await extractElements(borrowingAddressSelectors);
   const matchingZipCodes = await searchForZipCode(elements.postal);
   console.log("Matching Zip Codes:", matchingZipCodes);
 
@@ -110,7 +108,9 @@ export const packageFrequency = async () => {
         (library) =>
           `<li><strong>${library["Recipient Company"] || ""}</strong> (${
             library["Recipient Name"] || ""
-          }): ${calculateAverageDays(library["Appearances"])} days between packages.</li>`
+          }): ${calculateAverageDays(
+            library["Appearances"]
+          )} days between packages.</li>`
       )
       .join("");
     createMiniModal(
