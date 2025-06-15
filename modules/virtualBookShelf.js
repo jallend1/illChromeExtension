@@ -23,12 +23,26 @@ const extractBorrowingAddressElements = async () => {
   return elements;
 };
 
-const virtualBookShelfClick = async () => {
-  console.log("Virtual Bookshelf button clicked");
-  const isQueueUrl = window.currentUrl.includes("queue");
-  const activeSelectors = isQueueUrl
-    ? borrowingSelectors.queue
-    : borrowingSelectors.direct;
+// Retrieve the existing virtualBookShelf from local storage or initialize it
+const getVirtualBookShelf = async () => {
+  const storedBookshelf = await new Promise((resolve) => {
+    chrome.storage.local.get("virtualBookShelf", (result) => {
+      resolve(result.virtualBookShelf || []);
+    });
+  });
+  return storedBookshelf;
+};
+
+const addBookToVirtualBookShelf = async (book) => {
+  const virtualBookShelf = await getVirtualBookShelf();
+  virtualBookShelf.push(book);
+  await new Promise((resolve) => {
+    chrome.storage.local.set({ virtualBookShelf }, resolve);
+  });
+  console.log("Current Virtual Bookshelf:", virtualBookShelf);
+};
+
+const extractBookFromDOM = async (activeSelectors) => {
   const bookObject = {
     title: "",
     dueDate: "",
@@ -55,6 +69,22 @@ const virtualBookShelfClick = async () => {
   bookObject.dueDate = dueDate;
   bookObject.borrowingAddress = addressData;
   console.log("Book Object:", bookObject);
+  return bookObject;
+};
+
+const virtualBookShelfClick = async () => {
+  console.log("Virtual Bookshelf button clicked");
+  const isQueueUrl = window.currentUrl.includes("queue");
+  const activeSelectors = isQueueUrl
+    ? borrowingSelectors.queue
+    : borrowingSelectors.direct;
+  const book = await extractBookFromDOM(activeSelectors);
+  if (book.title) {
+    await addBookToVirtualBookShelf(book);
+    console.log("Book added to virtual bookshelf:", book);
+  } else {
+    console.error("No book title found. Cannot add to virtual bookshelf.");
+  }
 };
 
 export const createAddToBookshelfButton = async () => {
@@ -82,7 +112,7 @@ export const createAddToBookshelfButton = async () => {
 };
 
 // TODO: Next Steps
-// 1) Store the book object in local storage
+
 // 2) Create a modal to confirm the addition of the book
 // 3) Add Sidepanel to view the virtual bookshelf
 // 4) Implement functionality to view, edit, and delete books from the virtual bookshelf
