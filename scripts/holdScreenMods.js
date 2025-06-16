@@ -23,6 +23,7 @@
         chrome.runtime.getURL("images/kawaii-dinosaur.png")
       );
       const barcodeField = document.querySelector("#patron-barcode");
+      console.log("Barcode Field: ", barcodeField);
       barcodeField.value = "0040746158";
       const event = new Event("input", {
         bubbles: true,
@@ -32,9 +33,11 @@
       const placeHoldButton = document.querySelector(
         '[keydesc="Place Hold(s)"]'
       );
+      console.log("Place Hold Button: ", placeHoldButton);
       // Wait for disabled attribute to be removed from placeHoldButton
       const observer = new MutationObserver((mutationList) => {
         mutationList.forEach((mutation) => {
+          console.log("Mutation: ", mutation);
           if (
             mutation.type === "attributes" &&
             !placeHoldButton.hasAttribute("disabled")
