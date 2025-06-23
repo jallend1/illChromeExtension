@@ -80,9 +80,26 @@
             searchButton.style.borderRadius = "3px";
             searchButton.style.cursor = "pointer";
             searchButton.addEventListener("click", () => {
-              const patronName = modalHeader.textContent.trim();
+              let searchTerm;
+              const isbnField = document.querySelector(
+                "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(5) > div:nth-child(2) > input"
+              );
+              if (isbnField && isbnField.value.trim() !== "") {
+                searchTerm = isbnField.value.trim();
+              } else {
+                const titleField = document.querySelector(
+                  "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(2) > div.col-10 > input"
+                );
+                const authorField = document.querySelector(
+                  "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(4) > div:nth-child(4) > input"
+                );
+                const title = titleField ? titleField.value.trim() : "";
+                const author = authorField ? authorField.value.trim() : "";
+                console.log("Title:", title, "Author:", author);
+                searchTerm = `${title} ${author}`.trim();
+              }
               const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(
-                patronName
+                searchTerm
               )}`;
               window.open(amazonSearchUrl, "_blank");
             });
