@@ -16,6 +16,94 @@
         const modal = document.querySelector(".modal-dialog.modal-xl");
         if (modal) {
           console.log("We got one!", modal);
+          const modalHeader = document.querySelector(
+            ".modal-content > .modal-header"
+          );
+          if (modalHeader) {
+            const buttonContainer = document.createElement("div");
+            buttonContainer.style.display = "flex";
+            buttonContainer.style.justifyContent = "space-between";
+            buttonContainer.style.margin = "10px";
+            buttonContainer.style.padding = "10px";
+            buttonContainer.style.backgroundColor = "#f8f9fa";
+            buttonContainer.style.borderRadius = "5px";
+            buttonContainer.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+
+            // Create the "Copy Patron Name" button
+            const copyButton = document.createElement("button");
+            copyButton.textContent = "Copy Patron Name";
+            copyButton.style.marginRight = "10px";
+            copyButton.style.padding = "5px 10px";
+            copyButton.style.backgroundColor = "#007bff";
+            copyButton.style.color = "#fff";
+            copyButton.style.border = "none";
+            copyButton.style.borderRadius = "3px";
+            copyButton.style.cursor = "pointer";
+
+            copyButton.addEventListener("click", () => {
+              //   Get patron name from the DOM -- The first div with a parent div of '.modal-body .form-validated'
+              //   const patronNameParentElement = document.querySelector("div.modal-body.form-validated > div");
+
+              //   console.log(
+              //     "Patron Name Parent Element:",
+              //     patronNameParentElement
+              //   );
+              //   If the parent element is
+              //   //   Get the text content of the second child of the parent element
+              //   const patronName = patronNameParentElement
+              //     ? patronNameParentElement.children[1].textContent.trim()
+              //     : "Patron name not found";
+              const patronNameField = document.querySelector(
+                "div.modal-body.form-validated > div"
+              ).children[1];
+              const cleanPatronName = patronNameField.textContent
+                .split("(")[0]
+                .trim();
+              // Extract pickup location to append to patron name
+              const pickupLocation = document
+                .querySelector(
+                  "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(8) > div:nth-child(2)"
+                )
+                .textContent.split("(")[1]
+                .split(")")[0]
+                .trim();
+
+              const worldShareName = cleanPatronName + ", " + pickupLocation;
+              navigator.clipboard
+                .writeText(worldShareName)
+                .then(() => {
+                  console.log(
+                    "Patron name copied to clipboard:",
+                    worldShareName
+                  );
+                })
+                .catch((err) => {
+                  console.error("Failed to copy patron name:", err);
+                });
+            });
+
+            // Create the "Search Amazon" button
+            const searchButton = document.createElement("button");
+            searchButton.textContent = "Search Amazon";
+            searchButton.style.padding = "5px 10px";
+            searchButton.style.backgroundColor = "#28a745";
+            searchButton.style.color = "#fff";
+            searchButton.style.border = "none";
+            searchButton.style.borderRadius = "3px";
+            searchButton.style.cursor = "pointer";
+            searchButton.addEventListener("click", () => {
+              const patronName = modalHeader.textContent.trim();
+              const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(
+                patronName
+              )}`;
+              window.open(amazonSearchUrl, "_blank");
+            });
+            // Append buttons to the container
+            buttonContainer.appendChild(copyButton);
+            buttonContainer.appendChild(searchButton);
+            // Append the button container to the modal header
+            modalHeader.appendChild(buttonContainer);
+          }
 
           observer.disconnect();
           watchForModalRemoval(modal);
