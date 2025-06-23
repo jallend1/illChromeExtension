@@ -22,7 +22,7 @@
           if (modalHeader) {
             const buttonContainer = document.createElement("div");
             buttonContainer.style.display = "flex";
-            buttonContainer.style.justifyContent = "space-between";
+            // buttonContainer.style.justifyContent = "space-between";
             buttonContainer.style.margin = "10px";
             buttonContainer.style.padding = "10px";
             buttonContainer.style.backgroundColor = "#f8f9fa";
@@ -31,7 +31,7 @@
 
             // Create the "Copy Patron Name" button
             const copyButton = document.createElement("button");
-            copyButton.textContent = "Copy Patron Name";
+            copyButton.textContent = "Copy Name for WorldShare";
             copyButton.style.marginRight = "10px";
             copyButton.style.padding = "5px 10px";
             copyButton.style.backgroundColor = "#007bff";
@@ -41,18 +41,6 @@
             copyButton.style.cursor = "pointer";
 
             copyButton.addEventListener("click", () => {
-              //   Get patron name from the DOM -- The first div with a parent div of '.modal-body .form-validated'
-              //   const patronNameParentElement = document.querySelector("div.modal-body.form-validated > div");
-
-              //   console.log(
-              //     "Patron Name Parent Element:",
-              //     patronNameParentElement
-              //   );
-              //   If the parent element is
-              //   //   Get the text content of the second child of the parent element
-              //   const patronName = patronNameParentElement
-              //     ? patronNameParentElement.children[1].textContent.trim()
-              //     : "Patron name not found";
               const patronNameField = document.querySelector(
                 "div.modal-body.form-validated > div"
               ).children[1];
@@ -101,8 +89,8 @@
             // Append buttons to the container
             buttonContainer.appendChild(copyButton);
             buttonContainer.appendChild(searchButton);
-            // Append the button container to the modal header
-            modalHeader.appendChild(buttonContainer);
+            // modalHeader.appendChild(buttonContainer);
+            modalHeader.insertAdjacentElement("afterend", buttonContainer);
           }
 
           observer.disconnect();
