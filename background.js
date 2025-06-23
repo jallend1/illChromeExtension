@@ -371,6 +371,16 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       files: ["./scripts/worldShareMods.js"],
     });
   }
+  if (
+    tab.url.includes("staff/cat/requests") &&
+    changeInfo.status === "complete"
+  ) {
+    // Inject the request manager mods script when the request manager page is loaded
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/requestManagerMods.js"],
+    });
+  }
 
   // Dismisses 'Open Transit on item' modal when checking out items
   if (tab.url.includes("/checkout") && changeInfo.status === "complete") {
@@ -500,6 +510,14 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
       files: ["./scripts/worldShareMods.js"],
+    });
+  }
+  if (currentUrl.includes("/staff/cat/requests")) {
+    // Inject the request manager mods script when the request manager page is loaded
+    console.log("Sending again");
+    chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["./scripts/requestManagerMods.js"],
     });
   }
 });
