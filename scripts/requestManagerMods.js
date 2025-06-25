@@ -15,12 +15,15 @@
       modalObserver = new MutationObserver((mutationsList, observer) => {
         const modal = document.querySelector(".modal-dialog.modal-xl");
         if (modal) {
-          console.log("We got one!", modal);
           const modalHeader = document.querySelector(
             ".modal-content > .modal-header"
           );
           if (modalHeader) {
+            if(document.querySelector("#request-manager-mods-buttons")) {
+              return;
+            }
             const buttonContainer = document.createElement("div");
+            buttonContainer.id = "request-manager-mods-buttons";
             buttonContainer.style.display = "flex";
             // buttonContainer.style.justifyContent = "space-between";
             buttonContainer.style.margin = "10px";
