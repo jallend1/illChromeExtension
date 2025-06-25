@@ -50,6 +50,8 @@
               const cleanPatronName = patronNameField.textContent
                 .split("(")[0]
                 .trim();
+                // TODO: Extract barcode from the patron name field but not used yet
+                const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
               // Extract pickup location to append to patron name
               const pickupLocation = document
                 .querySelector(
@@ -60,16 +62,17 @@
                 .trim();
 
               const worldShareName = cleanPatronName + ", " + pickupLocation;
+              // const clipboardContent = worldShareName + "\t" + barcode;
               navigator.clipboard
                 .writeText(worldShareName)
                 .then(() => {
                   console.log(
-                    "Patron name copied to clipboard:",
+                    "Patron data copied to clipboard:",
                     worldShareName
                   );
                 })
                 .catch((err) => {
-                  console.error("Failed to copy patron name:", err);
+                  console.error("Failed to copy patron data:", err);
                 });
             });
 
