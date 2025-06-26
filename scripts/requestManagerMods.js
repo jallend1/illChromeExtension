@@ -19,7 +19,7 @@
             ".modal-content > .modal-header"
           );
           if (modalHeader) {
-            if(document.querySelector("#request-manager-mods-buttons")) {
+            if (document.querySelector("#request-manager-mods-buttons")) {
               return;
             }
             const buttonContainer = document.createElement("div");
@@ -50,8 +50,8 @@
               const cleanPatronName = patronNameField.textContent
                 .split("(")[0]
                 .trim();
-                // TODO: Extract barcode from the patron name field but not used yet
-                const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
+              // TODO: Extract barcode from the patron name field but not used yet
+              const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
               // Extract pickup location to append to patron name
               const pickupLocation = document
                 .querySelector(
@@ -109,6 +109,41 @@
               )}`;
               window.open(amazonSearchUrl, "_blank");
             });
+
+            // Create a button to copy Title and Author to clipboard
+            const copyTitleAuthorButton = document.createElement("button");
+            copyTitleAuthorButton.textContent = "Copy Title & Author";
+            copyTitleAuthorButton.style.marginLeft = "10px";
+            copyTitleAuthorButton.style.padding = "5px 10px";
+            copyTitleAuthorButton.style.backgroundColor = "#17a2b8";
+            copyTitleAuthorButton.style.color = "#fff";
+            copyTitleAuthorButton.style.border = "none";
+            copyTitleAuthorButton.style.borderRadius = "3px";
+            copyTitleAuthorButton.style.cursor = "pointer";
+
+            copyTitleAuthorButton.addEventListener("click", () => {
+              const titleField = document.querySelector(
+                "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(2) > div.col-10 > input"
+              );
+              const authorField = document.querySelector(
+                "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(4) > div:nth-child(4) > input"
+              );
+              const title = titleField ? titleField.value.trim() : "";
+              const author = authorField ? authorField.value.trim() : "";
+              const clipboardContent = `${title} ${author}`;
+              navigator.clipboard
+                .writeText(clipboardContent)
+                .then(() => {
+                  console.log(
+                    "Title and Author copied to clipboard:",
+                    clipboardContent
+                  );
+                })
+                .catch((err) => {
+                  console.error("Failed to copy Title and Author:", err);
+                });
+            });
+
             // Append buttons to the container
             buttonContainer.appendChild(copyButton);
             buttonContainer.appendChild(searchButton);
