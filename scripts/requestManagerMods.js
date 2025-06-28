@@ -1,3 +1,5 @@
+// TODO: Clean up this madness!
+
 (async () => {
   console.log("Request Manager Mods script starting...");
   if (!window.requestManagerModsInjected) {
@@ -10,6 +12,16 @@
 
     let modalObserver = null;
     let removalObserver = null;
+
+    function applyButtonStyles(button, color = "#007bff") {
+      button.style.marginRight = "10px";
+      button.style.padding = "5px 10px";
+      button.style.backgroundColor = color;
+      button.style.color = "#fff";
+      button.style.border = "none";
+      button.style.borderRadius = "3px";
+      button.style.cursor = "pointer";
+    }
 
     function watchForModal() {
       modalObserver = new MutationObserver((mutationsList, observer) => {
@@ -46,21 +58,11 @@
 
             const copyPatronBarcodeButton = document.createElement("button");
             copyPatronBarcodeButton.textContent = "Copy Patron Barcode";
-            copyPatronBarcodeButton.style.marginRight = "10px";
-            copyPatronBarcodeButton.style.padding = "5px 10px";
-            copyPatronBarcodeButton.style.backgroundColor = "#007bff";
-            copyPatronBarcodeButton.style.color = "#fff";
-            copyPatronBarcodeButton.style.border = "none";
-            copyPatronBarcodeButton.style.borderRadius = "3px";
-            copyPatronBarcodeButton.style.cursor = "pointer";
+            applyButtonStyles(copyPatronBarcodeButton, "#007bff");
             copyPatronBarcodeButton.addEventListener("click", () => {
               const patronNameField = document.querySelector(
                 "div.modal-body.form-validated > div"
               ).children[1];
-              const cleanPatronName = patronNameField.textContent
-                .split("(")[0]
-                .trim();
-              // TODO: Extract barcode from the patron name field but not used yet
               const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
               navigator.clipboard
                 .writeText(barcode)
@@ -75,13 +77,7 @@
             // Create the "Copy Patron Name" button
             const copyButton = document.createElement("button");
             copyButton.textContent = "Copy Name for WorldShare";
-            copyButton.style.marginRight = "10px";
-            copyButton.style.padding = "5px 10px";
-            copyButton.style.backgroundColor = "#007bff";
-            copyButton.style.color = "#fff";
-            copyButton.style.border = "none";
-            copyButton.style.borderRadius = "3px";
-            copyButton.style.cursor = "pointer";
+            applyButtonStyles(copyButton, "#007bff");
 
             copyButton.addEventListener("click", () => {
               const patronNameField = document.querySelector(
@@ -119,12 +115,7 @@
             // Create the "Search Amazon" button
             const searchButton = document.createElement("button");
             searchButton.textContent = "Search Amazon";
-            searchButton.style.padding = "5px 10px";
-            searchButton.style.backgroundColor = "#28a745";
-            searchButton.style.color = "#fff";
-            searchButton.style.border = "none";
-            searchButton.style.borderRadius = "3px";
-            searchButton.style.cursor = "pointer";
+            applyButtonStyles(searchButton, "#28a745");
             searchButton.addEventListener("click", () => {
               let searchTerm;
               const isbnField = document.querySelector(
@@ -153,13 +144,7 @@
             // Create a button to copy Title and Author to clipboard
             const copyTitleAuthorButton = document.createElement("button");
             copyTitleAuthorButton.textContent = "Copy Title & Author";
-            copyTitleAuthorButton.style.margin = "0 10px";
-            copyTitleAuthorButton.style.padding = "5px 10px";
-            copyTitleAuthorButton.style.backgroundColor = "#17a2b8";
-            copyTitleAuthorButton.style.color = "#fff";
-            copyTitleAuthorButton.style.border = "none";
-            copyTitleAuthorButton.style.borderRadius = "3px";
-            copyTitleAuthorButton.style.cursor = "pointer";
+            applyButtonStyles(copyTitleAuthorButton, "#17a2b8");
 
             copyTitleAuthorButton.addEventListener("click", () => {
               const titleField = document.querySelector(
@@ -189,12 +174,8 @@
             copyButtonContainer.appendChild(copyPatronBarcodeButton);
             searchButtonContainer.appendChild(copyTitleAuthorButton);
             searchButtonContainer.appendChild(searchButton);
-            // buttonContainer.appendChild(copyButton);
             buttonContainer.appendChild(copyButtonContainer);
             buttonContainer.appendChild(searchButtonContainer);
-            // buttonContainer.appendChild(searchButton);
-            // buttonContainer.appendChild(copyTitleAuthorButton);
-            // modalHeader.appendChild(buttonContainer);
             modalHeader.insertAdjacentElement("afterend", buttonContainer);
           }
 
