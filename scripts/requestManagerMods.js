@@ -44,6 +44,34 @@
             searchButtonContainer.style.display = "flex";
             searchButtonContainer.style.marginRight = "10px";
 
+            const copyPatronBarcodeButton = document.createElement("button");
+            copyPatronBarcodeButton.textContent = "Copy Patron Barcode";
+            copyPatronBarcodeButton.style.marginRight = "10px";
+            copyPatronBarcodeButton.style.padding = "5px 10px";
+            copyPatronBarcodeButton.style.backgroundColor = "#007bff";
+            copyPatronBarcodeButton.style.color = "#fff";
+            copyPatronBarcodeButton.style.border = "none";
+            copyPatronBarcodeButton.style.borderRadius = "3px";
+            copyPatronBarcodeButton.style.cursor = "pointer";
+            copyPatronBarcodeButton.addEventListener("click", () => {
+              const patronNameField = document.querySelector(
+                "div.modal-body.form-validated > div"
+              ).children[1];
+              const cleanPatronName = patronNameField.textContent
+                .split("(")[0]
+                .trim();
+              // TODO: Extract barcode from the patron name field but not used yet
+              const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
+              navigator.clipboard
+                .writeText(barcode)
+                .then(() => {
+                  console.log("Patron barcode copied to clipboard:", barcode);
+                })
+                .catch((err) => {
+                  console.error("Failed to copy patron barcode:", err);
+                });
+            });
+
             // Create the "Copy Patron Name" button
             const copyButton = document.createElement("button");
             copyButton.textContent = "Copy Name for WorldShare";
@@ -158,6 +186,7 @@
 
             // Append buttons to the container
             copyButtonContainer.appendChild(copyButton);
+            copyButtonContainer.appendChild(copyPatronBarcodeButton);
             searchButtonContainer.appendChild(copyTitleAuthorButton);
             searchButtonContainer.appendChild(searchButton);
             // buttonContainer.appendChild(copyButton);
