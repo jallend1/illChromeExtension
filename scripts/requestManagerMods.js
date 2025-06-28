@@ -25,12 +25,24 @@
             const buttonContainer = document.createElement("div");
             buttonContainer.id = "request-manager-mods-buttons";
             buttonContainer.style.display = "flex";
-            // buttonContainer.style.justifyContent = "space-between";
+            buttonContainer.style.justifyContent = "space-between";
             buttonContainer.style.margin = "10px";
             buttonContainer.style.padding = "10px";
             buttonContainer.style.backgroundColor = "#f8f9fa";
             buttonContainer.style.borderRadius = "5px";
             buttonContainer.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+
+            // Container for copy related actions
+            const copyButtonContainer = document.createElement("div");
+            copyButtonContainer.id = "request-manager-mods-copy-buttons";
+            copyButtonContainer.style.display = "flex";
+            copyButtonContainer.style.marginRight = "10px";
+
+            // Container for search related actions
+            const searchButtonContainer = document.createElement("div");
+            searchButtonContainer.id = "request-manager-mods-search-buttons";
+            searchButtonContainer.style.display = "flex";
+            searchButtonContainer.style.marginRight = "10px";
 
             // Create the "Copy Patron Name" button
             const copyButton = document.createElement("button");
@@ -113,7 +125,7 @@
             // Create a button to copy Title and Author to clipboard
             const copyTitleAuthorButton = document.createElement("button");
             copyTitleAuthorButton.textContent = "Copy Title & Author";
-            copyTitleAuthorButton.style.marginLeft = "10px";
+            copyTitleAuthorButton.style.margin = "0 10px";
             copyTitleAuthorButton.style.padding = "5px 10px";
             copyTitleAuthorButton.style.backgroundColor = "#17a2b8";
             copyTitleAuthorButton.style.color = "#fff";
@@ -145,8 +157,14 @@
             });
 
             // Append buttons to the container
-            buttonContainer.appendChild(copyButton);
-            buttonContainer.appendChild(searchButton);
+            copyButtonContainer.appendChild(copyButton);
+            searchButtonContainer.appendChild(copyTitleAuthorButton);
+            searchButtonContainer.appendChild(searchButton);
+            // buttonContainer.appendChild(copyButton);
+            buttonContainer.appendChild(copyButtonContainer);
+            buttonContainer.appendChild(searchButtonContainer);
+            // buttonContainer.appendChild(searchButton);
+            // buttonContainer.appendChild(copyTitleAuthorButton);
             // modalHeader.appendChild(buttonContainer);
             modalHeader.insertAdjacentElement("afterend", buttonContainer);
           }
