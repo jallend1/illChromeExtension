@@ -56,6 +56,16 @@ const storageKeys = [
   { key: "mailData", element: elements.importMailroomData },
 ];
 
+const currentPatronInfo = document.querySelector("#currentPatronInfo");
+console.log(currentPatronInfo);
+// Check local storage for requestManagerPatron and if it exists, insert requestManagerPatron.name
+chrome.storage.local.get("requestManagerPatron", (data) => {
+  console.log(data);
+  if (data.requestManagerPatron) {
+    currentPatronInfo.textContent = data.requestManagerPatron.name;
+  }
+});
+
 // Parses mailData CSV file and returns the parsed data
 const parseMailData = async () => {
   const mailDataUrl = chrome.runtime.getURL("data/mailData.csv");

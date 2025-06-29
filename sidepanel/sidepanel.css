@@ -164,6 +164,13 @@ section main {
 /* *    Buttons      * */
 /* ******************* */
 
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+}
+
 button {
   cursor: pointer;
   margin-top: 0.5rem;
