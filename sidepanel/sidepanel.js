@@ -27,7 +27,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "requestManagerPatronUpdated") {
     chrome.storage.local.get("requestManagerPatron", (data) => {
       if (data.requestManagerPatron) {
+        document.querySelector(".requestingPatronDetails").style.display =
+          "block";
         currentPatronInfo.textContent = data.requestManagerPatron.name;
+      } else {
+        currentPatronInfo.textContent = "";
+        document.querySelector(".requestingPatronDetails").style.display =
+          "none";
       }
     });
   }
@@ -74,6 +80,9 @@ chrome.storage.local.get("requestManagerPatron", (data) => {
   console.log(data);
   if (data.requestManagerPatron) {
     currentPatronInfo.textContent = data.requestManagerPatron.name;
+  } else {
+    currentPatronInfo.textContent = "";
+    document.querySelector(".requestingPatronDetails").style.display = "none";
   }
 });
 
@@ -158,6 +167,15 @@ const getStorageValue = (key, element) => {
 
 storageKeys.forEach((storageKey) => {
   getStorageValue(storageKey.key, storageKey.element);
+});
+
+const clearPatronInfoButton = document.getElementById("clearPatronInfoButton");
+clearPatronInfoButton.addEventListener("click", () => {
+  chrome.storage.local.remove("requestManagerPatron", () => {
+    currentPatronInfo.textContent = "";
+    document.querySelector(".requestingPatronDetails").style.display = "none";
+    console.log("Patron information cleared from storage.");
+  });
 });
 
 const initiateScript = (scriptName) => {

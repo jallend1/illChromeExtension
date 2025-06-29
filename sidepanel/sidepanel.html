@@ -33,34 +33,6 @@
     <main>
       <section class="scripts">
         <header>
-          <h2>Requesting</h2>
-          <img
-            class="collapsible rotated"
-            src="../images/collapse.svg"
-            alt="Collapse"
-          />
-        </header>
-        <main class="collapsible hidden collapsed">
-          <div class="button-group">
-            <div>
-              <button id="copyPatronFromRM" class="ill-actions tooltip">
-                Copy Patron Info
-                <!-- <span class="tooltiptext"></span> -->
-              </button>
-              <p class="subtitle" id="currentPatronInfo"></p>
-            </div>
-            <div>
-
-              <button id="pastePatronToWS" class="ill-actions tooltip">
-                Paste Patron Info
-                <!-- <span class="tooltiptext"></span> -->
-              </button>
-            </div>
-          </div>
-
-      </section>
-      <section class="scripts">
-        <header>
           <h2>Entering</h2>
           <img
             class="collapsible rotated"
@@ -87,6 +59,41 @@
               <label for="auto-receive-request" class="toggle-text">
                 Receive Request
               </label>
+            </div>
+          </div>
+        </main>
+      </section>
+      <section class="scripts">
+        <header>
+          <h2>Requesting</h2>
+          <img
+            class="collapsible rotated"
+            src="../images/collapse.svg"
+            alt="Collapse"
+          />
+        </header>
+        <main class="collapsible hidden collapsed">
+          <div class="button-group">
+            <div>
+              <button id="copyPatronFromRM" class="ill-actions tooltip">
+                Copy Patron Info
+                <!-- <span class="tooltiptext"></span> -->
+              </button>
+              <div class="requestingPatronDetails">
+                <p class="subtitle">Current patron:</p>
+                <p class="subtitle" id="currentPatronInfo"></p>
+                <p class="subtitle" id="clearPatronInfo">
+                  <button id="clearPatronInfoButton" class="tiny-button">
+                    Clear Patron Info
+                  </button>
+                </p>
+              </div>
+            </div>
+            <div>
+              <button id="pastePatronToWS" class="ill-actions tooltip">
+                Paste Patron Info
+                <!-- <span class="tooltiptext"></span> -->
+              </button>
             </div>
           </div>
         </main>
