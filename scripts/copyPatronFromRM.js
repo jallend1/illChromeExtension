@@ -19,13 +19,12 @@
   chrome.storage.local.set(
     { requestManagerPatron: { name: worldShareName, barcode } },
     () => {
-      console.log("Request Manager Patron saved to storage:", {
-        name: worldShareName,
-        barcode,
-      });
-      // Send message to sidepanel.js to extract address
-      //   chrome.runtime.sendMessage({ type: "requestManagerPatronReady" });
-      //   console.log(requestManagerPatron);
+      //   console.log("Request Manager Patron saved to storage:", {
+      //     name: worldShareName,
+      //     barcode,
+      //   });
+      //   Alerts sidepanel to update current patron info
+      chrome.runtime.sendMessage({ type: "requestManagerPatronUpdated" });
     }
   );
 })();

@@ -24,6 +24,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "requestManagerPatronUpdated") {
+    chrome.storage.local.get("requestManagerPatron", (data) => {
+      if (data.requestManagerPatron) {
+        currentPatronInfo.textContent = data.requestManagerPatron.name;
+      }
+    });
+  }
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "storage-updated") {
     for (const [key, { newValue }] of Object.entries(message.changes)) {
       const storageKey = storageKeys.find((sk) => sk.key === key);
@@ -56,6 +66,7 @@ const storageKeys = [
   { key: "mailData", element: elements.importMailroomData },
 ];
 
+// Renders current patron information in local storage from request manager
 const currentPatronInfo = document.querySelector("#currentPatronInfo");
 console.log(currentPatronInfo);
 // Check local storage for requestManagerPatron and if it exists, insert requestManagerPatron.name
@@ -174,17 +185,9 @@ const initiateScript = (scriptName) => {
               }
             });
             return;
-            // } else if (scriptName === "copyPatronFromRM") {
-            //   chrome.runtime.onMessage.addListener(async function handler(msg) {
-            //     if (msg.type === "requestManagerPatronReady") {
-            //       await navigator.clipboard.writeText("");
-            //       await extractFromStorage("requestManagerPatron");
-            //       chrome.runtime.onMessage.removeListener(handler);
-            //     }
-            //   });
           } else if (scriptName === "copyPatronFromRM") {
             chrome.runtime.sendMessage({ command: "copyPatronFromRM" });
-            // Don't send data: scriptName, so background doesn't try to load undefined.js
+            // Don't send data: scriptName, so background doesn't try to load undefined.js AGAIN
             // chrome.runtime.onMessage.addListener(async function handler(msg) {
             //   if (msg.type === "requestManagerPatronReady") {
             //     await navigator.clipboard.writeText("");
