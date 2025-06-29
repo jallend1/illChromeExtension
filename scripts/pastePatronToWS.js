@@ -24,6 +24,16 @@
   const nameField = await waitForElementWithInterval(nameSelector);
   const barcodeField = await waitForElementWithInterval(barcodeSelector);
 
+  // TODO: If there's no nameFieldTest, switch to WorldShare tab and try again
+  // const nameFieldTest = document.querySelector(nameSelector);
+  // console.log("Name field test:", nameFieldTest);
+  // if(!nameFieldTest) {
+  //     const tabs = await chrome.tabs.query({ url: "*share.worldcat.org/*" });
+  //     if (tabs.length > 0) {
+  //         chrome.tabs.update(tabs[0].id, { active: true });
+  //     }
+  // }
+
   // Scroll to nameSelector field
   nameField.scrollIntoView({ behavior: "smooth", block: "center" });
 
