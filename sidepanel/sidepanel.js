@@ -164,6 +164,25 @@ const initiateScript = (scriptName) => {
               }
             });
             return;
+            // } else if (scriptName === "copyPatronFromRM") {
+            //   chrome.runtime.onMessage.addListener(async function handler(msg) {
+            //     if (msg.type === "requestManagerPatronReady") {
+            //       await navigator.clipboard.writeText("");
+            //       await extractFromStorage("requestManagerPatron");
+            //       chrome.runtime.onMessage.removeListener(handler);
+            //     }
+            //   });
+          } else if (scriptName === "copyPatronFromRM") {
+            chrome.runtime.sendMessage({ command: "copyPatronFromRM" });
+            // Don't send data: scriptName, so background doesn't try to load undefined.js
+            // chrome.runtime.onMessage.addListener(async function handler(msg) {
+            //   if (msg.type === "requestManagerPatronReady") {
+            //     await navigator.clipboard.writeText("");
+            //     await extractFromStorage("requestManagerPatron");
+            //     chrome.runtime.onMessage.removeListener(handler);
+            //   }
+            // });
+            return;
           } else if (scriptName === "overdueNotice") {
             chrome.runtime.onMessage.addListener(async function handler(msg) {
               if (msg.type === "overdueNoticeReady") {

@@ -269,15 +269,17 @@ chrome.runtime.onMessage.addListener(async function (
       return;
     }
 
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: activeTab.id },
-        files: [`./scripts/${request.data}.js`],
-      },
-      () => {
-        sendResponse({ response: "Message received" });
-      }
-    );
+    if (request.data) {
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: activeTab.id },
+          files: [`./scripts/${request.data}.js`],
+        },
+        () => {
+          sendResponse({ response: "Message received" });
+        }
+      );
+    }
   }
   return true;
 });
