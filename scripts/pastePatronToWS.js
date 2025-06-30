@@ -21,18 +21,22 @@
   });
 
   // Wait for the name and barcode fields to be available
-  const nameField = await waitForElementWithInterval(nameSelector);
-  const barcodeField = await waitForElementWithInterval(barcodeSelector);
+  // const nameField = await waitForElementWithInterval(nameSelector);
+  // const barcodeField = await waitForElementWithInterval(barcodeSelector);
 
   // TODO: If there's no nameFieldTest, switch to WorldShare tab and try again
-  // const nameFieldTest = document.querySelector(nameSelector);
-  // console.log("Name field test:", nameFieldTest);
-  // if(!nameFieldTest) {
-  //     const tabs = await chrome.tabs.query({ url: "*share.worldcat.org/*" });
-  //     if (tabs.length > 0) {
-  //         chrome.tabs.update(tabs[0].id, { active: true });
-  //     }
-  // }
+  // TODO: chrome.tabs.query only available in background.js?
+  const nameFieldTest = document.querySelector(nameSelector);
+  console.log("Name field test:", nameFieldTest);
+  if (!nameFieldTest) {
+    console.log("Name field not found, switching to WorldShare tab.");
+    const tabs = await chrome.tabs.query({ url: "*share.worldcat.org/*" });
+    console.log(tabs);
+    if (tabs.length > 0) {
+      console.log("Switching to WorldShare tab:", tabs[0]);
+      chrome.tabs.update(tabs[0].id, { active: true });
+    }
+  }
 
   // Scroll to nameSelector field
   nameField.scrollIntoView({ behavior: "smooth", block: "center" });
