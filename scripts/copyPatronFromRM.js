@@ -19,10 +19,6 @@
   chrome.storage.local.set(
     { requestManagerPatron: { name: worldShareName, barcode } },
     () => {
-      //   console.log("Request Manager Patron saved to storage:", {
-      //     name: worldShareName,
-      //     barcode,
-      //   });
       //   Alerts sidepanel to update current patron info
       chrome.runtime.sendMessage({ type: "requestManagerPatronUpdated" });
     }

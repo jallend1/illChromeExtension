@@ -190,6 +190,10 @@
       removalObserver = new MutationObserver((mutationsList, observer) => {
         if (!document.body.contains(modal)) {
           console.log("Modal closed");
+          // Clears out patron data when modal is closed to prevent errors
+          chrome.storage.local.remove("requestManagerPatron");
+          chrome.runtime.sendMessage({ type: "requestManagerPatronUpdated" });
+
           observer.disconnect();
           watchForModal(); // Start watching for the next modal
         }
