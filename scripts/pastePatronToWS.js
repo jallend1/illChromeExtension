@@ -6,36 +6,40 @@
   const nameSelector = "#patron-details-NEW-REQUESTER-patronName";
   const barcodeSelector = "#patron-details-NEW-REQUESTER-patronId";
 
-  let patronName;
-  let barcode;
-  // Extract requestManagerPatron from local storage
-  chrome.storage.local.get("requestManagerPatron", (data) => {
-    if (data.requestManagerPatron) {
-      patronName = data.requestManagerPatron.name;
-      barcode = data.requestManagerPatron.barcode;
-      console.log("Request Manager Patron loaded from storage:", {
-        name: patronName,
-        barcode: barcode,
-      });
-    }
+  // Check if we're on the right page
+  if (!window.location.href.includes("share.worldcat.org")) {
+    console.log(
+      "Not on WorldShare page, finding and switching to WorldShare tab..."
+    );
+    chrome.runtime.sendMessage({
+      type: "findAndSwitchToWorldShare",
+      scriptToRelaunch: "pastePatronToWS",
+    });
+    return; // Don't wait for a response!
+  }
+
+  const storageData = await new Promise((resolve) => {
+    chrome.storage.local.get("requestManagerPatron", resolve);
+  });
+
+  if (!storageData.requestManagerPatron) {
+    console.error("No patron data found in storage");
+    return;
+  }
+
+  const { name: patronName, barcode } = storageData.requestManagerPatron;
+  console.log("Request Manager Patron loaded from storage:", {
+    name: patronName,
+    barcode: barcode,
   });
 
   // Wait for the name and barcode fields to be available
-  // const nameField = await waitForElementWithInterval(nameSelector);
-  // const barcodeField = await waitForElementWithInterval(barcodeSelector);
+  const nameField = await waitForElementWithInterval(nameSelector);
+  const barcodeField = await waitForElementWithInterval(barcodeSelector);
 
-  // TODO: If there's no nameFieldTest, switch to WorldShare tab and try again
-  // TODO: chrome.tabs.query only available in background.js?
-  const nameFieldTest = document.querySelector(nameSelector);
-  console.log("Name field test:", nameFieldTest);
-  if (!nameFieldTest) {
-    console.log("Name field not found, switching to WorldShare tab.");
-    const tabs = await chrome.tabs.query({ url: "*share.worldcat.org/*" });
-    console.log(tabs);
-    if (tabs.length > 0) {
-      console.log("Switching to WorldShare tab:", tabs[0]);
-      chrome.tabs.update(tabs[0].id, { active: true });
-    }
+  if (!nameField || !barcodeField) {
+    console.error("Could not find required fields on WorldShare page");
+    return;
   }
 
   // Scroll to nameSelector field

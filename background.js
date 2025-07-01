@@ -218,6 +218,46 @@ chrome.runtime.onMessage.addListener(async function (
     delete openSidepanels[request.windowId];
     return;
   }
+  if (request.type === "findAndSwitchToWorldShare") {
+    chrome.tabs.query({}, (tabs) => {
+      if (chrome.runtime.lastError) {
+        console.error("Error querying tabs:", chrome.runtime.lastError);
+        return;
+      }
+      const worldShareTab = tabs.find(
+        (tab) => tab.url && tab.url.includes("share.worldcat.org")
+      );
+      if (worldShareTab && worldShareTab.id) {
+        // Switches to WorldShare tab
+        chrome.tabs.update(worldShareTab.id, { active: true }, (tab) => {
+          if (chrome.runtime.lastError) {
+            console.error("Error activating tab:", chrome.runtime.lastError);
+            return;
+          }
+          // Waits a hot second before executing script
+          setTimeout(() => {
+            chrome.scripting.executeScript(
+              {
+                target: { tabId: worldShareTab.id },
+                files: [`./scripts/${request.scriptToRelaunch}.js`],
+              },
+              () => {
+                if (chrome.runtime.lastError) {
+                  console.error(
+                    "Error executing script:",
+                    chrome.runtime.lastError
+                  );
+                }
+              }
+            );
+          }, 100);
+        });
+      } else {
+        console.log("No WorldShare tab found in", tabs.length, "tabs");
+      }
+    });
+    return;
+  }
   const activeTab = await getActiveTab();
   if (activeTab) {
     if (!isAllowedHost(activeTab.url)) return;
