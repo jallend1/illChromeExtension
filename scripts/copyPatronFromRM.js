@@ -23,4 +23,8 @@
       chrome.runtime.sendMessage({ type: "requestManagerPatronUpdated" });
     }
   );
+
+  // TODO: Error handling if elements not found
+  // TODO: Ensure data is valid
+  // TODO: Automatically initiate pastePatronToWS.js Any reason to not?
 })();
