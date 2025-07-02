@@ -21,6 +21,13 @@ const extractElements = async (selectors) => {
 const returnArrayOfMatches = async (zipCode) => {
   console.log("Zip Code to check:", zipCode);
   return new Promise((resolve, reject) => {
+    // Check if chrome APIs are available
+    if (typeof chrome === 'undefined' || !chrome.storage) {
+      console.error("Chrome storage API is not available");
+      reject(new Error("Chrome storage API is not available"));
+      return;
+    }
+    
     chrome.storage.local.get("mailData", (result) => {
       if (chrome.runtime.lastError) {
         console.error("Error accessing storage:", chrome.runtime.lastError);
@@ -80,6 +87,13 @@ const calculateAverageDays = (appearances) => {
 };
 
 export const packageFrequency = async () => {
+  // Noticed intermittent error in console after the fact...Hopefully this will highlight when it's occurring
+  if (typeof chrome === 'undefined' || !chrome.storage) {
+    console.error("Chrome APIs are not available. This function must run in a Chrome extension context.");
+    createMiniModal("Error: Chrome extension APIs are not available.");
+    return;
+  }
+  
   const elements = await extractElements(borrowingAddressSelectors);
   const matchingZipCodes = await searchForZipCode(elements.postal);
   console.log("Matching Zip Codes:", matchingZipCodes);
