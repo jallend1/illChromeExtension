@@ -23,22 +23,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.type === "requestManagerPatronUpdated") {
-//     chrome.storage.local.get("requestManagerPatron", (data) => {
-//       if (data.requestManagerPatron) {
-//         document.querySelector(".requestingPatronDetails").style.display =
-//           "block";
-//         currentPatronInfo.textContent = data.requestManagerPatron.name;
-//       } else {
-//         currentPatronInfo.textContent = "";
-//         document.querySelector(".requestingPatronDetails").style.display =
-//           "none";
-//       }
-//     });
-//   }
-// });
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "storage-updated") {
     for (const [key, { newValue }] of Object.entries(message.changes)) {
@@ -71,20 +55,6 @@ const storageKeys = [
   { key: "autoReturnILL", element: elements.autoReturnILL },
   { key: "mailData", element: elements.importMailroomData },
 ];
-
-// Renders current patron information in local storage from request manager
-// const currentPatronInfo = document.querySelector("#currentPatronInfo");
-// console.log(currentPatronInfo);
-// // Check local storage for requestManagerPatron and if it exists, insert requestManagerPatron.name
-// chrome.storage.local.get("requestManagerPatron", (data) => {
-//   console.log(data);
-//   if (data.requestManagerPatron) {
-//     currentPatronInfo.textContent = data.requestManagerPatron.name;
-//   } else {
-//     currentPatronInfo.textContent = "";
-//     document.querySelector(".requestingPatronDetails").style.display = "none";
-//   }
-// });
 
 // Parses mailData CSV file and returns the parsed data
 const parseMailData = async () => {
@@ -169,15 +139,6 @@ storageKeys.forEach((storageKey) => {
   getStorageValue(storageKey.key, storageKey.element);
 });
 
-// const clearPatronInfoButton = document.getElementById("clearPatronInfoButton");
-// clearPatronInfoButton.addEventListener("click", () => {
-//   chrome.storage.local.remove("requestManagerPatron", () => {
-//     currentPatronInfo.textContent = "";
-//     document.querySelector(".requestingPatronDetails").style.display = "none";
-//     console.log("Patron information cleared from storage.");
-//   });
-// });
-
 const initiateScript = (scriptName) => {
   // Focus on the tab that the user is currently on
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -203,16 +164,8 @@ const initiateScript = (scriptName) => {
               }
             });
             return;
-          } else if (scriptName === "copyPatronFromRM") {
-            chrome.runtime.sendMessage({ command: "copyPatronFromRM" });
-            // Don't send data: scriptName, so background doesn't try to load undefined.js AGAIN
-            // chrome.runtime.onMessage.addListener(async function handler(msg) {
-            //   if (msg.type === "requestManagerPatronReady") {
-            //     await navigator.clipboard.writeText("");
-            //     await extractFromStorage("requestManagerPatron");
-            //     chrome.runtime.onMessage.removeListener(handler);
-            //   }
-            // });
+          } else if (scriptName === "sendPatronToWorldShare") {
+            chrome.runtime.sendMessage({ command: "sendPatronToWorldShare" });
             return;
           } else if (scriptName === "overdueNotice") {
             chrome.runtime.onMessage.addListener(async function handler(msg) {

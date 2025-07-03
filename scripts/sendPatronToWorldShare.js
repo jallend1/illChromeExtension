@@ -1,6 +1,7 @@
 // TODO: Rename this script to reflect consolidated functionality
 
 (async () => {
+  console.log("Inside sendPatronToWorldShare.js");
   const { waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
@@ -48,7 +49,7 @@
       );
       chrome.runtime.sendMessage({
         type: "findAndSwitchToWorldShare",
-        scriptToRelaunch: "copyPatronFromRM",
+        scriptToRelaunch: "sendPatronToWorldShare",
       });
       return; // Don't wait for a response!
     }
