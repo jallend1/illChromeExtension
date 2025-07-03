@@ -164,9 +164,6 @@ const initiateScript = (scriptName) => {
               }
             });
             return;
-          } else if (scriptName === "sendPatronToWorldShare") {
-            chrome.runtime.sendMessage({ command: "sendPatronToWorldShare" });
-            return;
           } else if (scriptName === "overdueNotice") {
             chrome.runtime.onMessage.addListener(async function handler(msg) {
               if (msg.type === "overdueNoticeReady") {

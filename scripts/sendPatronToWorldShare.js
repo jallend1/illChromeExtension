@@ -1,7 +1,4 @@
-// TODO: Rename this script to reflect consolidated functionality
-
 (async () => {
-  console.log("Inside sendPatronToWorldShare.js");
   const { waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
