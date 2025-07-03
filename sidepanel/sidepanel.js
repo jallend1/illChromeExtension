@@ -146,8 +146,11 @@ const initiateScript = (scriptName) => {
     chrome.tabs.update(currentTab.id, { active: true });
     // TODO: Navigating to a new URL in isbnSearch closes the port before a message can be sent
     // A callback causes an error, so calling it specifically for isbnSearch. Would like to clean up
-    if (scriptName === "isbnSearch") {
-      chrome.runtime.sendMessage({ command: "isbnSearch", data: "isbnSearch" });
+    if (
+      scriptName === "isbnSearch" ||
+      scriptName === "sendPatronToWorldShare"
+    ) {
+      chrome.runtime.sendMessage({ command: scriptName, data: scriptName });
       return;
     } else {
       chrome.runtime.sendMessage(

@@ -61,7 +61,7 @@ export const miniModalStyles = {
 };
 
 // -- Displays a mini-modal saying Open Transit dialog is being dismissed --
-export const createMiniModal = (message) => {
+export const createMiniModal = (message, isError = false) => {
   const existingModal = document.querySelector(".mini-modal");
   if (existingModal) {
     existingModal.remove(); // Remove the existing modal
@@ -74,6 +74,11 @@ export const createMiniModal = (message) => {
       </div>
     `;
   Object.assign(miniModal.style, miniModalStyles);
+  if (isError) {
+    miniModal.style.background =
+      "linear-gradient(135deg, #ffcccc 0%, #ff9999 100%)"; // Red gradient for errors
+    miniModal.style.color = "#010101";
+  }
   document.body.appendChild(miniModal);
   setTimeout(() => {
     miniModal.remove();

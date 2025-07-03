@@ -12,7 +12,15 @@
 
     const patronNameField = document
       .querySelector(requestManagerSelectors.patronNameField)
-      .children[1].textContent.trim();
+      ?.children[1]?.textContent?.trim();
+
+    if (!patronNameField) {
+      createMiniModal(
+        "Couldn't find patron info on this page.<br /><strong>Please run this when a request is open in the Evergreen client.</strong>",
+        true
+      );
+      return;
+    }
 
     const patronName = patronNameField.split(" (")[0].trim();
     const barcode = patronNameField.match(/\((\d+)\)/)[1];
@@ -24,9 +32,7 @@
       .trim();
     const worldShareName = patronName + ", " + pickupLocation;
 
-    createMiniModal(
-      `Patron information extracted: <p><small>${worldShareName}</small><br /><small> ${barcode} </small></p>`
-    );
+    createMiniModal(`Sending patron info to WorldShare`);
 
     // Stores name and barcode in local storage
     chrome.storage.local.set(
@@ -45,9 +51,7 @@
 
     // Check if we're on the right page
     if (!window.location.href.includes("share.worldcat.org")) {
-      console.log(
-        "Not on WorldShare page, finding and switching to WorldShare tab..."
-      );
+      // Find the correct tab
       chrome.runtime.sendMessage({
         type: "findAndSwitchToWorldShare",
         scriptToRelaunch: "sendPatronToWorldShare",
