@@ -1,5 +1,5 @@
 (async () => {
-  const { waitForElementWithInterval } = await import(
+  const { waitForElementWithInterval, createMiniModal } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
@@ -23,6 +23,10 @@
       .split(")")[0]
       .trim();
     const worldShareName = patronName + ", " + pickupLocation;
+
+    createMiniModal(
+      `Patron information extracted: <p><small>${worldShareName}</small><br /><small> ${barcode} </small></p>`
+    );
 
     // Stores name and barcode in local storage
     chrome.storage.local.set(
@@ -61,10 +65,6 @@
     }
 
     const { name: patronName, barcode } = storageData.requestManagerPatron;
-    console.log("Request Manager Patron loaded from storage:", {
-      name: patronName,
-      barcode: barcode,
-    });
 
     // Wait for the name and barcode fields to be available
     const nameField = await waitForElementWithInterval(nameSelector);
@@ -81,6 +81,13 @@
     // Fill in the name and barcode fields
     nameField.value = patronName;
     barcodeField.value = barcode;
+
+    createMiniModal(
+      `Patron information pasted: <p><small>${patronName}</small><br /><small>${barcode}</small></p>`
+    );
+
+    // Removes requestManagerPatron from storage after use to keep things fresh
+    chrome.storage.local.remove("requestManagerPatron");
   };
 
   // If the script is running in the Request Manager modal, extract patron details
