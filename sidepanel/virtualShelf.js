@@ -14,16 +14,28 @@
   console.log("Virtual Book Shelf:", virtualBookShelf);
 
   virtualBookShelf.forEach((book) => {
-    const bookElement = document.createElement("div");
+    // Assign values to variables
     const libraryName =
       book.borrowingAddress.attention + " - " + book.borrowingAddress.line1;
     const dueDate = new Date(book.dueDate);
     const libraryState = book.borrowingAddress.region;
-    const headingState = document.createElement("h2");
-    headingState.textContent = `${libraryState}`;
+    const title = book.title;
+
+    // Create elements
+    const bookElement = document.createElement("div");
     bookElement.className = "book";
-    bookElement.textContent = `${book.title} - ${libraryName}`;
+    const headingState = document.createElement("h2");
+    const dueDateElement = document.createElement("p");
+    const libraryNameElement = document.createElement("h3");
+
+    // Set text content
+    headingState.textContent = `${libraryState}`;
+    dueDateElement.textContent = `${dueDate.toLocaleDateString()} - ${title}`;
+    libraryNameElement.textContent = `${libraryName}`;
+
     bookElement.appendChild(headingState);
+    bookElement.appendChild(libraryNameElement);
+    bookElement.appendChild(dueDateElement);
     virtualShelfContainer.appendChild(bookElement);
   });
 })();
