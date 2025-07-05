@@ -25,13 +25,29 @@
     const bookElement = document.createElement("div");
     bookElement.className = "book";
     const headingState = document.createElement("h2");
+    headingState.className = "state";
     const dueDateElement = document.createElement("p");
+    dueDateElement.className = "due-date";
     const libraryNameElement = document.createElement("h3");
+    libraryNameElement.className = "library-name";
+
+    // Create individual spans for due date and title
+    const dueDateSpan = document.createElement("span");
+    dueDateSpan.className = "due-date-span";
+    dueDateSpan.textContent = dueDate.toLocaleDateString();
+
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "title-span";
+    titleSpan.textContent = title;
 
     // Set text content
     headingState.textContent = `${libraryState}`;
-    dueDateElement.textContent = `${dueDate.toLocaleDateString()} - ${title}`;
     libraryNameElement.textContent = `${libraryName}`;
+
+    // Append spans to the due date element
+    dueDateElement.appendChild(dueDateSpan);
+    dueDateElement.appendChild(document.createTextNode(" - "));
+    dueDateElement.appendChild(titleSpan);
 
     bookElement.appendChild(headingState);
     bookElement.appendChild(libraryNameElement);

@@ -1,0 +1,31 @@
+.book {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* .book img {
+  max-width: 100px;
+  margin-right: 8px;
+} */
+
+.book h2 {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.book p {
+  margin: 4px 0;
+}
+
+.due-date-span {
+  font-weight: bold;
+}
+
+.title-span {
+  font-style: italic;
+}
