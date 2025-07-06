@@ -1,3 +1,8 @@
+h1 {
+  font-size: 1.5em;
+  text-align: center;
+}
+
 .book {
   border: 1px solid #ccc;
   border-radius: 4px;
