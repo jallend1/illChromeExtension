@@ -1,5 +1,4 @@
 (async () => {
-  console.log("Virtual Shelf script loaded");
   const virtualShelfContainer = document.getElementById(
     "virtual-shelf-container"
   );
@@ -21,11 +20,23 @@
     const libraryState = book.borrowingAddress.region;
     const title = book.title;
 
+    // Check if the state is already displayed on the page
+    const existingStateElement = document.getElementById(
+      libraryState.replace(/\s+/g, "-").toLowerCase()
+    );
+    if (existingStateElement) {
+      console.log(
+        `State ${libraryState} already exists! Find a way to add this book to it.`
+      );
+    }
+
     // Create elements
     const bookElement = document.createElement("div");
     bookElement.className = "book";
     const headingState = document.createElement("h2");
     headingState.className = "state";
+    headingState.id = libraryState.replace(/\s+/g, "-").toLowerCase();
+    headingState.textContent = `${libraryState}`;
     const dueDateElement = document.createElement("p");
     dueDateElement.className = "due-date";
     const libraryNameElement = document.createElement("h3");
