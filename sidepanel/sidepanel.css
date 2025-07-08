@@ -213,6 +213,11 @@ button:disabled {
   transform: none;
 }
 
+button a {
+  text-decoration: none;
+  color: inherit;
+}
+
 #open-product-page a {
   color: #000;
 }
