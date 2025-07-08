@@ -42,6 +42,11 @@
     const libraryState = book.borrowingAddress.region;
     const title = book.title;
 
+    // Get current date and calculate date differences for styling
+    const today = new Date();
+    const twoWeeksFromNow = new Date();
+    twoWeeksFromNow.setDate(today.getDate() + 14);
+
     // Create individual spans for due date and title
     const dueDateSpan = document.createElement("span");
     dueDateSpan.className = "due-date-span";
@@ -54,15 +59,23 @@
     // Create the due date element
     const dueDateElement = document.createElement("p");
     dueDateElement.className = "due-date";
+
+    // Add appropriate class based on due date
+    if (dueDate < today) {
+      dueDateElement.classList.add("overdue");
+    } else if (dueDate <= twoWeeksFromNow) {
+      dueDateElement.classList.add("due-soon");
+    }
+
     dueDateElement.appendChild(dueDateSpan);
     dueDateElement.appendChild(titleSpan);
 
-    // Get the state container (now guaranteed to exist)
+    // Get the state container
     const stateContainer = document.getElementById(
       libraryState.replace(/\s+/g, "-").toLowerCase()
     );
 
-    // Check if a library with the same name already exists in this state
+    // Check if library already exists
     const existingLibraryElements = stateContainer.querySelectorAll(
       ".book h3.library-name"
     );
@@ -70,13 +83,13 @@
 
     for (let libraryElement of existingLibraryElements) {
       if (libraryElement.textContent === libraryName) {
-        existingLibraryDiv = libraryElement.parentElement; // Get the parent .book div
+        existingLibraryDiv = libraryElement.parentElement;
         break;
       }
     }
 
     if (existingLibraryDiv) {
-      // Library already exists, just append the due date element
+      // Library already exists, append the due date
       existingLibraryDiv.appendChild(dueDateElement);
     } else {
       // Create new book element for this library

@@ -34,3 +34,15 @@ h1 {
 .title-span {
   font-style: italic;
 }
+
+.overdue {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+
+.due-soon {
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+}
