@@ -12,6 +12,28 @@
 
   console.log("Virtual Book Shelf:", virtualBookShelf);
 
+  // Sorts unique states alphabetically
+  // TODO: Is this better than sorting books by state beforehand?
+  const uniqueStates = [
+    ...new Set(virtualBookShelf.map((book) => book.borrowingAddress.region)),
+  ].sort((a, b) => a.localeCompare(b));
+
+  // Create state containers in alphabetical order
+  uniqueStates.forEach((libraryState) => {
+    const stateElement = document.createElement("div");
+    stateElement.className = "state-container";
+    stateElement.id = libraryState.replace(/\s+/g, "-").toLowerCase();
+
+    const headingState = document.createElement("h2");
+    headingState.className = "state";
+    headingState.id = libraryState.replace(/\s+/g, "-").toLowerCase();
+    headingState.textContent = libraryState;
+
+    stateElement.appendChild(headingState);
+    virtualShelfContainer.appendChild(stateElement);
+  });
+
+  // Adds the books to the state containers
   virtualBookShelf.forEach((book) => {
     // Assign values to variables
     const libraryName =
@@ -20,37 +42,6 @@
     const libraryState = book.borrowingAddress.region;
     const title = book.title;
 
-    // Check if the state is already displayed on the page
-    const existingStateElement = document.getElementById(
-      libraryState.replace(/\s+/g, "-").toLowerCase()
-    );
-    // TODO: Add logic for this bad boy
-    if (!existingStateElement) {
-      console.log(
-        `State ${libraryState} already exists! Find a way to add this book to it.`
-      );
-
-      const stateElement = document.createElement("div");
-      stateElement.className = "state-container";
-      stateElement.id = libraryState.replace(/\s+/g, "-").toLowerCase();
-      const headingState = document.createElement("h2");
-      headingState.className = "state";
-      headingState.id = libraryState.replace(/\s+/g, "-").toLowerCase();
-      headingState.textContent = `${libraryState}`;
-      stateElement.appendChild(headingState);
-      virtualShelfContainer.appendChild(stateElement);
-    }
-
-    // Create elements
-    const bookElement = document.createElement("div");
-    bookElement.className = "book";
-
-    // const dueDateElement = document.createElement("p");
-    // dueDateElement.className = "due-date";
-
-    const libraryNameElement = document.createElement("h3");
-    libraryNameElement.className = "library-name";
-    libraryNameElement.textContent = `${libraryName}`;
     // Create individual spans for due date and title
     const dueDateSpan = document.createElement("span");
     dueDateSpan.className = "due-date-span";
@@ -66,7 +57,7 @@
     dueDateElement.appendChild(dueDateSpan);
     dueDateElement.appendChild(titleSpan);
 
-    // Get the state container
+    // Get the state container (now guaranteed to exist)
     const stateContainer = document.getElementById(
       libraryState.replace(/\s+/g, "-").toLowerCase()
     );
