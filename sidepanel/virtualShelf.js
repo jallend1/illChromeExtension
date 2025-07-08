@@ -68,6 +68,11 @@
     // bookElement.appendChild(headingState);
     bookElement.appendChild(libraryNameElement);
     bookElement.appendChild(dueDateElement);
-    virtualShelfContainer.appendChild(bookElement);
+
+    // Append bookElement to the state container
+    const stateContainer = document.getElementById(
+      libraryState.replace(/\s+/g, "-").toLowerCase()
+    );
+    stateContainer.appendChild(bookElement);
   });
 })();
