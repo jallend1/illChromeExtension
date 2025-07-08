@@ -31,6 +31,27 @@
     booksByState[libraryState][libraryName].push(book);
   });
 
+  // Remove book from storage and refresh display
+  const removeBookFromStorage = async (bookToRemove) => {
+    const updatedShelf = virtualBookShelf.filter(
+      (book) =>
+        !(
+          book.title === bookToRemove.title &&
+          book.borrowingAddress.attention ===
+            bookToRemove.borrowingAddress.attention &&
+          book.borrowingAddress.line1 === bookToRemove.borrowingAddress.line1 &&
+          book.dueDate === bookToRemove.dueDate
+        )
+    );
+
+    await new Promise((resolve) => {
+      chrome.storage.local.set({ virtualBookShelf: updatedShelf }, resolve);
+    });
+
+    // Refresh the page to show updated list
+    location.reload();
+  };
+
   // Sort states alphabetically
   const sortedStates = Object.keys(booksByState).sort((a, b) =>
     a.localeCompare(b)
@@ -87,7 +108,19 @@
         titleSpan.className = "title-span";
         titleSpan.textContent = title;
 
-        // Create the due date element
+        // Create remove button
+        const removeButton = document.createElement("button");
+        removeButton.classList.add("remove-button");
+        removeButton.textContent = "Remove";
+
+        // Add click handler to remove button
+        removeButton.addEventListener("click", () => {
+          if (confirm(`Are you sure you want to remove "${title}"?`)) {
+            removeBookFromStorage(book);
+          }
+        });
+
+        // Create the due date element container
         const dueDateElement = document.createElement("p");
         dueDateElement.className = "due-date";
 
@@ -100,6 +133,7 @@
 
         dueDateElement.appendChild(dueDateSpan);
         dueDateElement.appendChild(titleSpan);
+        dueDateElement.appendChild(removeButton);
         bookElement.appendChild(dueDateElement);
       });
 
