@@ -45,13 +45,12 @@
     const bookElement = document.createElement("div");
     bookElement.className = "book";
 
-    const dueDateElement = document.createElement("p");
-    dueDateElement.className = "due-date";
+    // const dueDateElement = document.createElement("p");
+    // dueDateElement.className = "due-date";
 
     const libraryNameElement = document.createElement("h3");
     libraryNameElement.className = "library-name";
     libraryNameElement.textContent = `${libraryName}`;
-
     // Create individual spans for due date and title
     const dueDateSpan = document.createElement("span");
     dueDateSpan.className = "due-date-span";
@@ -61,18 +60,45 @@
     titleSpan.className = "title-span";
     titleSpan.textContent = title;
 
-    // Append spans to the due date element
+    // Create the due date element
+    const dueDateElement = document.createElement("p");
+    dueDateElement.className = "due-date";
     dueDateElement.appendChild(dueDateSpan);
     dueDateElement.appendChild(titleSpan);
 
-    // bookElement.appendChild(headingState);
-    bookElement.appendChild(libraryNameElement);
-    bookElement.appendChild(dueDateElement);
-
-    // Append bookElement to the state container
+    // Get the state container
     const stateContainer = document.getElementById(
       libraryState.replace(/\s+/g, "-").toLowerCase()
     );
-    stateContainer.appendChild(bookElement);
+
+    // Check if a library with the same name already exists in this state
+    const existingLibraryElements = stateContainer.querySelectorAll(
+      ".book h3.library-name"
+    );
+    let existingLibraryDiv = null;
+
+    for (let libraryElement of existingLibraryElements) {
+      if (libraryElement.textContent === libraryName) {
+        existingLibraryDiv = libraryElement.parentElement; // Get the parent .book div
+        break;
+      }
+    }
+
+    if (existingLibraryDiv) {
+      // Library already exists, just append the due date element
+      existingLibraryDiv.appendChild(dueDateElement);
+    } else {
+      // Create new book element for this library
+      const bookElement = document.createElement("div");
+      bookElement.className = "book";
+
+      const libraryNameElement = document.createElement("h3");
+      libraryNameElement.className = "library-name";
+      libraryNameElement.textContent = `${libraryName}`;
+
+      bookElement.appendChild(libraryNameElement);
+      bookElement.appendChild(dueDateElement);
+      stateContainer.appendChild(bookElement);
+    }
   });
 })();
