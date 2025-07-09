@@ -86,6 +86,23 @@ const calculateAverageDays = (appearances) => {
   return Math.round(averageDays * 100) / 100; // Round to two decimal places
 };
 
+
+/**
+ * Checks for known address discrepancies between OCLC data and mailroom data. (Just Pollak Library for now)
+ * @param {Object} elements - The extracted address elements from the borrowing form
+ * @param {string} elements.postal - The ZIP code from the library
+ * @param {string} elements.attention - The attention line containing the library name
+ * @returns {string} The corrected ZIP code if a known mismatch exists, otherwise the original postal code
+ */
+const isAddressMismatch = (elements) => {
+  // Sometimes the mailroom has a different ZIP code for libraries than what the libraries say
+  if (elements.postal === "92831" && elements.attention.includes("Pollak")) {
+    const pollackZipCode = "92834-4150";
+    return pollackZipCode;
+  }
+  return elements.postal;
+}
+
 export const packageFrequency = async () => {
   // Noticed intermittent error in console after the fact...Hopefully this will highlight when it's occurring
   if (typeof chrome === 'undefined' || !chrome.storage) {
@@ -95,9 +112,9 @@ export const packageFrequency = async () => {
   }
   
   const elements = await extractElements(borrowingAddressSelectors);
-  const matchingZipCodes = await searchForZipCode(elements.postal);
-  console.log("Matching Zip Codes:", matchingZipCodes);
-
+  // Check if known discrepancy between OCLC data and mailroom data
+  const zipCodeToCheck = isAddressMismatch(elements);
+  let matchingZipCodes = await searchForZipCode(zipCodeToCheck);
   if (!matchingZipCodes || matchingZipCodes.length === 0) {
     createMiniModal("No matching ZIP codes found.");
     return;
@@ -114,8 +131,6 @@ export const packageFrequency = async () => {
       `A package was sent to ${libraryName} every ${averageDays} days in 2024.`
     );
   } else {
-    // TODO: Needs more testing! Unable to locate a ZIP code with multiple matches
-    console.warn("Multiple matches found for ZIP code:", elements.postal);
     // Multiple matches: list names and appearances
     const list = matchingZipCodes
       .map(
