@@ -56,62 +56,6 @@
             searchButtonContainer.style.display = "flex";
             searchButtonContainer.style.marginRight = "10px";
 
-            const copyPatronBarcodeButton = document.createElement("button");
-            copyPatronBarcodeButton.textContent = "Copy Patron Barcode";
-            applyButtonStyles(copyPatronBarcodeButton, "#007bff");
-            copyPatronBarcodeButton.addEventListener("click", () => {
-              const patronNameField = document.querySelector(
-                "div.modal-body.form-validated > div"
-              ).children[1];
-              const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
-              navigator.clipboard
-                .writeText(barcode)
-                .then(() => {
-                  console.log("Patron barcode copied to clipboard:", barcode);
-                })
-                .catch((err) => {
-                  console.error("Failed to copy patron barcode:", err);
-                });
-            });
-
-            // Create the "Copy Patron Name" button
-            const copyButton = document.createElement("button");
-            copyButton.textContent = "Copy Name for WorldShare";
-            applyButtonStyles(copyButton, "#007bff");
-
-            copyButton.addEventListener("click", () => {
-              const patronNameField = document.querySelector(
-                "div.modal-body.form-validated > div"
-              ).children[1];
-              const cleanPatronName = patronNameField.textContent
-                .split("(")[0]
-                .trim();
-              // TODO: Extract barcode from the patron name field but not used yet
-              const barcode = patronNameField.textContent.match(/\((\d+)\)/)[1];
-              // Extract pickup location to append to patron name
-              const pickupLocation = document
-                .querySelector(
-                  "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(8) > div:nth-child(2)"
-                )
-                .textContent.split("(")[1]
-                .split(")")[0]
-                .trim();
-
-              const worldShareName = cleanPatronName + ", " + pickupLocation;
-              // const clipboardContent = worldShareName + "\t" + barcode;
-              navigator.clipboard
-                .writeText(worldShareName)
-                .then(() => {
-                  console.log(
-                    "Patron data copied to clipboard:",
-                    worldShareName
-                  );
-                })
-                .catch((err) => {
-                  console.error("Failed to copy patron data:", err);
-                });
-            });
-
             // Create the "Search Amazon" button
             const searchButton = document.createElement("button");
             searchButton.textContent = "Search Amazon";
@@ -170,8 +114,6 @@
             });
 
             // Append buttons to the container
-            copyButtonContainer.appendChild(copyButton);
-            copyButtonContainer.appendChild(copyPatronBarcodeButton);
             searchButtonContainer.appendChild(copyTitleAuthorButton);
             searchButtonContainer.appendChild(searchButton);
             buttonContainer.appendChild(copyButtonContainer);
