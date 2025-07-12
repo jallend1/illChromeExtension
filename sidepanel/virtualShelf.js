@@ -59,21 +59,22 @@
 
   // Create state containers and populate with sorted libraries
   sortedStates.forEach((libraryState) => {
-    // Create state container
+    // Create state container to hold heading and library container
     const stateElement = document.createElement("div");
     stateElement.className = "state-container";
     stateElement.id = libraryState.replace(/\s+/g, "-").toLowerCase();
 
+    // Create heading for the state
     const headingState = document.createElement("h2");
     headingState.className = "state";
     headingState.id = libraryState.replace(/\s+/g, "-").toLowerCase();
     headingState.textContent = libraryState;
-
     stateElement.appendChild(headingState);
 
-    const bookContainer = document.createElement("div");
-    bookContainer.className = "book-container";
-    stateElement.appendChild(bookContainer);
+    // Create container holding all library cards for this state
+    const libraryContainer = document.createElement("div");
+    libraryContainer.className = "library-container";
+    stateElement.appendChild(libraryContainer);
 
     // Sort libraries within this state alphabetically
     const sortedLibraries = Object.keys(booksByState[libraryState]).sort(
@@ -84,17 +85,27 @@
     sortedLibraries.forEach((libraryName) => {
       const books = booksByState[libraryState][libraryName];
 
-      // Create book element for this library
-      const bookElement = document.createElement("div");
-      bookElement.className = "book";
+      // Create a card element for this library
+      const libraryCard = document.createElement("div");
+      libraryCard.className = "library-card";
 
+      // Create and append the library name element
       const libraryNameElement = document.createElement("h3");
       libraryNameElement.className = "library-name";
       libraryNameElement.textContent = libraryName;
-      bookElement.appendChild(libraryNameElement);
+      libraryCard.appendChild(libraryNameElement);
+
+      // Create a container for the books in this library
+      const bookContainer = document.createElement("div");
+      bookContainer.className = "book-container";
+      libraryCard.appendChild(bookContainer);
 
       // Add all books from this library
       books.forEach((book) => {
+        const bookElement = document.createElement("div");
+        bookElement.className = "book-details";
+        bookContainer.appendChild(bookElement);
+
         const dueDate = new Date(book.dueDate);
         const title = book.title;
 
@@ -104,13 +115,13 @@
         twoWeeksFromNow.setDate(today.getDate() + 14);
 
         // Create individual spans for due date and title
-        const dueDateSpan = document.createElement("span");
-        dueDateSpan.className = "due-date-span";
-        dueDateSpan.textContent = `${dueDate.toLocaleDateString()} - `;
+        const dueDateElement = document.createElement("p");
+        dueDateElement.className = "due-date-span";
+        dueDateElement.textContent = `${dueDate.toLocaleDateString()}`;
 
-        const titleSpan = document.createElement("span");
-        titleSpan.className = "title-span";
-        titleSpan.textContent = title;
+        const titleElement = document.createElement("p");
+        titleElement.className = "title-span";
+        titleElement.textContent = title;
 
         // Create remove button
         const removeButton = document.createElement("button");
@@ -125,8 +136,8 @@
         });
 
         // Create the due date element container
-        const dueDateElement = document.createElement("p");
-        dueDateElement.className = "due-date";
+        // const dueDateElement = document.createElement("p");
+        // dueDateElement.className = "due-date";
 
         // Add appropriate class based on due date
         if (dueDate < today) {
@@ -135,13 +146,19 @@
           dueDateElement.classList.add("due-soon");
         }
 
-        dueDateElement.appendChild(dueDateSpan);
-        dueDateElement.appendChild(titleSpan);
-        dueDateElement.appendChild(removeButton);
         bookElement.appendChild(dueDateElement);
+        bookElement.appendChild(titleElement);
+        bookElement.appendChild(removeButton);
+
+        bookContainer.appendChild(bookElement);
+
+        // dueDateElement.appendChild(dueDateElement);
+        // dueDateElement.appendChild(titleSpan);
+        // dueDateElement.appendChild(removeButton);
+        // libraryCard.appendChild(dueDateElement);
       });
 
-      bookContainer.appendChild(bookElement);
+      libraryContainer.appendChild(libraryCard);
     });
 
     virtualShelfContainer.appendChild(stateElement);
