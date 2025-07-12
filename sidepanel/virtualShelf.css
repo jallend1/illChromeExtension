@@ -3,6 +3,18 @@ h1 {
   text-align: center;
 }
 
+.book-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow-y: auto;
+}
+
 .book {
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -17,11 +29,6 @@ h1 {
   max-width: 100px;
   margin-right: 8px;
 } */
-
-.book h2 {
-  font-size: 1.2em;
-  margin: 0;
-}
 
 .book p {
   margin: 4px 0;

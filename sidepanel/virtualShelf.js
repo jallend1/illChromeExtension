@@ -71,6 +71,10 @@
 
     stateElement.appendChild(headingState);
 
+    const bookContainer = document.createElement("div");
+    bookContainer.className = "book-container";
+    stateElement.appendChild(bookContainer);
+
     // Sort libraries within this state alphabetically
     const sortedLibraries = Object.keys(booksByState[libraryState]).sort(
       (a, b) => a.localeCompare(b)
@@ -137,7 +141,7 @@
         bookElement.appendChild(dueDateElement);
       });
 
-      stateElement.appendChild(bookElement);
+      bookContainer.appendChild(bookElement);
     });
 
     virtualShelfContainer.appendChild(stateElement);
