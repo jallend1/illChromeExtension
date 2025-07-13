@@ -116,17 +116,17 @@
 
         // Create individual spans for due date and title
         const dueDateElement = document.createElement("p");
-        dueDateElement.className = "due-date-span";
+        dueDateElement.className = "due-date";
         dueDateElement.textContent = `${dueDate.toLocaleDateString()}`;
 
         const titleElement = document.createElement("p");
-        titleElement.className = "title-span";
+        titleElement.className = "title";
         titleElement.textContent = title;
 
         // Create remove button
         const removeButton = document.createElement("button");
         removeButton.classList.add("remove-button");
-        removeButton.textContent = "Remove";
+        removeButton.textContent = "Clear";
 
         // Add click handler to remove button
         removeButton.addEventListener("click", () => {
@@ -134,10 +134,6 @@
             removeBookFromStorage(book);
           }
         });
-
-        // Create the due date element container
-        // const dueDateElement = document.createElement("p");
-        // dueDateElement.className = "due-date";
 
         // Add appropriate class based on due date
         if (dueDate < today) {
@@ -151,11 +147,6 @@
         bookElement.appendChild(removeButton);
 
         bookContainer.appendChild(bookElement);
-
-        // dueDateElement.appendChild(dueDateElement);
-        // dueDateElement.appendChild(titleSpan);
-        // dueDateElement.appendChild(removeButton);
-        // libraryCard.appendChild(dueDateElement);
       });
 
       libraryContainer.appendChild(libraryCard);

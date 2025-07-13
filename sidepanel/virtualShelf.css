@@ -45,11 +45,12 @@ h1 {
   margin: 4px 0;
 }
 
-.due-date-span {
+.due-date {
   font-weight: bold;
+  text-align: center;
 }
 
-.title-span {
+.title {
   font-style: italic;
 }
 
@@ -69,7 +70,7 @@ h1 {
   margin-left: 10px;
   font-size: 12px;
   padding: 2px 6px;
-  background-color: #ff4444;
+  background-color: #9092fc;
   color: white;
   border: none;
   border-radius: 3px;
