@@ -3,12 +3,24 @@
     "virtual-shelf-container"
   );
 
+  virtualShelfContainer.innerHTML = `<div class="loading">Loading virtual book shelf...</div>`;
+
   // Extract virtualBookShelf from local storage
   const virtualBookShelf = await new Promise((resolve) => {
     chrome.storage.local.get("virtualBookShelf", (data) => {
       resolve(data.virtualBookShelf || []);
     });
   });
+
+  virtualShelfContainer.innerHTML = ""; // Clear loading state
+  if (!virtualBookShelf || !Array.isArray(virtualBookShelf)) {
+    virtualShelfContainer.innerHTML = `
+      <div class="empty-state">
+        <h3>No virtual book shelf found. :(</h3>
+      </div>
+    `;
+    return;
+  }
 
   console.log("Virtual Book Shelf:", virtualBookShelf);
 
