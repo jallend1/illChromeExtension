@@ -73,7 +73,6 @@ const extractBookFromDOM = async (activeSelectors) => {
 };
 
 const virtualBookShelfClick = async () => {
-  console.log("Virtual Bookshelf button clicked");
   const isQueueUrl = window.currentUrl.includes("queue");
   const activeSelectors = isQueueUrl
     ? borrowingSelectors.queue
@@ -104,7 +103,6 @@ export const createAddToBookshelfButton = async () => {
       button.style.fontSize = "1rem";
     });
     button.addEventListener("click", () => {
-      console.log("Here we are, bois!!!");
       virtualBookShelfClick();
     });
     parentElement.appendChild(button);
@@ -112,8 +110,5 @@ export const createAddToBookshelfButton = async () => {
 };
 
 // TODO: Next Steps
-
+// 1) Limit addition to book shelf to only when the user is on a queue or direct borrowing page
 // 2) Create a modal to confirm the addition of the book
-// 3) Add Sidepanel to view the virtual bookshelf
-// 4) Implement functionality to view, edit, and delete books from the virtual bookshelf
-// 5) Add functionality to export the virtual bookshelf to a file (JSON?)
