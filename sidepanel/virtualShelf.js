@@ -13,8 +13,52 @@
   console.log("Virtual Book Shelf:", virtualBookShelf);
 
   const exportShelfButton = document.getElementById("export-shelf");
+  const importShelfButton = document.getElementById("import-shelf");
+  const clearShelfButton = document.getElementById("clear-shelf");
 
-  // Add click handler to export button to copy shelf data to clipboard
+  // Clear the virtual book shelf
+  clearShelfButton.addEventListener("click", () => {
+    if (
+      confirm(
+        "Are you sure you want to clear the virtual book shelf? This is irreversible!"
+      )
+    ) {
+      // Copy the current shelf to clipboard before clearing, just in case!
+      const shelfData = JSON.stringify(virtualBookShelf, null, 2);
+      navigator.clipboard.writeText(shelfData).then(() => {
+        console.log(
+          "Virtual book shelf data copied to clipboard before clearing."
+        );
+      });
+      chrome.storage.local.set({ virtualBookShelf: [] }, () => {
+        location.reload();
+      });
+    }
+  });
+
+  // Opens dialog to import virtual book shelf data
+  importShelfButton.addEventListener("click", () => {
+    const input = prompt("Paste virtual book shelf data here:");
+    if (input) {
+      try {
+        const importedShelf = JSON.parse(input);
+        if (Array.isArray(importedShelf)) {
+          // Save the imported shelf to local storage
+          chrome.storage.local.set({ virtualBookShelf: importedShelf }, () => {
+            alert("Virtual book shelf imported successfully!");
+            location.reload(); // Refresh the page to show updated list
+          });
+        } else {
+          alert("Invalid data format. Please provide a valid JSON array.");
+        }
+      } catch (error) {
+        alert("Failed to parse JSON. Please check your input.");
+        console.error("Import error:", error);
+      }
+    }
+  });
+
+  // Copies the virtual book shelf data to clipboard
   exportShelfButton.addEventListener("click", () => {
     const shelfData = JSON.stringify(virtualBookShelf, null, 2);
     navigator.clipboard
