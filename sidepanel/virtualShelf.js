@@ -12,6 +12,21 @@
 
   console.log("Virtual Book Shelf:", virtualBookShelf);
 
+  const exportShelfButton = document.getElementById("export-shelf");
+
+  // Add click handler to export button to copy shelf data to clipboard
+  exportShelfButton.addEventListener("click", () => {
+    const shelfData = JSON.stringify(virtualBookShelf, null, 2);
+    navigator.clipboard
+      .writeText(shelfData)
+      .then(() => {
+        alert("Virtual book shelf data copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy shelf data: ", err);
+      });
+  });
+
   // Group books by state and library, then sort
   const booksByState = {};
 
