@@ -22,12 +22,12 @@ const returnArrayOfMatches = async (zipCode) => {
   console.log("Zip Code to check:", zipCode);
   return new Promise((resolve, reject) => {
     // Check if chrome APIs are available
-    if (typeof chrome === 'undefined' || !chrome.storage) {
+    if (typeof chrome === "undefined" || !chrome.storage) {
       console.error("Chrome storage API is not available");
       reject(new Error("Chrome storage API is not available"));
       return;
     }
-    
+
     chrome.storage.local.get("mailData", (result) => {
       if (chrome.runtime.lastError) {
         console.error("Error accessing storage:", chrome.runtime.lastError);
@@ -71,7 +71,7 @@ const searchForZipCode = async (zipCodeField) => {
   const sanitizedPostalCode = sanitizePostalCode(zipCodeField);
   let matchingZipCodes = await returnArrayOfMatches(sanitizedPostalCode);
   // If no results are found and it's a full 9-digit ZIP code, try the first 5 digits
-  if (matchingZipCodes.length === 0 && sanitizedPostalCode.length > 5) {
+  if (matchingZipCodes?.length === 0 && sanitizedPostalCode.length > 5) {
     const firstFiveDigits = sanitizedPostalCode.slice(0, 5);
     matchingZipCodes = await returnArrayOfMatches(firstFiveDigits);
   }
@@ -85,7 +85,6 @@ const calculateAverageDays = (appearances) => {
   const averageDays = 365 / appearances;
   return Math.round(averageDays * 100) / 100; // Round to two decimal places
 };
-
 
 /**
  * Checks for known address discrepancies between OCLC data and mailroom data. (Just Pollak Library for now)
@@ -101,16 +100,18 @@ const isAddressMismatch = (elements) => {
     return pollackZipCode;
   }
   return elements.postal;
-}
+};
 
 export const packageFrequency = async () => {
   // Noticed intermittent error in console after the fact...Hopefully this will highlight when it's occurring
-  if (typeof chrome === 'undefined' || !chrome.storage) {
-    console.error("Chrome APIs are not available. This function must run in a Chrome extension context.");
+  if (typeof chrome === "undefined" || !chrome.storage) {
+    console.error(
+      "Chrome APIs are not available. This function must run in a Chrome extension context."
+    );
     createMiniModal("Error: Chrome extension APIs are not available.");
     return;
   }
-  
+
   const elements = await extractElements(borrowingAddressSelectors);
   // Check if known discrepancy between OCLC data and mailroom data
   const zipCodeToCheck = isAddressMismatch(elements);
