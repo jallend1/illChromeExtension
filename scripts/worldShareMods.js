@@ -198,9 +198,9 @@
             console.log("Message Container:", requestAnchorTag);
             navigator.clipboard.writeText(requestAnchorTag.textContent.trim());
             console.log("Text copied to clipboard.");
-            // Clicking the link to navigate to the new request page
             console.log("Clicking request anchor tag...", requestAnchorTag);
-            requestAnchorTag.click();
+            // TODO: Clicking anchor tag works as expected for the first couple requests, but then loads a blank request page
+            // requestAnchorTag.click();
             return;
           }
           if (isRequestUrl(window.currentUrl)) {
