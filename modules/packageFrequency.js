@@ -116,7 +116,11 @@ export const packageFrequency = async () => {
   // Check if known discrepancy between OCLC data and mailroom data
   const zipCodeToCheck = isAddressMismatch(elements);
   let matchingZipCodes = await searchForZipCode(zipCodeToCheck);
-  if (!matchingZipCodes || matchingZipCodes.length === 0) {
+  if (!matchingZipCodes) {
+    createMiniModal("No matching ZIP codes found.");
+    return;
+  }
+  if (matchingZipCodes.length === 0) {
     createMiniModal("No matching ZIP codes found.");
     return;
   }
