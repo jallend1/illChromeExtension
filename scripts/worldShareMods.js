@@ -182,10 +182,27 @@
     };
 
     // --- URL Change Monitoring ---
-    const monitorUrlChanges = () => {
-      const observer = new MutationObserver(() => {
+    const monitorUrlChanges = async () => {
+      const observer = new MutationObserver(async () => {
         if (window.location.href !== window.currentUrl) {
           window.currentUrl = window.location.href; // Update the current URL
+          if (
+            window.currentUrl.includes(
+              "/new?fulfillmentType=OCLC_ILL&role=REQUESTER"
+            )
+          ) {
+            console.log("New request detected!!");
+            const requestAnchorTag = await waitForElementWithInterval(
+              ".wms-alert.wms-message-confirm > p.msg > a"
+            );
+            console.log("Message Container:", requestAnchorTag);
+            navigator.clipboard.writeText(requestAnchorTag.textContent.trim());
+            console.log("Text copied to clipboard.");
+            // Clicking the link to navigate to the new request page
+            console.log("Clicking request anchor tag...", requestAnchorTag);
+            requestAnchorTag.click();
+            return;
+          }
           if (isRequestUrl(window.currentUrl)) {
             createAddToBookshelfButton();
             determineMods();
