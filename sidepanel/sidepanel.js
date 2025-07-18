@@ -16,7 +16,9 @@ chrome.windows.getCurrent((currentWindow) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("Message type:", message.type);
   if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
+    console.log("Tab URL updated:", message.url);
     currentTabUrl = message.url || "";
     handleURLChange(currentTabUrl);
     sendResponse && sendResponse({ status: "URL handled" });
@@ -83,17 +85,49 @@ const worldShareButtonIds = [
   "isbnSearch",
 ];
 
+// const handleURLChange = (url) => {
+//   // Always disable all buttons first
+//   console.log("Disabling all buttons. Current URL:", url);
+//   disableButtons(evergreenButtonIds);
+//   disableButtons(worldShareButtonIds);
+
+//   // Only enable if the URL matches
+//   if (typeof url === "string" && url.includes(".kcls.org/eg2/en-US/staff/")) {
+//     console.log("Enabling Evergreen buttons. Current URL:", url);
+//     enableButtons(evergreenButtonIds);
+//   }
+//   if (
+//     typeof url === "string" &&
+//     url.includes("kingcountylibrarysystem.share.worldcat.org")
+//   ) {
+//     console.log("Enabling WorldShare buttons. Current URL:", url);
+//     enableButtons(worldShareButtonIds);
+//   }
+// };
+
 const handleURLChange = (url) => {
   // Always disable all buttons first
   console.log("Disabling all buttons. Current URL:", url);
   disableButtons(evergreenButtonIds);
   disableButtons(worldShareButtonIds);
 
+  // Add explicit debugging for the condition
+  const evergreenCondition =
+    typeof url === "string" && url.includes(".kcls.org/eg2/en-US/staff/");
+  console.log("Evergreen condition check:");
+  console.log("  typeof url === 'string':", typeof url === "string");
+  console.log(
+    "  url.includes('.kcls.org/eg2/en-US/staff/'):",
+    url.includes(".kcls.org/eg2/en-US/staff/")
+  );
+  console.log("  Overall condition result:", evergreenCondition);
+
   // Only enable if the URL matches
-  if (typeof url === "string" && url.includes(".kcls.org/eg2/en-US/staff/")) {
+  if (evergreenCondition) {
     console.log("Enabling Evergreen buttons. Current URL:", url);
     enableButtons(evergreenButtonIds);
   }
+
   if (
     typeof url === "string" &&
     url.includes("kingcountylibrarysystem.share.worldcat.org")
@@ -112,19 +146,31 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 });
 
 const enableButtons = (buttonIds) => {
+  console.log("enableButtons called with:", buttonIds);
   buttonIds.forEach((buttonId) => {
     const button = document.querySelector(`#${buttonId}`);
+    console.log(
+      `Button ${buttonId}:`,
+      button,
+      "disabled before:",
+      button?.disabled
+    );
     if (button) {
       button.disabled = false;
+      console.log(`Button ${buttonId} disabled after:`, button.disabled);
+    } else {
+      console.log(`Button with ID ${buttonId} not found in DOM`);
     }
   });
 };
 
 const disableButtons = (buttonIds) => {
+  console.log("disableButtons called with:", buttonIds);
   buttonIds.forEach((buttonId) => {
     const button = document.querySelector(`#${buttonId}`);
     if (button) {
       button.disabled = true;
+      console.log(`Button ${buttonId} disabled:`, button.disabled);
     }
   });
 };

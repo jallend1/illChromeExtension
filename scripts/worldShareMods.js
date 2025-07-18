@@ -12,7 +12,7 @@
       chrome.runtime.getURL("modules/virtualBookShelf.js")
     );
 
-    const { waitForElementWithInterval } = await import(
+    const { waitForElementWithInterval, createMiniModal } = await import(
       chrome.runtime.getURL("modules/utils.js")
     );
 
@@ -201,6 +201,11 @@
             console.log("Clicking request anchor tag...", requestAnchorTag);
             // TODO: Clicking anchor tag works as expected for the first couple requests, but then loads a blank request page
             // requestAnchorTag.click();
+            createMiniModal(
+              "Request ID ( " +
+                requestAnchorTag.textContent.trim() +
+                " ) copied to clipboard."
+            );
             return;
           }
           if (isRequestUrl(window.currentUrl)) {
