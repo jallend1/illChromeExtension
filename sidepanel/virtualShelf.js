@@ -192,7 +192,9 @@
 
         const titleElement = document.createElement("p");
         titleElement.className = "title";
-        titleElement.textContent = title;
+        const titleText =
+          title.length > 25 ? title.substring(0, 25) + "..." : title;
+        titleElement.textContent = titleText.replace(/:/g, "");
 
         // Create remove button
         const removeButton = document.createElement("button");
