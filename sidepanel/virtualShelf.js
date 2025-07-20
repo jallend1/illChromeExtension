@@ -1,3 +1,4 @@
+// TODO: Retrieve virtual book shelf from local storage on Evergreen pages
 (async () => {
   const virtualShelfContainer = document.getElementById(
     "virtual-shelf-container"
