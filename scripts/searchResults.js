@@ -30,7 +30,7 @@ function highlightReadyReads(copyLocations) {
 // Emphasizes owning libraries whose available items are not holdable
 function highlightNoHoldsLibraries() {
   let libraryLocations = document.querySelectorAll("th.shelving-library");
-  const noHoldsLibraries = ["OU", "JD", "CR", "SO", "SV"];
+  const noHoldsLibraries = ["OU", "JD", "CR", "GR", "SO", "SV"];
   libraryLocations.forEach((location) => {
     if (noHoldsLibraries.includes(location.textContent)) {
       location.style.fontWeight = "lighter";
