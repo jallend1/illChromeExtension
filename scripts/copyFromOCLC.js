@@ -192,7 +192,7 @@
       const patronName = extractValueFromField(elementSelectors.patronName);
       const isSecondPatron = extractValueFromField(
         elementSelectors.patronNote
-      )?.includes("2nd");
+      )?.includes("2nd pa");
       const patronNote = extractValueFromField(elementSelectors.patronNote);
 
       return {
