@@ -1,4 +1,25 @@
 function searchResults() {
+  // TODO: Change the div background color if the search is for a keyword instead of an ISBN
+  // Kind of a placeholder function until I can examine the URL more specifically
+  // Might need to use regex to determine the search type more meaningfully
+  function getSearchType() {
+    const url = window.location.href;
+    if (url.includes("search?query=")) {
+      return "keyword"; // Keyword search
+    }
+    if (url.includes("search?isbn=")) {
+      return "isbn"; // ISBN search
+    }
+
+    return "unknown"; // Unknown search type
+  }
+
+  const searchType = getSearchType(); // Assume this function determines the search type
+  if (searchType === "keyword") {
+    document.querySelector("div.search-results").style.backgroundColor =
+      "#f0f8ff";
+  }
+
   let copyLocations = document.querySelectorAll("td.copy-location");
 
   if (copyLocations.length === 0) {
