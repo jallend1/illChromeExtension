@@ -1,3 +1,5 @@
+// TODO: Import minimodal to alert when search is not ISBN based
+
 function searchResults() {
   // Checks URL to determine if the search is an ISBN search (More accurate and you don't need to look so close)
   function isISBNSearch() {
@@ -9,8 +11,8 @@ function searchResults() {
   function updateSearchResultsDiv() {
     const searchResultsDiv = document.getElementById("staffcat-search-form");
     isISBNSearch()
-      ? (searchResultsDiv.style.backgroundColor = "#ffeaea")
-      : (searchResultsDiv.style.backgroundColor = "#f7f7f7");
+      ? (searchResultsDiv.style.backgroundColor = "#f7f7f7")
+      : (searchResultsDiv.style.backgroundColor = "#ffeaea");
   }
 
   updateSearchResultsDiv();
