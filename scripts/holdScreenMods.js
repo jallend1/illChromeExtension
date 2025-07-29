@@ -43,6 +43,7 @@
             !placeHoldButton.hasAttribute("disabled")
           ) {
             placeHoldButton.click();
+            // TODO: Check for success message and implement standard logic
             observer.disconnect(); // Stop observing once the button is clicked
           }
         });
