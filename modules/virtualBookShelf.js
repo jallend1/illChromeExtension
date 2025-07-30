@@ -42,12 +42,7 @@ const addBookToVirtualBookShelf = async (book) => {
   console.log("Current Virtual Bookshelf:", virtualBookShelf);
 };
 
-const extractBookFromDOM = async (activeSelectors) => {
-  const bookObject = {
-    title: "",
-    dueDate: "",
-    borrowingAddress: {},
-  };
+const compileAddressData = async () => {
   const borrowingAddressElements = await extractBorrowingAddressElements();
   const addressData = {
     attention: borrowingAddressElements.attention.value,
@@ -57,6 +52,16 @@ const extractBookFromDOM = async (activeSelectors) => {
     region: borrowingAddressElements.region.textContent.trim(),
     postal: borrowingAddressElements.postal.value,
   };
+  return addressData;
+};
+
+const extractBookFromDOM = async (activeSelectors) => {
+  const bookObject = {
+    title: "",
+    dueDate: "",
+    borrowingAddress: {},
+  };
+  const addressData = await compileAddressData();
   const dueDateElement = await waitForElementWithInterval(
     activeSelectors.dueDateElement
   );
@@ -108,7 +113,3 @@ export const createAddToBookshelfButton = async () => {
     parentElement.appendChild(button);
   }
 };
-
-// TODO: Next Steps
-// 1) Limit addition to book shelf to only when the user is on a queue or direct borrowing page
-// 2) Create a modal to confirm the addition of the book

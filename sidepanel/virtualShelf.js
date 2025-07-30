@@ -1,4 +1,3 @@
-// TODO: Retrieve virtual book shelf from local storage on Evergreen pages
 (async () => {
   const virtualShelfContainer = document.getElementById(
     "virtual-shelf-container"
@@ -88,9 +87,9 @@
   const booksByState = {};
 
   virtualBookShelf.forEach((book) => {
-    const libraryState = book.borrowingAddress.region;
+    const libraryState = book.borrowingAddress?.region;
     const libraryName =
-      book.borrowingAddress.attention + " - " + book.borrowingAddress.line1;
+      book.borrowingAddress?.attention + " - " + book.borrowingAddress?.line1;
 
     if (!booksByState[libraryState]) {
       booksByState[libraryState] = {};
