@@ -8,9 +8,8 @@
       chrome.runtime.getURL("modules/constants.js")
     );
 
-    const { createAddToBookshelfButton } = await import(
-      chrome.runtime.getURL("modules/virtualBookShelf.js")
-    );
+    const { createAddToBookshelfButton, doesLibraryAlreadyExist } =
+      await import(chrome.runtime.getURL("modules/virtualBookShelf.js"));
 
     const { waitForElementWithInterval, createMiniModal } = await import(
       chrome.runtime.getURL("modules/utils.js")
@@ -210,6 +209,8 @@
           }
           if (isRequestUrl(window.currentUrl)) {
             createAddToBookshelfButton();
+            console.log("Checking if library exists...");
+            doesLibraryAlreadyExist();
             determineMods();
           }
         }
@@ -224,6 +225,7 @@
     // Runs the script initially when the page loads
     if (isRequestUrl(window.currentUrl)) determineMods();
     createAddToBookshelfButton();
+    doesLibraryAlreadyExist();
 
     // Sets up a MutationObserver to monitor URL changes
     // and reruns the script when we got a new URL

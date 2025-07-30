@@ -91,6 +91,23 @@ const virtualBookShelfClick = async () => {
   }
 };
 
+// Check if current library already exists in shelf
+export const doesLibraryAlreadyExist = async () => {
+  const addressData = await compileAddressData();
+  const virtualBookShelf = await getVirtualBookShelf();
+  console.log("Checking if library exists:", addressData);
+  console.log("Current Virtual Bookshelf:", virtualBookShelf);
+  console.log(
+    "Library exists:",
+    virtualBookShelf.some((book) => {
+      return (
+        book.borrowingAddress?.attention === addressData.attention &&
+        book.borrowingAddress?.line1 === addressData.line1
+      );
+    })
+  );
+};
+
 export const createAddToBookshelfButton = async () => {
   const parentElement = await waitForElementWithInterval("#sidebar-nd > div");
   if (!document.querySelector("#add-to-bookshelf-button")) {
