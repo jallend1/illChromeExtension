@@ -167,14 +167,14 @@
       libraryNameElement.textContent = libraryName;
       libraryCard.appendChild(libraryNameElement);
 
-      // Create a Clear All button for this library
-      const clearAllButton = document.createElement("button");
-      clearAllButton.className = "clear-all-button";
-      clearAllButton.textContent = "Clear All";
-      clearAllButton.addEventListener("click", () => {
+      // Create a Return All button for each library
+      const returnAllButton = document.createElement("button");
+      returnAllButton.className = "return-all-button";
+      returnAllButton.textContent = "Return All";
+      returnAllButton.addEventListener("click", () => {
         if (
           confirm(
-            `Are you sure you want to clear all books from "${libraryName}"? This is irreversible!`
+            `Are you sure you want to return all books from ${libraryName}?`
           )
         ) {
           // Remove all books from this library
@@ -183,7 +183,7 @@
           location.reload();
         }
       });
-      libraryCard.appendChild(clearAllButton);
+      libraryCard.appendChild(returnAllButton);
 
       // Create a container for the books in this library
       const bookContainer = document.createElement("div");
