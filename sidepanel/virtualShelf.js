@@ -167,6 +167,24 @@
       libraryNameElement.textContent = libraryName;
       libraryCard.appendChild(libraryNameElement);
 
+      // Create a Clear All button for this library
+      const clearAllButton = document.createElement("button");
+      clearAllButton.className = "clear-all-button";
+      clearAllButton.textContent = "Clear All";
+      clearAllButton.addEventListener("click", () => {
+        if (
+          confirm(
+            `Are you sure you want to clear all books from "${libraryName}"? This is irreversible!`
+          )
+        ) {
+          // Remove all books from this library
+          books.forEach((book) => removeBookFromStorage(book));
+          // Refresh the page to show updated list
+          location.reload();
+        }
+      });
+      libraryCard.appendChild(clearAllButton);
+
       // Create a container for the books in this library
       const bookContainer = document.createElement("div");
       bookContainer.className = "book-container";
