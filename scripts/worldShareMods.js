@@ -240,11 +240,3 @@
     monitorUrlChanges();
   }
 })();
-
-// TODO:
-// 1) Monitor URL changes for create new request page
-// 2) Once on create new request page, fire a function once the page is left
-// 3) Search for a div with a class of "nd-request-container-messages yui3-wms-messages-content" (That is not hidden!)
-// 4) If found, log the text content of that div
-// 5) Copy it to the clipboard?
-// 6) Auto add to print queue?
