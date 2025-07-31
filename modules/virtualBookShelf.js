@@ -97,15 +97,14 @@ export const doesLibraryAlreadyExist = async () => {
   const virtualBookShelf = await getVirtualBookShelf();
   console.log("Checking if library exists:", addressData);
   console.log("Current Virtual Bookshelf:", virtualBookShelf);
-  console.log(
-    "Library exists:",
-    virtualBookShelf.some((book) => {
-      return (
-        book.borrowingAddress?.attention === addressData.attention &&
-        book.borrowingAddress?.line1 === addressData.line1
-      );
-    })
-  );
+  const exists = virtualBookShelf.some((book) => {
+    return (
+      book.borrowingAddress?.attention === addressData.attention &&
+      book.borrowingAddress?.line1 === addressData.line1
+    );
+  });
+  console.log("Library exists:", exists);
+  return exists;
 };
 
 export const createAddToBookshelfButton = async () => {

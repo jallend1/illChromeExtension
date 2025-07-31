@@ -225,7 +225,15 @@
     // Runs the script initially when the page loads
     if (isRequestUrl(window.currentUrl)) determineMods();
     createAddToBookshelfButton();
+    console.log("Checking if library exists...");
+    console.log(doesLibraryAlreadyExist());
     doesLibraryAlreadyExist();
+    const libraryExists = await doesLibraryAlreadyExist();
+    console.log("Library exists:", libraryExists);
+    if (libraryExists) {
+      console.log("Creating mini modal...");
+      createMiniModal("Library already exists in virtual bookshelf.");
+    }
 
     // Sets up a MutationObserver to monitor URL changes
     // and reruns the script when we got a new URL
