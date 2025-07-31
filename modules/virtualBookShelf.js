@@ -44,6 +44,7 @@ const addBookToVirtualBookShelf = async (book) => {
 
 const compileAddressData = async () => {
   const borrowingAddressElements = await extractBorrowingAddressElements();
+  // console.log("Borrowing Address Elements:", borrowingAddressElements);
   const addressData = {
     attention: borrowingAddressElements.attention.value,
     line1: borrowingAddressElements.line1.value,
@@ -94,6 +95,7 @@ const virtualBookShelfClick = async () => {
 // Check if current library already exists in shelf
 export const doesLibraryAlreadyExist = async () => {
   const addressData = await compileAddressData();
+
   const virtualBookShelf = await getVirtualBookShelf();
   console.log("Checking if library exists:", addressData);
   console.log("Current Virtual Bookshelf:", virtualBookShelf);

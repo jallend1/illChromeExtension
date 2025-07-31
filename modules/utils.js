@@ -47,10 +47,6 @@ export const hoverStyles = {
 // -- MiniModal --
 
 export const miniModalStyles = {
-  position: "fixed",
-  top: "5%",
-  right: "0%",
-  zIndex: "9999",
   background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
   padding: "20px",
   boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
@@ -60,30 +56,79 @@ export const miniModalStyles = {
   opacity: "1",
 };
 
-// -- Displays a mini-modal saying Open Transit dialog is being dismissed --
-export const createMiniModal = (message, isError = false) => {
-  const existingModal = document.querySelector(".mini-modal");
-  if (existingModal) {
-    existingModal.remove(); // Remove the existing modal
-  }
-  const miniModal = document.createElement("div");
-  miniModal.className = "mini-modal";
-  miniModal.innerHTML = `
+const createModalMessage = (message, isError = false) => {
+  const modal = document.createElement("div");
+  modal.className = "mini-modal-message";
+  modal.innerHTML = `
       <div class="mini-modal-content">
         <p>${message}</p>
       </div>
     `;
-  Object.assign(miniModal.style, miniModalStyles);
+  Object.assign(modal.style, miniModalStyles);
   if (isError) {
-    miniModal.style.background =
+    modal.style.background =
       "linear-gradient(135deg, #ffcccc 0%, #ff9999 100%)"; // Red gradient for errors
-    miniModal.style.color = "#010101";
+    modal.style.color = "#010101";
   }
-  document.body.appendChild(miniModal);
-  setTimeout(() => {
-    miniModal.remove();
-  }, 2000);
+  return modal;
 };
+
+// -- Displays a mini-modal saying Open Transit dialog is being dismissed --
+export const createMiniModal = (message, isError = false, timeout = 2000) => {
+  const modalMessage = createModalMessage(message, isError);
+
+  let existingModal = document.querySelector(".mini-modal");
+  // If the modal already exists, append the new message
+  if (existingModal) {
+    // existingModal.remove(); // Remove the existing modal
+    console.log("Modal exists!!!", existingModal);
+    existingModal.appendChild(modalMessage);
+    setTimeout(() => {
+      modalMessage.remove();
+      // If no more messages are left, remove the existing modal
+      if (!existingModal.querySelector(".mini-modal-message")) {
+        existingModal.remove();
+      }
+    }, timeout);
+  } else {
+    // If the modal doesn't exist, create it
+    const miniModal = document.createElement("div");
+    miniModal.className = "mini-modal";
+    miniModal.appendChild(modalMessage);
+    miniModal.style.position = "fixed";
+    miniModal.style.top = "5%";
+    miniModal.style.right = "0%";
+    miniModal.style.zIndex = "9999";
+    document.body.appendChild(miniModal);
+    console.log("Created new mini modal:", miniModal);
+    setTimeout(() => {
+      modalMessage.remove();
+      // If no more messages are left, remove the mini modal
+      if (!miniModal.querySelector(".mini-modal-message")) {
+        miniModal.remove();
+      }
+    }, timeout);
+  }
+};
+
+// const miniModal = document.createElement("div");
+// miniModal.className = "mini-modal";
+// miniModal.innerHTML = `
+//     <div class="mini-modal-content">
+//       <p>${message}</p>
+//     </div>
+//   `;
+//   Object.assign(modalMessage.style, miniModalStyles);
+//   if (isError) {
+//     modalMessage.style.background =
+//       "linear-gradient(135deg, #ffcccc 0%, #ff9999 100%)"; // Red gradient for errors
+//     modalMessage.style.color = "#010101";
+//   }
+//   document.body.appendChild(miniModal);
+//   setTimeout(() => {
+//     miniModal.remove();
+//   }, 2000);
+// };
 
 export const ignoreHiddenElements = (selector) => {
   const elements = document.querySelectorAll(selector);

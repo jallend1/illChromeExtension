@@ -1,5 +1,9 @@
-const { waitForElementWithInterval, ignoreHiddenElements, miniModalStyles } =
-  await import(chrome.runtime.getURL("modules/utils.js"));
+const {
+  waitForElementWithInterval,
+  ignoreHiddenElements,
+  miniModalStyles,
+  createMiniModal,
+} = await import(chrome.runtime.getURL("modules/utils.js"));
 
 const { borrowingAddressSelectors } = await import(
   chrome.runtime.getURL("modules/constants.js")
@@ -108,7 +112,11 @@ export const packageFrequency = async () => {
     console.error(
       "Chrome APIs are not available. This function must run in a Chrome extension context."
     );
-    createMiniModal("Error: Chrome extension APIs are not available.");
+    createMiniModal(
+      "Error: Chrome extension APIs are not available.",
+      true,
+      10000
+    );
     return;
   }
 
@@ -117,11 +125,11 @@ export const packageFrequency = async () => {
   const zipCodeToCheck = isAddressMismatch(elements);
   let matchingZipCodes = await searchForZipCode(zipCodeToCheck);
   if (!matchingZipCodes) {
-    createMiniModal("No matching ZIP codes found.");
+    createMiniModal("No matching ZIP codes found.", false, 10000);
     return;
   }
   if (matchingZipCodes.length === 0) {
-    createMiniModal("No matching ZIP codes found.");
+    createMiniModal("No matching ZIP codes found.", false, 10000);
     return;
   }
 
@@ -133,7 +141,9 @@ export const packageFrequency = async () => {
       matchingZipCodes[0]["Recipient Name"];
     const averageDays = calculateAverageDays(appearances);
     createMiniModal(
-      `A package was sent to ${libraryName} every ${averageDays} days in 2024.`
+      `A package was sent to ${libraryName} every ${averageDays} days in 2024.`,
+      false,
+      10000
     );
   } else {
     // Multiple matches: list names and appearances
@@ -148,27 +158,29 @@ export const packageFrequency = async () => {
       )
       .join("");
     createMiniModal(
-      `<div>Multiple matches for this ZIP code:<ul>${list}</ul></div>`
+      `<div>Multiple matches for this ZIP code:<ul>${list}</ul></div>`,
+      false,
+      10000
     );
   }
 };
 
 // Import all this from utils once timeout is removed
-const createMiniModal = (message) => {
-  const existingModal = document.querySelector(".mini-modal");
-  if (existingModal) {
-    existingModal.remove(); // Remove the existing modal
-  }
-  const miniModal = document.createElement("div");
-  miniModal.className = "mini-modal";
-  miniModal.innerHTML = `
-      <div class="mini-modal-content">
-        <p>${message}</p>
-      </div>
-    `;
-  Object.assign(miniModal.style, miniModalStyles);
-  document.body.appendChild(miniModal);
-  setTimeout(() => {
-    miniModal.remove();
-  }, 10000);
-};
+// const createMiniModal = (message) => {
+//   const existingModal = document.querySelector(".mini-modal");
+//   if (existingModal) {
+//     existingModal.remove(); // Remove the existing modal
+//   }
+//   const miniModal = document.createElement("div");
+//   miniModal.className = "mini-modal";
+//   miniModal.innerHTML = `
+//       <div class="mini-modal-content">
+//         <p>${message}</p>
+//       </div>
+//     `;
+//   Object.assign(miniModal.style, miniModalStyles);
+//   document.body.appendChild(miniModal);
+//   setTimeout(() => {
+//     miniModal.remove();
+//   }, 10000);
+// };
