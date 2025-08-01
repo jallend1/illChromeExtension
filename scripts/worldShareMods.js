@@ -3,6 +3,9 @@
     const { packageFrequency } = await import(
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
+    const { isLendingRequestPage } = await import(
+      chrome.runtime.getURL("modules/utils.js")
+    );
 
     const { borrowingSelectors, lendingSelectors } = await import(
       chrome.runtime.getURL("modules/constants.js")
@@ -124,7 +127,6 @@
       if (elements.requestStatus.innerText.includes("Received") || elements.requestStatus.innerText.includes("Recalled")) {
         packageFrequency();
       } 
-
     };
 
     // --- Lending Mod Functions ---
@@ -158,20 +160,6 @@
           : borrowingSelectors.direct;
         return activeSelectors;
       }
-    };
-
-    const isLendingRequestPage = async () => {
-      if (window.location.href.includes("lendingSubmittedLoan")) return true;
-      const isQueueUrl = window.currentUrl.includes("queue");
-      let borrowingLibrary;
-      isQueueUrl
-        ? (borrowingLibrary = await waitForElementWithInterval(
-            "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
-          ))
-        : (borrowingLibrary = await waitForElementWithInterval(
-            "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
-          ));
-      return !borrowingLibrary.textContent.includes("NTG");
     };
 
     const determineMods = async () => {
