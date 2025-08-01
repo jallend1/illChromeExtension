@@ -8,6 +8,7 @@ const {
   buttonStyles,
   hoverStyles,
   createMiniModal,
+  isLendingRequestPage,
 } = await import(chrome.runtime.getURL("modules/utils.js"));
 
 const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
@@ -85,6 +86,11 @@ const extractBookFromDOM = async (activeSelectors) => {
 };
 
 const virtualBookShelfClick = async () => {
+  const isLendingRequest = await isLendingRequestPage();
+  if(isLendingRequest) {
+    alert("This feature is not available on lending request pages.");
+    return;
+  }
   const isQueueUrl = window.currentUrl.includes("queue");
   const activeSelectors = isQueueUrl
     ? borrowingSelectors.queue

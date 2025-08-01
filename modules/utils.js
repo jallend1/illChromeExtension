@@ -111,25 +111,6 @@ export const createMiniModal = (message, isError = false, timeout = 2000) => {
   }
 };
 
-// const miniModal = document.createElement("div");
-// miniModal.className = "mini-modal";
-// miniModal.innerHTML = `
-//     <div class="mini-modal-content">
-//       <p>${message}</p>
-//     </div>
-//   `;
-//   Object.assign(modalMessage.style, miniModalStyles);
-//   if (isError) {
-//     modalMessage.style.background =
-//       "linear-gradient(135deg, #ffcccc 0%, #ff9999 100%)"; // Red gradient for errors
-//     modalMessage.style.color = "#010101";
-//   }
-//   document.body.appendChild(miniModal);
-//   setTimeout(() => {
-//     miniModal.remove();
-//   }, 2000);
-// };
-
 export const ignoreHiddenElements = (selector) => {
   const elements = document.querySelectorAll(selector);
   for (const el of elements) {
@@ -140,3 +121,18 @@ export const ignoreHiddenElements = (selector) => {
   }
   return null;
 };
+
+// Examines URL to determine if the active page is a lending request
+export const isLendingRequestPage = async () => {
+  if (window.location.href.includes("lendingSubmittedLoan")) return true;
+      const isQueueUrl = window.currentUrl.includes("queue");
+      let borrowingLibrary;
+      isQueueUrl
+        ? (borrowingLibrary = await waitForElementWithInterval(
+            "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
+          ))
+        : (borrowingLibrary = await waitForElementWithInterval(
+            "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
+          ));
+      return !borrowingLibrary.textContent.includes("NTG");
+    };
