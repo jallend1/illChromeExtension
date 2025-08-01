@@ -7,6 +7,7 @@ const {
   ignoreHiddenElements,
   buttonStyles,
   hoverStyles,
+  createMiniModal,
 } = await import(chrome.runtime.getURL("modules/utils.js"));
 
 const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
@@ -39,6 +40,11 @@ const addBookToVirtualBookShelf = async (book) => {
   await new Promise((resolve) => {
     chrome.storage.local.set({ virtualBookShelf }, resolve);
   });
+  createMiniModal(
+    `Added "${book.title}" to your Virtual Bookshelf.`,
+    false,
+    2000
+  );
   console.log("Current Virtual Bookshelf:", virtualBookShelf);
 };
 
