@@ -120,7 +120,11 @@
 
       await highlightDueDate(elements);
       await highlightRequestStatus(elements);
-      packageFrequency();
+      // Only displays package frequency if request is in received/recalled status
+      if (elements.requestStatus.innerText.includes("Received") || elements.requestStatus.innerText.includes("Recalled")) {
+        packageFrequency();
+      } 
+
     };
 
     // --- Lending Mod Functions ---
@@ -225,14 +229,10 @@
     // Runs the script initially when the page loads
     if (isRequestUrl(window.currentUrl)) determineMods();
     createAddToBookshelfButton();
-    console.log("Checking if library exists...");
-    console.log(doesLibraryAlreadyExist());
     doesLibraryAlreadyExist();
     const libraryExists = await doesLibraryAlreadyExist();
-    console.log("Library exists:", libraryExists);
     if (libraryExists) {
-      console.log("Creating mini modal...");
-      createMiniModal("Library already exists in virtual bookshelf.");
+      createMiniModal("Alert! This library has items on the virtual bookshelf!", true, 10000);
     }
 
     // Sets up a MutationObserver to monitor URL changes
