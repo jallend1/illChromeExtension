@@ -7,6 +7,7 @@
       chrome.runtime.getURL("modules/utils.js")
     );
     window.requestManagerModsInjected = true;
+    window.gridItemsLength = 0;
     const targetNode = document.body;
     const config = { childList: true, subtree: true };
 
@@ -23,8 +24,34 @@
       button.style.cursor = "pointer";
     }
 
+    // Apply highlighting to Outreach and ADA profile types
+    const highlightProfileTypes = async () => {
+      const gridItems = await waitForElementWithInterval(() => {
+        const elements = document.querySelectorAll('eg-grid-body-cell');
+        return elements.length > 0 ? elements : null;
+      });
+      console.log("Grid items length", gridItems.length);
+      if (gridItems.length === window.gridItemsLength) {
+        // No change in grid items, exit the function
+        return;
+      }
+      // Update the global variable to the current grid length
+      window.gridItemsLength = gridItems.length;
+      const matchingItems = [];
+      gridItems.forEach((item) => {
+        const spans = item.querySelectorAll('span[tooltipclass="eg-grid-tooltip"]');
+        spans.forEach((span) => {
+          if (span.textContent.includes("Outreach") || span.textContent.includes("ADA Circulation")) {
+            item.style.backgroundColor = "#ffeb3b"; 
+            matchingItems.push(item);
+          }
+        });
+      })
+    }
+
     function watchForModal() {
       modalObserver = new MutationObserver((mutationsList, observer) => {
+        highlightProfileTypes();
         const modal = document.querySelector(".modal-dialog.modal-xl");
         if (modal) {
           const modalHeader = document.querySelector(
@@ -142,6 +169,8 @@
       removalObserver.observe(targetNode, config);
     }
 
+
     watchForModal();
+    highlightProfileTypes();
   }
 })();
