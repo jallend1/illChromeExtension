@@ -170,15 +170,37 @@
       const returnAllButton = document.createElement("button");
       returnAllButton.className = "return-all-button";
       returnAllButton.textContent = "Return All";
-      returnAllButton.addEventListener("click", () => {
+      returnAllButton.addEventListener("click", async () => {
         if (
           confirm(
             `Are you sure you want to return all books from ${libraryName}?`
           )
         ) {
-          // Remove all books from this library
-          books.forEach((book) => removeBookFromStorage(book));
-          // Refresh the page to show updated list
+          // Get the latest shelf from storage
+          const currentShelf = await new Promise((resolve) => {
+            chrome.storage.local.get("virtualBookShelf", (data) => {
+              resolve(data.virtualBookShelf || []);
+            });
+          });
+
+          // Excludes allbooks from this library
+          const updatedShelf = currentShelf.filter(
+            (book) =>
+              !(
+                book.borrowingAddress?.attention ===
+                  books[0].borrowingAddress?.attention &&
+                book.borrowingAddress?.line1 ===
+                  books[0].borrowingAddress?.line1
+              )
+          );
+
+          await new Promise((resolve) => {
+            chrome.storage.local.set(
+              { virtualBookShelf: updatedShelf },
+              resolve
+            );
+          });
+
           location.reload();
         }
       });
