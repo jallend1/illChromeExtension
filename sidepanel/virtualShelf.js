@@ -42,6 +42,21 @@
     }
   };
 
+  // Remove book from storage and refresh display
+  const removeBookFromStorage = async (bookToRemove) => {
+    const updatedShelf = virtualBookShelf.filter(
+      (book) =>
+        !(
+          book.title === bookToRemove.title &&
+          book.borrowingAddress.attention ===
+            bookToRemove.borrowingAddress.attention &&
+          book.borrowingAddress.line1 === bookToRemove.borrowingAddress.line1 &&
+          book.dueDate === bookToRemove.dueDate
+        )
+    );
+    updateVirtualShelf(updatedShelf);
+  };
+
   // *******************
   // * Event Listeners *
   // *******************
@@ -118,21 +133,6 @@
 
     booksByState[libraryState][libraryName].push(book);
   });
-
-  // Remove book from storage and refresh display
-  const removeBookFromStorage = async (bookToRemove) => {
-    const updatedShelf = virtualBookShelf.filter(
-      (book) =>
-        !(
-          book.title === bookToRemove.title &&
-          book.borrowingAddress.attention ===
-            bookToRemove.borrowingAddress.attention &&
-          book.borrowingAddress.line1 === bookToRemove.borrowingAddress.line1 &&
-          book.dueDate === bookToRemove.dueDate
-        )
-    );
-    updateVirtualShelf(updatedShelf);
-  };
 
   // Sort states alphabetically
   const sortedStates = Object.keys(booksByState).sort((a, b) =>
