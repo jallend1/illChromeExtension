@@ -164,23 +164,3 @@ export const packageFrequency = async () => {
     );
   }
 };
-
-// Import all this from utils once timeout is removed
-// const createMiniModal = (message) => {
-//   const existingModal = document.querySelector(".mini-modal");
-//   if (existingModal) {
-//     existingModal.remove(); // Remove the existing modal
-//   }
-//   const miniModal = document.createElement("div");
-//   miniModal.className = "mini-modal";
-//   miniModal.innerHTML = `
-//       <div class="mini-modal-content">
-//         <p>${message}</p>
-//       </div>
-//     `;
-//   Object.assign(miniModal.style, miniModalStyles);
-//   document.body.appendChild(miniModal);
-//   setTimeout(() => {
-//     miniModal.remove();
-//   }, 10000);
-// };
