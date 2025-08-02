@@ -1,9 +1,5 @@
-const {
-  waitForElementWithInterval,
-  ignoreHiddenElements,
-  miniModalStyles,
-  createMiniModal,
-} = await import(chrome.runtime.getURL("modules/utils.js"));
+const { waitForElementWithInterval, ignoreHiddenElements, createMiniModal } =
+  await import(chrome.runtime.getURL("modules/utils.js"));
 
 const { borrowingAddressSelectors } = await import(
   chrome.runtime.getURL("modules/constants.js")
@@ -125,11 +121,19 @@ export const packageFrequency = async () => {
   const zipCodeToCheck = isAddressMismatch(elements);
   let matchingZipCodes = await searchForZipCode(zipCodeToCheck);
   if (!matchingZipCodes) {
-    createMiniModal("No matching ZIP codes found.", false, 10000);
+    createMiniModal(
+      `No ZIP codes matching ${zipCodeToCheck} found.`,
+      false,
+      10000
+    );
     return;
   }
   if (matchingZipCodes.length === 0) {
-    createMiniModal("No matching ZIP codes found.", false, 10000);
+    createMiniModal(
+      `No ZIP codes matching ${zipCodeToCheck} found.`,
+      false,
+      10000
+    );
     return;
   }
 
@@ -139,9 +143,9 @@ export const packageFrequency = async () => {
       matchingZipCodes[0]["Recipient Company"] +
       "\n" +
       matchingZipCodes[0]["Recipient Name"];
-    const averageDays = calculateAverageDays(appearances);
+    const averageDays = Math.floor(calculateAverageDays(appearances));
     createMiniModal(
-      `A package was sent to ${libraryName} every ${averageDays} days in 2024.`,
+      `A package was sent to <strong>${libraryName}</strong> every ${averageDays} days in 2024.`,
       false,
       10000
     );
