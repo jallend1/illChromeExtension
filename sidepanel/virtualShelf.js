@@ -2,31 +2,59 @@
   const virtualShelfContainer = document.getElementById(
     "virtual-shelf-container"
   );
-
-  virtualShelfContainer.innerHTML = `<div class="loading">Loading virtual book shelf...</div>`;
-
-  // Extract virtualBookShelf from local storage
-  const virtualBookShelf = await new Promise((resolve) => {
-    chrome.storage.local.get("virtualBookShelf", (data) => {
-      resolve(data.virtualBookShelf || []);
-    });
-  });
-
-  virtualShelfContainer.innerHTML = ""; // Clear loading state
-  if (!virtualBookShelf || !Array.isArray(virtualBookShelf)) {
-    virtualShelfContainer.innerHTML = `
-      <div class="empty-state">
-        <h3>No virtual book shelf found. :(</h3>
-      </div>
-    `;
-    return;
-  }
-
-  console.log("Virtual Book Shelf:", virtualBookShelf);
-
   const exportShelfButton = document.getElementById("export-shelf");
   const importShelfButton = document.getElementById("import-shelf");
   const clearShelfButton = document.getElementById("clear-shelf");
+
+  virtualShelfContainer.innerHTML = `<div class="loading">Loading virtual book shelf...</div>`;
+
+  // *****************
+  // Utility functions
+  // *****************
+
+  // Extract Virtual Shelf from local storage
+  const getVirtualShelf = async () => {
+    return new Promise((resolve) => {
+      chrome.storage.local.get("virtualBookShelf", (data) => {
+        resolve(data.virtualBookShelf || []);
+      });
+    });
+  };
+
+  // Update Virtual Shelf in local storage
+  const updateVirtualShelf = async (shelf) => {
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ virtualBookShelf: shelf }, () => {
+        resolve();
+        location.reload();
+      });
+    });
+  };
+
+  // Copy to clipboard
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      return false;
+    }
+  };
+
+  // *******************
+  // * Event Listeners *
+  // *******************
+
+  // Copies the virtual book shelf data to clipboard
+  exportShelfButton.addEventListener("click", () => {
+    const shelfData = JSON.stringify(virtualBookShelf, null, 2);
+    copyToClipboard(shelfData).then((success) => {
+      if (success) {
+        alert("Virtual book shelf data copied to clipboard!");
+      }
+    });
+  });
 
   // Clear the virtual book shelf
   clearShelfButton.addEventListener("click", () => {
@@ -37,14 +65,8 @@
     ) {
       // Copy the current shelf to clipboard before clearing, just in case!
       const shelfData = JSON.stringify(virtualBookShelf, null, 2);
-      navigator.clipboard.writeText(shelfData).then(() => {
-        console.log(
-          "Virtual book shelf data copied to clipboard before clearing."
-        );
-      });
-      chrome.storage.local.set({ virtualBookShelf: [] }, () => {
-        location.reload();
-      });
+      copyToClipboard(shelfData);
+      updateVirtualShelf([]);
     }
   });
 
@@ -55,11 +77,7 @@
       try {
         const importedShelf = JSON.parse(input);
         if (Array.isArray(importedShelf)) {
-          // Save the imported shelf to local storage
-          chrome.storage.local.set({ virtualBookShelf: importedShelf }, () => {
-            alert("Virtual book shelf imported successfully!");
-            location.reload(); // Refresh the page to show updated list
-          });
+          updateVirtualShelf(importedShelf);
         } else {
           alert("Invalid data format. Please provide a valid JSON array.");
         }
@@ -70,18 +88,17 @@
     }
   });
 
-  // Copies the virtual book shelf data to clipboard
-  exportShelfButton.addEventListener("click", () => {
-    const shelfData = JSON.stringify(virtualBookShelf, null, 2);
-    navigator.clipboard
-      .writeText(shelfData)
-      .then(() => {
-        alert("Virtual book shelf data copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy shelf data: ", err);
-      });
-  });
+  const virtualBookShelf = await getVirtualShelf();
+  console.log("Virtual Book Shelf:", virtualBookShelf);
+
+  virtualShelfContainer.innerHTML = ""; // Clear loading state
+  if (!virtualBookShelf || virtualBookShelf.length === 0) {
+    virtualShelfContainer.innerHTML = `
+      <div class="empty-state">
+        <h3>No virtual book shelf found. :(</h3>
+      </div>
+    `;
+  }
 
   // Group books by state and library, then sort
   const booksByState = {};
@@ -114,13 +131,7 @@
           book.dueDate === bookToRemove.dueDate
         )
     );
-
-    await new Promise((resolve) => {
-      chrome.storage.local.set({ virtualBookShelf: updatedShelf }, resolve);
-    });
-
-    // Refresh the page to show updated list
-    location.reload();
+    updateVirtualShelf(updatedShelf);
   };
 
   // Sort states alphabetically
@@ -177,13 +188,8 @@
           )
         ) {
           // Get the latest shelf from storage
-          const currentShelf = await new Promise((resolve) => {
-            chrome.storage.local.get("virtualBookShelf", (data) => {
-              resolve(data.virtualBookShelf || []);
-            });
-          });
-
-          // Excludes allbooks from this library
+          const currentShelf = await getVirtualShelf();
+          // Filters out all books from this library
           const updatedShelf = currentShelf.filter(
             (book) =>
               !(
@@ -193,15 +199,7 @@
                   books[0].borrowingAddress?.line1
               )
           );
-
-          await new Promise((resolve) => {
-            chrome.storage.local.set(
-              { virtualBookShelf: updatedShelf },
-              resolve
-            );
-          });
-
-          location.reload();
+          updateVirtualShelf(updatedShelf);
         }
       });
       libraryCard.appendChild(returnAllButton);
