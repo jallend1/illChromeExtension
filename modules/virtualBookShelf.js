@@ -53,12 +53,12 @@ const compileAddressData = async () => {
   const borrowingAddressElements = await extractBorrowingAddressElements();
   // console.log("Borrowing Address Elements:", borrowingAddressElements);
   const addressData = {
-    attention: borrowingAddressElements.attention.value,
-    line1: borrowingAddressElements.line1.value,
-    line2: borrowingAddressElements.line2.value,
-    locality: borrowingAddressElements.locality.value,
-    region: borrowingAddressElements.region.textContent.trim(),
-    postal: borrowingAddressElements.postal.value,
+    attention: borrowingAddressElements?.attention?.value || null,
+    line1: borrowingAddressElements?.line1?.value || null,
+    line2: borrowingAddressElements?.line2?.value || null,
+    locality: borrowingAddressElements?.locality?.value || null,
+    region: borrowingAddressElements?.region?.textContent?.trim() || null,
+    postal: borrowingAddressElements?.postal?.value || null,
   };
   return addressData;
 };
@@ -87,7 +87,7 @@ const extractBookFromDOM = async (activeSelectors) => {
 
 const virtualBookShelfClick = async () => {
   const isLendingRequest = await isLendingRequestPage();
-  if(isLendingRequest) {
+  if (isLendingRequest) {
     alert("This feature is not available on lending request pages.");
     return;
   }
@@ -107,17 +107,13 @@ const virtualBookShelfClick = async () => {
 // Check if current library already exists in shelf
 export const doesLibraryAlreadyExist = async () => {
   const addressData = await compileAddressData();
-
   const virtualBookShelf = await getVirtualBookShelf();
-  console.log("Checking if library exists:", addressData);
-  console.log("Current Virtual Bookshelf:", virtualBookShelf);
   const exists = virtualBookShelf.some((book) => {
     return (
       book.borrowingAddress?.attention === addressData.attention &&
       book.borrowingAddress?.line1 === addressData.line1
     );
   });
-  console.log("Library exists:", exists);
   return exists;
 };
 

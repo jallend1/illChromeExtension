@@ -109,7 +109,6 @@ export const createMiniModal = (message, isError = false, timeout = 2000) => {
     miniModal.style.right = "0%";
     miniModal.style.zIndex = "9999";
     document.body.appendChild(miniModal);
-    console.log("Created new mini modal:", miniModal);
     setTimeout(() => {
       modalMessage.remove();
       // If no more messages are left, remove the mini modal
@@ -129,4 +128,19 @@ export const ignoreHiddenElements = (selector) => {
     }
   }
   return null;
+};
+
+// Examines URL to determine if the active page is a lending request
+export const isLendingRequestPage = async () => {
+  if (window.location.href.includes("lendingSubmittedLoan")) return true;
+  const isQueueUrl = window.currentUrl.includes("queue");
+  let borrowingLibrary;
+  isQueueUrl
+    ? (borrowingLibrary = await waitForElementWithInterval(
+        "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
+      ))
+    : (borrowingLibrary = await waitForElementWithInterval(
+        "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
+      ));
+  return !borrowingLibrary.textContent.includes("NTG");
 };
