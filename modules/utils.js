@@ -80,8 +80,17 @@ export const createMiniModal = (message, isError = false, timeout = 2000) => {
   let existingModal = document.querySelector(".mini-modal");
   // If the modal already exists, append the new message
   if (existingModal) {
+    // TODO: Intermittently having duplicates, suggesting some repetitive calls at some point?
+    // Confirm that the existing modal is not a duplicate of the new message
+    const existingMessage = existingModal.querySelector(".mini-modal-message");
+    if (
+      existingMessage &&
+      existingMessage.innerHTML === modalMessage.innerHTML
+    ) {
+      console.log("Duplicate message, not appending again.");
+      return; // Exit if the message is a duplicate
+    }
     // existingModal.remove(); // Remove the existing modal
-    console.log("Modal exists!!!", existingModal);
     existingModal.appendChild(modalMessage);
     setTimeout(() => {
       modalMessage.remove();
@@ -121,18 +130,3 @@ export const ignoreHiddenElements = (selector) => {
   }
   return null;
 };
-
-// Examines URL to determine if the active page is a lending request
-export const isLendingRequestPage = async () => {
-  if (window.location.href.includes("lendingSubmittedLoan")) return true;
-      const isQueueUrl = window.currentUrl.includes("queue");
-      let borrowingLibrary;
-      isQueueUrl
-        ? (borrowingLibrary = await waitForElementWithInterval(
-            "#requests > div:not([class*='hidden']) span.borrowingLibraryExtra"
-          ))
-        : (borrowingLibrary = await waitForElementWithInterval(
-            "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
-          ));
-      return !borrowingLibrary.textContent.includes("NTG");
-    };
