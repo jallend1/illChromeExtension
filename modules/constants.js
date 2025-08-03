@@ -47,3 +47,21 @@ export const lendingSelectors = {
     borrowingNotes: `div:not(.yui3-default-hidden) span[data="requester.note"]`,
   },
 };
+
+export const createILL = {
+  SELECTORS: {
+    TITLE_INPUT: "#title-input",
+    CALLNUMBER_INPUT: "#callnumber-input",
+    PATRON_BARCODE_INPUT: "#patron-barcode-input",
+    ITEM_BARCODE_INPUT: "#item-barcode-input",
+    PATRON_ADDRESS: "textarea",
+  },
+  PREFIXES: {
+    TITLE: "ILL Title - ",
+    CALL_NUMBER: "IL",
+  },
+  SPECIAL_TEXT: {
+    BAG: "**BAG**\n",
+    BOX: "**RETURN IN BOX**\n",
+  },
+};

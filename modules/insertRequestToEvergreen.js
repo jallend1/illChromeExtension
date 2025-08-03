@@ -3,7 +3,7 @@
 export const updateInputField = (selector, value, prefix = "") => {
   const inputField = document.querySelector(selector);
   if (!inputField) {
-    statusModal(result, headerColor, imgURL);
+    console.warn(`Input field not found for selector: ${selector}`);
     return;
   }
   inputField.value = prefix + value;
@@ -18,6 +18,9 @@ export async function insertRequestToEvergreen() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
+  const { createILL } = await import(
+    chrome.runtime.getURL("modules/constants.js")
+  );
 
   // TODO: Patron name stored in localStorage but not used in this function yet
   // Use to 1) Verify patron name on Evergreen screen 2) Add patron pickup location
@@ -25,7 +28,6 @@ export async function insertRequestToEvergreen() {
     let heading = "Something went wrong!";
     let message =
       "Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason.";
-    // let result = `<h2 style="font-weight: thin; padding: 1rem; color: #3b607c">Something went wrong!</h2> <p style="font-size: 1rem;">Couldn't find the right spots to insert the request information. Make sure you're on the 'Create ILL Screen.' If the problems continue, contact Jason.</p>`;
     const imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
     const headerColor = "#e85e6a";
 
@@ -35,13 +37,11 @@ export async function insertRequestToEvergreen() {
         statusModal(heading, message, headerColor, imgURL);
         return;
       }
-      const bagText = "**BAG**\n";
-      const boxText = "**RETURN IN BOX**\n";
-      if (inputField.value.includes(bagText)) {
-        addressString = bagText + addressString;
+      if (inputField.value.includes(createILL.SPECIAL_TEXT.BAG)) {
+        addressString = createILL.SPECIAL_TEXT.BAG + addressString;
       }
-      if (inputField.value.includes(boxText)) {
-        addressString = boxText + addressString;
+      if (inputField.value.includes(createILL.SPECIAL_TEXT.BOX)) {
+        addressString = createILL.SPECIAL_TEXT.BOX + addressString;
       }
       updateInputField("textarea", addressString);
     };
@@ -62,14 +62,22 @@ export async function insertRequestToEvergreen() {
             patronID,
             isLendingFee,
           } = JSON.parse(result.requestData);
-          updateInputField("#title-input", title, "ILL Title - ");
-          updateInputField("#callnumber-input", requestNumber, "IL");
-          updateInputField("#patron-barcode-input", patronID);
+          updateInputField(
+            createILL.SELECTORS.TITLE_INPUT,
+            title,
+            "ILL Title - "
+          );
+          updateInputField(
+            createILL.SELECTORS.CALLNUMBER_INPUT,
+            requestNumber,
+            "IL"
+          );
+          updateInputField(createILL.SELECTORS.PATRON_BARCODE_INPUT, patronID);
           updatePatronAddress(addressString);
 
           // Moves focus to barcode input field
           const barcodeInputField = document.querySelector(
-            "#item-barcode-input"
+            createILL.SELECTORS.ITEM_BARCODE_INPUT
           );
           if (barcodeInputField) {
             barcodeInputField.focus();
