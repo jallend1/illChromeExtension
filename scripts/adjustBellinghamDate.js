@@ -181,11 +181,4 @@
   } catch (error) {
     console.error("Error in main execution flow:", error);
   }
-
-  // createMiniModal(CONFIG.NOTIFICATION_MESSAGE);
-  // clickDueDateOptions();
-  // clickSpecificDueDate();
-  // setDueDate();
-  // clickDueDateOptions(); // Runs again to close dropdown
-  // focusBarcodeInput();
 })();
