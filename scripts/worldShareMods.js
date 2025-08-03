@@ -3,9 +3,6 @@
     const { packageFrequency } = await import(
       chrome.runtime.getURL("modules/packageFrequency.js")
     );
-    const { isLendingRequestPage } = await import(
-      chrome.runtime.getURL("modules/utils.js")
-    );
 
     const { borrowingSelectors, lendingSelectors } = await import(
       chrome.runtime.getURL("modules/constants.js")
@@ -14,9 +11,11 @@
     const { createAddToBookshelfButton, doesLibraryAlreadyExist } =
       await import(chrome.runtime.getURL("modules/virtualBookShelf.js"));
 
-    const { waitForElementWithInterval, createMiniModal } = await import(
-      chrome.runtime.getURL("modules/utils.js")
-    );
+    const {
+      waitForElementWithInterval,
+      createMiniModal,
+      isLendingRequestPage,
+    } = await import(chrome.runtime.getURL("modules/utils.js"));
 
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;
@@ -124,9 +123,12 @@
       await highlightDueDate(elements);
       await highlightRequestStatus(elements);
       // Only displays package frequency if request is in received/recalled status
-      if (elements.requestStatus.innerText.includes("Received") || elements.requestStatus.innerText.includes("Recalled")) {
+      if (
+        elements.requestStatus.innerText.includes("Received") ||
+        elements.requestStatus.innerText.includes("Recalled")
+      ) {
         packageFrequency();
-      } 
+      }
     };
 
     // --- Lending Mod Functions ---
@@ -201,7 +203,7 @@
           }
           if (isRequestUrl(window.currentUrl)) {
             createAddToBookshelfButton();
-            console.log("Checking if library exists...");
+            // TODO: Seems to be executed under lending requests...That desirable?
             doesLibraryAlreadyExist();
             determineMods();
           }
@@ -220,7 +222,11 @@
     doesLibraryAlreadyExist();
     const libraryExists = await doesLibraryAlreadyExist();
     if (libraryExists) {
-      createMiniModal("Alert! This library has items on the virtual bookshelf!", true, 10000);
+      createMiniModal(
+        "Alert! This library has items on the virtual bookshelf!",
+        true,
+        10000
+      );
     }
 
     // Sets up a MutationObserver to monitor URL changes

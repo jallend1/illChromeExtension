@@ -79,7 +79,6 @@ const calculateURL = async (urlSuffix) => {
 const executeScript = (tabId, script) => {
   // Logs message to the console on first run so people know where to direct their rage
   sessionLog();
-  console.log(`Executing script: ${script} on tabId: ${tabId}`);
 
   chrome.scripting.executeScript(
     {
@@ -362,6 +361,11 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     return;
   }
   const tab = await chrome.tabs.get(activeInfo.tabId);
+  console.log("Sending tab URL update:", {
+    tabId: tab.id,
+    url: tab.url,
+    windowId: tab.windowId,
+  });
   chrome.runtime.sendMessage(
     {
       type: "tab-url-updated",
