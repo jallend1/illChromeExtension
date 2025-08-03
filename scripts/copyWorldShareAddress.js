@@ -14,6 +14,10 @@
   const autoReturnEnabled = await chrome.storage.local.get("autoReturnILL");
   const { printLabel } = await chrome.storage.local.get("printLabel");
 
+  /**
+   * Copies the address information from the WorldShare interface
+   * @returns {Object} The copied address information
+   */
   function copyWorldShareAddress() {
     let addressObject = {
       attention: null,
@@ -24,16 +28,20 @@
       postal: null,
     };
 
+    /**
+     * Converts a state name to its two-letter abbreviation
+     * @param {string} stateName - The full name of the state
+     * @returns {string} The two-letter abbreviation of the state
+     */
     const convertStateNameToAbbreviation = (stateName) => {
-      if (!stateName) {
-        return "NOT LISTED IN WORLDSHARE";
-      }
-      if (!states[stateName]) {
-        return "NOT FOUND";
-      }
-      return states[stateName];
+      if (!stateName) return "NOT LISTED IN WORLDSHARE";
+      return states[stateName] ?? "NOT FOUND";
     };
 
+    /**
+     * Checks if the current request is a lending request
+     * @return {boolean} True if it is a lending request, false otherwise
+     */
     const isLendingRequest = () => {
       let lender;
       // Returns lending request if request pulled up through requests
