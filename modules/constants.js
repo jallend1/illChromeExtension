@@ -7,6 +7,15 @@ export const borrowingAddressSelectors = {
   postal: 'input[data="returning.address.postal"]',
 };
 
+export const lendingAddressSelectors = {
+  attention: 'span[data="delivery.address.attention"]',
+  line1: 'span[data="delivery.address.line1"]',
+  line2: 'span[data="delivery.address.line2"]',
+  locality: 'span[data="delivery.address.locality"]',
+  region: 'span[data="delivery.address.region"]',
+  postal: 'span[data="delivery.address.postal"]',
+};
+
 // TODO: Refactor this because hot damn is it a mess
 // --- Selectors ---
 export const borrowingSelectors = {

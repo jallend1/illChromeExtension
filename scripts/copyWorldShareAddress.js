@@ -3,6 +3,9 @@
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
+  const { borrowingAddressSelectors, lendingAddressSelectors } = await import(
+    chrome.runtime.getURL("modules/constants.js")
+  );
 
   const { dymoFunctions } = await import(
     chrome.runtime.getURL("modules/dymoFunctions.js")
@@ -31,24 +34,6 @@
       return states[stateName];
     };
 
-    const lendingSelectors = {
-      attention: 'span[data="delivery.address.attention"]',
-      line1: 'span[data="delivery.address.line1"]',
-      line2: 'span[data="delivery.address.line2"]',
-      locality: 'span[data="delivery.address.locality"]',
-      region: 'span[data="delivery.address.region"]',
-      postal: 'span[data="delivery.address.postal"]',
-    };
-
-    const borrowingSelectors = {
-      attention: 'input[data="returning.address.attention"]',
-      line1: 'input[data="returning.address.line1"]',
-      line2: 'input[data="returning.address.line2"]',
-      locality: 'input[data="returning.address.locality"]',
-      region: 'span[data="returning.address.region"]',
-      postal: 'input[data="returning.address.postal"]',
-    };
-
     const isLendingRequest = () => {
       let lender;
       // Returns lending request if request pulled up through requests
@@ -62,6 +47,7 @@
         );
         return lender !== null;
       }
+      return lender !== null;
     };
 
     const addressFields = (selectors) => {
@@ -87,9 +73,10 @@
     };
 
     // Iterate through addressObject keys and extract values from page
+    console.log("Is Lending Request:", isLendingRequest());
     isLendingRequest()
-      ? addressFields(lendingSelectors)
-      : addressFields(borrowingSelectors);
+      ? addressFields(lendingAddressSelectors)
+      : addressFields(borrowingAddressSelectors);
 
     // Format addressObject for mail label
     const createAddressString = () => {
