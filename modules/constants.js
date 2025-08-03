@@ -65,3 +65,10 @@ export const createILL = {
     BOX: "**RETURN IN BOX**\n",
   },
 };
+
+export const DUEDATESELECTORS = {
+  DROPDOWN_TOGGLE: "button.dropdown-toggle",
+  DATE_OPTIONS: "button.dropdown-item > span.pl-2",
+  DATE_INPUT: "input[type='date']",
+  BARCODE_INPUT: "#barcode-input",
+};

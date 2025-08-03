@@ -2,12 +2,14 @@
   const { waitForElementWithInterval, createMiniModal } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
+  const { DUEDATESELECTORS } = await import(
+    chrome.runtime.getURL("modules/constants.js")
+  );
 
-  const SELECTORS = {
-    DROPDOWN_TOGGLE: "button.dropdown-toggle",
-    DATE_OPTIONS: "button.dropdown-item > span.pl-2",
-    DATE_INPUT: "input[type='date']",
-    BARCODE_INPUT: "#barcode-input",
+  const CONFIG = {
+    DUE_DATE_WEEKS: 10,
+    DUE_DATE_DAYS: 70,
+    NOTIFICATION_MESSAGE: "Setting due date to 10 weeks from now.",
   };
 
   /**
@@ -31,7 +33,7 @@
    */
   const compileDueDate = () => {
     const date = new Date();
-    date.setDate(date.getDate() + 70);
+    date.setDate(date.getDate() + CONFIG.DUE_DATE_DAYS);
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     const year = date.getFullYear();
@@ -45,7 +47,7 @@
    */
   const clickDueDateOptions = async () => {
     const dropDownButtons = await waitForElementWithInterval(() =>
-      document.querySelectorAll(SELECTORS.DROPDOWN_TOGGLE)
+      document.querySelectorAll(DUEDATESELECTORS.DROPDOWN_TOGGLE)
     );
     const dateOptionsButton = findElementByText(
       dropDownButtons,
@@ -63,7 +65,7 @@
    */
   const clickSpecificDueDate = async () => {
     const dateOptions = await waitForElementWithInterval(() =>
-      document.querySelectorAll(SELECTORS.DATE_OPTIONS)
+      document.querySelectorAll(DUEDATESELECTORS.DATE_OPTIONS)
     );
     const specificDueDate = findElementByText(dateOptions, "Specific Due Date");
     if (specificDueDate) {
@@ -81,7 +83,7 @@
    */
   const setDueDate = async () => {
     const dateInput = await waitForElementWithInterval(() =>
-      document.querySelector(SELECTORS.DATE_INPUT)
+      document.querySelector(DUEDATESELECTORS.DATE_INPUT)
     );
     if (dateInput) {
       const formattedDate = compileDueDate();
@@ -101,16 +103,17 @@
    */
   const focusBarcodeInput = async () => {
     const barcodeInput = await waitForElementWithInterval(() =>
-      document.querySelector(SELECTORS.BARCODE_INPUT)
+      document.querySelector(DUEDATESELECTORS.BARCODE_INPUT)
     );
     if (barcodeInput) {
       barcodeInput.focus(); // Focus on the input field
     }
   };
 
-  createMiniModal("Setting due date to 10 weeks from now.");
+  createMiniModal(`${CONFIG.NOTIFICATION_MESSAGE}`);
   clickDueDateOptions();
   clickSpecificDueDate();
   setDueDate();
+  clickDueDateOptions(); // Runs again to close dropdown
   focusBarcodeInput();
 })();
