@@ -43,33 +43,55 @@
   /**
    * Clicks the Date Options dropdown to reveal due date options
    * @async
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} True if successful, false otherwise
+   * @throws Will log an error if the dropdown cannot be clicked
    */
   const clickDueDateOptions = async () => {
-    const dropDownButtons = await waitForElementWithInterval(() =>
-      document.querySelectorAll(DUEDATESELECTORS.DROPDOWN_TOGGLE)
-    );
-    const dateOptionsButton = findElementByText(
-      dropDownButtons,
-      "Date Options"
-    );
-    if (dateOptionsButton) {
+    try {
+      const dropDownButtons = await waitForElementWithInterval(() =>
+        document.querySelectorAll(DUEDATESELECTORS.DROPDOWN_TOGGLE)
+      );
+      const dateOptionsButton = findElementByText(
+        dropDownButtons,
+        "Date Options"
+      );
+      if (!dateOptionsButton) {
+        console.warn("Unable to locate Date Options button");
+        return false;
+      }
       dateOptionsButton.click();
+      return true;
+    } catch (error) {
+      console.error("Error clicking date options:", error);
+      return false;
     }
   };
 
   /**
    * Clicks the Specific Due Date option in the Date Options dropdown
    * @async
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} True if successful, false otherwise
+   * @throws Will log an error if the specific due date option cannot be clicked
    */
   const clickSpecificDueDate = async () => {
-    const dateOptions = await waitForElementWithInterval(() =>
-      document.querySelectorAll(DUEDATESELECTORS.DATE_OPTIONS)
-    );
-    const specificDueDate = findElementByText(dateOptions, "Specific Due Date");
-    if (specificDueDate) {
+    try {
+      const dateOptions = await waitForElementWithInterval(() =>
+        document.querySelectorAll(DUEDATESELECTORS.DATE_OPTIONS)
+      );
+      const specificDueDate = findElementByText(
+        dateOptions,
+        "Specific Due Date"
+      );
+
+      if (!specificDueDate) {
+        console.warn("Unable to locate Specific Due Date option");
+        return false;
+      }
       specificDueDate.click();
+      return true;
+    } catch (error) {
+      console.error("Error clicking specific due date:", error);
+      return false;
     }
   };
 
@@ -79,18 +101,27 @@
    * formats the date as YYYY-MM-DD, and sets the value.
    * It also dispatches a change event to ensure Evergreen recognizes the update.
    * @async
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} True if successful, false otherwise
+   * @throws Will log an error if the date input field cannot be located
    */
   const setDueDate = async () => {
-    const dateInput = await waitForElementWithInterval(() =>
-      document.querySelector(DUEDATESELECTORS.DATE_INPUT)
-    );
-    if (dateInput) {
+    try {
+      const dateInput = await waitForElementWithInterval(() =>
+        document.querySelector(DUEDATESELECTORS.DATE_INPUT)
+      );
+      if (!dateInput) {
+        console.warn("Unable to locate date input field");
+        return false;
+      }
       const formattedDate = compileDueDate();
       dateInput.value = formattedDate;
       dateInput.dispatchEvent(
         new Event("change", { bubbles: true, cancelable: true })
       );
+      return true;
+    } catch (error) {
+      console.error("Error setting due date:", error);
+      return false;
     }
   };
 
@@ -99,21 +130,62 @@
    * After setting the due date, this function refocuses on the barcode input field
    * to allow for immediate scanning.
    * @async
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} True if successful, false otherwise
+   * @throws Will log an error if the barcode input field cannot be located
    */
   const focusBarcodeInput = async () => {
-    const barcodeInput = await waitForElementWithInterval(() =>
-      document.querySelector(DUEDATESELECTORS.BARCODE_INPUT)
-    );
-    if (barcodeInput) {
+    try {
+      const barcodeInput = await waitForElementWithInterval(() =>
+        document.querySelector(DUEDATESELECTORS.BARCODE_INPUT)
+      );
+      if (!barcodeInput) {
+        console.warn("Unable to locate barcode input field");
+        return false;
+      }
+
       barcodeInput.focus(); // Focus on the input field
+      return true;
+    } catch (error) {
+      console.error("Error focusing barcode input:", error);
+      return false;
     }
   };
 
-  createMiniModal(`${CONFIG.NOTIFICATION_MESSAGE}`);
-  clickDueDateOptions();
-  clickSpecificDueDate();
-  setDueDate();
-  clickDueDateOptions(); // Runs again to close dropdown
-  focusBarcodeInput();
+  // Main execution flow
+  try {
+    createMiniModal(CONFIG.NOTIFICATION_MESSAGE);
+    const isDateOptionsClicked = await clickDueDateOptions();
+    if (!isDateOptionsClicked) {
+      throw new Error("Failed to click date options");
+    }
+
+    const isSpecificDueDateClicked = await clickSpecificDueDate();
+    if (!isSpecificDueDateClicked) {
+      throw new Error("Failed to click specific due date");
+    }
+
+    const isDueDateSet = await setDueDate();
+    if (!isDueDateSet) {
+      throw new Error("Failed to set due date");
+    }
+
+    const isDateOptionsClickedAgain = await clickDueDateOptions();
+    if (!isDateOptionsClickedAgain) {
+      throw new Error("Failed to click date options again");
+    }
+
+    const isBarcodeInputFocused = await focusBarcodeInput();
+    if (!isBarcodeInputFocused) {
+      throw new Error("Failed to focus barcode input");
+    }
+  } catch (error) {
+    console.error("Error in main execution flow:", error);
+  }
+
+  // createMiniModal(CONFIG.NOTIFICATION_MESSAGE);
+  // clickDueDateOptions();
+  // clickSpecificDueDate();
+  // setDueDate();
+  // clickDueDateOptions(); // Runs again to close dropdown
+  // focusBarcodeInput();
 })();
