@@ -6,10 +6,7 @@
 let loggedUrls = new Set();
 
 // URLs where we want the warning message to trigger
-const TRIGGER_URLS = [
-  'share.worldcat.org',
-  'kcls.org/eg2'
-];
+const TRIGGER_URLS = ["share.worldcat.org", "kcls.org/eg2"];
 
 /**
  * Checks if URL should trigger the welcome message
@@ -18,7 +15,7 @@ const TRIGGER_URLS = [
  */
 const shouldTriggerLog = (url) => {
   if (!url) return null;
-  
+
   for (const pattern of TRIGGER_URLS) {
     if (url.includes(pattern) && !loggedUrls.has(pattern)) {
       return pattern;
@@ -58,15 +55,18 @@ const logToPageConsole = () => {
  * @returns {void} - Injects the logToPageConsole function into the page and executes it
  */
 const logWelcomeMessage = (tabId, pattern) => {
-  chrome.scripting.executeScript({
-    target: { tabId: tabId },
-    func: logToPageConsole,
-  }).then(() => {
-    // Mark this pattern as logged so we don't log it again
-    loggedUrls.add(pattern);
-  }).catch((error) => {
-    console.error('Failed to inject welcome message:', error);
-  });
+  chrome.scripting
+    .executeScript({
+      target: { tabId: tabId },
+      func: logToPageConsole,
+    })
+    .then(() => {
+      // Mark this pattern as logged so we don't log it again
+      loggedUrls.add(pattern);
+    })
+    .catch((error) => {
+      console.error("Failed to inject welcome message:", error);
+    });
 };
 
 /**
@@ -76,9 +76,11 @@ const logWelcomeMessage = (tabId, pattern) => {
 export const initializeSessionLog = () => {
   // Listen for tab updates
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'complete') {
+    if (changeInfo.status === "complete") {
       const pattern = shouldTriggerLog(tab.url);
       if (pattern) {
+        console.log("Initializing session log for:", tab.url);
+        console.log(loggedUrls);
         logWelcomeMessage(tabId, pattern);
       }
     }
@@ -88,6 +90,8 @@ export const initializeSessionLog = () => {
   chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     const pattern = shouldTriggerLog(details.url);
     if (pattern) {
+      console.log("SPA navigation detected for:", details.url);
+      console.log(loggedUrls);
       logWelcomeMessage(details.tabId, pattern);
     }
   });
@@ -96,6 +100,8 @@ export const initializeSessionLog = () => {
   chrome.tabs.onCreated.addListener((tab) => {
     const pattern = shouldTriggerLog(tab.url);
     if (pattern) {
+      console.log("New tab created for:", tab.url);
+      console.log(loggedUrls);
       logWelcomeMessage(tab.id, pattern);
     }
   });
