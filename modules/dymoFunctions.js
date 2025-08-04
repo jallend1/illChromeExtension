@@ -1,7 +1,46 @@
-const { statusModal } = await import(chrome.runtime.getURL("modules/modal.js"));
+/**
+ * Injects the Dymo framework into the specified tab.
+ * @param {number} tabId - The ID of the tab to inject the framework into.
+ * @returns {Promise<void>}
+ */
 
+export const injectDymoFramework = (tabId) => {
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: tabId },
+      func: () => {
+        return typeof dymo !== "undefined" && dymo.label;
+      },
+    },
+    (result) => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "Error injecting Dymo framework:",
+          chrome.runtime.lastError
+        );
+        return;
+      }
+      const isDymoLoaded = result[0]?.result;
+      if (!isDymoLoaded) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          files: ["./libs/dymo.connect.framework.js"],
+        });
+      }
+    }
+  );
+};
+
+/**
+ * Dymo functions for label generation and printing.
+ * @module dymoFunctions
+ */
 export const dymoFunctions = {
-  // Generate XML for Dymo label
+  /**
+   * Generates the XML for a Dymo label.
+   * @param {string} address - The address to include on the label.
+   * @returns {string} The generated XML.
+   */
   generateLabelXML: (address) => {
     return `
               <DieCutLabel Version="8.0" Units="twips">
@@ -39,7 +78,11 @@ export const dymoFunctions = {
                 </ObjectInfo>
               </DieCutLabel>`;
   },
-  // WorldShare address fields sometimes have a handful of special characters that need to be sanitized for XML
+  /**
+   * Sanitizes a string for inclusion in XML.
+   * @param {string} str - The string to sanitize.
+   * @returns {string} The sanitized string.
+   */
   sanitizeForXML: (str) => {
     return str
       .replace(/&/g, "&amp;")
@@ -55,7 +98,11 @@ export const dymoFunctions = {
     const addressLines = address.split("\n");
     const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
   },
-  // Make sure address contains basic information needed for label before printing
+  /**
+   * Checks if the address is suitable for printing on a Dymo label.
+   * @param {string} address - The address to check.
+   * @returns {boolean} True if the address is suitable, false otherwise.
+   */
   isSuitableToPrint: (address) => {
     const addressLines = address.split("\n");
     // Address requires name, street address, and city/state/zip
@@ -73,7 +120,14 @@ export const dymoFunctions = {
     }
     return true;
   },
-  printDymoLabel: (address) => {
+  /**
+   * Prints a Dymo label with the specified address.
+   * @param {string} address - The address to print on the label.
+   */
+  printDymoLabel: async (address) => {
+    const { statusModal } = await import(
+      chrome.runtime.getURL("modules/modal.js")
+    );
     if (typeof dymo !== "undefined" && dymo.label.framework) {
       dymo.label.framework.init(() => {
         const sanitizedAddress = dymoFunctions.sanitizeForXML(address);
@@ -85,9 +139,7 @@ export const dymoFunctions = {
           console.error("No Dymo printers found.");
           return;
         }
-
         const label = dymo.label.framework.openLabelXml(labelXML);
-        console.log("Printing!");
         label.print(printers[0].name);
       });
     } else {

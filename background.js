@@ -7,6 +7,9 @@ import {
 } from "./background-utils.js";
 
 import { initializeSessionLog } from "./session-logger.js";
+import { injectDymoFramework } from "./modules/dymoFunctions.js";
+
+console.log("injectDymoFramework imported:", typeof injectDymoFramework);
 
 // Initialize session logging
 initializeSessionLog();
@@ -117,6 +120,9 @@ chrome.commands.onCommand.addListener((command) => {
     const activeTab = await getActiveTab();
     if (activeTab) {
       if (option.id === "copyWorldShareAddress") {
+        console.log(
+          "Injecting Dymo framework for copying address from WorldShare"
+        );
         injectDymoFramework(activeTab.id);
       }
       chrome.scripting.executeScript({
@@ -292,33 +298,6 @@ chrome.runtime.onMessage.addListener(async function (
   }
   return true;
 });
-
-const injectDymoFramework = (tabId) => {
-  chrome.scripting.executeScript(
-    {
-      target: { tabId: tabId },
-      func: () => {
-        return typeof dymo !== "undefined" && dymo.label;
-      },
-    },
-    (result) => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Error injecting Dymo framework:",
-          chrome.runtime.lastError
-        );
-        return;
-      }
-      const isDymoLoaded = result[0]?.result;
-      if (!isDymoLoaded) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          files: ["./libs/dymo.connect.framework.js"],
-        });
-      }
-    }
-  );
-};
 
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
