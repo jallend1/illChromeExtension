@@ -81,7 +81,6 @@
     };
 
     // Iterate through addressObject keys and extract values from page
-    console.log("Is Lending Request:", isLendingRequest());
     isLendingRequest()
       ? addressFields(lendingAddressSelectors)
       : addressFields(borrowingAddressSelectors);
