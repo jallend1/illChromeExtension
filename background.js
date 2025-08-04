@@ -8,6 +8,7 @@ import {
 
 import { initializeSessionLog } from "./session-logger.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
+import { urlActions } from "./urlActions.js";
 
 console.log("injectDymoFramework imported:", typeof injectDymoFramework);
 
@@ -50,9 +51,6 @@ const calculateURL = async (urlSuffix) => {
 };
 
 const executeScript = (tabId, script) => {
-  // // Logs message to the console on first run so people know where to direct their rage
-  // sessionLog();
-
   chrome.scripting.executeScript(
     {
       target: { tabId: tabId },
@@ -449,70 +447,87 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       }
     );
   }
+  // In your SPA navigation handler:
+  urlActions.forEach(({ match, action }) => {
+    if (match(currentUrl)) {
+      action(tabId);
+    }
+  });
 
-  // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
-  if (currentUrl.includes("/eg2/en-US/staff/")) {
-    executeScript(tabId, "frequentLending");
-  }
-
-  // -- Create ILL Page --
-  if (currentUrl.includes("/cat/ill/track")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/createILLPageMods.js"],
-    });
-    chrome.scripting.insertCSS({
-      target: { tabId: tabId },
-      files: ["./styles/createILLPage.css"],
-    });
-  } else if (currentUrl.includes("catalog/hold/")) {
-    // Inject a CSS file to style the warning when placing a hold is unsuccessful
-    chrome.scripting.insertCSS({
-      target: { tabId: tabId },
-      files: ["./styles/warning.css"],
-    });
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/holdScreenMods.js"],
-    });
-  } else if (currentUrl.includes("/catalog/search?")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/searchResults.js"],
-    });
-  } else if (currentUrl.includes("/circ/patron/register")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/updateAddress.js"],
-    });
-  } else if (currentUrl.includes("/circ/patron/2372046/checkout")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/adjustBellinghamDate.js"],
-    });
-  }
+  // Remove the tooltip if not on hold page
   if (!currentUrl.includes("catalog/hold/")) {
-    // Remove the tooltip if the user navigates away from the hold page
     chrome.scripting.executeScript({
-      target: { tabId: tabId },
+      target: { tabId },
       func: () => {
         const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
         if (tooltip) tooltip.remove();
       },
     });
   }
-  if (currentUrl.includes("share.worldcat.org")) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/worldShareMods.js"],
-    });
-  }
-  if (currentUrl.includes("/staff/cat/requests")) {
-    // Inject the request manager mods script when the request manager page is loaded
-    console.log("Sending again");
-    chrome.scripting.executeScript({
-      target: { tabId: tabId },
-      files: ["./scripts/requestManagerMods.js"],
-    });
-  }
+
+  // // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
+  // if (currentUrl.includes("/eg2/en-US/staff/")) {
+  //   executeScript(tabId, "frequentLending");
+  // }
+
+  // // -- Create ILL Page --
+  // if (currentUrl.includes("/cat/ill/track")) {
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/createILLPageMods.js"],
+  //   });
+  //   chrome.scripting.insertCSS({
+  //     target: { tabId: tabId },
+  //     files: ["./styles/createILLPage.css"],
+  //   });
+  // } else if (currentUrl.includes("catalog/hold/")) {
+  //   // Inject a CSS file to style the warning when placing a hold is unsuccessful
+  //   chrome.scripting.insertCSS({
+  //     target: { tabId: tabId },
+  //     files: ["./styles/warning.css"],
+  //   });
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/holdScreenMods.js"],
+  //   });
+  // } else if (currentUrl.includes("/catalog/search?")) {
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/searchResults.js"],
+  //   });
+  // } else if (currentUrl.includes("/circ/patron/register")) {
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/updateAddress.js"],
+  //   });
+  // } else if (currentUrl.includes("/circ/patron/2372046/checkout")) {
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/adjustBellinghamDate.js"],
+  //   });
+  // }
+  // if (!currentUrl.includes("catalog/hold/")) {
+  //   // Remove the tooltip if the user navigates away from the hold page
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     func: () => {
+  //       const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
+  //       if (tooltip) tooltip.remove();
+  //     },
+  //   });
+  // }
+  // if (currentUrl.includes("share.worldcat.org")) {
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/worldShareMods.js"],
+  //   });
+  // }
+  // if (currentUrl.includes("/staff/cat/requests")) {
+  //   // Inject the request manager mods script when the request manager page is loaded
+  //   console.log("Sending again");
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tabId },
+  //     files: ["./scripts/requestManagerMods.js"],
+  //   });
+  // }
 });
