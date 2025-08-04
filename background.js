@@ -6,6 +6,11 @@ import {
   URLS,
 } from "./background-utils.js";
 
+import { initializeSessionLog } from "./session-logger.js";
+
+// Initialize session logging
+initializeSessionLog();
+
 // import Papa from "./libs/papaparse.min.js";
 // import Papa from "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js";
 
@@ -32,41 +37,6 @@ const getActiveTab = async () => {
   }
 };
 
-// TODO: Maybe just run this onInstall event?
-const sessionLog = async () => {
-  const logToConsole = () => {
-    console.log(`
-  ⊂_ヽ    
-  　 ＼＼
-  　　 ＼( ͡ ° ͜ʖ ͡° )    Jason Allen
-  　　　 >　⌒ヽ       
-  　　　/ 　 へ＼       (Probably)  
-  　　 /　　/　＼＼
-  　　 ﾚ　ノ   　 ヽ_つ  Didn't break   
-  　　/　/
-  　 /　/|      anything here.
-  　(　( \\
-  　|　 |、＼     But if he did?
-    | 丿 ＼ ⌒)
-  　| |   ) /    jallend1@gmail.com
-   ノ )   Lﾉ
-  (_／
-   `);
-  };
-  chrome.storage.session.get(["logged"], async (result) => {
-    if (!result.logged) {
-      const activeTab = await getActiveTab();
-      if (activeTab) {
-        chrome.scripting.executeScript({
-          target: { tabId: activeTab.id },
-          func: logToConsole,
-        });
-      }
-      chrome.storage.session.set({ logged: true });
-    }
-  });
-};
-
 function isAnySidepanelOpen() {
   return Object.keys(openSidepanels).length > 0;
 }
@@ -77,8 +47,8 @@ const calculateURL = async (urlSuffix) => {
 };
 
 const executeScript = (tabId, script) => {
-  // Logs message to the console on first run so people know where to direct their rage
-  sessionLog();
+  // // Logs message to the console on first run so people know where to direct their rage
+  // sessionLog();
 
   chrome.scripting.executeScript(
     {
