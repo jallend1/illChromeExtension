@@ -1,7 +1,12 @@
 export const urlActions = [
   {
     match: (url) => url.includes("/eg2/en-US/staff/"),
-    action: (tabId) => executeScript(tabId, "frequentLending"),
+    action: (tabId) => {
+      chrome.scripting.executeScript({
+        target: { tabId },
+        files: ["./scripts/frequentLending.js"],
+      });
+    },
   },
   {
     match: (url) => url.includes("/cat/ill/track"),
