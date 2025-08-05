@@ -51,6 +51,7 @@ const handleKeyboardCowboy = (tabId, url) => {
  * @param {Function} executeScript
  * @param {Function} sendTabUrlUpdate
  */
+// In modules/tabEventHandlers.js - update the handleTabUpdate function call
 export const handleTabUpdate = (
   tabId,
   changeInfo,
@@ -65,7 +66,12 @@ export const handleTabUpdate = (
   if (changeInfo.status === "complete") {
     // Handle sidepanel URL updates
     if (tab.active) {
-      sendTabUrlUpdate(tab);
+      // Convert tab object to details format
+      sendTabUrlUpdate({
+        tabId: tab.id,
+        url: tab.url,
+        windowId: tab.windowId,
+      });
     }
 
     // Handle patron-specific injections (not covered by urlActions)

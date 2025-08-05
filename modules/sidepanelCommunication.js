@@ -10,55 +10,9 @@ export const isAnySidepanelOpen = () => {
 
 /**
  * Sends tab URL update to sidepanel
- * @param {object} tab
+ * @param {object} details - Object with tabId, url, and windowId properties
  */
-export const sendTabUrlUpdate = (tab) => {
-  if (!isAnySidepanelOpen() || !openSidepanels[tab.windowId]) {
-    return;
-  }
-
-  chrome.runtime.sendMessage(
-    {
-      type: "tab-url-updated",
-      tabId: tab.id,
-      url: tab.url,
-      windowId: tab.windowId,
-    },
-    () => {
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Error sending tab URL update:",
-          chrome.runtime.lastError
-        );
-      }
-    }
-  );
-};
-
-/**
- * Handles tab activation events for sidepanel
- * @param {object} activeInfo
- */
-export const handleTabActivation = async (activeInfo) => {
-  if (!isAnySidepanelOpen() || !openSidepanels[activeInfo.windowId]) {
-    return;
-  }
-
-  const tab = await chrome.tabs.get(activeInfo.tabId);
-  console.log("Sending tab URL update:", {
-    tabId: tab.id,
-    url: tab.url,
-    windowId: tab.windowId,
-  });
-
-  sendTabUrlUpdate(tab);
-};
-
-/**
- * Handles SPA navigation for sidepanel
- * @param {object} details
- */
-export const handleSPANavigation = (details) => {
+export const sendTabUrlUpdate = (details) => {
   if (!isAnySidepanelOpen() || !openSidepanels[details.windowId]) {
     return;
   }

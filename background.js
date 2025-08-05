@@ -3,11 +3,7 @@ import { injectDymoFramework } from "./modules/dymoFunctions.js";
 import { urlActions } from "./urlActions.js";
 import { handleMessage } from "./backgroundMessageHandler.js";
 import { handleTabUpdate } from "./modules/tabEventHandlers.js";
-import {
-  handleTabActivation,
-  handleSPANavigation,
-  sendTabUrlUpdate,
-} from "./modules/sidepanelCommunication.js";
+import { sendTabUrlUpdate } from "./modules/sidepanelCommunication.js";
 import {
   initializeLendingMode,
   handleStorageChanges,
@@ -53,7 +49,19 @@ chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
   .catch((error) => console.error(error));
 
-chrome.tabs.onActivated.addListener(handleTabActivation);
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  // If the window ID is not in openSidepanels, ignore the event
+  if (!isAnySidepanelOpen() || !openSidepanels[activeInfo.windowId]) {
+    return;
+  }
+
+  const tab = await chrome.tabs.get(activeInfo.tabId);
+  sendTabUrlUpdate({
+    tabId: tab.id,
+    url: tab.url,
+    windowId: tab.windowId,
+  });
+});
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   handleTabUpdate(
@@ -62,7 +70,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     tab,
     arePassiveToolsActive,
     executeScript,
-    sendTabUrlUpdate
+    // Convert tab object to details format
+    (tab) =>
+      sendTabUrlUpdate({
+        tabId: tab.id,
+        url: tab.url,
+        windowId: tab.windowId,
+      })
   );
 });
 
@@ -74,8 +88,8 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     return;
   }
 
-  // Handle sidepanel updates
-  handleSPANavigation(details);
+  // Handle sidepanel updates - use sendTabUrlUpdate directly
+  sendTabUrlUpdate(details);
 
   // Handle URL actions
   urlActions.forEach(({ match, action }) => {
