@@ -9,16 +9,12 @@ import {
 import { initializeSessionLog } from "./session-logger.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
 import { urlActions } from "./urlActions.js";
+import { handleMessage, openSidepanels } from "./backgroundMessageHandler.js";
 
 console.log("injectDymoFramework imported:", typeof injectDymoFramework);
 
 // Initialize session logging
 initializeSessionLog();
-
-// import Papa from "./libs/papaparse.min.js";
-// import Papa from "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js";
-
-let openSidepanels = {};
 
 const currentOptions = [
   { id: "copyWorldShareAddress", title: "Copy Address from WorldShare" },
@@ -44,11 +40,6 @@ const getActiveTab = async () => {
 function isAnySidepanelOpen() {
   return Object.keys(openSidepanels).length > 0;
 }
-
-const calculateURL = async (urlSuffix) => {
-  const baseUrl = await getBaseURL(urlSuffix);
-  await focusOrCreateTab(baseUrl);
-};
 
 const executeScript = (tabId, script) => {
   chrome.scripting.executeScript(
@@ -111,7 +102,6 @@ chrome.commands.onCommand.addListener((command) => {
   const option = currentOptions.find((opt) => opt.id === command);
   if (!option) {
     console.warn(`No option found for command: ${command}`);
-    // Unknown command, do nothing
     return;
   }
   (async () => {
@@ -131,171 +121,8 @@ chrome.commands.onCommand.addListener((command) => {
   })();
 });
 
-const retrievePatron = async () => {
-  const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
-  const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
-
-  chrome.tabs.create(
-    {
-      url: url,
-      active: true,
-    },
-    (newTab) => {
-      if (!newTab) {
-        console.error("Failed to create a new tab.");
-        return;
-      }
-      const onTabUpdated = (tabId, changeInfo, tab) => {
-        if (tabId === newTab.id && changeInfo.status === "complete") {
-          chrome.scripting.executeScript(
-            {
-              target: { tabId: newTab.id },
-              files: ["./scripts/retrievePatron.js"],
-            },
-            async () => {
-              if (chrome.runtime.lastError) {
-                console.error(
-                  "Error executing script:",
-                  chrome.runtime.lastError.message
-                );
-              }
-              // Get the latest tab info to ensure correct URL and windowId
-              const updatedTab = await chrome.tabs.get(newTab.id);
-              chrome.runtime.sendMessage({
-                type: "tab-url-updated",
-                tabId: updatedTab.id,
-                url: updatedTab.url,
-                windowId: updatedTab.windowId,
-              });
-            }
-          );
-          chrome.tabs.onUpdated.removeListener(onTabUpdated);
-        }
-      };
-      chrome.tabs.onUpdated.addListener(onTabUpdated);
-    }
-  );
-};
-
-// TODO: Using command and actions here is a bit confusing -- Maybe combine? Or at least have a justification for it
-chrome.runtime.onMessage.addListener(async function (
-  request,
-  sender,
-  sendResponse
-) {
-  if (request.type === "sidepanel-open") {
-    openSidepanels[request.windowId] = true;
-    return;
-  }
-  if (request.type === "sidepanel-close") {
-    delete openSidepanels[request.windowId];
-    return;
-  }
-  if (request.type === "findAndSwitchToWorldShare") {
-    chrome.tabs.query({}, (tabs) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error querying tabs:", chrome.runtime.lastError);
-        return;
-      }
-      const worldShareTab = tabs.find(
-        (tab) => tab.url && tab.url.includes("share.worldcat.org")
-      );
-      if (worldShareTab && worldShareTab.id) {
-        // Switches to WorldShare tab
-        chrome.tabs.update(worldShareTab.id, { active: true }, (tab) => {
-          if (chrome.runtime.lastError) {
-            console.error("Error activating tab:", chrome.runtime.lastError);
-            return;
-          }
-          // Waits a hot second before executing script
-          setTimeout(() => {
-            chrome.scripting.executeScript(
-              {
-                target: { tabId: worldShareTab.id },
-                files: [`./scripts/${request.scriptToRelaunch}.js`],
-              },
-              () => {
-                if (chrome.runtime.lastError) {
-                  console.error(
-                    "Error executing script:",
-                    chrome.runtime.lastError
-                  );
-                }
-              }
-            );
-          }, 100);
-        });
-      } else {
-        console.log("No WorldShare tab found in", tabs.length, "tabs");
-      }
-    });
-    return;
-  }
-  const activeTab = await getActiveTab();
-  if (activeTab) {
-    if (!isAllowedHost(activeTab.url)) return;
-    if (request.command === "toggleExtension") {
-      chrome.storage.local.get("arePassiveToolsActive", (result) => {
-        arePassiveToolsActive = result.arePassiveToolsActive;
-      });
-      return;
-    }
-    if (request.command === "disableButton") {
-      chrome.management.getSelf((extensionInfo) => {
-        chrome.tabs.reload(activeTab.id);
-        chrome.management.setEnabled(extensionInfo.id, false, () => {
-          console.log("Extension disabled.");
-        });
-      });
-      return;
-    }
-    if (request.action === "editPatron") {
-      // Store patron barcode in local storage
-      chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
-        console.log("Patron barcode stored");
-      });
-      // Open the patron page in a new tab
-      retrievePatron();
-      sendResponse({ success: true });
-      return;
-    }
-    if (request.command === "openCreateILL") {
-      // Coming from copyFromOCLC
-      calculateURL(URLS.CREATE_ILL);
-      return;
-    }
-    if (request.action === "isbnSearch") {
-      await calculateURL(URLS.CATALOG + "/" + request.url);
-      return true; // <-- Keeps the message port open for async response
-    }
-
-    if (request.data === "copyWorldShareAddress") {
-      injectDymoFramework(activeTab.id);
-      sendResponse({ success: true });
-    }
-
-    if (request.action === "retrievePatron") {
-      chrome.storage.local.set({ request }, () => {
-        console.log("Request Data stored", request);
-      });
-      retrievePatron();
-      return;
-    }
-
-    if (request.data) {
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: activeTab.id },
-          files: [`./scripts/${request.data}.js`],
-        },
-        () => {
-          sendResponse({ response: "Message received" });
-        }
-      );
-    }
-  }
-  return true;
-});
+// Use the extracted message handler
+chrome.runtime.onMessage.addListener(handleMessage);
 
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })
@@ -419,7 +246,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // SPA navigation handling
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  // TODO: This if/else situation is absurd and nobody should ever lay eyes on it but me
   if (arePassiveToolsActive === false) return;
 
   let tabId = details.tabId;
@@ -464,70 +290,4 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       },
     });
   }
-
-  // // Fire frequentLending script to update when page is updated to ensure persistence of lending bar
-  // if (currentUrl.includes("/eg2/en-US/staff/")) {
-  //   executeScript(tabId, "frequentLending");
-  // }
-
-  // // -- Create ILL Page --
-  // if (currentUrl.includes("/cat/ill/track")) {
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/createILLPageMods.js"],
-  //   });
-  //   chrome.scripting.insertCSS({
-  //     target: { tabId: tabId },
-  //     files: ["./styles/createILLPage.css"],
-  //   });
-  // } else if (currentUrl.includes("catalog/hold/")) {
-  //   // Inject a CSS file to style the warning when placing a hold is unsuccessful
-  //   chrome.scripting.insertCSS({
-  //     target: { tabId: tabId },
-  //     files: ["./styles/warning.css"],
-  //   });
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/holdScreenMods.js"],
-  //   });
-  // } else if (currentUrl.includes("/catalog/search?")) {
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/searchResults.js"],
-  //   });
-  // } else if (currentUrl.includes("/circ/patron/register")) {
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/updateAddress.js"],
-  //   });
-  // } else if (currentUrl.includes("/circ/patron/2372046/checkout")) {
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/adjustBellinghamDate.js"],
-  //   });
-  // }
-  // if (!currentUrl.includes("catalog/hold/")) {
-  //   // Remove the tooltip if the user navigates away from the hold page
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     func: () => {
-  //       const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
-  //       if (tooltip) tooltip.remove();
-  //     },
-  //   });
-  // }
-  // if (currentUrl.includes("share.worldcat.org")) {
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/worldShareMods.js"],
-  //   });
-  // }
-  // if (currentUrl.includes("/staff/cat/requests")) {
-  //   // Inject the request manager mods script when the request manager page is loaded
-  //   console.log("Sending again");
-  //   chrome.scripting.executeScript({
-  //     target: { tabId: tabId },
-  //     files: ["./scripts/requestManagerMods.js"],
-  //   });
-  // }
 });
