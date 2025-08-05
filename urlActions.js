@@ -80,4 +80,13 @@ export const urlActions = [
       });
     },
   },
+  {
+    match: (url) => url.includes("/checkout"),
+    action: (tabId) => {
+      chrome.scripting.executeScript({
+        target: { tabId },
+        files: ["./scripts/dismissOpenTransit.js"],
+      });
+    },
+  },
 ];

@@ -2,42 +2,6 @@ import { isAllowedHost } from "../background-utils.js";
 import { injectDymoFramework } from "./dymoFunctions.js";
 
 /**
- * URL-based script injection rules
- */
-const scriptInjectionRules = [
-  {
-    urlPattern: "share.worldcat.org",
-    scripts: ["./scripts/worldShareMods.js"],
-  },
-  {
-    urlPattern: "staff/cat/requests",
-    scripts: ["./scripts/requestManagerMods.js"],
-  },
-  {
-    urlPattern: "/checkout",
-    scripts: ["./scripts/dismissOpenTransit.js"],
-  },
-];
-
-/**
- * Handles script injection based on URL patterns
- * @param {number} tabId
- * @param {string} url
- */
-const handleScriptInjection = (tabId, url) => {
-  scriptInjectionRules.forEach((rule) => {
-    if (url.includes(rule.urlPattern)) {
-      rule.scripts.forEach((script) => {
-        chrome.scripting.executeScript({
-          target: { tabId },
-          files: [script],
-        });
-      });
-    }
-  });
-};
-
-/**
  * Handles patron page specific injections
  * @param {number} tabId
  * @param {string} url
@@ -104,8 +68,7 @@ export const handleTabUpdate = (
       sendTabUrlUpdate(tab);
     }
 
-    // Handle script injections
-    handleScriptInjection(tabId, tab.url);
+    // Handle patron-specific injections (not covered by urlActions)
     handlePatronPage(tabId, tab.url, executeScript);
     handleKeyboardCowboy(tabId, tab.url);
   }
