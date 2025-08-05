@@ -15,9 +15,7 @@ import {
 } from "./modules/scriptExecutor.js";
 import { isAllowedHost } from "./background-utils.js";
 
-console.log("injectDymoFramework imported:", typeof injectDymoFramework);
-
-// Initialize session logging
+// Initialize warning message in console pointing people to me
 initializeSessionLog();
 
 const currentOptions = [
@@ -88,7 +86,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
     return;
   }
 
-  // Handle sidepanel updates - use sendTabUrlUpdate directly
+  // Handle sidepanel updates
   sendTabUrlUpdate(details);
 
   // Handle URL actions
@@ -97,15 +95,4 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
       action(details.tabId);
     }
   });
-
-  // Remove tooltip if not on hold page
-  if (!details.url.includes("catalog/hold/")) {
-    chrome.scripting.executeScript({
-      target: { tabId: details.tabId },
-      func: () => {
-        const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
-        if (tooltip) tooltip.remove();
-      },
-    });
-  }
 });

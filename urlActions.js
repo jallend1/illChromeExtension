@@ -89,4 +89,16 @@ export const urlActions = [
       });
     },
   },
+  {
+    match: (url) => !url.includes("catalog/hold/"),
+    action: (tabId) => {
+      chrome.scripting.executeScript({
+        target: { tabId },
+        func: () => {
+          const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
+          if (tooltip) tooltip.remove();
+        },
+      });
+    },
+  },
 ];
