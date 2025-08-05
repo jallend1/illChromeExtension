@@ -8,161 +8,137 @@ async function loadFrequentLending() {
   const { buttonStyles, hoverStyles, waitForElementWithInterval } =
     await import(chrome.runtime.getURL("modules/utils.js"));
 
-  function frequentLending() {
-    const isEvergreen =
-      window.location.href.includes("evgclient") ||
-      window.location.href.includes("evgmobile");
+  // Check if on Evergreen page
+  const isEvergreenPage = () => {
+    const url = window.location.href;
+    return url.includes("evgclient") || url.includes("evgmobile");
+  };
 
-    if (!isEvergreen) return;
+  // Inject print styles
+  const injectPrintStyles = () => {
+    if (document.getElementById("frequentLibrariesPrintStyle")) return;
+    const style = document.createElement("style");
+    style.id = "frequentLibrariesPrintStyle";
+    style.textContent = `@media print { #frequentLibraries { display: none !important; } }`;
+    document.head.appendChild(style);
+  };
 
-    // -- Hide frequent lending buttons when printing --
-    function injectPrintStyles() {
-      if (document.getElementById("frequentLibrariesPrintStyle")) return;
-      const style = document.createElement("style");
-      style.id = "frequentLibrariesPrintStyle";
-      style.textContent = `
-      @media print {
-        #frequentLibraries {
-          display: none !important;
-        }
-      }
-    `;
-      document.head.appendChild(style);
+  // Handle barcode input
+  const handleBarcodeInput = (value) => {
+    const barcodeInput =
+      document.querySelector("#patron-barcode") ||
+      document.querySelector("#barcode-search-input");
+    const isSearchScreen = document.querySelector("#barcode-search-input");
+
+    if (!barcodeInput) {
+      navigator.clipboard.writeText(value);
+      statusModal(
+        "Copied to clipboard!",
+        "We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.",
+        "#4CAF50",
+        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      );
+      return;
     }
 
-    const checkNavBar = async () => {
-      let navBar = await waitForElementWithInterval("eg-staff-nav-bar");
-      if (!navBar) {
-        console.log("No navBar found.");
-        return;
-      }
-      if (!document.querySelector("#frequentLibraries")) {
-        generateLendingContainer(navBar);
-      }
-    };
+    barcodeInput.value = value;
+    barcodeInput.dispatchEvent(
+      new Event("input", { bubbles: true, cancelable: true })
+    );
+    barcodeInput.focus();
 
-    const copyValuetoInput = (value) => {
-      let barcodeInput;
-      let isSearchScreen = document.querySelector("#barcode-search-input");
-      // #patron-barcode is ID on place hold screen, #barcode-search-input is ID on patron search screen
-      barcodeInput =
-        document.querySelector("#patron-barcode") ||
-        document.querySelector("#barcode-search-input");
+    if (isSearchScreen) {
+      document
+        .querySelector(".input-group > .input-group-text > button")
+        ?.click();
+    }
+  };
 
-      // If no barcode input, copy the value to the clipboard
-      if (!barcodeInput) {
-        navigator.clipboard.writeText(value);
-        statusModal(
-          "Copied to clipboard!",
-          `We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.`,
-          "#4CAF50",
-          chrome.runtime.getURL("images/kawaii-dinosaur.png")
-        );
-        return;
-      }
-      barcodeInput.value = value;
-      const event = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      barcodeInput.dispatchEvent(event);
-      barcodeInput.focus();
+  // Create library button
+  const createLibraryButton = (library, container) => {
+    const button = document.createElement("button");
+    button.textContent = library;
+    button.value = frequentLibraries[library];
+    Object.assign(button.style, buttonStyles);
 
-      // If on search screen, automatically click the search button
-      if (isSearchScreen) {
-        const searchButton = document.querySelector(
-          ".input-group > .input-group-text > button"
-        );
-        searchButton.click();
-      }
-    };
+    button.addEventListener("click", (e) => handleBarcodeInput(e.target.value));
+    button.addEventListener("mouseover", () =>
+      Object.assign(button.style, hoverStyles)
+    );
+    button.addEventListener("mouseout", () =>
+      Object.assign(button.style, buttonStyles)
+    );
 
-    const generateButton = (containerEl, library) => {
-      const libraryButton = document.createElement("button");
-      libraryButton.textContent = library;
-      libraryButton.value = frequentLibraries[library];
+    container.appendChild(button);
+  };
 
-      Object.assign(libraryButton.style, buttonStyles);
+  // Create close button
+  const createCloseButton = (container) => {
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "X";
+    Object.assign(closeButton.style, {
+      position: "absolute",
+      top: "0",
+      right: "0",
+      background: "none",
+      border: "none",
+      fontSize: ".5rem",
+      cursor: "pointer",
+      color: "#333",
+      padding: "0.5rem",
+      margin: "0.5rem",
+      zIndex: "9999",
+    });
 
-      libraryButton.addEventListener("click", (e) => {
-        copyValuetoInput(e.target.value);
-      });
-      libraryButton.addEventListener("mouseover", () => {
-        Object.assign(libraryButton.style, hoverStyles);
-      });
-      libraryButton.addEventListener("mouseout", () => {
-        Object.assign(libraryButton.style, buttonStyles);
-      });
-      containerEl.appendChild(libraryButton);
-    };
+    closeButton.addEventListener("click", () => {
+      chrome.storage.local.set({ lendingMode: false });
+      container.remove();
+    });
 
-    const generateLendingContainer = (navBar) => {
-      if (document.querySelector("#frequentLibraries")) {
-        return;
-      }
-      injectPrintStyles();
-      const frequentLibrariesDiv = document.createElement("div");
-      frequentLibrariesDiv.id = "frequentLibraries";
+    container.appendChild(closeButton);
+  };
 
-      const divStyles = {
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        alignItems: "center",
-        border: "1px solid #ccc",
-        background: "linear-gradient(135deg, #f8fafc 0%, #e8f0ee 100%)",
-        borderRadius: "5px",
-        marginTop: "35px",
-        paddingTop: "1rem",
-        paddingBottom: "0.75rem",
-        position: "relative",
-      };
+  // Main setup function
+  const setupFrequentLending = async () => {
+    if (!isEvergreenPage() || document.querySelector("#frequentLibraries"))
+      return;
 
-      Object.assign(frequentLibrariesDiv.style, divStyles);
+    const navBar = await waitForElementWithInterval("eg-staff-nav-bar");
+    if (!navBar) return;
 
-      for (const library in frequentLibraries) {
-        generateButton(frequentLibrariesDiv, library);
-      }
+    injectPrintStyles();
 
-      // Add an x to close the frequent lending buttons
-      const closeButton = document.createElement("button");
-      const closeButtonStyles = {
-        position: "absolute",
-        top: "0",
-        right: "0",
-        background: "none",
-        border: "none",
-        fontSize: ".5rem",
-        cursor: "pointer",
-        color: "#333",
-        padding: "0.5rem",
-        margin: "0.5rem",
-        zIndex: "9999",
-      };
-      Object.assign(closeButton.style, closeButtonStyles);
-      closeButton.textContent = "X";
-      closeButton.addEventListener("click", () => {
-        chrome.storage.local.set({
-          lendingMode: false,
-        });
-        frequentLibrariesDiv.remove();
-      });
-      frequentLibrariesDiv.appendChild(closeButton);
+    const container = document.createElement("div");
+    container.id = "frequentLibraries";
+    Object.assign(container.style, {
+      display: "flex",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      alignItems: "center",
+      border: "1px solid #ccc",
+      background: "linear-gradient(135deg, #f8fafc 0%, #e8f0ee 100%)",
+      borderRadius: "5px",
+      marginTop: "35px",
+      paddingTop: "1rem",
+      paddingBottom: "0.75rem",
+      position: "relative",
+    });
 
-      navBar.insertAdjacentElement("afterend", frequentLibrariesDiv);
-    };
+    Object.keys(frequentLibraries).forEach((library) =>
+      createLibraryButton(library, container)
+    );
+    createCloseButton(container);
+    navBar.insertAdjacentElement("afterend", container);
+  };
 
-    checkNavBar();
-  }
-
-  frequentLending();
+  setupFrequentLending();
 }
 
+// Initialize based on storage
 chrome.storage.local.get("lendingMode", (result) => {
   if (result.lendingMode) {
     loadFrequentLending();
   } else {
-    const frequentLibraries = document.querySelector("#frequentLibraries");
-    frequentLibraries ? frequentLibraries.remove() : null;
+    document.querySelector("#frequentLibraries")?.remove();
   }
 });

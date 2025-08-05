@@ -1,4 +1,4 @@
-import { openSidepanels } from "../backgroundMessageHandler.js";
+let openSidepanels = {};
 
 /**
  * Checks if any sidepanel is open
@@ -6,6 +6,22 @@ import { openSidepanels } from "../backgroundMessageHandler.js";
  */
 export const isAnySidepanelOpen = () => {
   return Object.keys(openSidepanels).length > 0;
+};
+
+/**
+ * Handles sidepanel open/close messages
+ * @param {Object} request
+ */
+export const handleSidepanelMessage = (request) => {
+  if (request.type === "sidepanel-open") {
+    openSidepanels[request.windowId] = true;
+    return true;
+  }
+  if (request.type === "sidepanel-close") {
+    delete openSidepanels[request.windowId];
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -34,3 +50,5 @@ export const sendTabUrlUpdate = (details) => {
     }
   );
 };
+
+export { openSidepanels };

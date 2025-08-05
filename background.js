@@ -3,7 +3,11 @@ import { injectDymoFramework } from "./modules/dymoFunctions.js";
 import { urlActions } from "./urlActions.js";
 import { handleMessage } from "./backgroundMessageHandler.js";
 import { handleTabUpdate } from "./modules/tabEventHandlers.js";
-import { sendTabUrlUpdate } from "./modules/sidepanelCommunication.js";
+import {
+  sendTabUrlUpdate,
+  isAnySidepanelOpen,
+  openSidepanels,
+} from "./modules/sidepanelCommunication.js";
 import {
   initializeLendingMode,
   handleStorageChanges,

@@ -204,7 +204,16 @@ const handleActionMessage = async (request, activeTab, sendResponse) => {
 const handleDataMessage = (request, activeTab, sendResponse) => {
   if (request.data === "copyWorldShareAddress") {
     injectDymoFramework(activeTab.id);
-    sendResponse({ success: true });
+    // Also execute the script like other data messages
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: activeTab.id },
+        files: [`./scripts/${request.data}.js`],
+      },
+      () => {
+        sendResponse({ success: true });
+      }
+    );
     return true;
   }
 
@@ -275,6 +284,3 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
   return true; // Keep message channel open
 };
-
-// Export openSidepanels for use in background.js
-export { openSidepanels };
