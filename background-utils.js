@@ -34,15 +34,14 @@ export const isAllowedHost = (url) => {
   });
 };
 
-/** 
+/**
  * Checks if the current Evergreen tab is a mobile version.
  * @returns {Promise<boolean>} - True if the current Evergreen tab is mobile, false otherwise
-*/
+ */
 export const isEvgMobile = async () => {
   const tabs = await chrome.tabs.query({});
   return tabs.some((tab) => tab.url?.includes("evgmobile"));
 };
-
 
 // === Tab Management ===
 /**
@@ -110,4 +109,18 @@ export const evergreenTabId = async () => {
     }
   }
   return null;
+};
+
+/**
+ * Gets the currently active tab
+ * @returns {Promise<chrome.tabs.Tab|null>}
+ */
+export const getActiveTab = async () => {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (tabs.length > 0) {
+    return tabs[0];
+  } else {
+    console.error("No active tab found.");
+    return null;
+  }
 };

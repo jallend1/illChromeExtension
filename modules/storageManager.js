@@ -1,11 +1,10 @@
-import { isAllowedHost } from "../background-utils.js";
+import { isAllowedHost, getActiveTab } from "../background-utils.js";
 
 /**
  * Manages lending mode state and updates
- * @param {Function} getActiveTab
  * @param {Function} executeScript
  */
-export const initializeLendingMode = async (getActiveTab, executeScript) => {
+export const initializeLendingMode = async (executeScript) => {
   chrome.storage.local.get("lendingMode", async (result) => {
     if (result.lendingMode) {
       const activeTab = await getActiveTab();

@@ -1,3 +1,5 @@
+import { getActiveTab } from "../background-utils";
+
 /**
  * Enhanced script executor with better error handling
  * @param {number} tabId
@@ -44,13 +46,11 @@ export const executeScript = (tabId, script) => {
  * Enhanced keyboard shortcut handler
  * @param {string} command
  * @param {Array} currentOptions
- * @param {Function} getActiveTab
  * @param {Function} injectDymoFramework
  */
 export const handleKeyboardShortcut = async (
   command,
   currentOptions,
-  getActiveTab,
   injectDymoFramework
 ) => {
   const option = currentOptions.find((opt) => opt.id === command);

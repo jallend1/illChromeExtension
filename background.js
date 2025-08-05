@@ -17,7 +17,7 @@ import {
   executeScript,
   handleKeyboardShortcut,
 } from "./modules/scriptExecutor.js";
-import { isAllowedHost } from "./background-utils.js";
+import { isAllowedHost, getActiveTab } from "./background-utils.js";
 
 console.log("injectDymoFramework imported:", typeof injectDymoFramework);
 
@@ -37,18 +37,8 @@ getPassiveToolsState().then((state) => {
   arePassiveToolsActive = state;
 });
 
-const getActiveTab = async () => {
-  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tabs.length > 0) {
-    return tabs[0];
-  } else {
-    console.error("No active tab found.");
-    return null;
-  }
-};
-
 // Initialize lending mode
-initializeLendingMode(getActiveTab, executeScript);
+initializeLendingMode(executeScript);
 
 // Event Listeners
 chrome.storage.onChanged.addListener(handleStorageChanges);
