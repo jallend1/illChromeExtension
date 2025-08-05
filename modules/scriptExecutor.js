@@ -1,4 +1,4 @@
-import { getActiveTab } from "../background-utils";
+import { getActiveTab } from "../background-utils.js";
 
 /**
  * Enhanced script executor with better error handling

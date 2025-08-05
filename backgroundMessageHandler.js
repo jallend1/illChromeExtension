@@ -9,20 +9,6 @@ import { injectDymoFramework } from "./modules/dymoFunctions.js";
 
 let openSidepanels = {};
 
-// /**
-//  * Gets the currently active tab
-//  * @returns {Promise<chrome.tabs.Tab|null>}
-//  */
-// const getActiveTab = async () => {
-//   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-//   if (tabs.length > 0) {
-//     return tabs[0];
-//   } else {
-//     console.error("No active tab found.");
-//     return null;
-//   }
-// };
-
 /**
  * Calculates URL and opens/focuses tab
  * @param {string} urlSuffix

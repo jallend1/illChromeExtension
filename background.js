@@ -17,7 +17,7 @@ import {
   executeScript,
   handleKeyboardShortcut,
 } from "./modules/scriptExecutor.js";
-import { isAllowedHost, getActiveTab } from "./background-utils.js";
+import { isAllowedHost } from "./background-utils.js";
 
 console.log("injectDymoFramework imported:", typeof injectDymoFramework);
 
@@ -44,12 +44,7 @@ initializeLendingMode(executeScript);
 chrome.storage.onChanged.addListener(handleStorageChanges);
 
 chrome.commands.onCommand.addListener((command) => {
-  handleKeyboardShortcut(
-    command,
-    currentOptions,
-    getActiveTab,
-    injectDymoFramework
-  );
+  handleKeyboardShortcut(command, currentOptions, injectDymoFramework);
 });
 
 chrome.runtime.onMessage.addListener(handleMessage);
