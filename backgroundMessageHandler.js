@@ -4,6 +4,7 @@ import {
   isAllowedHost,
   URLS,
   getActiveTab,
+  isEvgMobile,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
 
