@@ -7,6 +7,7 @@ import {
   isEvgMobile,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
+import { createTabWithScript } from "./modules/scriptExecutor.js";
 
 let openSidepanels = {};
 
@@ -26,46 +27,7 @@ const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
-  chrome.tabs.create(
-    {
-      url: url,
-      active: true,
-    },
-    (newTab) => {
-      if (!newTab) {
-        console.error("Failed to create a new tab.");
-        return;
-      }
-      const onTabUpdated = (tabId, changeInfo, tab) => {
-        if (tabId === newTab.id && changeInfo.status === "complete") {
-          chrome.scripting.executeScript(
-            {
-              target: { tabId: newTab.id },
-              files: ["./scripts/retrievePatron.js"],
-            },
-            async () => {
-              if (chrome.runtime.lastError) {
-                console.error(
-                  "Error executing script:",
-                  chrome.runtime.lastError.message
-                );
-              }
-              // Get the latest tab info to ensure correct URL and windowId
-              const updatedTab = await chrome.tabs.get(newTab.id);
-              chrome.runtime.sendMessage({
-                type: "tab-url-updated",
-                tabId: updatedTab.id,
-                url: updatedTab.url,
-                windowId: updatedTab.windowId,
-              });
-            }
-          );
-          chrome.tabs.onUpdated.removeListener(onTabUpdated);
-        }
-      };
-      chrome.tabs.onUpdated.addListener(onTabUpdated);
-    }
-  );
+  createTabWithScript(url, "retrievePatron");
 };
 
 /**
@@ -190,6 +152,7 @@ const handleActionMessage = async (request, activeTab, sendResponse) => {
       console.log("Request Data stored", request);
     });
     retrievePatron();
+    sendResponse({ success: true });
     return true;
   }
 

@@ -1,4 +1,4 @@
-import { getActiveTab } from "../background-utils.js";
+import { getActiveTab, createTab } from "../background-utils.js";
 
 /**
  * Enhanced script executor with better error handling
@@ -9,6 +9,7 @@ export const executeScript = (tabId, script) => {
   const scriptsWithoutMessages = [
     "frequentLending",
     "injectPrintAddressButton",
+    "retrievePatron",
   ];
 
   chrome.scripting.executeScript(
@@ -40,6 +41,23 @@ export const executeScript = (tabId, script) => {
       });
     }
   );
+};
+
+/**
+ * Creates a tab and executes a script when it loads
+ * @param {string} url - The URL to open
+ * @param {string} scriptName - Name of the script (without .js extension)
+ */
+export const createTabWithScript = (url, scriptName) => {
+  createTab(url);
+
+  const onTabUpdated = (tabId, changeInfo, tab) => {
+    if (changeInfo.status === "complete" && tab.url === url && tab.active) {
+      executeScript(tabId, scriptName); // Use existing function
+      chrome.tabs.onUpdated.removeListener(onTabUpdated);
+    }
+  };
+  chrome.tabs.onUpdated.addListener(onTabUpdated);
 };
 
 /**
