@@ -1,4 +1,9 @@
 let myWindowId = null;
+const SCRIPTS_WITHOUT_CALLBACKS = ["isbnSearch", "sendPatronToWorldShare"];
+const URL_PATTERNS = {
+  EVERGREEN: ".kcls.org/eg2/en-US/staff/",
+  WORLDSHARE: "kingcountylibrarysystem.share.worldcat.org",
+};
 
 chrome.windows.getCurrent((currentWindow) => {
   myWindowId = currentWindow.id;
@@ -17,15 +22,17 @@ chrome.windows.getCurrent((currentWindow) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Message type:", message.type);
+
+  // Handle tab URL updates
   if (message.type === "tab-url-updated" && message.windowId === myWindowId) {
     console.log("Tab URL updated:", message.url);
     currentTabUrl = message.url || "";
     handleURLChange(currentTabUrl);
     sendResponse && sendResponse({ status: "URL handled" });
+    return;
   }
-});
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Handle storage updates
   if (message.type === "storage-updated") {
     for (const [key, { newValue }] of Object.entries(message.changes)) {
       const storageKey = storageKeys.find((sk) => sk.key === key);
@@ -33,6 +40,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         storageKey.element.checked = newValue;
       }
     }
+    return;
+  }
+
+  // Handle script-to-sidepanel messages
+  if (message.type === "addressReady") {
+    extractFromStorage("addressString");
+    return;
+  }
+
+  if (message.type === "overdueNoticeReady") {
+    extractFromStorage("overdueNotice");
+    return;
   }
 });
 
@@ -85,54 +104,31 @@ const worldShareButtonIds = [
   "isbnSearch",
 ];
 
-// const handleURLChange = (url) => {
-//   // Always disable all buttons first
-//   console.log("Disabling all buttons. Current URL:", url);
-//   disableButtons(evergreenButtonIds);
-//   disableButtons(worldShareButtonIds);
-
-//   // Only enable if the URL matches
-//   if (typeof url === "string" && url.includes(".kcls.org/eg2/en-US/staff/")) {
-//     console.log("Enabling Evergreen buttons. Current URL:", url);
-//     enableButtons(evergreenButtonIds);
-//   }
-//   if (
-//     typeof url === "string" &&
-//     url.includes("kingcountylibrarysystem.share.worldcat.org")
-//   ) {
-//     console.log("Enabling WorldShare buttons. Current URL:", url);
-//     enableButtons(worldShareButtonIds);
-//   }
-// };
-
+/**
+ * Handles changes to the active tab's URL.
+ * @param {string} url - The new URL of the active tab.
+ * @returns {void}
+ */
 const handleURLChange = (url) => {
+  console.log("Handling URL change:", url);
+
   // Always disable all buttons first
-  console.log("Disabling all buttons. Current URL:", url);
   disableButtons(evergreenButtonIds);
   disableButtons(worldShareButtonIds);
 
-  // Add explicit debugging for the condition
-  const evergreenCondition =
-    typeof url === "string" && url.includes(".kcls.org/eg2/en-US/staff/");
-  console.log("Evergreen condition check:");
-  console.log("  typeof url === 'string':", typeof url === "string");
-  console.log(
-    "  url.includes('.kcls.org/eg2/en-US/staff/'):",
-    url.includes(".kcls.org/eg2/en-US/staff/")
-  );
-  console.log("  Overall condition result:", evergreenCondition);
+  if (typeof url !== "string") {
+    console.warn("URL is not a string:", typeof url);
+    return;
+  }
 
-  // Only enable if the URL matches
-  if (evergreenCondition) {
-    console.log("Enabling Evergreen buttons. Current URL:", url);
+  // Enable appropriate buttons based on URL
+  if (url.includes(URL_PATTERNS.EVERGREEN)) {
+    console.log("Enabling Evergreen buttons for:", url);
     enableButtons(evergreenButtonIds);
   }
 
-  if (
-    typeof url === "string" &&
-    url.includes("kingcountylibrarysystem.share.worldcat.org")
-  ) {
-    console.log("Enabling WorldShare buttons. Current URL:", url);
+  if (url.includes(URL_PATTERNS.WORLDSHARE)) {
+    console.log("Enabling WorldShare buttons for:", url);
     enableButtons(worldShareButtonIds);
   }
 };
@@ -145,6 +141,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   handleURLChange(currentTabUrl);
 });
 
+/**
+ * Enables the specified buttons.
+ * @param {string[]} buttonIds - The IDs of the buttons to enable.
+ */
 const enableButtons = (buttonIds) => {
   console.log("enableButtons called with:", buttonIds);
   buttonIds.forEach((buttonId) => {
@@ -164,6 +164,10 @@ const enableButtons = (buttonIds) => {
   });
 };
 
+/**
+ * Disables the specified buttons.
+ * @param {string[]} buttonIds - The IDs of the buttons to disable.
+ */
 const disableButtons = (buttonIds) => {
   console.log("disableButtons called with:", buttonIds);
   buttonIds.forEach((buttonId) => {
@@ -175,6 +179,11 @@ const disableButtons = (buttonIds) => {
   });
 };
 
+/**
+ * Retrieves a value from storage and updates the corresponding element.
+ * @param {string} key - The key of the value to retrieve.
+ * @param {HTMLElement} element - The element to update with the retrieved value.
+ */
 const getStorageValue = (key, element) => {
   chrome.storage.local.get(key, (result) => {
     element.checked = result[key];
@@ -185,49 +194,30 @@ storageKeys.forEach((storageKey) => {
   getStorageValue(storageKey.key, storageKey.element);
 });
 
+/**
+ * Initiates the specified script in the active tab.
+ * @param {string} scriptName - The name of the script to initiate.
+ */
 const initiateScript = (scriptName) => {
-  // Focus on the tab that the user is currently on
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    var currentTab = tabs[0];
+    const currentTab = tabs[0];
     chrome.tabs.update(currentTab.id, { active: true });
-    // TODO: Navigating to a new URL in isbnSearch closes the port before a message can be sent
-    // A callback causes an error, so calling it specifically for isbnSearch. Would like to clean up
-    if (
-      scriptName === "isbnSearch" ||
-      scriptName === "sendPatronToWorldShare"
-    ) {
+
+    // Scripts that don't need callback handling
+    if (SCRIPTS_WITHOUT_CALLBACKS.includes(scriptName)) {
       chrome.runtime.sendMessage({ command: scriptName, data: scriptName });
       return;
-    } else {
-      chrome.runtime.sendMessage(
-        { command: scriptName, data: scriptName },
-        async (response) => {
-          // Extract address from storage if the script is copyWorldShareAddress to get around clipboard copying restrictions
-          if (scriptName === "copyWorldShareAddress") {
-            chrome.runtime.onMessage.addListener(async function handler(msg) {
-              if (msg.type === "addressReady") {
-                await navigator.clipboard.writeText("");
-                await extractFromStorage("addressString");
-                // extractFromStorage("addressString");
-                chrome.runtime.onMessage.removeListener(handler);
-              }
-            });
-            return;
-          } else if (scriptName === "overdueNotice") {
-            chrome.runtime.onMessage.addListener(async function handler(msg) {
-              if (msg.type === "overdueNoticeReady") {
-                await navigator.clipboard.writeText("");
-                await extractFromStorage("overdueNotice");
-                chrome.runtime.onMessage.removeListener(handler);
-              }
-            });
-          }
-        }
-      );
     }
+
+    // Scripts that need callback handling
+    chrome.runtime.sendMessage({ command: scriptName, data: scriptName });
   });
 };
 
+/**
+ * Extracts a value from storage and copies it to the clipboard.
+ * @param {string} key - The key of the value to extract.
+ */
 const extractFromStorage = async (key) => {
   console.log(`Extracting ${key} from storage...`);
   const result = await new Promise((resolve) =>
@@ -245,6 +235,11 @@ const extractFromStorage = async (key) => {
   }
 };
 
+/**
+ * Toggles the visibility of a section.
+ * @param {HTMLElement} toggle - The toggle element.
+ * @param {HTMLElement} mainSection - The main section to show/hide.
+ */
 const toggleSection = (toggle, mainSection) => {
   const isCollapsed = mainSection.classList.contains("collapsed");
   if (isCollapsed) {
@@ -262,6 +257,9 @@ const toggleSection = (toggle, mainSection) => {
   }
 };
 
+/**
+ * Adds event listeners to the sidepanel elements.
+ */
 const addEventListeners = () => {
   elements.passiveTools.addEventListener("click", () => {
     chrome.storage.local.get("arePassiveToolsActive", (result) => {
@@ -316,6 +314,11 @@ const addEventListeners = () => {
     }
   });
 
+  /**
+   * Adds a click listener to the checkbox and updates the storage value.
+   * @param {HTMLElement} checkbox - The checkbox element.
+   * @param {string} key - The key to store the checkbox state.
+   */
   const addCheckboxListener = (checkbox, key) => {
     checkbox.addEventListener("click", () => {
       chrome.storage.local.set({ [key]: checkbox.checked });
