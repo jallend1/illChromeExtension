@@ -6,7 +6,6 @@
 // includes setting the Patron Permission Type to ILL, Internet Access Level to No Access,
 // and Library District of Residence to Unset. It also fills in the universal settings
 // for the account, including a default date of birth and 'ILL DEPT' as family name.
-// ...existing code...
 
 (async () => {
   const { statusModal } = await import(
@@ -16,52 +15,72 @@
     chrome.runtime.getURL("modules/utils.js")
   );
 
-  // -- Constants for modal messages --
-  const ERROR_HEADING = "Something went wrong!";
-  const ERROR_COLOR = "#e85e6a";
-  const ERROR_MSG =
-    "Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.";
-  const ERROR_IMG = chrome.runtime.getURL("images/kawaii-book-sad.png");
-  const WORKING_HEADING = "Please wait...";
-  const SUCCESS_HEADING = "Success!";
-  const SUCCESS_MSG = "Standard address fields have been applied!";
-  const SUCCESS_COLOR = "#4CAF50";
-  const SUCCESS_IMG = chrome.runtime.getURL("images/kawaii-dinosaur.png");
+  // -- Configuration Object --
+  const CONFIG = {
+    // Modal messages
+    messages: {
+      error: {
+        heading: "Something went wrong!",
+        text: "Couldn't find the correct fields to update! This is supposed to be used on the Patron Edit Screen if that clarifies things.",
+        color: "#e85e6a",
+        image: chrome.runtime.getURL("images/kawaii-book-sad.png"),
+      },
+      working: {
+        heading: "Please wait...",
+        text: "Attempting to fill standard address fields.",
+        color: "#ffc107",
+        image: chrome.runtime.getURL("images/beaver.png"),
+      },
+      success: {
+        heading: "Success!",
+        text: "Standard address fields have been applied!",
+        color: "#4CAF50",
+        image: chrome.runtime.getURL("images/kawaii-dinosaur.png"),
+      },
+    },
 
-  const WORKING_MSG = "Attempting to fill standard address fields.";
-  const WORKING_COLOR = "#ffc107";
-  const WORKING_IMG = chrome.runtime.getURL("images/beaver.png");
+    // Form field values
+    textInputs: {
+      "#au-dob-input": "1980-07-16",
+      "#au-family_name-input": "ILL DEPT",
+    },
 
-  //  -- Constants for text inputs --
-  const textInputs = {
-    "#au-dob-input": "1980-07-16",
-    "#au-family_name-input": "ILL DEPT",
+    // Dropdown configurations
+    dropdowns: [
+      {
+        field: "Patron Permission Type",
+        optionText: "ILL",
+        optionSelector:
+          '[role="listbox"].dropdown-menu.show button[role="option"]',
+        inputSelector: 'eg-combobox[placeholder="Profile Group"] input',
+      },
+      {
+        field: "Internet Access Level",
+        optionText: "No Access",
+        optionSelector: "#au-net_access_level-input-101",
+        inputSelector: "#au-net_access_level-input",
+      },
+      {
+        field: "Library District of Residence",
+        optionText: "Unset",
+        optionSelector: "#asc-12-input-210182",
+        inputSelector: "#asc-12-input",
+      },
+    ],
+
+    // Retry configuration
+    retry: {
+      maxAttempts: 100,
+      delay: 100,
+    },
   };
 
-  // -- Constants for dropdown selections --
-  const dropDownSelections = [
-    {
-      field: "Patron Permission Type",
-      optionText: "ILL",
-      optionSelector:
-        '[role="listbox"].dropdown-menu.show button[role="option"]',
-      inputSelector: 'eg-combobox[placeholder="Profile Group"] input',
-    },
-    {
-      field: "Internet Access Level",
-      optionText: "No Access",
-      optionSelector: "#au-net_access_level-input-101",
-      inputSelector: "#au-net_access_level-input",
-    },
-    {
-      field: "Library District of Residence",
-      optionText: "Unset",
-      optionSelector: "#asc-12-input-210182",
-      inputSelector: "#asc-12-input",
-    },
-  ];
-
   // -- Utility Functions --
+  const showModal = (type) => {
+    const config = CONFIG.messages[type];
+    statusModal(config.heading, config.text, config.color, config.image);
+  };
+
   const generateEvent = (type) => {
     return new Event(type, {
       bubbles: true,
@@ -89,8 +108,8 @@
       throw new Error(`Dropdown input ${inputSelector} not found`);
 
     let attempts = 0;
-    const maxAttempts = 100;
-    const delay = 100;
+    const maxAttempts = CONFIG.retry.maxAttempts;
+    const delay = CONFIG.retry.delay;
 
     return new Promise((resolve, reject) => {
       const trySelect = () => {
@@ -125,25 +144,21 @@
   };
 
   const fillUniversalSettings = async () => {
-    for (const [selector, value] of Object.entries(textInputs)) {
+    for (const [selector, value] of Object.entries(CONFIG.textInputs)) {
       await applyInputValues(selector, value);
     }
-  };
-
-  const showErrorModal = () => {
-    statusModal(ERROR_HEADING, ERROR_MSG, ERROR_COLOR, ERROR_IMG);
   };
 
   // -- Main Function --
   async function updateAddress() {
     const currentUrl = window.location.href;
     try {
-      statusModal(WORKING_HEADING, WORKING_MSG, WORKING_COLOR, WORKING_IMG);
+      showModal("working");
       for (const {
         optionText,
         optionSelector,
         inputSelector,
-      } of dropDownSelections) {
+      } of CONFIG.dropdowns) {
         await waitForOptionsAndSelect(
           optionText,
           optionSelector,
@@ -153,14 +168,14 @@
 
       await fillUniversalSettings();
 
-      statusModal(SUCCESS_HEADING, SUCCESS_MSG, SUCCESS_COLOR, SUCCESS_IMG);
+      showModal("success");
     } catch (err) {
       // If the user navigates away from the page, cut our losses and don't show an error
       if (window.location.href !== currentUrl) {
         return;
       }
       console.error(err);
-      showErrorModal();
+      showModal("error");
     }
   }
 
@@ -168,12 +183,7 @@
     !window.location.href.includes("register") &&
     !window.location.href.includes("edit")
   ) {
-    statusModal(
-      ERROR_HEADING,
-      ERROR_MSG,
-      ERROR_COLOR,
-      chrome.runtime.getURL("images/kawaii-book-sad.png")
-    );
+    showModal("error");
     return;
   }
   await updateAddress();
