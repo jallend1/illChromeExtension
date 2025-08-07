@@ -27,7 +27,7 @@
     // Apply highlighting to Outreach and ADA profile types
     const highlightProfileTypes = async () => {
       const gridItems = await waitForElementWithInterval(() => {
-        const elements = document.querySelectorAll('eg-grid-body-cell');
+        const elements = document.querySelectorAll("eg-grid-body-cell");
         return elements.length > 0 ? elements : null;
       });
       console.log("Grid items length", gridItems.length);
@@ -39,15 +39,20 @@
       window.gridItemsLength = gridItems.length;
       const matchingItems = [];
       gridItems.forEach((item) => {
-        const spans = item.querySelectorAll('span[tooltipclass="eg-grid-tooltip"]');
+        const spans = item.querySelectorAll(
+          'span[tooltipclass="eg-grid-tooltip"]'
+        );
         spans.forEach((span) => {
-          if (span.textContent.includes("Outreach") || span.textContent.includes("ADA Circulation")) {
-            item.style.backgroundColor = "#ffeb3b"; 
+          if (
+            span.textContent.includes("Outreach") ||
+            span.textContent.includes("ADA Circulation")
+          ) {
+            item.style.backgroundColor = "#ffeb3b";
             matchingItems.push(item);
           }
         });
-      })
-    }
+      });
+    };
 
     function watchForModal() {
       modalObserver = new MutationObserver((mutationsList, observer) => {
@@ -160,15 +165,12 @@
         if (!document.body.contains(modal)) {
           // Clears out patron data when modal is closed to prevent errors
           chrome.storage.local.remove("requestManagerPatron");
-          chrome.runtime.sendMessage({ type: "requestManagerPatronUpdated" });
-
           observer.disconnect();
           watchForModal(); // Start watching for the next modal
         }
       });
       removalObserver.observe(targetNode, config);
     }
-
 
     watchForModal();
     highlightProfileTypes();

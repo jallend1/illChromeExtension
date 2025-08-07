@@ -38,8 +38,6 @@
     chrome.storage.local.set(
       { requestManagerPatron: { name: worldShareName, barcode } },
       () => {
-        //   Alerts sidepanel to update current patron info
-        chrome.runtime.sendMessage({ type: "requestManagerPatronUpdated" });
         pastePatronToWS();
       }
     );
