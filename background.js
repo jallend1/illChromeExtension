@@ -45,7 +45,19 @@ chrome.commands.onCommand.addListener((command) => {
   handleKeyboardShortcut(command, currentOptions, injectDymoFramework);
 });
 
-chrome.runtime.onMessage.addListener(handleMessage);
+// chrome.runtime.onMessage.addListener(handleMessage);
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Call handleMessage and check if it returns a promise or true
+  const result = handleMessage(request, sender, sendResponse);
+  if (result instanceof Promise) {
+    result.catch((error) => {
+      console.error("Error in message handler:", error);
+    });
+    return true; // Keep message port open for async operations
+  }
+  return result;
+});
 
 chrome.sidePanel
   .setPanelBehavior({ openPanelOnActionClick: true })

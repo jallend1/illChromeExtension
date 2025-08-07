@@ -7,13 +7,19 @@ import {
   isEvgMobile,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
-import { createTabWithScript } from "./modules/scriptExecutor.js";
+import {
+  createTabWithScript,
+  executeScript,
+} from "./modules/scriptExecutor.js";
 
 let openSidepanels = {};
 
 /**
  * Calculates URL and opens/focuses tab
  * @param {string} urlSuffix
+ * @returns {Promise<void>}
+ * @description This function constructs a URL based on the provided suffix,
+ * retrieves the base URL, and then opens or focuses a tab with that URL.
  */
 const calculateURL = async (urlSuffix) => {
   const baseUrl = await getBaseURL(urlSuffix);
@@ -22,6 +28,9 @@ const calculateURL = async (urlSuffix) => {
 
 /**
  * Opens patron retrieval page
+ * @returns {Promise<void>}
+ * @description This function checks if mobile Evergreen is used and constructs the patron retrieval URL accordingly.
+ * It then opens a new tab with the patron retrieval script.
  */
 const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
@@ -33,6 +42,8 @@ const retrievePatron = async () => {
 /**
  * Handles sidepanel open/close messages to manage openSidepanels state
  * @param {Object} request
+ * @returns {boolean}
+ * @description This function handles sidepanel open/close messages to manage the openSidepanels state.
  */
 const handleSidepanelMessage = (request) => {
   if (request.type === "sidepanel-open") {
@@ -49,6 +60,9 @@ const handleSidepanelMessage = (request) => {
 /**
  * Handles WorldShare tab switching
  * @param {Object} request
+ * @returns {boolean}
+ * @description This function checks if the request is to find and switch to a WorldShare tab.
+ * If found, it switches to that tab and executes a specified script after a short delay.
  */
 const handleWorldShareMessage = (request) => {
   if (request.type !== "findAndSwitchToWorldShare") return false;
@@ -70,20 +84,7 @@ const handleWorldShareMessage = (request) => {
         }
         // Waits a hot second before executing script
         setTimeout(() => {
-          chrome.scripting.executeScript(
-            {
-              target: { tabId: worldShareTab.id },
-              files: [`./scripts/${request.scriptToRelaunch}.js`],
-            },
-            () => {
-              if (chrome.runtime.lastError) {
-                console.error(
-                  "Error executing script:",
-                  chrome.runtime.lastError
-                );
-              }
-            }
-          );
+          executeScript(worldShareTab.id, request.scriptToRelaunch);
         }, 100);
       });
     } else {

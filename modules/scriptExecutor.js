@@ -6,10 +6,12 @@ import { getActiveTab, createTab } from "../background-utils.js";
  * @param {string} script
  */
 export const executeScript = (tabId, script) => {
+  console.log(script);
   const scriptsWithoutMessages = [
     "frequentLending",
     "injectPrintAddressButton",
     "retrievePatron",
+    "sendPatronToWorldShare",
   ];
 
   chrome.scripting.executeScript(
