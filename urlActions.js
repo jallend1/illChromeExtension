@@ -1,6 +1,6 @@
 import { executeScript } from "./modules/scriptExecutor.js";
 
-// Simple mapping of URL patterns to their required resources
+// Mapping URL patterns to their associated scripts and styles
 const URL_MAP = {
   "/eg2/en-US/staff/": { scripts: ["frequentLending"] },
   "/cat/ill/track": {
@@ -16,6 +16,11 @@ const URL_MAP = {
   "/checkout": { scripts: ["dismissOpenTransit"] },
 };
 
+/**
+ * Executes the required scripts and styles for a given tab.
+ * @param {number} tabId - The ID of the tab to execute actions in.
+ * @param {Object} config - The configuration object containing scripts and styles.
+ */
 const executeActions = (tabId, config) => {
   config.styles?.forEach((style) => {
     chrome.scripting.insertCSS({
@@ -26,15 +31,18 @@ const executeActions = (tabId, config) => {
   config.scripts?.forEach((script) => executeScript(tabId, script));
 };
 
-// Generate urlActions array from URL_MAP
+/**
+ * Generates an array of URL actions based on the URL_MAP configuration.
+ * Each action includes a match function to identify relevant URLs
+ * and an action function to execute the required scripts and styles.
+ */
 export const urlActions = [
-  // Generate actions from URL_MAP
   ...Object.entries(URL_MAP).map(([pattern, config]) => ({
     match: (url) => url.includes(pattern),
     action: (tabId) => executeActions(tabId, config),
   })),
 
-  // Special case for removing tooltips (negative match)
+  // Special case for removing tooltip
   {
     match: (url) => !url.includes("catalog/hold/"),
     action: (tabId) => {

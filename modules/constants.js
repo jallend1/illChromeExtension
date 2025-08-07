@@ -1,3 +1,11 @@
+export const URLS = {
+  CLIENT_BASE: "https://evgclient.kcls.org",
+  MOBILE_BASE: "https://evgmobile.kcls.org",
+  PATRON_SEARCH: "/eg2/en-US/staff/circ/patron/bcsearch",
+  CREATE_ILL: "/eg2/en-US/staff/cat/ill/track",
+  CATALOG: "/eg2/en-US/staff/catalog",
+};
+
 export const borrowingAddressSelectors = {
   attention: 'input[data="returning.address.attention"]',
   line1: 'input[data="returning.address.line1"]',

@@ -2,11 +2,11 @@ import {
   getBaseURL,
   focusOrCreateTab,
   isAllowedHost,
-  URLS,
   getActiveTab,
   isEvgMobile,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
+import { URLS } from "./modules/constants.js";
 import {
   createTabWithScript,
   executeScript,
