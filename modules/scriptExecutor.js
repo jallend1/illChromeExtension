@@ -12,6 +12,14 @@ export const executeScript = (tabId, script) => {
     "injectPrintAddressButton",
     "retrievePatron",
     "sendPatronToWorldShare",
+    "worldShareMods",
+    "searchResults",
+    "createILLPageMods",
+    "updateAddress",
+    "adjustBellinghamDate",
+    "requestManagerMods",
+    "dismissOpenTransit",
+    "holdScreenMods",
   ];
 
   chrome.scripting.executeScript(

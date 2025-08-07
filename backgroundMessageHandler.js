@@ -40,10 +40,11 @@ const retrievePatron = async () => {
 };
 
 /**
- * Handles sidepanel open/close messages to manage openSidepanels state
+ * Handles sidepanel messages
  * @param {Object} request
  * @returns {boolean}
- * @description This function handles sidepanel open/close messages to manage the openSidepanels state.
+ * @description This function handles sidepanel open/close messages to manage the openSidepanels state,
+ * and to prevent errors with background.js intercepting the addressReady message intended for sidepanel.
  */
 const handleSidepanelMessage = (request) => {
   if (request.type === "sidepanel-open") {
@@ -52,6 +53,10 @@ const handleSidepanelMessage = (request) => {
   }
   if (request.type === "sidepanel-close") {
     delete openSidepanels[request.windowId];
+    return true;
+  }
+  if (request.type === "addressReady") {
+    // Message is handled by sidePanel, but this bad boy keeps intercepting it
     return true;
   }
   return false;

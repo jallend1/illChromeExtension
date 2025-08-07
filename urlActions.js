@@ -1,103 +1,47 @@
+import { executeScript } from "./modules/scriptExecutor.js";
+
+// Simple mapping of URL patterns to their required resources
+const URL_MAP = {
+  "/eg2/en-US/staff/": { scripts: ["frequentLending"] },
+  "/cat/ill/track": {
+    scripts: ["createILLPageMods"],
+    styles: ["createILLPage"],
+  },
+  "catalog/hold/": { scripts: ["holdScreenMods"], styles: ["warning"] },
+  "/catalog/search?": { scripts: ["searchResults"] },
+  "/circ/patron/register": { scripts: ["updateAddress"] },
+  "/circ/patron/2372046/checkout": { scripts: ["adjustBellinghamDate"] },
+  "share.worldcat.org": { scripts: ["worldShareMods"] },
+  "/staff/cat/requests": { scripts: ["requestManagerMods"] },
+  "/checkout": { scripts: ["dismissOpenTransit"] },
+};
+
+const executeActions = (tabId, config) => {
+  config.styles?.forEach((style) => {
+    chrome.scripting.insertCSS({
+      target: { tabId },
+      files: [`./styles/${style}.css`],
+    });
+  });
+  config.scripts?.forEach((script) => executeScript(tabId, script));
+};
+
+// Generate urlActions array from URL_MAP
 export const urlActions = [
-  {
-    match: (url) => url.includes("/eg2/en-US/staff/"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/frequentLending.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("/cat/ill/track"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/createILLPageMods.js"],
-      });
-      chrome.scripting.insertCSS({
-        target: { tabId },
-        files: ["./styles/createILLPage.css"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("catalog/hold/"),
-    action: (tabId) => {
-      chrome.scripting.insertCSS({
-        target: { tabId },
-        files: ["./styles/warning.css"],
-      });
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/holdScreenMods.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("/catalog/search?"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/searchResults.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("/circ/patron/register"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/updateAddress.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("/circ/patron/2372046/checkout"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/adjustBellinghamDate.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("share.worldcat.org"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/worldShareMods.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("/staff/cat/requests"),
-    action: (tabId) => {
-      console.log("Sending again");
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/requestManagerMods.js"],
-      });
-    },
-  },
-  {
-    match: (url) => url.includes("/checkout"),
-    action: (tabId) => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        files: ["./scripts/dismissOpenTransit.js"],
-      });
-    },
-  },
+  // Generate actions from URL_MAP
+  ...Object.entries(URL_MAP).map(([pattern, config]) => ({
+    match: (url) => url.includes(pattern),
+    action: (tabId) => executeActions(tabId, config),
+  })),
+
+  // Special case for removing tooltips (negative match)
   {
     match: (url) => !url.includes("catalog/hold/"),
     action: (tabId) => {
       chrome.scripting.executeScript({
         target: { tabId },
-        func: () => {
-          const tooltip = document.querySelector("#keyboard-cowboy-tooltip");
-          if (tooltip) tooltip.remove();
-        },
+        func: () =>
+          document.querySelector("#keyboard-cowboy-tooltip")?.remove(),
       });
     },
   },
