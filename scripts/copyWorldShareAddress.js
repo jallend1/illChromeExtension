@@ -1,5 +1,5 @@
 (async () => {
-  const { states } = await import(chrome.runtime.getURL("modules/states.js"));
+  const { states } = await import(chrome.runtime.getURL("data/states.js"));
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );

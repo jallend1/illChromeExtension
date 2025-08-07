@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "permissions": [
     "activeTab",
     "storage",
@@ -60,7 +60,13 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["images/*", "modules/*", "libs/*", "product-page/*"],
+      "resources": [
+        "images/*",
+        "modules/*",
+        "libs/*",
+        "product-page/*",
+        "data/*"
+      ],
       "matches": ["<all_urls>"]
     }
   ],

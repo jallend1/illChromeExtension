@@ -4,9 +4,9 @@
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { states } = await import(chrome.runtime.getURL("modules/states.js"));
+  const { states } = await import(chrome.runtime.getURL("data/states.js"));
   const { orbisLibrarySymbols } = await import(
-    chrome.runtime.getURL("modules/orbisLibrarySymbols.js")
+    chrome.runtime.getURL("data/orbisLibrarySymbols.js")
   );
 
   function copyFromOCLC() {
