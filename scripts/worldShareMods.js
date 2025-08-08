@@ -22,6 +22,11 @@
     window.currentUrl = window.location.href;
 
     // --- Utility Functions --
+    /**
+     * Calculates the difference in days between the due date and today.
+     * @param {string} dueDateString - The due date as a string.
+     * @returns {number} - The difference in days.
+     */
     const calculateTimeDiff = (dueDateString) => {
       const dueDate = new Date(dueDateString);
       const today = new Date();
@@ -30,7 +35,12 @@
       return diffDays;
     };
 
-    // --- Style WorldShare Fields ---
+    /**
+     * Applies emphasis styles to a given element.
+     * @param {HTMLElement} el - The element to style.
+     * @param {string} backgroundColor - The background color to apply.
+     * @param {string} color - The text color to apply.
+     */
     const applyEmphasisStyle = (el, backgroundColor, color = "white") => {
       el.style.backgroundColor = backgroundColor;
       el.style.color = color;
@@ -39,7 +49,11 @@
       el.style.fontWeight = "bold";
     };
 
-    // --- Borrowing Mod Functions ---
+    /**
+     * Highlights the request status element based on its content.
+     * @param {Object} elements - The elements to process.
+     * @returns
+     */
     const highlightRequestStatus = async (elements) => {
       const { requestStatus, requestHeader, dispositionElement } = elements;
       if (!requestStatus) return;
@@ -66,6 +80,11 @@
       }
     };
 
+    /**
+     * Highlights the due date element based on its content.
+     * @param {Object} elements - The elements to process.
+     * @returns {Promise<void>}
+     */
     const highlightDueDate = async (elements) => {
       const {
         dueDateElement,
@@ -97,6 +116,10 @@
       }
     };
 
+    /**
+     * Runs the borrowing modifications.
+     * @param {Object} activeSelectors - The active selectors to use.
+     */
     const runBorrowingMods = async (activeSelectors) => {
       const elements = {
         requestHeader: await waitForElementWithInterval(
@@ -131,7 +154,10 @@
       }
     };
 
-    // --- Lending Mod Functions ---
+    /**
+     * Runs the lending modifications.
+     * @param {Object} activeSelectors - The active selectors to use.
+     */
     const runLendingMods = async (activeSelectors) => {
       const borrowingNotes = await waitForElementWithInterval(
         activeSelectors.borrowingNotes
@@ -142,6 +168,11 @@
     };
 
     // --- Page Analysis Functions ---
+    /**
+     * Checks if the given URL is a request URL.
+     * @param {string} url - The URL to check.
+     * @returns {boolean} - True if the URL is a request URL, false otherwise.
+     */
     const isRequestUrl = (url) => {
       // Return false if request is being updated in OCLC with URL parameters
       if (url.includes("?message")) return false;
@@ -149,6 +180,11 @@
       return url.match(requestUrlRegEx);
     };
 
+    /**
+     * Determines the active selectors based on the lending/borrowing context.
+     * @param {boolean} isLending - True if the context is lending, false if borrowing.
+     * @returns {Object} - The active selectors to use.
+     */
     const determineSelectors = (isLending) => {
       const isQueueUrl = window.currentUrl.includes("queue");
       if (isLending) {
@@ -164,6 +200,10 @@
       }
     };
 
+    /**
+     * Determines the modifications to apply based on the lending/borrowing context.
+     * @returns {Promise<void>}
+     */
     const determineMods = async () => {
       const isLending = await isLendingRequestPage();
       const activeSelectors = determineSelectors(isLending);
@@ -174,7 +214,10 @@
       }
     };
 
-    // --- URL Change Monitoring ---
+    /**
+     * Monitors URL changes and triggers actions based on the new URL.
+     * @returns {Promise<void>}
+     */
     const monitorUrlChanges = async () => {
       const observer = new MutationObserver(async () => {
         if (window.location.href !== window.currentUrl) {
