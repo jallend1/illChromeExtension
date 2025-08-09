@@ -28,3 +28,22 @@ export const URL_PATTERNS = {
   EVERGREEN: ".kcls.org/eg2/en-US/staff/",
   WORLDSHARE: "kingcountylibrarysystem.share.worldcat.org",
 };
+
+export const BUTTON_GROUPS = {
+  EVERGREEN: ["updateAddress", "overdueNotice"],
+  WORLDSHARE: ["copyFromOCLC", "copyWorldShareAddress", "isbnSearch"],
+};
+
+export const CONFIG = {
+  ANIMATION_DELAY: 300,
+  UPDATE_INTERVAL: 1000,
+};
+
+export const MESSAGE_TYPES = {
+  TAB_URL_UPDATED: "tab-url-updated",
+  STORAGE_UPDATED: "storage-updated",
+  ADDRESS_READY: "addressReady",
+  OVERDUE_NOTICE_READY: "overdueNoticeReady",
+  SIDEPANEL_OPEN: "sidepanel-open",
+  SIDEPANEL_CLOSE: "sidepanel-close",
+};
