@@ -30,7 +30,7 @@
       let isCourier;
       let modifiedLibraryName;
       if (rawLibraryName.includes("UNIVERSITY")) {
-        modifiedLibraryname = rawLibraryName.replace("UNIVERSITY", "UNIV");
+        modifiedLibraryName = rawLibraryName.replace("UNIVERSITY", "UNIV");
       }
       isCourier = courierLibraries.find((library) =>
         library.toUpperCase().includes(modifiedLibraryName)
