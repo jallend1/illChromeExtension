@@ -20,6 +20,13 @@
       postal: null,
     };
 
+    /**
+     * Builds a CSS selector string based on the provided parameters
+     * @param {string} tag - The HTML tag to select
+     * @param {string} dataAttr - The data attribute to match
+     * @param {string} className - The class name to match
+     * @returns {string} The constructed CSS selector
+     */
     function buildSelector({ tag, dataAttr, className }) {
       if (className) {
         return `div:not(.yui3-default-hidden) ${tag}.${className}:not(div.yui3-default-hidden ${tag})`;
@@ -27,6 +34,10 @@
       return `div:not(.yui3-default-hidden) ${tag}[data="${dataAttr}"]:not(div.yui3-default-hidden ${tag})`;
     }
 
+    /**
+     * An object of CSS selectors for extracting information from the OCLC interface
+     * @type {Object<string, string>}
+     */
     const elementSelectors = {
       title: buildSelector({ tag: "span", dataAttr: "resource.title" }),
       requestNumber: buildSelector({
@@ -63,6 +74,11 @@
       }),
     };
 
+    /**
+     * Extracts the value from a field based on the provided CSS selector
+     * @param {string} selector - The CSS selector for the field
+     * @returns {string|null} The extracted value or null if not found
+     */
     const extractValueFromField = (selector) => {
       const currentMatch = document.querySelector(selector);
       if (selector.includes("patron.userId"))
@@ -73,7 +89,13 @@
         : currentMatch?.textContent;
     };
 
+    /**
+     * Converts a state name to its abbreviation
+     * @param {string} stateName - The full name of the state
+     * @returns {string} The abbreviated state name or an empty string if not found
+     */
     const convertStateNameToAbbreviation = (stateName) => {
+      // TODO: Should this just return an empty string or NOT FOUND for both? Why the distinction?
       // If the stateName is undefined return an empty string
       if (!stateName) return "";
       // If the stateName is not found in the states object, return "NOT FOUND"
@@ -82,6 +104,10 @@
       return states[stateName];
     };
 
+    /**
+     * Assigns values to the addressObject based on the extracted field values
+     * @param {string} key - The key for the addressObject
+     */
     const assignAddressObjectValues = (key) => {
       if (key === "region") {
         let region = extractValueFromField(elementSelectors.region);
@@ -99,6 +125,10 @@
     // Iterate through addressObject keys and extract values from page
     Object.keys(addressObject).forEach(assignAddressObjectValues);
 
+    /**
+     * Converts the addressObject into a formatted string
+     * @returns {string} The formatted address string
+     */
     const formatLenderAddress = () => {
       let addressString = "";
       Object.keys(addressObject).forEach((key) => {
@@ -125,7 +155,10 @@
       return addressString;
     };
 
-    // Format lender address and notes
+    /**
+     * Compiles the lender address notes for insertion into Evergreen
+     * @returns {string} The formatted lender address notes
+     */
     const generateLenderAddressNotes = () => {
       let addressString = "";
       const currentLender = extractValueFromField(
@@ -137,7 +170,11 @@
       return addressString;
     };
 
-    // Prompts user for WCCLS barcode
+    /**
+     * Prompts the user for the WCCLS barcode
+     * @returns {string} The WCCLS barcode information
+     * @description This function prompts the user to enter the WCCLS barcode information (Something WCCLS requires) and returns it for inclusion in the address notes.
+     */
     const WCCLSprompt = () => {
       let barcode;
       let addressField = "";
@@ -153,6 +190,12 @@
       return addressField;
     };
 
+    /**
+     * Checks the requirements for the current lender
+     * @param {string} currentLender - The current lender's identifier
+     * @returns {string} The requirements for the current lender
+     * @description This function checks for any unique requirements that the current lender may have, and integrates that into the note to be pasted into Evergreen.
+     */
     const checkLenderRequirements = (currentLender) => {
       // Checks to see if the current lender requires paperwork to be kept
       requiresPaperwork(currentLender);
@@ -169,6 +212,11 @@
       return "";
     };
 
+    /**
+     * Checks if the current library requires paperwork to be kept
+     * @param {string} oclcSymbol - The OCLC symbol of the library
+     * @description This function checks if the current library is one of the libraries that requires paperwork to be kept and throws an alert if it does.
+     */
     const requiresPaperwork = (oclcSymbol) => {
       const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
       if (paperworkLibraries.includes(oclcSymbol)) {
@@ -176,11 +224,19 @@
       }
     };
 
+    /**
+     * Checks if the current library is an Orbis library
+     * @param {string} oclcSymbol - The OCLC symbol of the library
+     * @returns {boolean} True if the library is an Orbis library, false otherwise
+     */
     const isCourier = (oclcSymbol) => {
       return orbisLibrarySymbols.includes(oclcSymbol);
     };
 
-    // Bundles all pertinent information into an object
+    /**
+     * Compiles the request data for the current loan
+     * @returns {object} The compiled request data
+     */
     const compileRequestData = () => {
       const addressString = generateLenderAddressNotes();
       const requestNumber = extractValueFromField(
@@ -207,6 +263,11 @@
       };
     };
 
+    /**
+     * Converts the request data to a JSON string
+     * @param {object} data - The request data to convert
+     * @returns {string} The JSON string representation of the request data
+     */
     const convertDataToJSON = (data) => {
       return JSON.stringify(data);
     };
@@ -214,6 +275,11 @@
     const compiledData = compileRequestData();
     const stringifiedData = convertDataToJSON(compiledData);
 
+    /**
+     * Copies the data to Chrome's storage
+     * @param {object} data - The data to copy
+     * @param {string} requestNum - The request number
+     */
     async function copyToStorage(data, requestNum) {
       // If the request number isn't defined, display an error and remove the previous data from storage just in case
       if (!requestNum) {
@@ -266,6 +332,9 @@
       }
     }
 
+    /**
+     * Marks the current loan as received in WorldShare
+     */
     const markReceived = () => {
       const receiveButton = document.querySelector(".receive-button");
       if (receiveButton) {
@@ -285,12 +354,6 @@
       if (result.autoReceiveRequest) markReceived();
       chrome.runtime.sendMessage({ command: "openCreateILL" });
     });
-
-    // If autoOpenCreateILL is true, send a message to the background script to open the tab
-    // chrome.storage.local.get("openCreateILL", (result) => {
-    //   if (result.openCreateILL) {
-    //   }
-    // });
   }
 
   const currentURL = window.location.href;
