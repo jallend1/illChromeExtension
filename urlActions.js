@@ -1,5 +1,6 @@
 import { executeScript } from "./modules/scriptExecutor.js";
 
+// TODO: Adjust the URL_MAP to include multiple URLs for the same script (eg adjustBellinghamDate)
 // Mapping URL patterns to their associated scripts and styles
 const URL_MAP = {
   "/eg2/en-US/staff/": { scripts: ["frequentLending"] },
