@@ -12,6 +12,7 @@ const URL_MAP = {
   "/catalog/search?": { scripts: ["searchResults"] },
   "/circ/patron/register": { scripts: ["updateAddress"] },
   "/circ/patron/2372046/checkout": { scripts: ["adjustBellinghamDate"] },
+  "/circ/patron/2089608/checkout": { scripts: ["adjustBellinghamDate"] },
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
