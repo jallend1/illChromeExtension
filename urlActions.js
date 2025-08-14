@@ -1,5 +1,8 @@
 import { executeScript } from "./modules/scriptExecutor.js";
 
+const longDueDateIds = [2372046, 2089608];
+const isLongCheckout = (url) => longDueDateIds.some((id) => url.includes(id));
+
 // TODO: Adjust the URL_MAP to include multiple URLs for the same script (eg adjustBellinghamDate)
 // Mapping URL patterns to their associated scripts and styles
 const URL_MAP = {
@@ -11,8 +14,8 @@ const URL_MAP = {
   "catalog/hold/": { scripts: ["holdScreenMods"], styles: ["warning"] },
   "/catalog/search?": { scripts: ["searchResults"] },
   "/circ/patron/register": { scripts: ["updateAddress"] },
-  "/circ/patron/2372046/checkout": { scripts: ["adjustBellinghamDate"] },
-  "/circ/patron/2089608/checkout": { scripts: ["adjustBellinghamDate"] },
+  // "/circ/patron/2372046/checkout": { scripts: ["adjustBellinghamDate"] },
+  // "/circ/patron/2089608/checkout": { scripts: ["adjustBellinghamDate"] },
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
@@ -43,6 +46,11 @@ export const urlActions = [
     match: (url) => url.includes(pattern),
     action: (tabId) => executeActions(tabId, config),
   })),
+  {
+    match: isLongCheckout,
+    action: (tabId) =>
+      executeActions(tabId, { scripts: ["adjustBellinghamDate"] }),
+  },
 
   // Special case for removing tooltip
   {
