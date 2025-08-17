@@ -1,3 +1,7 @@
+/**
+ * Displays a tooltip with a cactus cowboy.
+ * @param {string} message - The message to display in the tooltip.
+ */
 export const keyboardCowboy = (message) => {
   const mainSection = document.querySelector("main");
   const existing = document.getElementById("keyboard-cowboy-tooltip");

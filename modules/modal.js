@@ -1,3 +1,10 @@
+/**
+ * Displays a status modal with a heading, message, background color, and image.
+ * @param {string} heading - The heading text for the modal.
+ * @param {string} message - The message text for the modal.
+ * @param {string} backgroundColor - The background color for the modal.
+ * @param {string} imgURL - The image URL to display in the modal.
+ */
 export const statusModal = (heading, message, backgroundColor, imgURL) => {
   const existingModal = document.getElementById("powILL-modal");
   if (existingModal) {
