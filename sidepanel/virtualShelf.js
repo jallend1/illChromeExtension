@@ -12,7 +12,10 @@
   // Utility functions
   // *****************
 
-  // Extract Virtual Shelf from local storage
+  /**
+   * Retrieves the virtual book shelf from local storage.
+   * @returns {Promise<Array>} A promise that resolves to the virtual book shelf array.
+   */
   const getVirtualShelf = async () => {
     return new Promise((resolve) => {
       chrome.storage.local.get("virtualBookShelf", (data) => {
@@ -21,7 +24,11 @@
     });
   };
 
-  // Update Virtual Shelf in local storage
+  /**
+   * Updates the virtual book shelf in local storage.
+   * @param {Array} shelf - The virtual book shelf array to update.
+   * @returns {Promise<void>}
+   */
   const updateVirtualShelf = async (shelf) => {
     return new Promise((resolve) => {
       chrome.storage.local.set({ virtualBookShelf: shelf }, () => {
@@ -31,7 +38,11 @@
     });
   };
 
-  // Copy to clipboard
+  /**
+   * Copies the given text to the clipboard.
+   * @param {string} text - The text to copy.
+   * @returns {Promise<boolean>} A promise that resolves to true if the text was copied successfully, false otherwise.
+   */
   const copyToClipboard = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -42,7 +53,10 @@
     }
   };
 
-  // Remove book from storage and refresh display
+  /**
+   * Removes a book from the virtual book shelf.
+   * @param {Object} bookToRemove - The book to remove.
+   */
   const removeBookFromStorage = async (bookToRemove) => {
     const updatedShelf = virtualBookShelf.filter(
       (book) =>
@@ -61,7 +75,10 @@
   // * Event Listeners *
   // *******************
 
-  // Copies the virtual book shelf data to clipboard
+  /**
+   * Exports the virtual book shelf data to clipboard.
+   * @returns {Promise<void>}
+   */
   exportShelfButton.addEventListener("click", () => {
     const shelfData = JSON.stringify(virtualBookShelf, null, 2);
     copyToClipboard(shelfData).then((success) => {
@@ -118,6 +135,11 @@
   // Group books by state and library, then sort
   const booksByState = {};
 
+  /**
+   * Groups books by their library state and name.
+   * @param {Array} books - The array of books to group.
+   * @returns {Object} An object containing the grouped books.
+   */
   virtualBookShelf.forEach((book) => {
     const libraryState = book.borrowingAddress?.region;
     const libraryName =
