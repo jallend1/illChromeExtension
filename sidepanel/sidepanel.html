@@ -242,6 +242,38 @@
       </section>
       <section class="scripts">
         <header>
+          <h2>Vendoring</h2>
+          <img
+            class="collapsible"
+            src="../images/collapse.svg"
+            alt="Collapse"
+          />
+        </header>
+        <main class="collapsible hidden collapsed">
+          <div>
+            <button id="checkBookPrice" class="ill-actions tooltip">
+              Check Book Price
+              <span class="tooltiptext"
+                >Search Kinokuniya for current book price</span
+              >
+            </button>
+          </div>
+          <div>
+            <button id="bulkPriceCheck" class="ill-actions tooltip">
+              Bulk Price Check
+              <span class="tooltiptext"
+                >Check prices for multiple books from Excel data</span
+              >
+            </button>
+          </div>
+          <div id="price-results" class="price-results hidden">
+            <h4>Price Results:</h4>
+            <div id="price-output"></div>
+          </div>
+        </main>
+      </section>
+      <section class="scripts">
+        <header>
           <h2>Resources</h2>
           <img
             class="collapsible"
