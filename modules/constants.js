@@ -89,3 +89,17 @@ export const DUEDATESELECTORS = {
   DATE_INPUT: "input[type='date']",
   BARCODE_INPUT: "#barcode-input",
 };
+
+// Feels like overkill right now?
+// export const KINOKUNIYA_CONFIG = {
+//   BASE_URL: "https://united-states.kinokuniya.com",
+//   SEARCH_PATH: "/products",
+//   SEARCH_PARAMS: {
+//     utf8: "%E2%9C%93",
+//     is_searching: "true",
+//     "restrictBy[available_only]": "1",
+//     taxon: "",
+//     x: "0",
+//     y: "0",
+//   },
+// };

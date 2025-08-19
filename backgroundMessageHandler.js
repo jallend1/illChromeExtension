@@ -220,6 +220,35 @@ export const handleMessage = async (request, sender, sendResponse) => {
     return;
   }
 
+  // Handle Kinokuniya search (no need for active tab validation)
+  if (request.command === "openKinokuniyaSearch") {
+    try {
+      console.log(
+        `Background: Opening Kinokuniya search for: ${request.searchTerm}`
+      );
+
+      // Build search URL using the same logic as your Python script
+      const cleanTerm = String(request.searchTerm)
+        .replace(/-/g, "")
+        .replace(/\s+/g, "+");
+
+      const searchUrl = `https://united-states.kinokuniya.com/products?utf8=%E2%9C%93&is_searching=true&restrictBy%5Bavailable_only%5D=1&keywords=${cleanTerm}&taxon=&x=0&y=0`;
+
+      console.log(`Opening URL: ${searchUrl}`);
+
+      // Create a new tab with the search URL
+      await chrome.tabs.create({
+        url: searchUrl,
+        active: true, // Make it the active tab so user can see results
+      });
+
+      console.log("Successfully opened Kinokuniya search tab");
+    } catch (error) {
+      console.error("Error opening Kinokuniya search:", error);
+    }
+    return true;
+  }
+
   // For all other messages, get active tab and validate
   const activeTab = await getActiveTab();
   if (!activeTab) {

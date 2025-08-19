@@ -93,6 +93,35 @@ const setupButtonListeners = () => {
   }
 };
 
+const setupBookPricingListeners = () => {
+  const checkBookPriceBtn = document.getElementById("checkBookPrice");
+  if (checkBookPriceBtn) {
+    checkBookPriceBtn.addEventListener("click", async () => {
+      const searchTerm = prompt("Enter ISBN, title, or author to search:");
+      if (!searchTerm || searchTerm.trim() === "") return;
+
+      try {
+        checkBookPriceBtn.disabled = true;
+        checkBookPriceBtn.textContent = "Opening Kinokuniya...";
+
+        console.log(`Opening Kinokuniya search for: "${searchTerm}"`);
+
+        // Send message to background script to open the tab
+        await chrome.runtime.sendMessage({
+          command: "openKinokuniyaSearch",
+          searchTerm: searchTerm.trim(),
+        });
+      } catch (error) {
+        console.error("Failed to open Kinokuniya search:", error);
+        alert("Failed to open search: " + error.message);
+      } finally {
+        checkBookPriceBtn.disabled = false;
+        checkBookPriceBtn.textContent = "Check Book Price";
+      }
+    });
+  }
+};
+
 /**
  * Sets up checkbox listeners
  */
@@ -138,4 +167,5 @@ export const initializeEventListeners = () => {
   setupButtonListeners();
   setupCheckboxListeners();
   setupKeyboardShortcuts();
+  setupBookPricingListeners();
 };
