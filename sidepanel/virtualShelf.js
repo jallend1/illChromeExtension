@@ -142,8 +142,8 @@
    */
   virtualBookShelf.forEach((book) => {
     const libraryState = book.borrowingAddress?.region;
-    const libraryName =
-      book.borrowingAddress?.attention + " - " + book.borrowingAddress?.line1;
+    let libraryName;
+    book.borrowingAddress?.attention ? libraryName = book.borrowingAddress?.attention + " - " + book.borrowingAddress?.line1 : libraryName = book.borrowingAddress?.line1
 
     if (!booksByState[libraryState]) {
       booksByState[libraryState] = {};
