@@ -210,18 +210,25 @@ const handleDataMessage = (request, activeTab, sendResponse) => {
  * @param {Function} sendResponse
  */
 export const handleMessage = async (request, sender, sendResponse) => {
+  console.log("=== MESSAGE HANDLER DEBUG ===");
+  console.log("Request:", request);
+  console.log("Sender:", sender);
+
   // Handle sidepanel messages first (no need for active tab)
   if (handleSidepanelMessage(request)) {
+    console.log("Handled as sidepanel message");
     return;
   }
 
   // Handle WorldShare messages (no need for active tab validation)
   if (handleWorldShareMessage(request)) {
+    console.log("Handled as WorldShare message");
     return;
   }
 
-  // Handle Kinokuniya search (no need for active tab validation)
+  // Handle Kinokuniya search FIRST - before any tab validation
   if (request.command === "openKinokuniyaSearch") {
+    console.log("Handling Kinokuniya search - no tab validation needed");
     try {
       console.log(
         `Background: Opening Kinokuniya search for: ${request.searchTerm}`
@@ -250,13 +257,32 @@ export const handleMessage = async (request, sender, sendResponse) => {
   }
 
   // For all other messages, get active tab and validate
+  console.log("Getting active tab for validation...");
   const activeTab = await getActiveTab();
+  console.log("Active tab result:", activeTab);
+
   if (!activeTab) {
     console.error("No active tab available for message:", request);
     return;
   }
 
-  if (!isAllowedHost(activeTab.url)) {
+  console.log("Active tab URL:", activeTab.url);
+  console.log("Request type/command/action:", {
+    type: request.type,
+    command: request.command,
+    action: request.action,
+    data: request.data,
+  });
+
+  const isKinokuniyaRelated =
+    activeTab.url?.includes("kinokuniya.com") ||
+    request.command?.includes("kinokuniya") ||
+    request.action?.includes("kinokuniya");
+
+  console.log("Is Kinokuniya related:", isKinokuniyaRelated);
+  console.log("Is allowed host:", isAllowedHost(activeTab.url));
+
+  if (!isKinokuniyaRelated && !isAllowedHost(activeTab.url)) {
     console.log("Message ignored - not on allowed host:", activeTab.url);
     return;
   }

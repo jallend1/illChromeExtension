@@ -18,7 +18,8 @@
   "host_permissions": [
     "https://evgmobile.kcls.org/*",
     "https://evgclient.kcls.org/*",
-    "https://kingcountylibrarysystem.share.worldcat.org/*"
+    "https://kingcountylibrarysystem.share.worldcat.org/*",
+    "https://united-states.kinokuniya.com/*"
   ],
   "background": {
     "service_worker": "background.js",

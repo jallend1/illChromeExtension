@@ -16,6 +16,7 @@ const URL_MAP = {
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
+  "kinokuniya.com": { scripts: ["kinokuniya"] },
 };
 
 /**
