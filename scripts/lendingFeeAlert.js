@@ -1,4 +1,5 @@
 (async () => {
+  // TODO: statusModal not actually being used right now
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
@@ -7,7 +8,6 @@
   const extractPatronDataFromStorage = () => {
     chrome.storage.local.get("requestData", (result) => {
       if (!result.requestData) return;
-
       const { patronName } = JSON.parse(result.requestData);
       console.log(patronName);
       const nameField = patronName.split(", ");
