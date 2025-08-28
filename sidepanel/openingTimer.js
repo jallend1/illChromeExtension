@@ -13,6 +13,11 @@ const branchHours = {
   6: { system: 11, bellevue: 11 },
 };
 
+/**
+ * Formats a duration in milliseconds to a human-readable string.
+ * @param {number} ms
+ * @returns {string}
+ */
 function formatTime(ms) {
   const totalSeconds = Math.floor(ms / 1000);
   const hours = Math.floor(totalSeconds / 3600);
@@ -22,7 +27,12 @@ function formatTime(ms) {
     .map((n) => String(n).padStart(2, "0"))
     .join(":");
 }
-
+/**
+ * Updates the countdown display.
+ * @param {string} mainText
+ * @param {string} subText
+ * @param {boolean} isAlert
+ */
 function updateCountdown(mainText, subText = "", isAlert = false) {
   countdownElements.countdownTimerElement.textContent = mainText;
   countdownElements.countdownTextElement.textContent = subText;
@@ -32,6 +42,10 @@ function updateCountdown(mainText, subText = "", isAlert = false) {
   );
 }
 
+/**
+ * Main countdown timer function
+ * @returns {void}
+ */
 function countdownTimer() {
   const now = new Date();
   const { system, bellevue } = branchHours[now.getDay()];
