@@ -9,12 +9,19 @@
 
   const courierStates = [", WA ", ", OR ", ", ID "];
 
+  /**
+   * Highlights courier libraries in the patron information section
+   * @param {Array} courierLibraries
+   */
   async function courierHighlight(courierLibraries) {
     // Checks if patron name matches ILL name formatting
     const isLibrary = (patronLastName) =>
       ["ILL DEPT", "LIBRARY"].includes(patronLastName);
 
-    // Checks if library state is a courier state to avoid false positives
+    /**
+     * Checks if the address field is in a courier state to avoid false positives
+     * @returns {boolean}
+     */
     const isCourierState = () => {
       const addressField = document.querySelector(
         "textarea[id*='patron-address-copy']"
@@ -24,7 +31,11 @@
       );
     };
 
-    // Checks if library name is in courierLibraries array
+    /**
+     * Checks if the given library name is a courier library
+     * @param {string} rawLibraryName
+     * @returns {boolean}
+     */
     const isCourierLibrary = (rawLibraryName) => {
       // Courier list uses UNIV instead of Evergreen's UNIVERSITY
       let isCourier;
@@ -53,7 +64,11 @@
       return isCourier;
     };
 
-    // Initiates processing of library to determine if it is a courier library
+    /**
+     * Processes the patron name to extract relevant information
+     * @param {string} patronName
+     * @returns {boolean}
+     */
     const processName = (patronName) => {
       const [patronLastName, patronLibraryName] = patronName
         .split(", ")
@@ -102,8 +117,9 @@
       }
     });
 
-    // Inserts courier alert into patron page
-
+    /**
+     * Inserts the courier alert into the page
+     */
     const insertCourierAlert = () => {
       const lead = document.querySelector(".lead");
       const courierHighlightExists =
