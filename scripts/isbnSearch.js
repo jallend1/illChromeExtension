@@ -15,11 +15,21 @@ async function isbnSearch() {
     chrome.runtime.getURL("modules/modal.js")
   );
 
+  /**
+   * Builds the search URL for Evergreen
+   * @param {string} query
+   * @returns {string}
+   */
   const buildSearchURL = (query) => {
     const encodedQuery = encodeURIComponent(query); // Encodes the query for URL to deal with those troublesome ampersands
     return `search?org=1&limit=10&query=${encodedQuery}%20&fieldClass=keyword&joinOp=&matchOp=contains&dateOp=is&ridx=122`;
   };
 
+  /**
+   * Extracts fields from the page based on the provided selector
+   * @param {string} selector
+   * @returns {string|null}
+   */
   const extractFields = (selector) => {
     const latestField = document.querySelector(
       `div:not(.yui3-default-hidden) span${selector}:not(div.yui3-default-hidden span)`
