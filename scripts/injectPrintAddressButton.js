@@ -11,6 +11,10 @@
     ".patron-summary-container > .patron-status-color"
   );
 
+  /**
+   * Creates the print button element
+   * @returns {HTMLButtonElement}
+   */
   const createButton = () => {
     const printButton = document.createElement("button");
     printButton.innerText = "Print (ILL Remix)";
@@ -18,6 +22,10 @@
     return printButton;
   };
 
+  /**
+   * Creates the container element for the print button
+   * @returns {HTMLDivElement}
+   */
   const createContainer = () => {
     const container = document.createElement("div");
     const containerStyles = {
@@ -32,6 +40,10 @@
     return container;
   };
 
+  /**
+   * Adds the container with the print button to the DOM
+   * @returns {void}
+   */
   const addContainerToDOM = () => {
     const printButton = createButton();
     const container = createContainer();
