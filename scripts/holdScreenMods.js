@@ -9,12 +9,18 @@
 
   let mainObserver;
 
+  /**
+   * Modifications for the hold screen
+   */
   function holdScreenMods() {
     keyboardCowboy(
       `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`
     );
 
-    // If item has a second patron, automatically populate departmental card barcode
+    /**
+     * If item has a second patron, automatically populate departmental card barcode
+     * @returns {void}
+     */
     const handleSecondPatron = () => {
       statusModal(
         "Second Patron Detected!",
@@ -54,6 +60,11 @@
       });
     };
 
+    /**
+     * Handles mutations in the hold status container
+     * @param {Array} mutationList
+     * @param {MutationObserver} observer
+     */
     const handleHoldStatusMutation = (mutationList, observer) => {
       for (const mutation of mutationList) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
@@ -126,6 +137,12 @@
       }
     };
 
+    /**
+     * Handles the lending fee for a patron
+     * @param {string} fee
+     * @param {string} patronID
+     * @param {string} title
+     */
     const handleFee = (fee, patronID, title) => {
       // Employ a status modal on testing
       sendMessageToBackground(fee, patronID, title);
@@ -144,6 +161,12 @@
   holdScreenMods();
 
   // TODO: Send message to background script with patron barcode to open patron in new tab
+  /**
+   * Sends a message to the background script with patron information
+   * @param {string} fee
+   * @param {string} barcode
+   * @param {string} title
+   */
   const sendMessageToBackground = (fee, barcode, title) => {
     chrome.runtime.sendMessage(
       { action: "retrievePatron", patronBarcode: barcode, fee, title },
@@ -157,6 +180,9 @@
     );
   };
 
+  /**
+   * Creates the edit patron button and appends it to the DOM
+   */
   const createEditPatronButton = () => {
     const searchButton = document.querySelector(
       "button > span.align-middle"
@@ -192,6 +218,10 @@
       return newButton;
     };
 
+    /**
+     * Creates the container div for the edit patron button
+     * @returns {HTMLDivElement}
+     */
     const createContainerDiv = () => {
       const containerDiv = document.createElement("div");
       containerDiv.appendChild(createButton());
@@ -199,6 +229,10 @@
       return containerDiv;
     };
 
+    /**
+     * Creates the span element for the edit patron button
+     * @returns {HTMLSpanElement}
+     */
     const createSpanText = () => {
       const newSpan = document.createElement("span");
       newSpan.classList.add("align-middle");
@@ -209,6 +243,10 @@
     searchButtonDiv.parentElement.appendChild(createContainerDiv());
   };
 
+  /**
+   * Enables or disables the edit patron button
+   * @param {boolean} boolean
+   */
   const isEditDisabled = (boolean) => {
     const editButton = document.querySelector("#edit-patron-button");
     if (editButton) {
@@ -216,6 +254,11 @@
     }
   };
 
+  /**
+   * Compares patron names for discrepancies
+   * @param {string} evgLastNameTextContent
+   * @param {string} requestLastName
+   */
   const comparePatronNames = (evgLastNameTextContent, requestLastName) => {
     // TODO: Add styles to name if they don't match and a warning text
     const evgLastNameArr = evgLastNameTextContent.split(",")[0];
@@ -225,6 +268,9 @@
     console.log(requestLastName.includes(evgLastName));
   };
 
+  /**
+   * Monitors changes to the patron name field
+   */
   const monitorPatronName = () => {
     const h3Elements = document.querySelectorAll("h3");
 
