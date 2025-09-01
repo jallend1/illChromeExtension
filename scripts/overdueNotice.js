@@ -14,6 +14,10 @@ async function overdueNotice() {
   let overdueText = "";
 
   // Extracts ILL titles from page that are overdue (.less-intense-alert class applied to overdue titles)
+  /**
+   * Checks for overdue titles and adds them to the overdueTitles array
+   * @return {void}
+   */
   const checkForOverdueTitles = () => {
     const lessIntenseAlertDivs = document.querySelectorAll(
       ".less-intense-alert"
@@ -28,6 +32,10 @@ async function overdueNotice() {
     });
   };
 
+  /**
+   * Checks for lost titles and adds them to the overdueTitles array
+   * @return {void}
+   */
   const checkForLostTitles = () => {
     const divs = document.querySelectorAll(
       "div.eg-grid-cell.eg-grid-body-cell"
@@ -47,6 +55,10 @@ async function overdueNotice() {
   checkForOverdueTitles();
   checkForLostTitles();
 
+  /**
+   * Determines the appropriate overdue notice text based on the number of overdue titles
+   * @returns {string} The overdue notice text
+   */
   const determineOverdueText = () => {
     if (overdueTitles.length === 0) {
       return `The Interlibrary Loan book "ILLTITLEGOESHERE" is overdue to the library we borrowed it from, and they would like it returned as soon as possible. The King County Library System may be blocked from borrowing from this library system until this item has been returned. We appreciate you returning any overdue interlibrary loan items at your earliest opportunity. This helps ensure that King County Library System will be able to borrow from this library in the future.`;
@@ -83,6 +95,11 @@ Unfortunately, we are not able to issue renewals on interlibrary loan books. If 
 
 Please do not hesitate to reach out to me if you have any questions. And if you have returned this book since the date above? Please accept our sincerest thanks!`;
 
+  /**
+   * Copies the given data to the clipboard and shows a status modal
+   * @param {string} data - The data to copy to the clipboard
+   * @returns {void}
+   */
   async function copyToClipboard(data) {
     try {
       let imgURL = chrome.runtime.getURL("images/kawaii-dinosaur.png");
