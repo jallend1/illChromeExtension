@@ -76,11 +76,20 @@
   };
 
   // -- Utility Functions --
+  /**
+   * Displays a status modal with a specific message type.
+   * @param {string} type
+   */
   const showModal = (type) => {
     const config = CONFIG.messages[type];
     statusModal(config.heading, config.text, config.color, config.image);
   };
 
+  /**
+   * Generates a DOM event of the specified type
+   * @param {string} type
+   * @returns {Event}
+   */
   const generateEvent = (type) => {
     return new Event(type, {
       bubbles: true,
@@ -88,6 +97,11 @@
     });
   };
 
+  /**
+   * Applies a value to an input field and dispatches necessary events
+   * @param {string} selector
+   * @param {string} value
+   */
   const applyInputValues = async (selector, value) => {
     const input = await waitForElementWithInterval(selector);
     if (!input) throw new Error(`Input field ${selector} not found`);
@@ -98,6 +112,13 @@
     }
   };
 
+  /**
+   * Waits for dropdown options to appear and selects the specified options
+   * @param {string} optionText
+   * @param {string} selector
+   * @param {string} inputSelector
+   * @returns {Promise<void>}
+   */
   const waitForOptionsAndSelect = async (
     optionText,
     selector,
@@ -143,6 +164,10 @@
     });
   };
 
+  /**
+   * Fills in the settings that are universal across all accounts
+   * @returns {Promise<void>}
+   */
   const fillUniversalSettings = async () => {
     for (const [selector, value] of Object.entries(CONFIG.textInputs)) {
       await applyInputValues(selector, value);
@@ -150,6 +175,10 @@
   };
 
   // -- Main Function --
+  /**
+   * Updates the address fields on the patron edit screen
+   * @returns {Promise<void>}
+   */
   async function updateAddress() {
     const currentUrl = window.location.href;
     try {
