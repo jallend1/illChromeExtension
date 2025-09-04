@@ -213,6 +213,10 @@ export const handleMessage = async (request, sender, sendResponse) => {
   console.log("=== MESSAGE HANDLER DEBUG ===");
   console.log("Request:", request);
   console.log("Sender:", sender);
+  console.log(
+    "Kinokuniya search command?",
+    request.command === "openKinokuniyaSearch"
+  );
 
   // Handle sidepanel messages first (no need for active tab)
   if (handleSidepanelMessage(request)) {
