@@ -88,7 +88,10 @@
     });
   });
 
-  // Clear the virtual book shelf
+  /**
+   * Clears the virtual book shelf after user confirmation.
+   * @returns {Promise<void>}
+   */
   clearShelfButton.addEventListener("click", () => {
     if (
       confirm(
@@ -143,7 +146,12 @@
   virtualBookShelf.forEach((book) => {
     const libraryState = book.borrowingAddress?.region;
     let libraryName;
-    book.borrowingAddress?.attention ? libraryName = book.borrowingAddress?.attention + " - " + book.borrowingAddress?.line1 : libraryName = book.borrowingAddress?.line1
+    book.borrowingAddress?.attention
+      ? (libraryName =
+          book.borrowingAddress?.attention +
+          " - " +
+          book.borrowingAddress?.line1)
+      : (libraryName = book.borrowingAddress?.line1);
 
     if (!booksByState[libraryState]) {
       booksByState[libraryState] = {};
