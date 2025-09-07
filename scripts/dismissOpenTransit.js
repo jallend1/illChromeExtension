@@ -11,6 +11,10 @@
   let listeningForBarcode = false;
 
   // -- Dismisses open transit modal --
+  /**
+   * Dismisses the "open transit on item" modal if it appears
+   * @returns {Promise<void>}
+   */
   async function dismissOpenTransit() {
     const modal = document.querySelector(".modal-body");
     if (!modal || !modal.textContent.includes("open transit on item")) return;
@@ -23,7 +27,12 @@
     }
   }
 
-  // -- Handles changes to holds field count --
+  /**
+   * Handles changes to holds field count
+   * @param {number} oldValue
+   * @param {number} currentValue
+   * @returns {void}
+   */
   function handleHoldsMutation(oldValue, currentValue) {
     if (currentValue === 0) {
       // If the old value is not zero, set the stored holdCount to the old value (Evergreen has an intermediary state where the value will be 0)
@@ -49,13 +58,22 @@
     }
   }
 
-  // -- Extracts number from the holds field --
+  /**
+   * Extracts the number of holds from a string.
+   * @param {string} str - The string to extract the holds count from.
+   * @returns {number|null} - The extracted holds count, or null if not found.
+   */
+
   function extractHoldsCount(str) {
     const match = str.match(HOLDSREGEX);
     return match ? parseInt(match[1]) : null;
   }
 
-  // -- Mutation Observer callback function --
+  /**
+   * Sets up mutation observers to monitor changes in the holds field and modal dialogs.
+   * Also sets up a keydown listener on the barcode input to trigger holds monitoring.
+   * @returns {void}
+   */
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       // If mutation is childList, check if the added node has a class of "modal-body"
@@ -93,7 +111,11 @@
     });
   });
 
-  // -- Keydown listener on barcode input to listen for holds changes --
+  /**
+   * Sets up a keydown listener on the barcode input field to monitor for Enter key presses.
+   * When Enter is pressed, it sets listeningForBarcode to true.
+   * @returns {void}
+   */
   function monitorBarcodeInput() {
     const barcodeInput = document.querySelector("#barcode-input");
     if (barcodeInput && !barcodeInput.dataset.listenerAdded) {
@@ -106,7 +128,10 @@
     }
   }
 
-  // -- Mutation observer to watch for changes in the holds field --
+  /**
+   * Attaches mutation observers to the holds field to monitor changes in its text content.
+   * @returns {void}
+   */
   const attachMutationObservers = () => {
     const holdsField = document.querySelector("[ngbnavitem='holds'] > a");
     if (holdsField && !holdsField.dataset.observerAdded) {
