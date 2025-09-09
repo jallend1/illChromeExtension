@@ -124,7 +124,6 @@
   });
 
   const virtualBookShelf = await getVirtualShelf();
-  console.log("Virtual Book Shelf:", virtualBookShelf);
 
   virtualShelfContainer.innerHTML = ""; // Clear loading state
   if (!virtualBookShelf || virtualBookShelf.length === 0) {
