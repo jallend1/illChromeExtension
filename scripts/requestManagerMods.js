@@ -54,6 +54,9 @@
       });
     };
 
+    /**
+     * Watches for the addition of a modal element.
+     */
     function watchForModal() {
       modalObserver = new MutationObserver((mutationsList, observer) => {
         highlightProfileTypes();
@@ -160,6 +163,10 @@
       modalObserver.observe(targetNode, config);
     }
 
+    /**
+     * Watches for the removal of a modal element.
+     * @param {*} modal - The modal element to watch for removal.
+     */
     function watchForModalRemoval(modal) {
       removalObserver = new MutationObserver((mutationsList, observer) => {
         if (!document.body.contains(modal)) {
