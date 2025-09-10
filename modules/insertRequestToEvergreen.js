@@ -1,5 +1,12 @@
 // Description: Inserts request data copied from WorldShare into Evergreen ILL form if it's detected in local storage
 
+/**
+ * Updates an input field's value and triggers an input event.
+ * @param {string} selector - The CSS selector for the input field.
+ * @param {*} value - The value to set for the input field.
+ * @param {string} prefix - An optional prefix to prepend to the value.
+ * @returns {void}
+ */
 export const updateInputField = (selector, value, prefix = "") => {
   const inputField = document.querySelector(selector);
   if (!inputField) {
@@ -14,6 +21,10 @@ export const updateInputField = (selector, value, prefix = "") => {
   inputField.dispatchEvent(event);
 };
 
+/**
+ * Inserts request data into the Evergreen ILL form.
+ * @returns {Promise<void>}
+ */
 export async function insertRequestToEvergreen() {
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
@@ -24,6 +35,9 @@ export async function insertRequestToEvergreen() {
 
   // TODO: Patron name stored in localStorage but not used in this function yet
   // Use to 1) Verify patron name on Evergreen screen 2) Add patron pickup location
+  /**
+   * Inserts the request data into the Evergreen ILL form.
+   */
   function pasteToEvergreen() {
     let heading = "Something went wrong!";
     let message =
@@ -31,6 +45,11 @@ export async function insertRequestToEvergreen() {
     const imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
     const headerColor = "#e85e6a";
 
+    /**
+     * Updates the patron address input field with the provided address string.
+     * @param {string} addressString - The address string to insert into the input field.
+     * @returns {void}
+     */
     const updatePatronAddress = (addressString) => {
       const inputField = document.querySelector("textarea");
       if (!inputField) {
