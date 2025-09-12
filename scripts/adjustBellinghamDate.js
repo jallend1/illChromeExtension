@@ -1,3 +1,4 @@
+// TODO: Expand to adjust due date to 10 weeks for all of Alaska libraries
 (async () => {
   const { waitForElementWithInterval, createMiniModal } = await import(
     chrome.runtime.getURL("modules/utils.js")
