@@ -14,7 +14,10 @@ const {
 const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
   await import(chrome.runtime.getURL("modules/constants.js"));
 
-// Extract borrowing address elements
+/**
+ * Extracts the borrowing address elements from the page.
+ * @returns {Promise<Object>} - An object containing the borrowing address elements
+ */
 const extractBorrowingAddressElements = async () => {
   const elements = {};
   for (const [key, selector] of Object.entries(borrowingAddressSelectors)) {
@@ -25,7 +28,10 @@ const extractBorrowingAddressElements = async () => {
   return elements;
 };
 
-// Retrieve the existing virtualBookShelf from local storage or initialize it
+/**
+ * Retrieves the virtual bookshelf from Chrome's local storage.
+ * @returns {Promise<Array>} - An array of books in the virtual bookshelf
+ */
 const getVirtualBookShelf = async () => {
   const storedBookshelf = await new Promise((resolve) => {
     chrome.storage.local.get("virtualBookShelf", (result) => {
@@ -35,6 +41,10 @@ const getVirtualBookShelf = async () => {
   return storedBookshelf;
 };
 
+/**
+ * Adds a book to the virtual bookshelf in Chrome's local storage.
+ * @param {*} book - The book object to add to the virtual bookshelf
+ */
 const addBookToVirtualBookShelf = async (book) => {
   const virtualBookShelf = await getVirtualBookShelf();
   virtualBookShelf.push(book);
@@ -49,6 +59,10 @@ const addBookToVirtualBookShelf = async (book) => {
   console.log("Current Virtual Bookshelf:", virtualBookShelf);
 };
 
+/**
+ * Compiles the address data from the borrowing address elements.
+ * @returns {Promise<Object>} - An object containing the compiled address data
+ */
 const compileAddressData = async () => {
   const borrowingAddressElements = await extractBorrowingAddressElements();
   // console.log("Borrowing Address Elements:", borrowingAddressElements);
@@ -63,6 +77,11 @@ const compileAddressData = async () => {
   return addressData;
 };
 
+/**
+ * Extracts book information from the DOM based on the provided active selectors.
+ * @param {*} activeSelectors - The active selectors to use for extracting book information
+ * @returns {Promise<Object>} - An object containing the extracted book information
+ */
 const extractBookFromDOM = async (activeSelectors) => {
   const bookObject = {
     title: "",
@@ -85,6 +104,10 @@ const extractBookFromDOM = async (activeSelectors) => {
   return bookObject;
 };
 
+/**
+ * Handles the click event for adding a book to the virtual bookshelf.
+ * @returns {Promise<void>}
+ */
 const virtualBookShelfClick = async () => {
   const isLendingRequest = await isLendingRequestPage();
   if (isLendingRequest) {
@@ -104,7 +127,10 @@ const virtualBookShelfClick = async () => {
   }
 };
 
-// Check if current library already exists in shelf
+/**
+ * Checks if the current library already exists in the virtual bookshelf.
+ * @returns {Promise<boolean>} - True if the library already exists in the virtual bookshelf, false otherwise
+ */
 export const doesLibraryAlreadyExist = async () => {
   const addressData = await compileAddressData();
   const virtualBookShelf = await getVirtualBookShelf();
@@ -117,6 +143,10 @@ export const doesLibraryAlreadyExist = async () => {
   return exists;
 };
 
+/**
+ * Creates and appends the "Add to Virtual Bookshelf" button to the sidebar.
+ * @returns {Promise<void>}
+ */
 export const createAddToBookshelfButton = async () => {
   const parentElement = await waitForElementWithInterval("#sidebar-nd > div");
   if (!document.querySelector("#add-to-bookshelf-button")) {
