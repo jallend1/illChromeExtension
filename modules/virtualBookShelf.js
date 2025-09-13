@@ -122,6 +122,13 @@ const virtualBookShelfClick = async () => {
   if (book.title) {
     await addBookToVirtualBookShelf(book);
     console.log("Book added to virtual bookshelf:", book);
+    // Close the request after adding to the bookshelf
+    const closeRequestButton = document.querySelector(
+      ".card-panel-current > .card-panel-delete > .delete-panel-icon"
+    );
+    if (closeRequestButton) {
+      closeRequestButton.click();
+    }
   } else {
     console.error("No book title found. Cannot add to virtual bookshelf.");
   }
