@@ -47,6 +47,24 @@ const getVirtualBookShelf = async () => {
  */
 const addBookToVirtualBookShelf = async (book) => {
   const virtualBookShelf = await getVirtualBookShelf();
+  // Check for duplicates based on title and borrowing address
+  const duplicate = virtualBookShelf.find(
+    (existingBook) =>
+      existingBook.title === book.title &&
+      existingBook.borrowingAddress.postal === book.borrowingAddress.postal &&
+      existingBook.borrowingAddress.line1 === book.borrowingAddress.line1 &&
+      existingBook.borrowingAddress.attention ===
+        book.borrowingAddress.attention
+  );
+  console.log("Duplicate check:", duplicate);
+  if (duplicate) {
+    createMiniModal(
+      `The book "${book.title}" is already in your Virtual Bookshelf.`,
+      true,
+      2000
+    );
+    return;
+  }
   virtualBookShelf.push(book);
   await new Promise((resolve) => {
     chrome.storage.local.set({ virtualBookShelf }, resolve);
