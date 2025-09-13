@@ -1,7 +1,7 @@
 // TODO: kinokuniya.js does NOT get fired??
 import { executeScript } from "./modules/scriptExecutor.js";
 
-const longDueDateIds = [2372046, 2089608];
+const longDueDateIds = [2372046, 2089608, 2755234, 4465480, 2645812];
 const isLongCheckout = (url) => longDueDateIds.some((id) => url.includes(id));
 
 // Mapping URL patterns to their associated scripts and styles
