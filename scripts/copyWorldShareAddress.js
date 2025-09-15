@@ -188,6 +188,7 @@
     }
   }
 
+  // TODO: Button is appearing on pages where it isn't actually visible?
   const autoReturnILL = () => {
     const returnButtons = document.querySelectorAll(
       "button.returned-button.button-return"
