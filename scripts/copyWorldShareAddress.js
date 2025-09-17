@@ -152,6 +152,7 @@
       if (printLabel) {
         // Prints the Dymo label and indicates as much in status modal
         if (dymoFunctions.isSuitableToPrint(addressString)) {
+          console.log("Calling printDymoLabel with address...");
           dymoFunctions.printDymoLabel(addressString);
           statusModal(
             "Printing label!",

@@ -42,6 +42,7 @@ export const dymoFunctions = {
    * @returns {string} The generated XML.
    */
   generateLabelXML: (address) => {
+    console.log("Generating label XML...");
     return `
               <DieCutLabel Version="8.0" Units="twips">
                 <PaperOrientation>Landscape</PaperOrientation>
@@ -84,6 +85,7 @@ export const dymoFunctions = {
    * @returns {string} The sanitized string.
    */
   sanitizeForXML: (str) => {
+    console.log("Sanitizing string for XML...");
     return str
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -94,6 +96,7 @@ export const dymoFunctions = {
   },
   // TODO: Implement logic to resize font size to fit label-- Currently not used anywhere
   resizeToFitLabel: (address, boundsWidth, boundsHeight) => {
+    console.log("Resizing address to fit label...");
     let fontSize = 12; // Starting font size -- Too small?
     const addressLines = address.split("\n");
     const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
@@ -104,6 +107,7 @@ export const dymoFunctions = {
    * @returns {boolean} True if the address is suitable, false otherwise.
    */
   isSuitableToPrint: (address) => {
+    console.log("Checking if address is suitable to print...");
     const addressLines = address.split("\n");
     // Address requires name, street address, and city/state/zip
     if (addressLines.length < 3) {
@@ -125,6 +129,7 @@ export const dymoFunctions = {
    * @param {string} address - The address to print on the label.
    */
   printDymoLabel: async (address) => {
+    console.log("Printing Dymo label from inside dymoFunctions...");
     const { statusModal } = await import(
       chrome.runtime.getURL("modules/modal.js")
     );
