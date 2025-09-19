@@ -8,13 +8,19 @@ async function loadFrequentLending() {
   const { buttonStyles, hoverStyles, waitForElementWithInterval } =
     await import(chrome.runtime.getURL("modules/utils.js"));
 
-  // Check if on Evergreen page
+  /**
+   * Checks if the current page is an Evergreen client page
+   * @returns {boolean} True if the current page is an Evergreen client page
+   */
   const isEvergreenPage = () => {
     const url = window.location.href;
     return url.includes("evgclient") || url.includes("evgmobile");
   };
 
-  // Inject print styles
+  /**
+   * Injects styles to hide the frequent libraries section when printing
+   * @returns {void}
+   */
   const injectPrintStyles = () => {
     if (document.getElementById("frequentLibrariesPrintStyle")) return;
     const style = document.createElement("style");
@@ -23,7 +29,11 @@ async function loadFrequentLending() {
     document.head.appendChild(style);
   };
 
-  // Handle barcode input
+  /**
+   * Handles inputting the barcode into the appropriate field or copying to clipboard
+   * @param {string} value - The barcode value to input or copy
+   * @returns {void}
+   */
   const handleBarcodeInput = (value) => {
     const barcodeInput =
       document.querySelector("#patron-barcode") ||
@@ -54,7 +64,11 @@ async function loadFrequentLending() {
     }
   };
 
-  // Create library button
+  /**
+   * Creates a button for the specified library and appends it to the container
+   * @param {string} library - The name of the library
+   * @param {HTMLElement} container - The container to append the button to
+   */
   const createLibraryButton = (library, container) => {
     const button = document.createElement("button");
     button.textContent = library;
@@ -72,7 +86,11 @@ async function loadFrequentLending() {
     container.appendChild(button);
   };
 
-  // Create close button
+  /**
+   * Creates a close button for the frequent libraries section
+   * @param {HTMLElement} container - The container to append the close button to
+   * @return {void}
+   */
   const createCloseButton = (container) => {
     const closeButton = document.createElement("button");
     closeButton.textContent = "X";
