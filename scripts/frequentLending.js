@@ -116,7 +116,10 @@ async function loadFrequentLending() {
     container.appendChild(closeButton);
   };
 
-  // Main setup function
+  /**
+   * Sets up the frequent lending section on the page
+   * @returns {Promise<void>} A promise that resolves when the setup is complete
+   */
   const setupFrequentLending = async () => {
     if (!isEvergreenPage() || document.querySelector("#frequentLibraries"))
       return;
