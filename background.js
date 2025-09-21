@@ -107,6 +107,11 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 
   // Handle URL actions
   urlActions.forEach(({ match, action }) => {
+    console.log("URL from background.js: ", details.url);
+    if (details.url.includes("kinokuniya.com")) {
+      console.log("Matched kinokuniya.com");
+      console.log(match, action);
+    }
     if (match(details.url)) {
       action(details.tabId);
     }
