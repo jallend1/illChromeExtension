@@ -20,6 +20,7 @@ PowILL Tools is a browser extension to help manage processing ILL requests. It's
 
 - Copies the address from the WorldShare request into the clipboard for pasting into Dymo.
 - Identifies libraries on the courier, and includes that information prominently on the ILL return receipt.
+- Automatically returns request
 - Coming Soon: Alert when checking out or returning an item to a frequently used library to facilitate bundling.
 
 ### User Accounts
