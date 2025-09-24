@@ -1,3 +1,4 @@
+// Selectors for various DOM elements in the side panel
 export const elements = {
   collapseToggle: document.querySelectorAll("img.collapsible"),
   illActions: document.querySelectorAll(".ill-actions"),
@@ -11,6 +12,7 @@ export const elements = {
   importMailroomData: document.querySelector("#import-mailroom-data"),
 };
 
+// Storage keys and their corresponding elements
 export const storageKeys = [
   { key: "autoReceiveRequest", element: elements.autoReceiveRequestButton },
   { key: "lendingMode", element: elements.lendingMode },
@@ -20,10 +22,13 @@ export const storageKeys = [
   { key: "mailData", element: elements.importMailroomData },
 ];
 
+// Scripts that do not require a callback function
 export const SCRIPTS_WITHOUT_CALLBACKS = [
   "isbnSearch",
   "sendPatronToWorldShare",
 ];
+
+// URL patterns and button groups for different systems
 export const URL_PATTERNS = {
   EVERGREEN: ".kcls.org/eg2/en-US/staff/",
   WORLDSHARE: "kingcountylibrarysystem.share.worldcat.org",
@@ -34,11 +39,13 @@ export const BUTTON_GROUPS = {
   WORLDSHARE: ["copyFromOCLC", "copyWorldShareAddress", "isbnSearch"],
 };
 
+// Clock constants
 export const CONFIG = {
   ANIMATION_DELAY: 300,
   UPDATE_INTERVAL: 1000,
 };
 
+// Message types for communication
 export const MESSAGE_TYPES = {
   TAB_URL_UPDATED: "tab-url-updated",
   STORAGE_UPDATED: "storage-updated",
