@@ -44,7 +44,10 @@ const executeActions = (tabId, config) => {
  */
 export const urlActions = [
   ...Object.entries(URL_MAP).map(([pattern, config]) => ({
-    match: (url) => url.includes(pattern),
+    match: (url) => {
+      console.log("Handling URL: ", url);
+      return url.includes(pattern);
+    },
     action: (tabId) => executeActions(tabId, config),
   })),
   // Special case for libraries with long checkout requirements
