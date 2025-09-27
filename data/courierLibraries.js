@@ -209,7 +209,6 @@ export const courierLibraries = [
   "The Dalles-Wasco County Library",
   "The Evergreen State College",
   "Tigard Public Library",
-  "Tillamook Bay Community College",
   "Tillamook County Library",
   "Timberland Regional Library",
   "Toledo Public Library",
