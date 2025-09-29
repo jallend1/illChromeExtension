@@ -261,4 +261,5 @@ export const courierLibraries = [
   "Willamina Public Library",
   "Wilsonville Public Library",
   "Woodburn Public Library",
+  "Yakima Valley Libraries",
 ];
