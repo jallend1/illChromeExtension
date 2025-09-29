@@ -31,7 +31,7 @@ body {
   background: #fff;
   color: #000;
   background: var(--body-background);
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 h1 {
