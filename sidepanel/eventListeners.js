@@ -95,6 +95,7 @@ const setupButtonListeners = () => {
 
 const setupBookPricingListeners = () => {
   const checkBookPriceBtn = document.getElementById("checkBookPrice");
+  const bulkPriceCheckBtn = document.getElementById("bulkPriceCheck");
   if (checkBookPriceBtn) {
     checkBookPriceBtn.addEventListener("click", async () => {
       const searchTerm = prompt("Enter ISBN, title, or author to search:");
@@ -118,6 +119,11 @@ const setupBookPricingListeners = () => {
         checkBookPriceBtn.disabled = false;
         checkBookPriceBtn.textContent = "Check Book Price";
       }
+    });
+  }
+  if (bulkPriceCheckBtn) {
+    bulkPriceCheckBtn.addEventListener("click", async () => {
+      alert("Nothing yet, pal!");
     });
   }
 };
