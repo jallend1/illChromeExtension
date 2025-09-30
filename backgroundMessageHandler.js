@@ -238,7 +238,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
         `Background: Opening Kinokuniya search for: ${request.searchTerm}`
       );
 
-      // Build search URL using the same logic as your Python script
+      // Build search URL
       const cleanTerm = String(request.searchTerm)
         .replace(/-/g, "")
         .replace(/\s+/g, "+");
@@ -247,13 +247,20 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
       console.log(`Opening URL: ${searchUrl}`);
 
-      // Create a new tab with the search URL
-      await chrome.tabs.create({
+      // Create a new tab with the search URL and capture the tab object
+      const newTab = await chrome.tabs.create({
         url: searchUrl,
         active: true, // Make it the active tab so user can see results
       });
 
       console.log("Successfully opened Kinokuniya search tab");
+      // Wait a moment to ensure the tab is fully loaded
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Once loaded, inject content script checkKinokuniya
+      chrome.scripting.executeScript({
+        target: { tabId: newTab.id },
+        files: ["./scripts/checkKinokuniya.js"],
+      });
     } catch (error) {
       console.error("Error opening Kinokuniya search:", error);
     }
