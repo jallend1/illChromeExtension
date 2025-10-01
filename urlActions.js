@@ -19,6 +19,9 @@ const URL_MAP = {
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
+  "kinokuniya.com/bw/": {
+    scripts: ["extractKinokuniya"],
+  },
   "kinokuniya.com": { scripts: ["kinokuniya"] },
 };
 
@@ -45,8 +48,10 @@ const executeActions = (tabId, config) => {
 export const urlActions = [
   ...Object.entries(URL_MAP).map(([pattern, config]) => ({
     match: (url) => {
-      console.log("Handling URL: ", url);
-      return url.includes(pattern);
+      console.log(`Checking URL: ${url} against pattern: ${pattern}`);
+      const matches = url.includes(pattern);
+      console.log(`Match result: ${matches}`);
+      return matches;
     },
     action: (tabId) => executeActions(tabId, config),
   })),

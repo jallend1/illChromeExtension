@@ -20,11 +20,44 @@ export const getBaseURL = async (urlSuffix) => {
  */
 
 export const isAllowedHost = (url) => {
+  // const manifest = chrome.runtime.getManifest();
+  // const allowedHosts = manifest.host_permissions || [];
+  // return allowedHosts.some((pattern) => {
+  //   const urlPattern = new URLPattern(pattern);
+  //   return urlPattern.test(url);
+  // });
+  // Trying it without URLPattern cuz things ain't working quite right
   const manifest = chrome.runtime.getManifest();
   const allowedHosts = manifest.host_permissions || [];
+
+  console.log("Checking URL:", url);
+  console.log("Against host permissions:", allowedHosts);
+
   return allowedHosts.some((pattern) => {
-    const urlPattern = new URLPattern(pattern);
-    return urlPattern.test(url);
+    try {
+      // Convert Chrome extension pattern to regex
+      // Replace * with .* and escape special regex characters
+      const regexPattern = pattern
+        .replace(/\./g, "\\.") // Escape dots
+        .replace(/\*/g, ".*"); // Replace * with .*
+
+      const regex = new RegExp("^" + regexPattern + "$");
+      const matches = regex.test(url);
+
+      console.log(
+        `Pattern: ${pattern} -> Regex: ${regexPattern} -> Match: ${matches}`
+      );
+
+      return matches;
+    } catch (error) {
+      console.error("Error testing URL pattern:", error);
+      // Fallback to simple string matching
+      const simpleMatch = url.includes(
+        pattern.replace("https://", "").replace("/*", "")
+      );
+      console.log(`Fallback match for ${pattern}: ${simpleMatch}`);
+      return simpleMatch;
+    }
   });
 };
 

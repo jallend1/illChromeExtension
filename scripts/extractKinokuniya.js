@@ -1,6 +1,7 @@
 // TODO: Inject this onto URLs that match: https://united-states.kinokuniya.com/bw/****
 
 (async () => {
+  console.log("Extracting Kinokuniya data");
   const extractISBN = () => {
     const tableData = document.querySelector("bookData");
     // Find the th that has the textContent of "ISBN"
@@ -41,4 +42,6 @@
   const isbn = extractISBN();
   const price = extractPrice();
   const url = window.location.href;
+
+  console.log({ isbn, price, url });
 })();

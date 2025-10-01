@@ -1,5 +1,6 @@
 import { isAllowedHost } from "../background-utils.js";
 import { injectDymoFramework } from "./dymoFunctions.js";
+import { urlActions } from "../urlActions.js";
 
 /**
  * Handles patron page specific injections
@@ -17,6 +18,24 @@ const handlePatronPage = (tabId, url, executeScript) => {
     executeScript(tabId, "courierHighlight");
     executeScript(tabId, "injectPrintAddressButton");
   }
+};
+
+/**
+ * Handles URL actions for all supported sites
+ * @param {number} tabId
+ * @param {string} url
+ */
+const handleUrlActions = (tabId, url) => {
+  console.log("TabEventHandlers - Processing URL actions for:", url);
+  urlActions.forEach(({ match, action }) => {
+    if (match(url)) {
+      console.log(
+        "TabEventHandlers - Matched URL pattern, executing action for:",
+        url
+      );
+      action(tabId);
+    }
+  });
 };
 
 /**
@@ -51,7 +70,6 @@ const handleKeyboardCowboy = (tabId, url) => {
  * @param {Function} executeScript
  * @param {Function} sendTabUrlUpdate
  */
-// In modules/tabEventHandlers.js - update the handleTabUpdate function call
 export const handleTabUpdate = (
   tabId,
   changeInfo,
@@ -60,19 +78,36 @@ export const handleTabUpdate = (
   executeScript,
   sendTabUrlUpdate
 ) => {
-  if (!isAllowedHost(tab.url)) return;
-  if (arePassiveToolsActive === false) return;
+  console.log("TabEventHandlers - Tab update:", {
+    url: tab.url,
+    status: changeInfo.status,
+    arePassiveToolsActive,
+  });
+
+  if (!isAllowedHost(tab.url)) {
+    console.log("TabEventHandlers - URL not allowed:", tab.url);
+    return;
+  }
+
+  if (arePassiveToolsActive === false) {
+    console.log("TabEventHandlers - Passive tools not active");
+    return;
+  }
 
   if (changeInfo.status === "complete") {
+    console.log("TabEventHandlers - Page load complete for:", tab.url);
+
     // Handle sidepanel URL updates
     if (tab.active) {
-      // Convert tab object to details format
       sendTabUrlUpdate({
         tabId: tab.id,
         url: tab.url,
         windowId: tab.windowId,
       });
     }
+
+    // Handle URL actions - THIS IS THE KEY ADDITION
+    handleUrlActions(tabId, tab.url);
 
     // Handle patron-specific injections (not covered by urlActions)
     handlePatronPage(tabId, tab.url, executeScript);
