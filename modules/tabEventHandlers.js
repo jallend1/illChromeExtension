@@ -106,7 +106,7 @@ export const handleTabUpdate = (
       });
     }
 
-    // Handle URL actions - THIS IS THE KEY ADDITION
+    // Handle URL actions
     handleUrlActions(tabId, tab.url);
 
     // Handle patron-specific injections (not covered by urlActions)

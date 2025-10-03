@@ -121,8 +121,11 @@ async function loadFrequentLending() {
    * @returns {Promise<void>} A promise that resolves when the setup is complete
    */
   const setupFrequentLending = async () => {
-    if (!isEvergreenPage() || document.querySelector("#frequentLibraries"))
+    // Check if script has already run using data attribute
+    if (!isEvergreenPage() || document.body.dataset.frequentLendingLoaded)
       return;
+
+    document.body.dataset.frequentLendingLoaded = "true";
 
     const navBar = await waitForElementWithInterval("eg-staff-nav-bar");
     if (!navBar) return;
