@@ -184,6 +184,9 @@
    * Creates the edit patron button and appends it to the DOM
    */
   const createEditPatronButton = () => {
+    if (document.body.dataset.editPatronButtonCreated) return;
+    document.body.dataset.editPatronButtonCreated = "true";
+
     const searchButton = document.querySelector(
       "button > span.align-middle"
     ).parentElement;
