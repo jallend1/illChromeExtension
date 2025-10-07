@@ -209,8 +209,20 @@
     }
   };
 
+  /**
+   * Checks if the current page is an Evergreen client page
+   * @returns {boolean} True if the current page is an Evergreen client page
+   */
+  const isEvergreenPage = () => {
+    const url = window.location.href;
+    return url.includes("evgclient") || url.includes("evgmobile");
+  };
+
   // -- Main Function --
   async function createILLPageMods() {
+    if (!isEvergreenPage() || document.body.dataset.createILLPageMods) return;
+
+    document.body.dataset.createILLPageMods = "true";
     const checkForForm = setInterval(async () => {
       const parentILLForm = document.querySelector(".form-validated");
       if (parentILLForm) {
