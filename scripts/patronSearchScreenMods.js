@@ -73,13 +73,20 @@
     updateProfileGroupFilter();
   };
 
-  const observer = new MutationObserver(() => {
-    insertCheckbox();
-  });
+  // TODO: Disabled for now since it's causing some issues :(
+  // const observer = new MutationObserver(() => {
+  //   if (window.location.href.includes("staff/circ/patron/search")) {
+  //     insertCheckbox();
+  //   }
+  // });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-  insertCheckbox();
+  // observer.observe(document.body, {
+  //   childList: true,
+  //   subtree: true,
+  // });
+
+  // // TODO: Was being run on incorrect page...Feel like this check shouldn't be necessary...and yet
+  // if (window.location.href.includes("staff/circ/patron/search")) {
+  //   insertCheckbox();
+  // }
 })();
