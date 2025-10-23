@@ -13,7 +13,10 @@
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.id = "ill-patron-type-checkbox";
-    checkbox.checked = true;
+    checkbox.checked = false;
+    checkbox.addEventListener("click", () => {
+      updateProfileGroupFilter();
+    });
 
     const label = document.createElement("label");
     label.htmlFor = checkbox.id;
@@ -26,22 +29,33 @@
   };
 
   const updateProfileGroupFilter = () => {
-    const profileGroupMenu = document.querySelector(
-      'input[placeholder="Profile Group"]'
-    );
-    if (profileGroupMenu.value === "ILL") return;
-    profileGroupMenu.click();
-    // Set a small timeout to allow the dropdown to render
-    setTimeout(() => {
-      const dropdownOption = Array.from(
-        document.querySelectorAll("button.dropdown-item")
-      ).find((item) => item.innerText.trim() === "ILL");
-      if (dropdownOption) {
-        dropdownOption.click();
+    const checkbox = document.querySelector("#ill-patron-type-checkbox");
+    // Reset the search filters if the checkbox is unchecked
+    if (!checkbox.checked) {
+      const resetButton = document.querySelector("button.btn.btn-warning");
+      if (resetButton) {
+        resetButton.click();
       }
-      clearTimeout(dropdownTimeout);
-    }, 100);
-    profileGroupMenu.dispatchEvent(new Event("change", { bubbles: true }));
+      return;
+    }
+    // Set the Profile Group filter to ILL if the checkbox is checked
+    else {
+      const profileGroupMenu = document.querySelector(
+        'input[placeholder="Profile Group"]'
+      );
+      if (profileGroupMenu.value === "ILL") return;
+      profileGroupMenu.click();
+      // Sets short timeout to allow the dropdown to render
+      setTimeout(() => {
+        const dropdownOption = Array.from(
+          document.querySelectorAll("button.dropdown-item")
+        ).find((item) => item.innerText.trim() === "ILL");
+        if (dropdownOption) {
+          dropdownOption.click();
+        }
+      }, 100);
+      profileGroupMenu.dispatchEvent(new Event("change", { bubbles: true }));
+    }
   };
 
   const insertCheckbox = () => {
