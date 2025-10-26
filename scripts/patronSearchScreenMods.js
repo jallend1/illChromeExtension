@@ -1,13 +1,10 @@
 // Adds button to patron search screen to limit search to only patron type of "Interlibrary Loan"
 (async () => {
-  console.log("patronSearchScreenMods script loaded");
-
-  // More robust duplicate prevention
+  // More robust duplicate prevention because clearly it needs it for some reason
   if (
     document.querySelector("#ill-patron-type-checkbox-div") ||
     document.body.dataset.patronSearchModsLoaded
   ) {
-    console.log("Script already executed or checkbox already exists");
     return;
   }
   document.body.dataset.patronSearchModsLoaded = "true";
@@ -15,16 +12,19 @@
   const createPatronTypeCheckbox = async () => {
     return new Promise((resolve) => {
       chrome.storage.local.get("illCheckboxStatus", (data) => {
-        const isChecked = data.illCheckboxStatus !== false; // Default to true
+        const isChecked = data.illCheckboxStatus !== false; // Defaults to checked
 
         const checkboxDiv = document.createElement("div");
         checkboxDiv.id = "ill-patron-type-checkbox-div";
-        checkboxDiv.style.margin = "10px";
-        checkboxDiv.style.display = "inline-flex";
-        checkboxDiv.style.alignItems = "center";
-        checkboxDiv.style.gap = "5px";
-        checkboxDiv.style.width = "100%";
-        checkboxDiv.style.justifyContent = "flex-end";
+
+        Object.assign(checkboxDiv.style, {
+          margin: "10px",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "5px",
+          width: "100%",
+          justifyContent: "flex-end",
+        });
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -90,13 +90,11 @@
 
     // Additional check to prevent duplicates
     if (document.querySelector("#ill-patron-type-checkbox-div")) {
-      console.log("Checkbox already exists, skipping insertion");
       return;
     }
 
     const patronSearchElement = document.querySelector("eg-patron-search");
     if (patronSearchElement) {
-      console.log("Creating checkbox");
       const checkboxDiv = await createPatronTypeCheckbox();
       patronSearchElement.parentNode.insertBefore(
         checkboxDiv,
@@ -110,6 +108,7 @@
 
   // Wait for page to load, then insert checkbox
   if (document.readyState === "loading") {
+    console.log("Waiting for DOMContentLoaded to insert checkbox");
     document.addEventListener("DOMContentLoaded", insertCheckbox);
   } else {
     insertCheckbox();
@@ -119,7 +118,7 @@
   let observerTimeout;
   const observer = new MutationObserver(() => {
     if (window.location.href.includes("staff/circ/patron/search")) {
-      // Debounce the calls to prevent multiple rapid executions
+      // Clear timeout to prevent multiple executions
       clearTimeout(observerTimeout);
       observerTimeout = setTimeout(() => {
         insertCheckbox();
