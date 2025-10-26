@@ -137,7 +137,7 @@ const handleCommandMessage = async (request, activeTab) => {
  * @param {Function} sendResponse
  */
 const handleActionMessage = async (request, activeTab, sendResponse) => {
-  if (request.action === "editPatron") {
+  if (request.action === "editPatron" || request.action == "retrieveOnly") {
     // Store patron barcode in local storage
     chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
       console.log("Patron barcode stored");

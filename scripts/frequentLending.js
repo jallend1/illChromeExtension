@@ -41,13 +41,31 @@ async function loadFrequentLending() {
     const isSearchScreen = document.querySelector("#barcode-search-input");
 
     if (!barcodeInput) {
-      navigator.clipboard.writeText(value);
-      statusModal(
-        "Copied to clipboard!",
-        "We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.",
-        "#4CAF50",
-        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      // TODO: Either delete, or add a toggle to the menu bar to allow copying instead of opening a new tab
+      // Copies to clipboard if no input field is found
+      // navigator.clipboard.writeText(value);
+      // statusModal(
+      //   "Copied to clipboard!",
+      //   "We didn't find anywhere to insert the patron barcode, so we copied it to your clipboard.",
+      //   "#4CAF50",
+      //   chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      // );
+      // Store the current patron barcode in local storage
+
+      // Opens a new tab and retrieves the patron
+      const currentPatron = value;
+      chrome.storage.local.set({ patronToEdit: currentPatron });
+      chrome.runtime.sendMessage(
+        { action: "editPatron", patronBarcode: currentPatron },
+        (response) => {
+          if (response.success) {
+            console.log("Patron info retrieved successfully:", response.data);
+          } else {
+            console.error("Failed to retrieve patron info:", response.error);
+          }
+        }
       );
+
       return;
     }
 
