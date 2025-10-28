@@ -10,6 +10,7 @@ function searchResults() {
   // Either highlights the search field div red if it's an ISBN search, or the default if not
   function updateSearchResultsDiv() {
     const searchResultsDiv = document.getElementById("staffcat-search-form");
+    if (!searchResultsDiv) return;
     isISBNSearch()
       ? (searchResultsDiv.style.backgroundColor = "#f7f7f7")
       : (searchResultsDiv.style.backgroundColor = "#ffeaea");
