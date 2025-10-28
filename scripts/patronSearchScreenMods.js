@@ -54,10 +54,13 @@
     const checkbox = document.querySelector("#ill-patron-type-checkbox");
     if (!checkbox) return;
 
-    // Reset the search filters if the checkbox is unchecked
     if (!checkbox.checked) {
       const resetButton = document.querySelector("button.btn.btn-warning");
       if (resetButton) {
+        // Prevent event bubbling cuz Evergreen is behaving a bit weird?
+        resetButton.addEventListener("click", (e) => e.stopPropagation(), {
+          once: true,
+        });
         resetButton.click();
       }
       return;
@@ -126,8 +129,10 @@
     }
   });
 
-  observer.observe(document.body, {
+  const patronSearchContainer =
+    document.querySelector("eg-patron-search") || document.body;
+  observer.observe(patronSearchContainer, {
     childList: true,
-    subtree: true,
+    subtree: false, // Don't watch deeply nested changes because might be causing a conflict with Evergreen itself?
   });
 })();
