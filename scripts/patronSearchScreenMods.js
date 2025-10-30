@@ -33,7 +33,15 @@
         checkbox.addEventListener("change", () => {
           // Save the state to storage
           chrome.storage.local.set({ illCheckboxStatus: checkbox.checked });
-          updateProfileGroupFilter();
+          if (!checkbox.checked) {
+            // If unchecked, reset the Profile Group filter
+            const resetButton = document.querySelector(
+              "button.btn.btn-warning"
+            );
+            if (resetButton) resetButton.click();
+          } else {
+            updateProfileGroupFilter();
+          }
         });
 
         const label = document.createElement("label");
@@ -52,19 +60,7 @@
 
   const updateProfileGroupFilter = () => {
     const checkbox = document.querySelector("#ill-patron-type-checkbox");
-    if (!checkbox) return;
-
-    if (!checkbox.checked) {
-      const resetButton = document.querySelector("button.btn.btn-warning");
-      if (resetButton) {
-        // Prevent event bubbling cuz Evergreen is behaving a bit weird?
-        resetButton.addEventListener("click", (e) => e.stopPropagation(), {
-          once: true,
-        });
-        resetButton.click();
-      }
-      return;
-    }
+    if (!checkbox || !checkbox.checked) return;
 
     // Set the Profile Group filter to ILL if the checkbox is checked
     const profileGroupMenu = document.querySelector(
