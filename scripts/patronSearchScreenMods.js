@@ -1,13 +1,10 @@
 // Adds button to patron search screen to limit search to only patron type of "Interlibrary Loan"
 (async () => {
   // More robust duplicate prevention because clearly it needs it for some reason
-  if (
-    document.querySelector("#ill-patron-type-checkbox-div") ||
-    document.body.dataset.patronSearchModsLoaded
-  ) {
+  if (document.querySelector("#ill-patron-type-checkbox-div")) {
     return;
   }
-  document.body.dataset.patronSearchModsLoaded = "true";
+  // document.body.dataset.patronSearchModsLoaded = "true";
 
   const createPatronTypeCheckbox = async () => {
     return new Promise((resolve) => {
@@ -100,17 +97,18 @@
         patronSearchElement
       );
 
+      observer.disconnect(); // Disconnect the observer to prevent Evergreen's looping issues
+
       // Apply the filter based on initial checkbox state
       setTimeout(() => updateProfileGroupFilter(), 200);
     }
   };
 
   // Wait for page to load, then insert checkbox
+  // TODO: Test if this is actually necessary or being fired at all
   if (document.readyState === "loading") {
     console.log("Waiting for DOMContentLoaded to insert checkbox");
     document.addEventListener("DOMContentLoaded", insertCheckbox);
-  } else {
-    insertCheckbox();
   }
 
   // Limit the observer to prevent excessive calls
@@ -121,7 +119,7 @@
       clearTimeout(observerTimeout);
       observerTimeout = setTimeout(() => {
         insertCheckbox();
-      }, 100);
+      }, 500);
     }
   });
 
