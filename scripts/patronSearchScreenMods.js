@@ -104,13 +104,6 @@
     }
   };
 
-  // Wait for page to load, then insert checkbox
-  // TODO: Test if this is actually necessary or being fired at all
-  if (document.readyState === "loading") {
-    console.log("Waiting for DOMContentLoaded to insert checkbox");
-    document.addEventListener("DOMContentLoaded", insertCheckbox);
-  }
-
   // Limit the observer to prevent excessive calls
   let observerTimeout;
   const observer = new MutationObserver(() => {
