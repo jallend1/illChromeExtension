@@ -19,7 +19,6 @@ const URL_MAP = {
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
-  "/staff/circ/patron/search": { scripts: ["patronSearchScreenMods"] },
   "kinokuniya.com/bw/": {
     scripts: ["extractKinokuniya"],
   },
