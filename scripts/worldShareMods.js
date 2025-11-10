@@ -55,8 +55,10 @@
      * @returns
      */
     const highlightRequestStatus = async (elements) => {
-      const { requestStatus, requestHeader, dispositionElement } = elements;
+      const { requestStatus, requestHeader } = elements;
+
       if (!requestStatus) return;
+
       if (requestStatus.innerText.includes("Closed")) {
         applyEmphasisStyle(requestStatus, "black", "white");
         applyEmphasisStyle(requestHeader, "black", "white");
@@ -71,11 +73,8 @@
       }
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
-        if (
-          dispositionElement &&
-          dispositionElement.innerText.includes("Overdue")
-        ) {
-          applyEmphasisStyle(dispositionElement, "red", "black");
+        if (requestStatus.innerText.includes("Overdue")) {
+          applyEmphasisStyle(requestStatus, "red", "black");
         }
       }
     };
@@ -122,25 +121,37 @@
      */
     const runBorrowingMods = async (activeSelectors) => {
       const elements = {
-        requestHeader: await waitForElementWithInterval(
-          activeSelectors.requestHeader
-        ),
+        // TODO: Update requestHeader selector to match new structure
+        requestHeader: await waitForElementWithInterval("h1"),
+        // await waitForElementWithInterval(
+        //   activeSelectors.requestHeader
+        // ),
         requestStatus: await waitForElementWithInterval(
-          activeSelectors.requestStatus
+          () =>
+            Array.from(document.querySelectorAll("div")).find(
+              (div) => div.textContent.trim() === "Status"
+            ).nextElementSibling
         ),
-        dispositionElement: await waitForElementWithInterval(
-          activeSelectors.dispositionElement
-        ),
-        dueDateElement: await waitForElementWithInterval(
-          activeSelectors.dueDateElement
-        ),
+        // dispositionElement: await waitForElementWithInterval(
+        //   activeSelectors.dispositionElement
+        // ),
+        dueDateElement: await waitForElementWithInterval(() => {
+          const div = Array.from(document.querySelectorAll("div")).find(
+            (div) => div.textContent.trim() === "Due date"
+          );
+          return div?.nextElementSibling;
+        }),
+        // await waitForElementWithInterval(
+        //   activeSelectors.dueDateElement
+        // ),
       };
 
       // renewalDueDateElement does not exist on all pages, but will exist if dueDateElement exists
       if (elements.dueDateElement) {
-        elements.renewalDueDateElement = document.querySelector(
-          activeSelectors.renewalDueDateElement
-        );
+        // TODO: Reenable this with new selectors!
+        // elements.renewalDueDateElement = document.querySelector(
+        //   activeSelectors.renewalDueDateElement
+        // );
       }
 
       await highlightDueDate(elements);
