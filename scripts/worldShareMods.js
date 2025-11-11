@@ -91,6 +91,7 @@
         requestStatus,
         requestHeader,
       } = elements;
+      console.log("Request Header:", requestHeader);
       try {
         if (!dueDateElement) return;
         const dueDate = renewalDueDateElement
@@ -122,10 +123,13 @@
     const runBorrowingMods = async (activeSelectors) => {
       const elements = {
         // TODO: Update requestHeader selector to match new structure
-        requestHeader: await waitForElementWithInterval("h1"),
-        // await waitForElementWithInterval(
-        //   activeSelectors.requestHeader
-        // ),
+        requestHeader: await waitForElementWithInterval(() =>
+          Array.from(document.querySelectorAll("h1")).find(
+            (h1) =>
+              h1.textContent.includes(":") &&
+              !h1.textContent.includes("Borrowing requests")
+          )
+        ),
         requestStatus: await waitForElementWithInterval(
           () =>
             Array.from(document.querySelectorAll("div")).find(
@@ -141,9 +145,6 @@
           );
           return div?.nextElementSibling;
         }),
-        // await waitForElementWithInterval(
-        //   activeSelectors.dueDateElement
-        // ),
       };
 
       // renewalDueDateElement does not exist on all pages, but will exist if dueDateElement exists
