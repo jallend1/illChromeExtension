@@ -91,7 +91,6 @@
         requestStatus,
         requestHeader,
       } = elements;
-      console.log("Request Header:", requestHeader);
       try {
         if (!dueDateElement) return;
         const dueDate = renewalDueDateElement
@@ -234,6 +233,7 @@
       const observer = new MutationObserver(async () => {
         if (window.location.href !== window.currentUrl) {
           window.currentUrl = window.location.href; // Update the current URL
+          // Extracts the request number after submission
           if (
             window.currentUrl.includes(
               "/new?fulfillmentType=OCLC_ILL&role=REQUESTER"
