@@ -3,6 +3,18 @@
     chrome.runtime.getURL("modules/utils.js")
   );
 
+  /**
+   * Sets the value of an input element and dispatches necessary events
+   * @param {string} element CSS selector for the input element
+   * @param {string} value Value to set
+   */
+  const setInputValue = (element, value) => {
+    element.value = value;
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+    element.dispatchEvent(new Event("blur", { bubbles: true }));
+  };
+
   const extractPatronDetails = async () => {
     const requestManagerSelectors = {
       patronNameField: "div.modal-body.form-validated > div",
@@ -85,9 +97,9 @@
     // Scroll to nameSelector field
     nameField.scrollIntoView({ behavior: "smooth", block: "center" });
 
-    // Fill in the name and barcode fields
-    nameField.value = patronName;
-    barcodeField.value = barcode;
+    // Use helper function to set values for patron information and dispatch events
+    setInputValue(nameField, patronName);
+    setInputValue(barcodeField, barcode);
 
     createMiniModal(
       `Patron information pasted: <p><small>${patronName}</small><br /><small>${barcode}</small></p>`
