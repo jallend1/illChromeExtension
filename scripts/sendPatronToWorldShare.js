@@ -56,13 +56,17 @@
   };
 
   const pastePatronToWS = async () => {
-    // const nameSelector = "#patron-details-NEW-REQUESTER-patronName";
-    const nameSelector = 'input[name="patron.name"]';
-    const barcodeSelector = 'input[name="patron.userId"]';
-    // const barcodeSelector = "#patron-details-NEW-REQUESTER-patronId";
+    const nameSelector = "#patron-details-NEW-REQUESTER-patronName";
+    const barcodeSelector = "#patron-details-NEW-REQUESTER-patronId";
 
+    // TODO: Move these to constants
+    // ******************************************************
+    // * Alternate Selectors for Updated WorldShare Version *
+    // ******************************************************
+    // const nameSelector = 'input[name="patron.name"]';
+    // const barcodeSelector = 'input[name="patron.userId"]';
     // Find input with name attribute of "patron.name"
-    const nameInput = document.querySelector('input[name="patron.name"]');
+    // const nameInput = document.querySelector('input[name="patron.name"]');
 
     // Check if we're on the right page
     if (!window.location.href.includes("share.worldcat.org")) {
