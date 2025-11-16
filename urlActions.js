@@ -48,10 +48,7 @@ const executeActions = (tabId, config) => {
 export const urlActions = [
   ...Object.entries(URL_MAP).map(([pattern, config]) => ({
     match: (url) => {
-      console.log(`Checking URL: ${url} against pattern: ${pattern}`);
-      const matches = url.includes(pattern);
-      console.log(`Match result: ${matches}`);
-      return matches;
+      return url.includes(pattern);
     },
     action: (tabId) => executeActions(tabId, config),
   })),

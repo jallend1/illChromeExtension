@@ -30,9 +30,6 @@ export const isAllowedHost = (url) => {
   const manifest = chrome.runtime.getManifest();
   const allowedHosts = manifest.host_permissions || [];
 
-  console.log("Checking URL:", url);
-  console.log("Against host permissions:", allowedHosts);
-
   return allowedHosts.some((pattern) => {
     try {
       // Convert Chrome extension pattern to regex

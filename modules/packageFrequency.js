@@ -19,7 +19,6 @@ const extractElements = async (selectors) => {
 };
 
 const returnArrayOfMatches = async (zipCode) => {
-  console.log("Zip Code to check:", zipCode);
   return new Promise((resolve, reject) => {
     // Check if chrome APIs are available
     if (typeof chrome === "undefined" || !chrome.storage) {
