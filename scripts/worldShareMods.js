@@ -127,19 +127,8 @@
       const elements = {
         requestHeader: await waitForElementWithInterval(
           activeSelectors.requestHeader
-        ), // TODO: Update requestHeader selector to match new structure
-        // requestHeader: await waitForElementWithInterval(() =>
-        //   Array.from(document.querySelectorAll("h1")).find(
-        //     (h1) =>
-        //       h1.textContent.includes(":") &&
-        //       !h1.textContent.includes("Borrowing requests")
-        //   )
-        // ),
+        ),
         requestStatus: await waitForElementWithInterval(
-          // () =>
-          //   Array.from(document.querySelectorAll("div")).find(
-          //     (div) => div.textContent.trim() === "Status"
-          //   ).nextElementSibling
           activeSelectors.requestStatus
         ),
         dispositionElement: await waitForElementWithInterval(
@@ -148,15 +137,6 @@
         dueDateElement: await waitForElementWithInterval(
           activeSelectors.dueDateElement
         ),
-        // dispositionElement: await waitForElementWithInterval(
-        //   activeSelectors.dispositionElement
-        // ),
-        // dueDateElement: await waitForElementWithInterval(() => {
-        //   const div = Array.from(document.querySelectorAll("div")).find(
-        //     (div) => div.textContent.trim() === "Due date"
-        //   );
-        //   return div?.nextElementSibling;
-        // }),
       };
 
       // renewalDueDateElement does not exist on all pages, but will exist if dueDateElement exists
