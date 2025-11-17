@@ -85,7 +85,7 @@ export const handleTabUpdate = (
   });
 
   if (!isAllowedHost(tab.url)) {
-    console.log("TabEventHandlers - URL not allowed:", tab.url);
+    // console.log("TabEventHandlers - URL not allowed:", tab.url);
     return;
   }
 
@@ -95,7 +95,7 @@ export const handleTabUpdate = (
   }
 
   if (changeInfo.status === "complete") {
-    console.log("TabEventHandlers - Page load complete for:", tab.url);
+    // console.log("TabEventHandlers - Page load complete for:", tab.url);
 
     // Handle sidepanel URL updates
     if (tab.active) {
