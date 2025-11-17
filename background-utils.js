@@ -30,8 +30,8 @@ export const isAllowedHost = (url) => {
   const manifest = chrome.runtime.getManifest();
   const allowedHosts = manifest.host_permissions || [];
 
-  console.log("Checking URL:", url);
-  console.log("Against host permissions:", allowedHosts);
+  // console.log("Checking URL:", url);
+  // console.log("Against host permissions:", allowedHosts);
 
   return allowedHosts.some((pattern) => {
     try {
@@ -44,9 +44,9 @@ export const isAllowedHost = (url) => {
       const regex = new RegExp("^" + regexPattern + "$");
       const matches = regex.test(url);
 
-      console.log(
-        `Pattern: ${pattern} -> Regex: ${regexPattern} -> Match: ${matches}`
-      );
+      // console.log(
+      //   `Pattern: ${pattern} -> Regex: ${regexPattern} -> Match: ${matches}`
+      // );
 
       return matches;
     } catch (error) {
@@ -55,7 +55,7 @@ export const isAllowedHost = (url) => {
       const simpleMatch = url.includes(
         pattern.replace("https://", "").replace("/*", "")
       );
-      console.log(`Fallback match for ${pattern}: ${simpleMatch}`);
+      // console.log(`Fallback match for ${pattern}: ${simpleMatch}`);
       return simpleMatch;
     }
   });
