@@ -104,25 +104,27 @@ export const DUEDATESELECTORS = {
 //   },
 // };
 
+// TODO: Not actually constants, so should move dynamic imports out of this file...
+// Keeping them here for now until I'm ready to refactor
 // Borrowing selectors not being used until forced migration to updated WorldShare
-export const NEW_WORLDSHARE_SELECTORS = {
-  dueDateElement: await waitForElementWithInterval(() => {
-    const div = Array.from(document.querySelectorAll("div")).find(
-      (div) => div.textContent.trim() === "Due date"
-    );
-    return div?.nextElementSibling;
-  }),
-  requestHeader: await waitForElementWithInterval(() =>
-    Array.from(document.querySelectorAll("h1")).find(
-      (h1) =>
-        h1.textContent.includes(":") &&
-        !h1.textContent.includes("Borrowing requests")
-    )
-  ),
-  requestStatus: await waitForElementWithInterval(() => {
-    () =>
-      Array.from(document.querySelectorAll("div")).find(
-        (div) => div.textContent.trim() === "Status"
-      ).nextElementSibling;
-  }),
-};
+// export const NEW_WORLDSHARE_SELECTORS = {
+//   dueDateElement: await waitForElementWithInterval(() => {
+//     const div = Array.from(document.querySelectorAll("div")).find(
+//       (div) => div.textContent.trim() === "Due date"
+//     );
+//     return div?.nextElementSibling;
+//   }),
+//   requestHeader: await waitForElementWithInterval(() =>
+//     Array.from(document.querySelectorAll("h1")).find(
+//       (h1) =>
+//         h1.textContent.includes(":") &&
+//         !h1.textContent.includes("Borrowing requests")
+//     )
+//   ),
+//   requestStatus: await waitForElementWithInterval(() => {
+//     () =>
+//       Array.from(document.querySelectorAll("div")).find(
+//         (div) => div.textContent.trim() === "Status"
+//       ).nextElementSibling;
+//   }),
+// };
