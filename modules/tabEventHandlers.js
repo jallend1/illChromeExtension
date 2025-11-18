@@ -85,18 +85,14 @@ export const handleTabUpdate = (
   // });
 
   if (!isAllowedHost(tab.url)) {
-    // console.log("TabEventHandlers - URL not allowed:", tab.url);
     return;
   }
 
   if (arePassiveToolsActive === false) {
-    console.log("TabEventHandlers - Passive tools not active");
     return;
   }
 
   if (changeInfo.status === "complete") {
-    // console.log("TabEventHandlers - Page load complete for:", tab.url);
-
     // Handle sidepanel URL updates
     if (tab.active) {
       sendTabUrlUpdate({
