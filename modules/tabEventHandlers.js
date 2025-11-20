@@ -26,13 +26,12 @@ const handlePatronPage = (tabId, url, executeScript) => {
  * @param {string} url
  */
 const handleUrlActions = (tabId, url) => {
-  console.log("TabEventHandlers - Processing URL actions for:", url);
   urlActions.forEach(({ match, action }) => {
     if (match(url)) {
-      console.log(
-        "TabEventHandlers - Matched URL pattern, executing action for:",
-        url
-      );
+      // console.log(
+      //   "TabEventHandlers - Matched URL pattern, executing action for:",
+      //   url
+      // );
       action(tabId);
     }
   });

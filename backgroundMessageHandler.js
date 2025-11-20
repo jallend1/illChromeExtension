@@ -213,10 +213,10 @@ export const handleMessage = async (request, sender, sendResponse) => {
   console.log("=== MESSAGE HANDLER DEBUG ===");
   console.log("Request:", request);
   console.log("Sender:", sender);
-  console.log(
-    "Kinokuniya search command?",
-    request.command === "openKinokuniyaSearch"
-  );
+  // console.log(
+  //   "Kinokuniya search command?",
+  //   request.command === "openKinokuniyaSearch"
+  // );
 
   // Handle sidepanel messages first (no need for active tab)
   if (handleSidepanelMessage(request)) {
@@ -232,11 +232,11 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
   // Handle Kinokuniya search FIRST - before any tab validation
   if (request.command === "openKinokuniyaSearch") {
-    console.log("Handling Kinokuniya search - no tab validation needed");
+    // console.log("Handling Kinokuniya search - no tab validation needed");
     try {
-      console.log(
-        `Background: Opening Kinokuniya search for: ${request.searchTerm}`
-      );
+      // console.log(
+      //   `Background: Opening Kinokuniya search for: ${request.searchTerm}`
+      // );
 
       // Build search URL
       const cleanTerm = String(request.searchTerm)
@@ -245,7 +245,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
       const searchUrl = `https://united-states.kinokuniya.com/products?utf8=%E2%9C%93&is_searching=true&restrictBy%5Bavailable_only%5D=1&keywords=${cleanTerm}&taxon=&x=0&y=0`;
 
-      console.log(`Opening URL: ${searchUrl}`);
+      // console.log(`Opening URL: ${searchUrl}`);
 
       // Create a new tab with the search URL and capture the tab object
       const newTab = await chrome.tabs.create({
@@ -253,7 +253,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
         active: true, // Make it the active tab so user can see results
       });
 
-      console.log("Successfully opened Kinokuniya search tab");
+      // console.log("Successfully opened Kinokuniya search tab");
       // Wait a moment to ensure the tab is fully loaded
       await new Promise((resolve) => setTimeout(resolve, 1000));
       // Once loaded, inject content script checkKinokuniya
@@ -290,8 +290,8 @@ export const handleMessage = async (request, sender, sendResponse) => {
     request.command?.includes("kinokuniya") ||
     request.action?.includes("kinokuniya");
 
-  console.log("Is Kinokuniya related:", isKinokuniyaRelated);
-  console.log("Is allowed host:", isAllowedHost(activeTab.url));
+  // console.log("Is Kinokuniya related:", isKinokuniyaRelated);
+  // console.log("Is allowed host:", isAllowedHost(activeTab.url));
 
   if (!isKinokuniyaRelated && !isAllowedHost(activeTab.url)) {
     console.log("Message ignored - not on allowed host:", activeTab.url);
