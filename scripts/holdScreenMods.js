@@ -17,6 +17,7 @@
       `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`
     );
 
+    // TODO: Test this bad boy because there has been limited testing due to few requests with second patrons
     /**
      * If item has a second patron, automatically populate departmental card barcode
      * @returns {void}
@@ -30,6 +31,7 @@
       );
       const barcodeField = document.querySelector("#patron-barcode");
       console.log("Barcode Field: ", barcodeField);
+      // Set departmental card barcode
       barcodeField.value = "0040746158";
       const event = new Event("input", {
         bubbles: true,
