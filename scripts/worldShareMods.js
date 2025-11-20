@@ -232,20 +232,26 @@
             )
           ) {
             console.log("New request detected!!");
+
+            // The request ID that populates after submission
             const requestAnchorTag = await waitForElementWithInterval(
               ".wms-alert.wms-message-confirm > p.msg > a"
             );
-            console.log("Message Container:", requestAnchorTag);
-            navigator.clipboard.writeText(requestAnchorTag.textContent.trim());
-            console.log("Text copied to clipboard.");
-            console.log("Clicking request anchor tag...", requestAnchorTag);
-            // TODO: Clicking anchor tag works as expected for the first couple requests, but then loads a blank request page
+
+            if (!requestAnchorTag || !requestAnchorTag.isConnected) {
+              console.error("Could not find valid request anchor tag");
+              return;
+            }
+
+            const requestId = requestAnchorTag.textContent.trim();
+
+            navigator.clipboard.writeText(requestId);
+            console.log("Text copied to clipboard:", requestId);
+
+            // TODO: Automatically clicking generally works the first time, but after that opens up a blank request (Still copies the appropriate number tho)
             // requestAnchorTag.click();
-            createMiniModal(
-              "Request ID ( " +
-                requestAnchorTag.textContent.trim() +
-                " ) copied to clipboard."
-            );
+
+            createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
             return;
           }
           if (isRequestUrl(window.currentUrl)) {
