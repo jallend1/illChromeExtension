@@ -16,7 +16,7 @@ export const executeScript = (tabId, script) => {
     "searchResults",
     "createILLPageMods",
     "updateAddress",
-    "adjustBellinghamDate",
+    "adjustLongDueDate",
     "requestManagerMods",
     "dismissOpenTransit",
     "holdScreenMods",

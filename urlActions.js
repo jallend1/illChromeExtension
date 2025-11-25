@@ -59,7 +59,7 @@ export const urlActions = [
   {
     match: isLongCheckout,
     action: (tabId) =>
-      executeActions(tabId, { scripts: ["adjustBellinghamDate"] }),
+      executeActions(tabId, { scripts: ["adjustLongDueDate"] }),
   },
 
   // Special case for removing tooltip
