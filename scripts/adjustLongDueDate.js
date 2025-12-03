@@ -1,5 +1,10 @@
 // TODO: Expand to adjust due date to 10 weeks for all of Alaska libraries
 (async () => {
+  // If the URL does not include "/checkout", exit the script
+  if (!window.location.href.includes("/checkout")) {
+    console.log("Tried running on a non-checkout page, exiting script.");
+    return;
+  }
   const { waitForElementWithInterval, createMiniModal } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
