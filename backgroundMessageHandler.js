@@ -137,6 +137,7 @@ const handleCommandMessage = async (request, activeTab) => {
  * @param {Function} sendResponse
  */
 const handleActionMessage = async (request, activeTab, sendResponse) => {
+  // TODO: Clean up logic -- editPatron/retriveOnly/retrievePatron duplicating a lot of functionality
   if (request.action === "editPatron" || request.action == "retrieveOnly") {
     // Store patron barcode in local storage
     chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
