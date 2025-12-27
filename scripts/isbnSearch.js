@@ -44,7 +44,12 @@ async function isbnSearch() {
     ?.split(" ")[0]
     .replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
   const title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
-  const author = extractFields(".yui-field-author")?.split(";")[0]; // Takes the first author
+  // TODO: I THINK the author sometimes includes a URL contained in parentheses in CD requests
+  // Might be in the title?
+  // Remove this when I can find an example to test
+  const author = extractFields(".yui-field-author")
+    ?.split(";")[0]
+    ?.replace(/\s*\(.*?\)\s*/g, ""); // Takes the first author and removes any URLs contained in parentheses
   const searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
