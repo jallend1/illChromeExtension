@@ -40,10 +40,12 @@ async function isbnSearch() {
   const getSearchQuery = (isbn, title, author) =>
     isbn ? isbn : title && author ? `${title} ${author}` : title || null;
 
-  let isbn = extractFields(".yui-field-isbn")?.split(" ")[0].replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
-  let title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
-  let author = extractFields(".yui-field-author")?.split(";")[0]; // Takes the first author
-  let searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
+  const isbn = extractFields(".yui-field-isbn")
+    ?.split(" ")[0]
+    .replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
+  const title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
+  const author = extractFields(".yui-field-author")?.split(";")[0]; // Takes the first author
+  const searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
     const previousIsbnSearch = sessionStorage.getItem("isbnSearch"); // Checks previous isbnSearch to prevent duplicate searches
