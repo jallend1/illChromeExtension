@@ -1,6 +1,9 @@
 const { waitForElementWithInterval } = await import(
   chrome.runtime.getURL("modules/utils.js")
 );
+const { populatePatronBarcode, getPatronSearchElements } = await import(
+  chrome.runtime.getURL("scripts/retrievePatron.js")
+);
 
 /**
  * Waits for billing modal to appear and then fills out fee and title
@@ -63,34 +66,14 @@ const clickAddBilling = async () => {
 };
 
 /**
- * Populates the patron barcode input field and submits the form.
- * @param {HTMLInputElement} inputField
- * @param {Element} submitButton
- * @param {number} patronBarcode
- */
-const populateBarcode = (inputField, submitButton, patronBarcode) => {
-  inputField.value = patronBarcode;
-  const event = new Event("input", { bubbles: true, cancelable: true });
-  inputField.dispatchEvent(event);
-  submitButton.click();
-};
-
-/**
- * Adds a lending fee to the specified input field and submits the form.
- * @param {HTMLInputElement} inputField
- * @param {Element} submitButton
+ * Adds a lending fee to the patron's account.
  * @param {Object} requestDetails
  */
-export const addLendingFee = async (
-  inputField,
-  submitButton,
-  requestDetails
-) => {
+export const addLendingFee = async (requestDetails) => {
   const { patronBarcode, title, fee } = requestDetails;
-  populateBarcode(inputField, submitButton, patronBarcode);
+  const { inputField, submitButton } = await getPatronSearchElements();
+  populatePatronBarcode(inputField, submitButton, patronBarcode);
   goToBillingTab();
   clickAddBilling();
   addBillingNotes(title, fee);
 };
-
-// TODO: Move inputField and submitButton into retrievePatron.js and create shared function for patronToEdit
