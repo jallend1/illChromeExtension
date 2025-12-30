@@ -44,12 +44,13 @@ async function isbnSearch() {
     ?.split(" ")[0]
     .replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
   const title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
-  // TODO: I THINK the author sometimes includes a URL contained in parentheses in CD requests
-  // Might be in the title?
-  // Remove this when I can find an example to test
+  // Only takes first author, removes any URLs and author lifespan
   const author = extractFields(".yui-field-author")
-    ?.split(";")[0]
-    ?.replace(/\s*\(.*?\)\s*/g, ""); // Takes the first author and removes any URLs contained in parentheses
+    ?.split(";")[0] // Takes only the first author
+    ?.split("http")[0] // Removes any URLs included in author string
+    ?.split("prf")[0] // Worldshare audio records generally include prf
+    ?.split(/, \d{4}/)[0] // Removes any author lifespan information
+    ?.trim();
   const searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
