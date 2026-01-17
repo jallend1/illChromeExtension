@@ -7,9 +7,12 @@ const {
   ignoreHiddenElements,
   buttonStyles,
   hoverStyles,
-  createMiniModal,
   isLendingRequestPage,
 } = await import(chrome.runtime.getURL("modules/utils.js"));
+
+const { createMiniModal } = await import(
+  chrome.runtime.getURL("modules/modal.js")
+);
 
 const { borrowingAddressSelectors, borrowingSelectors, lendingSelectors } =
   await import(chrome.runtime.getURL("modules/constants.js"));

@@ -308,3 +308,88 @@ export const inputModal = (heading, message, backgroundColor, imgURL) => {
     inputField.focus();
   });
 };
+
+/**
+ * Styles for the mini modal
+ */
+const miniModalStyles = {
+  background: "linear-gradient(135deg, #b7f8db 0%, #50e3c2 100%)",
+  padding: "20px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  borderRadius: "8px",
+  color: "#333",
+  transition: "opacity 0.3s ease-in-out",
+  opacity: "1",
+};
+
+/**
+ * Creates a modal message element
+ * @param {string} message - The message to display
+ * @param {boolean} isError - Whether this is an error message
+ * @returns {HTMLElement} The modal message element
+ */
+const createModalMessage = (message, isError = false) => {
+  const modal = document.createElement("div");
+  modal.className = "mini-modal-message";
+  modal.innerHTML = `
+    <div class="mini-modal-content">
+      <p>${message}</p>
+    </div>
+  `;
+  Object.assign(modal.style, miniModalStyles);
+  if (isError) {
+    modal.style.background =
+      "linear-gradient(135deg, #ffcccc 0%, #ff9999 100%)";
+    modal.style.color = "#010101";
+  }
+  return modal;
+};
+
+/**
+ * Displays a mini-modal with a message that auto-dismisses
+ * @param {string} message - The message to display
+ * @param {boolean} isError - Whether this is an error message (red styling)
+ * @param {number} timeout - How long to display the message in milliseconds
+ */
+export const createMiniModal = (message, isError = false, timeout = 2000) => {
+  const modalMessage = createModalMessage(message, isError);
+
+  let existingModal = document.querySelector(".mini-modal");
+  // If the modal already exists, append the new message
+  if (existingModal) {
+    // Confirm that the existing modal is not a duplicate of the new message
+    const existingMessage = existingModal.querySelector(".mini-modal-message");
+    if (
+      existingMessage &&
+      existingMessage.innerHTML === modalMessage.innerHTML
+    ) {
+      console.log("Duplicate message, not appending again.");
+      return; // Exit if the message is a duplicate
+    }
+    existingModal.appendChild(modalMessage);
+    setTimeout(() => {
+      modalMessage.remove();
+      // If no more messages are left, remove the existing modal
+      if (!existingModal.querySelector(".mini-modal-message")) {
+        existingModal.remove();
+      }
+    }, timeout);
+  } else {
+    // If the modal doesn't exist, create it
+    const miniModal = document.createElement("div");
+    miniModal.className = "mini-modal";
+    miniModal.appendChild(modalMessage);
+    miniModal.style.position = "fixed";
+    miniModal.style.top = "5%";
+    miniModal.style.right = "0%";
+    miniModal.style.zIndex = "9999";
+    document.body.appendChild(miniModal);
+    setTimeout(() => {
+      modalMessage.remove();
+      // If no more messages are left, remove the mini modal
+      if (!miniModal.querySelector(".mini-modal-message")) {
+        miniModal.remove();
+      }
+    }, timeout);
+  }
+};

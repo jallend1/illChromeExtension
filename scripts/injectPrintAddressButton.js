@@ -1,6 +1,9 @@
 (async () => {
-  const { waitForElementWithInterval, createMiniModal } = await import(
+  const { waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
+  );
+  const { createMiniModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
   );
 
   const { dymoFunctions } = await import(

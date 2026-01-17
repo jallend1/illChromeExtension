@@ -13,9 +13,12 @@
 
     const {
       waitForElementWithInterval,
-      createMiniModal,
       isLendingRequestPage,
     } = await import(chrome.runtime.getURL("modules/utils.js"));
+
+    const { createMiniModal } = await import(
+      chrome.runtime.getURL("modules/modal.js")
+    );
 
     // Sets a flag on the window object to prevent the script from running multiple times
     window.worldShareModsInjected = true;

@@ -5,8 +5,11 @@
     console.log("Tried running on a non-checkout page, exiting script.");
     return;
   }
-  const { waitForElementWithInterval, createMiniModal } = await import(
+  const { waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
+  );
+  const { createMiniModal } = await import(
+    chrome.runtime.getURL("modules/modal.js")
   );
   const { DUEDATESELECTORS } = await import(
     chrome.runtime.getURL("modules/constants.js")

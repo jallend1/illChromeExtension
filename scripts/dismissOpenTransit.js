@@ -1,8 +1,8 @@
 (async () => {
-  const { statusModal } = await import(
+  const { statusModal, createMiniModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
-  const { waitForElementWithInterval, createMiniModal } = await import(
+  const { waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
 
