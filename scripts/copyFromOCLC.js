@@ -1,7 +1,7 @@
 // TODO: Oh lordy. This file has been untouched since it was brute forced and it shows :(
 
 (async () => {
-  const { statusModal } = await import(
+  const { statusModal, inputModal } = await import(
     chrome.runtime.getURL("modules/modal.js")
   );
   const { states } = await import(chrome.runtime.getURL("data/states.js"));
@@ -9,7 +9,7 @@
     chrome.runtime.getURL("data/orbisLibrarySymbols.js")
   );
 
-  function copyFromOCLC() {
+  async function copyFromOCLC() {
     // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
     let addressObject = {
       attention: null,
@@ -157,46 +157,61 @@
 
     /**
      * Compiles the lender address notes for insertion into Evergreen
-     * @returns {string} The formatted lender address notes
+     * @returns {Promise<string|null>} The formatted lender address notes, or null if cancelled
      */
-    const generateLenderAddressNotes = () => {
+    const generateLenderAddressNotes = async () => {
       let addressString = "";
       const currentLender = extractValueFromField(
         elementSelectors.currentLender
       );
       if (isCourier(currentLender)) addressString += "Courier\n";
-      addressString += checkLenderRequirements(currentLender);
+      const lenderRequirements = await checkLenderRequirements(currentLender);
+      if (lenderRequirements === null) return null;
+      addressString += lenderRequirements;
       addressString += formatLenderAddress();
       return addressString;
     };
 
     /**
      * Prompts the user for the WCCLS barcode
-     * @returns {string} The WCCLS barcode information
+     * @returns {Promise<string|null>} The WCCLS barcode information, or null if cancelled
      * @description This function prompts the user to enter the WCCLS barcode information (Something WCCLS requires) and returns it for inclusion in the address notes.
      */
-    const WCCLSprompt = () => {
-      let barcode;
+    const WCCLSprompt = async () => {
       let addressField = "";
       const title =
         "Title: " + extractValueFromField(elementSelectors.title) + "\n";
       addressField += title;
-      while (!barcode) {
-        barcode = prompt(
-          "This is from WCCLS! Please write the 4-digit code from their paperwork. (Also can be found as the last four digits of THEIR barcode)"
-        );
-        if (barcode) addressField += "WCCLS barcode: " + barcode + "\n";
+
+      const barcode = await inputModal(
+        "WCCLS Request",
+        "Please enter the 4-digit code from their paperwork (last four digits of THEIR barcode):",
+        "#3b607c",
+        chrome.runtime.getURL("images/kawaii-dinosaur.png")
+      );
+
+      // If cancelled (null), abort the entire process
+      if (barcode === null) {
+        return null;
       }
+
+      // If empty string (user skipped after warning), don't add barcode
+      if (barcode === "") {
+        return addressField;
+      }
+
+      // Valid barcode entered
+      addressField += "WCCLS barcode: " + barcode + "\n";
       return addressField;
     };
 
     /**
      * Checks the requirements for the current lender
      * @param {string} currentLender - The current lender's identifier
-     * @returns {string} The requirements for the current lender
+     * @returns {Promise<string|null>} The requirements for the current lender, or null if cancelled
      * @description This function checks for any unique requirements that the current lender may have, and integrates that into the note to be pasted into Evergreen.
      */
-    const checkLenderRequirements = (currentLender) => {
+    const checkLenderRequirements = async (currentLender) => {
       // Checks to see if the current lender requires paperwork to be kept
       requiresPaperwork(currentLender);
       const dueDateLibraries = ["BLP", "ZWR", "COW"];
@@ -208,7 +223,7 @@
         return "OCLC Due Date: " + dueDate + "\n";
       }
       // Implements WCCLS unique requirements
-      if (currentLender === "OQX") return WCCLSprompt();
+      if (currentLender === "OQX") return await WCCLSprompt();
       return "";
     };
 
@@ -235,10 +250,12 @@
 
     /**
      * Compiles the request data for the current loan
-     * @returns {object} The compiled request data
+     * @returns {Promise<object|null>} The compiled request data, or null if cancelled
      */
-    const compileRequestData = () => {
-      const addressString = generateLenderAddressNotes();
+    const compileRequestData = async () => {
+      const addressString = await generateLenderAddressNotes();
+      if (addressString === null) return null;
+
       const requestNumber = extractValueFromField(
         elementSelectors.requestNumber
       );
@@ -272,7 +289,19 @@
       return JSON.stringify(data);
     };
 
-    const compiledData = compileRequestData();
+    const compiledData = await compileRequestData();
+
+    // If user cancelled, abort the process
+    if (compiledData === null) {
+      statusModal(
+        "Cancelled",
+        "Process cancelled by user.",
+        "#999",
+        chrome.runtime.getURL("images/kawaii-book-sad.png")
+      );
+      return;
+    }
+
     const stringifiedData = convertDataToJSON(compiledData);
 
     /**
