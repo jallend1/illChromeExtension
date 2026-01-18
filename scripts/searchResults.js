@@ -1,10 +1,23 @@
 // TODO: Import minimodal to alert when search is not ISBN based
 
-function searchResults() {
+async function searchResults() {
+  const { keyboardCowboy } = await import(
+    chrome.runtime.getURL("modules/keyboardCowboy.js")
+  );
+  console.log("Workin fine!");
+
   // Checks URL to determine if the search is an ISBN search (More accurate and you don't need to look so close)
   function isISBNSearch() {
     const url = window.location.href;
     return url.includes("&query=97");
+  }
+
+  function keywordQueryIncludesColon() {
+    const url = window.location.href;
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get("query") || "";
+    const isKeywordSearch = urlParams.get("fieldClass") === "keyword";
+    return query.includes(":") && isKeywordSearch;
   }
 
   // Either highlights the search field div red if it's an ISBN search, or the default if not
@@ -14,6 +27,13 @@ function searchResults() {
     isISBNSearch()
       ? (searchResultsDiv.style.backgroundColor = "#f7f7f7")
       : (searchResultsDiv.style.backgroundColor = "#ffeaea");
+    if (keywordQueryIncludesColon()) {
+      console.log("Colon detected in keyword search");
+      keyboardCowboy(
+        "Colon detected in keyword search. Evergreen struggles with colons in keyword searches. It works well under a title search, however!",
+        "Did you know?",
+      );
+    }
   }
 
   updateSearchResultsDiv();
