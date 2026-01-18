@@ -27,7 +27,7 @@ export const updateInputField = (selector, value, prefix = "") => {
  */
 export async function insertRequestToEvergreen() {
   const { statusModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
   const { createILL } = await import(
     chrome.runtime.getURL("modules/constants.js")

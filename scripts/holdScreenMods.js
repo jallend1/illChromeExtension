@@ -1,10 +1,10 @@
 (async () => {
   const { keyboardCowboy } = await import(
-    chrome.runtime.getURL("modules/keyboardCowboy.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
 
   const { statusModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
 
   let mainObserver;

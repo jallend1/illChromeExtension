@@ -6,7 +6,7 @@ copies an overdue notice letter containing the relevant info to the clipboard. *
 
 async function overdueNotice() {
   const { statusModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
   window.focus();
   let todaysDate = new Date().toLocaleDateString();

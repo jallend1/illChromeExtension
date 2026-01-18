@@ -12,7 +12,7 @@
 
 async function isbnSearch() {
   const { statusModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
 
   /**

@@ -1,7 +1,7 @@
 (async () => {
   // TODO: statusModal not actually being used right now
   const { statusModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
 
   // TODO: In progress - Verify patron name against WorldShare; Auto-update pickup location to request info

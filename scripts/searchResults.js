@@ -2,9 +2,8 @@
 
 async function searchResults() {
   const { keyboardCowboy } = await import(
-    chrome.runtime.getURL("modules/keyboardCowboy.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
-  console.log("Workin fine!");
 
   // Checks URL to determine if the search is an ISBN search (More accurate and you don't need to look so close)
   function isISBNSearch() {
@@ -28,9 +27,8 @@ async function searchResults() {
       ? (searchResultsDiv.style.backgroundColor = "#f7f7f7")
       : (searchResultsDiv.style.backgroundColor = "#ffeaea");
     if (keywordQueryIncludesColon()) {
-      console.log("Colon detected in keyword search");
       keyboardCowboy(
-        "Colon detected in keyword search. Evergreen struggles with colons in keyword searches. It works well under a title search, however!",
+        "Evergreen struggles with colons in keyword searches. It works well under a title search, however!",
         "Did you know?",
       );
     }

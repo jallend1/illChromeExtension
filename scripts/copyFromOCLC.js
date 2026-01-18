@@ -2,7 +2,7 @@
 
 (async () => {
   const { statusModal, inputModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
   const { states } = await import(chrome.runtime.getURL("data/states.js"));
   const { orbisLibrarySymbols } = await import(

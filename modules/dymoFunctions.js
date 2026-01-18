@@ -131,7 +131,7 @@ export const dymoFunctions = {
   printDymoLabel: async (address) => {
     console.log("Printing Dymo label from inside dymoFunctions...");
     const { statusModal } = await import(
-      chrome.runtime.getURL("modules/modal.js")
+      chrome.runtime.getURL("modules/modals.js")
     );
     if (typeof dymo !== "undefined" && dymo.label.framework) {
       dymo.label.framework.init(() => {

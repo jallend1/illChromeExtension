@@ -3,7 +3,7 @@
     chrome.runtime.getURL("modules/utils.js")
   );
   const { createMiniModal } = await import(
-    chrome.runtime.getURL("modules/modal.js")
+    chrome.runtime.getURL("modules/modals.js")
   );
 
   const { dymoFunctions } = await import(

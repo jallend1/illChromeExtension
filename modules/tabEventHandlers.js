@@ -47,7 +47,7 @@ const handleKeyboardCowboy = (tabId, url) => {
     chrome.scripting.executeScript({
       target: { tabId },
       func: (message) => {
-        import(chrome.runtime.getURL("modules/keyboardCowboy.js")).then(
+        import(chrome.runtime.getURL("modules/modals.js")).then(
           ({ keyboardCowboy }) => {
             keyboardCowboy(message);
           }
