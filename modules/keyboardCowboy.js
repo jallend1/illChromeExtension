@@ -2,7 +2,7 @@
  * Displays a tooltip with a cactus cowboy.
  * @param {string} message - The message to display in the tooltip.
  */
-export const keyboardCowboy = (message) => {
+export const keyboardCowboy = (message, header = "Be a keyboard cowboy!") => {
   const mainSection = document.querySelector("main");
   const existing = document.getElementById("keyboard-cowboy-tooltip");
   const cactusCowboy = chrome.runtime.getURL("images/cowboy.png");
@@ -22,7 +22,7 @@ export const keyboardCowboy = (message) => {
   });
 
   tooltip.innerHTML = `
-    <header><h2>Be a keyboard cowboy!</h2></header>
+    <header><h2>${header}</h2></header>
     <main style="display: flex; flex-direction: row;">
         <img src="${cactusCowboy}" style="height:100px;width:100px;margin-right:10px;">
       <p style="color:#000; margin:0;">${message}</p>
