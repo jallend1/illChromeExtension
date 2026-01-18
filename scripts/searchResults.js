@@ -1,7 +1,7 @@
 // TODO: Import minimodal to alert when search is not ISBN based
 
 async function searchResults() {
-  const { keyboardCowboy } = await import(
+  const { keyboardCowboy, createMiniModal } = await import(
     chrome.runtime.getURL("modules/modals.js")
   );
 
@@ -23,9 +23,14 @@ async function searchResults() {
   function updateSearchResultsDiv() {
     const searchResultsDiv = document.getElementById("staffcat-search-form");
     if (!searchResultsDiv) return;
-    isISBNSearch()
-      ? (searchResultsDiv.style.backgroundColor = "#f7f7f7")
-      : (searchResultsDiv.style.backgroundColor = "#ffeaea");
+    if (isISBNSearch()) {
+      searchResultsDiv.style.backgroundColor = "#f7f7f7";
+      return;
+    } else {
+      searchResultsDiv.style.backgroundColor = "#ffeaea";
+      createMiniModal("You're not searching by ISBN, so look alive!", true);
+    }
+
     if (keywordQueryIncludesColon()) {
       keyboardCowboy(
         "Evergreen struggles with colons in keyword searches. It works well under a title search, however!",
