@@ -340,7 +340,8 @@ export const handleMessage = async (request, sender, sendResponse) => {
           found: request.found,
           url: request.url,
           price: request.price,
-          isbn: isbn,
+          isbn: isbn, // This is the original search term from storage
+          extractedIsbn: request.isbn || "", // This is the ISBN extracted from the page
         };
         console.log("Background: Forwarding to sidepanel:", messageToSend);
 

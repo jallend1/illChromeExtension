@@ -196,13 +196,13 @@ const setupBookPricingListeners = () => {
                 message.command === "kinokuniyaResult" &&
                 message.isbn === isbn
               ) {
-                console.log(`Sidepanel: Matched result for ISBN ${isbn}`);
+                console.log(`Sidepanel: Matched result for search term ${isbn}`);
                 chrome.runtime.onMessage.removeListener(messageListener);
                 resolve(message);
               }
             };
             chrome.runtime.onMessage.addListener(messageListener);
-            console.log(`Sidepanel: Waiting for result for ISBN ${isbn}`);
+            console.log(`Sidepanel: Waiting for result for search term ${isbn}`);
 
             chrome.runtime.sendMessage({
               command: "openKinokuniyaSearch",
@@ -220,9 +220,20 @@ const setupBookPricingListeners = () => {
             }, 30000);
           });
 
+          // Determine which ISBN to use for the results
+          // If original search term starts with "97", it's already an ISBN
+          // Otherwise, use the extracted ISBN from the page
+          let isbnForResults = "";
+          if (isbn.startsWith("97")) {
+            isbnForResults = isbn;
+          } else if (result.extractedIsbn) {
+            isbnForResults = result.extractedIsbn;
+          }
+
           // Store result
           const resultEntry = {
-            isbn: isbn,
+            searchTerm: isbn, // Original search term (could be UPC, ISBN, etc.)
+            isbn: isbnForResults, // The actual ISBN (either from search or extracted)
             found: result.found,
             url: result.url || "",
             price: result.price || "",
@@ -235,14 +246,17 @@ const setupBookPricingListeners = () => {
           resultDiv.style.cssText =
             "padding: 5px; margin: 5px 0; border: 1px solid #ccc; font-size: 12px;";
           if (result.found) {
+            const isbnDisplay = isbnForResults
+              ? `<br/>ISBN: ${isbnForResults}`
+              : "";
             resultDiv.innerHTML = `
-              <strong>${isbn}</strong><br/>
+              <strong>Search: ${isbn}</strong>${isbnDisplay}<br/>
               Price: ${result.price}<br/>
               <a href="${result.url}" target="_blank">View Product</a>
             `;
             resultDiv.style.backgroundColor = "#d4edda";
           } else {
-            resultDiv.innerHTML = `<strong>${isbn}</strong><br/>Not found${
+            resultDiv.innerHTML = `<strong>Search: ${isbn}</strong><br/>Not found${
               result.error ? ": " + result.error : ""
             }`;
             resultDiv.style.backgroundColor = "#f8d7da";
@@ -278,8 +292,9 @@ const setupBookPricingListeners = () => {
   if (copyResultsBtn) {
     copyResultsBtn.addEventListener("click", () => {
       // Format results as tab-separated for Excel
+      // Columns: Search Term, ISBN, URL, Price
       const lines = currentResults.map((r) => {
-        return `${r.isbn}\t${r.url}\t${r.price}`;
+        return `${r.searchTerm}\t${r.isbn}\t${r.url}\t${r.price}`;
       });
       const text = lines.join("\n");
 

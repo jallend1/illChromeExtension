@@ -127,20 +127,48 @@
 
     console.log(`Final extracted price: ${price}`);
 
-    // Extract ISBN from the page
+    // Extract ISBN from the page - try multiple methods
     let isbn = "";
-    const isbnElement = document.querySelector(
-      '[data-isbn], [itemprop="isbn"], .isbn'
-    );
-    if (isbnElement) {
-      isbn = isbnElement.textContent.trim();
+
+    // Method 1: Look in the bookData table for ISBN row
+    const bookDataTable = document.querySelector("table.bookData");
+    if (bookDataTable) {
+      console.log("kinokuniya.js - Found bookData table, searching for ISBN");
+      const rows = bookDataTable.querySelectorAll("tr");
+      for (const row of rows) {
+        const th = row.querySelector("th");
+        if (th && th.textContent.trim() === "ISBN") {
+          const td = row.querySelector("td");
+          if (td) {
+            isbn = td.textContent.trim();
+            console.log(`kinokuniya.js - Found ISBN in bookData table: ${isbn}`);
+            break;
+          }
+        }
+      }
     }
 
-    // If we can't find ISBN on page, try to extract from URL params or search history
+    // Method 2: Try other common ISBN selectors
+    if (!isbn) {
+      const isbnElement = document.querySelector(
+        '[data-isbn], [itemprop="isbn"], .isbn'
+      );
+      if (isbnElement) {
+        isbn = isbnElement.textContent.trim();
+        console.log(`kinokuniya.js - Found ISBN via selector: ${isbn}`);
+      }
+    }
+
+    // Method 3: If we can't find ISBN on page, try to extract from URL params
     if (!isbn) {
       const urlParams = new URLSearchParams(window.location.search);
       isbn = urlParams.get("isbn") || "";
+      if (isbn) {
+        console.log(`kinokuniya.js - Found ISBN in URL params: ${isbn}`);
+      }
     }
+
+    console.log(`kinokuniya.js - Final extracted ISBN: ${isbn}`);
 
     console.log(`kinokuniya.js - Product price: ${price}, ISBN: ${isbn}`);
 
