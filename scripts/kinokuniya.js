@@ -1,4 +1,11 @@
 (async () => {
+  // Prevent double execution
+  if (window.kinokuniyaScriptExecuted) {
+    console.log("kinokuniya.js already executed, skipping");
+    return;
+  }
+  window.kinokuniyaScriptExecuted = true;
+
   console.log("Kinokuniya helper script loaded on:", window.location.href);
 
   // Wait for page to load
@@ -69,19 +76,93 @@
     }
   }
 
-  // If we're on a product page, we could extract info here later
+  // If we're on a product page, extract info and send to sidepanel
   else if (
-    window.location.href.includes("/products/") &&
+    (window.location.href.includes("/products/") ||
+      window.location.href.includes("/bw/")) &&
     !window.location.href.includes("?")
   ) {
-    console.log("On Kinokuniya product page");
+    console.log(
+      "kinokuniya.js - On Kinokuniya product page:",
+      window.location.href
+    );
 
-    // Future enhancement: Extract price and ISBN here
-    // For now, just log that we're on a product page
-    const priceElement = document.querySelector(".price span");
-    const price = priceElement
-      ? priceElement.textContent.trim()
-      : "Price not found";
-    console.log(`Product price: ${price}`);
+    // Wait for page to fully load
+    console.log("kinokuniya.js - Waiting 2 seconds for page to load...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log("kinokuniya.js - Starting price extraction...");
+
+    // Extract price - try multiple approaches
+    let price = "Price not found";
+
+    // Method 1: Look for "Online Price" text and extract price before it
+    const bodyText = document.body.textContent;
+    const onlinePriceMatch = bodyText.match(/\$[\d,.]+\s+Online Price/i);
+    if (onlinePriceMatch) {
+      price = onlinePriceMatch[0].replace(/\s+Online Price/i, "").trim();
+      console.log(`Found price using text match: ${price}`);
+    }
+
+    // Method 2: Try common price selectors if Method 1 failed
+    if (price === "Price not found") {
+      const priceSelectors = [
+        ".product-price .price-value",
+        ".product-price span",
+        ".price span",
+        "[data-price]",
+        ".online-price",
+        ".price",
+        "[itemprop='price']",
+      ];
+
+      for (const selector of priceSelectors) {
+        const priceElement = document.querySelector(selector);
+        if (priceElement) {
+          price = priceElement.textContent.trim();
+          console.log(`Found price using selector ${selector}: ${price}`);
+          break;
+        }
+      }
+    }
+
+    console.log(`Final extracted price: ${price}`);
+
+    // Extract ISBN from the page
+    let isbn = "";
+    const isbnElement = document.querySelector(
+      '[data-isbn], [itemprop="isbn"], .isbn'
+    );
+    if (isbnElement) {
+      isbn = isbnElement.textContent.trim();
+    }
+
+    // If we can't find ISBN on page, try to extract from URL params or search history
+    if (!isbn) {
+      const urlParams = new URLSearchParams(window.location.search);
+      isbn = urlParams.get("isbn") || "";
+    }
+
+    console.log(`kinokuniya.js - Product price: ${price}, ISBN: ${isbn}`);
+
+    // Send result back to extension
+    const message = {
+      command: "kinokuniyaResult",
+      found: true,
+      url: window.location.href,
+      price: price,
+      isbn: isbn,
+    };
+    console.log("kinokuniya.js - Sending message to background:", message);
+
+    chrome.runtime.sendMessage(message, () => {
+      if (chrome.runtime.lastError) {
+        console.error(
+          "kinokuniya.js - Error sending message:",
+          chrome.runtime.lastError
+        );
+      } else {
+        console.log("kinokuniya.js - Message sent successfully");
+      }
+    });
   }
 })();

@@ -266,8 +266,30 @@
               >
             </button>
           </div>
+          <div id="bulk-price-container" class="hidden">
+            <h4>Paste ISBNs/UPCs (one per line):</h4>
+            <textarea
+              id="isbn-input"
+              rows="10"
+              placeholder="Paste ISBNs here, one per line..."
+              style="width: 100%; margin-bottom: 10px; padding: 5px; font-family: monospace;"
+            ></textarea>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button id="startBulkCheck">Start Checking</button>
+              <button id="cancelBulkCheck">Cancel</button>
+            </div>
+            <div id="bulk-progress" class="hidden">
+              <p><strong>Progress:</strong> <span id="progress-text">0/0</span></p>
+              <p><strong>Current ISBN:</strong> <span id="current-isbn">-</span></p>
+              <p><strong>Status:</strong> <span id="status-text">Ready</span></p>
+            </div>
+          </div>
           <div id="price-results" class="price-results hidden">
             <h4>Price Results:</h4>
+            <div style="margin-bottom: 10px;">
+              <button id="copyResults">Copy Results to Clipboard</button>
+              <button id="clearResults">Clear Results</button>
+            </div>
             <div id="price-output"></div>
           </div>
         </main>

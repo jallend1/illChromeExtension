@@ -233,12 +233,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
   // Handle Kinokuniya search FIRST - before any tab validation
   if (request.command === "openKinokuniyaSearch") {
-    // console.log("Handling Kinokuniya search - no tab validation needed");
     try {
-      // console.log(
-      //   `Background: Opening Kinokuniya search for: ${request.searchTerm}`
-      // );
-
       // Build search URL
       const cleanTerm = String(request.searchTerm)
         .replace(/-/g, "")
@@ -246,24 +241,124 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
       const searchUrl = `https://united-states.kinokuniya.com/products?utf8=%E2%9C%93&is_searching=true&restrictBy%5Bavailable_only%5D=1&keywords=${cleanTerm}&taxon=&x=0&y=0`;
 
-      // console.log(`Opening URL: ${searchUrl}`);
+      // Store the ISBN/search term with the tab so we can track it
+      const bulkMode = request.bulkMode || false;
+      const originalIsbn = request.searchTerm;
 
       // Create a new tab with the search URL and capture the tab object
       const newTab = await chrome.tabs.create({
         url: searchUrl,
-        active: true, // Make it the active tab so user can see results
+        active: !bulkMode, // Don't focus tab if in bulk mode
       });
 
-      // console.log("Successfully opened Kinokuniya search tab");
-      // Wait a moment to ensure the tab is fully loaded
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Once loaded, inject content script checkKinokuniya
-      chrome.scripting.executeScript({
-        target: { tabId: newTab.id },
-        files: ["./scripts/checkKinokuniya.js"],
-      });
+      // Store mapping of tab ID to ISBN for later
+      if (bulkMode) {
+        chrome.storage.session.set({
+          [`kinokuniya_${newTab.id}`]: originalIsbn,
+        });
+      }
+
+      // Listen for page loads to inject scripts
+      // This handles both the search results page and the product page after navigation
+      let hasInjectedSearchScript = false;
+      let listenerTimeout = setTimeout(() => {
+        // Cleanup listener after 40 seconds if nothing happened
+        chrome.tabs.onUpdated.removeListener(listener);
+      }, 40000);
+
+      function listener(tabId, info, tab) {
+        if (tabId === newTab.id && info.status === "complete") {
+          console.log(
+            `Background: Tab ${tabId} loaded: ${tab.url}, status: ${info.status}`
+          );
+
+          // Check what kind of page we're on
+          if (tab.url.includes("/products?") && !hasInjectedSearchScript) {
+            // Search results page - inject checkKinokuniya
+            console.log("Background: Detected search results page, injecting checkKinokuniya.js");
+            hasInjectedSearchScript = true;
+            chrome.scripting
+              .executeScript({
+                target: { tabId: newTab.id },
+                files: ["./scripts/checkKinokuniya.js"],
+              })
+              .catch((err) => {
+                console.error("Error injecting checkKinokuniya:", err);
+              });
+          } else if (
+            (tab.url.includes("/products/") || tab.url.includes("/bw/")) &&
+            !tab.url.includes("?")
+          ) {
+            // Product page - inject kinokuniya to extract price
+            console.log("Background: Detected product page, injecting kinokuniya.js");
+            clearTimeout(listenerTimeout);
+            chrome.tabs.onUpdated.removeListener(listener);
+            chrome.scripting
+              .executeScript({
+                target: { tabId: newTab.id },
+                files: ["./scripts/kinokuniya.js"],
+              })
+              .catch((err) => {
+                console.error("Error injecting kinokuniya:", err);
+              });
+          }
+        }
+      }
+
+      chrome.tabs.onUpdated.addListener(listener);
     } catch (error) {
       console.error("Error opening Kinokuniya search:", error);
+    }
+    return true;
+  }
+
+  // Handle legacy kinokuniyaResults message (for backwards compatibility)
+  if (request.type === "kinokuniyaResults") {
+    console.log("Received legacy kinokuniyaResults message:", request);
+    return true;
+  }
+
+  // Handle Kinokuniya result messages from content script
+  if (request.command === "kinokuniyaResult") {
+    console.log("Background: Received kinokuniya result:", request);
+    console.log("Background: Sender tab ID:", sender.tab?.id);
+
+    // Get the ISBN from session storage if available
+    const tabId = sender.tab?.id;
+    if (tabId) {
+      chrome.storage.session.get([`kinokuniya_${tabId}`], (result) => {
+        const isbn = result[`kinokuniya_${tabId}`] || request.isbn || "";
+        const isBulkMode = !!result[`kinokuniya_${tabId}`];
+
+        console.log(
+          `Background: ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`
+        );
+
+        // Forward to all open sidepanels
+        const messageToSend = {
+          command: "kinokuniyaResult",
+          found: request.found,
+          url: request.url,
+          price: request.price,
+          isbn: isbn,
+        };
+        console.log("Background: Forwarding to sidepanel:", messageToSend);
+
+        chrome.runtime.sendMessage(messageToSend);
+
+        // Clean up session storage
+        chrome.storage.session.remove([`kinokuniya_${tabId}`]);
+
+        // Close the tab after a short delay only if in bulk mode
+        if (isBulkMode) {
+          console.log(`Background: Closing tab ${tabId} in 500ms`);
+          setTimeout(() => {
+            chrome.tabs.remove(tabId);
+          }, 500);
+        }
+      });
+    } else {
+      console.error("Background: No tab ID in sender!");
     }
     return true;
   }

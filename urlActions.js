@@ -19,10 +19,12 @@ const URL_MAP = {
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
-  "kinokuniya.com/bw/": {
-    scripts: ["extractKinokuniya"],
-  },
-  "kinokuniya.com": { scripts: ["kinokuniya"] },
+  // Note: kinokuniya scripts are now handled by bulk price check feature
+  // Don't auto-inject them to avoid conflicts
+  // "kinokuniya.com/bw/": {
+  //   scripts: ["extractKinokuniya"],
+  // },
+  // "kinokuniya.com": { scripts: ["kinokuniya"] },
 };
 
 /**
