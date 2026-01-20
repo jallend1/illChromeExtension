@@ -292,9 +292,17 @@ const setupBookPricingListeners = () => {
   if (copyResultsBtn) {
     copyResultsBtn.addEventListener("click", () => {
       // Format results as tab-separated for Excel
-      // Columns: Search Term, ISBN, URL, Price
+      // Columns: ISBN-13, Search Term, Price, Source ("Kinokuniya" if found), Blank, Link
       const lines = currentResults.map((r) => {
-        return `${r.searchTerm}\t${r.isbn}\t${r.url}\t${r.price}`;
+        // Only include ISBN if it starts with 97 (valid ISBN-13)
+        const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
+        // Source column: "Kinokuniya" if found, blank otherwise
+        const source = r.found ? "Kinokuniya" : "";
+        // Blank column
+        const blank = "";
+        // Format URL as Excel HYPERLINK formula if found
+        const link = r.found && r.url ? `=HYPERLINK("${r.url}","Link")` : "";
+        return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t${blank}\t${link}`;
       });
       const text = lines.join("\n");
 
