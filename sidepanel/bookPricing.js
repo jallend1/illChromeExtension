@@ -66,35 +66,9 @@ const waitForSearchResult = (isbn) => {
 };
 
 /**
- * Creates a result display element
- */
-const createResultElement = (isbn, isbnForResults, result) => {
-  const resultDiv = document.createElement("div");
-  resultDiv.style.cssText =
-    "padding: 5px; margin: 5px 0; border: 1px solid #ccc; font-size: 12px;";
-
-  if (result.found) {
-    const isbnDisplay = isbnForResults ? `<br/>ISBN: ${isbnForResults}` : "";
-    resultDiv.innerHTML = `
-      <strong>Search: ${isbn}</strong>${isbnDisplay}<br/>
-      Price: ${result.price}<br/>
-      <a href="${result.url}" target="_blank">View Product</a>
-    `;
-    resultDiv.style.backgroundColor = "#d4edda";
-  } else {
-    resultDiv.innerHTML = `<strong>Search: ${isbn}</strong><br/>Not found${
-      result.error ? ": " + result.error : ""
-    }`;
-    resultDiv.style.backgroundColor = "#f8d7da";
-  }
-
-  return resultDiv;
-};
-
-/**
  * Processes a single ISBN search
  */
-const processIsbn = async (isbn, priceOutput) => {
+const processIsbn = async (isbn) => {
   document.getElementById("current-isbn").textContent = isbn;
   document.getElementById("status-text").textContent = "Searching...";
 
@@ -122,10 +96,6 @@ const processIsbn = async (isbn, priceOutput) => {
     };
     currentResults.push(resultEntry);
 
-    // Display result
-    const resultDiv = createResultElement(isbn, isbnForResults, result);
-    priceOutput.appendChild(resultDiv);
-
     document.getElementById("status-text").textContent = result.found
       ? "Found!"
       : "Not found";
@@ -151,9 +121,7 @@ const processIsbn = async (isbn, priceOutput) => {
 const setupStartBulkCheck = (
   startBulkCheckBtn,
   isbnInput,
-  bulkProgress,
-  priceResults,
-  priceOutput
+  bulkProgress
 ) => {
   if (!startBulkCheckBtn) return;
 
@@ -178,15 +146,13 @@ const setupStartBulkCheck = (
     isProcessing = true;
     currentResults = [];
     bulkProgress.classList.remove("hidden");
-    priceResults.classList.remove("hidden");
-    priceOutput.innerHTML = "";
     startBulkCheckBtn.disabled = true;
 
     // Process each ISBN
     for (let i = 0; i < isbns.length && isProcessing; i++) {
       document.getElementById("progress-text").textContent = `${i + 1}/${isbns.length}`;
 
-      await processIsbn(isbns[i], priceOutput);
+      await processIsbn(isbns[i]);
 
       // Wait before next search (respect rate limits)
       if (i < isbns.length - 1 && isProcessing) {
@@ -197,6 +163,16 @@ const setupStartBulkCheck = (
     document.getElementById("status-text").textContent = "Complete!";
     startBulkCheckBtn.disabled = false;
     isProcessing = false;
+
+    // Show results in modal on active tab
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          command: 'showPriceResults',
+          results: currentResults
+        });
+      }
+    });
   });
 };
 
@@ -237,16 +213,24 @@ const setupCopyResults = (copyResultsBtn) => {
 /**
  * Sets up clear results button
  */
-const setupClearResults = (clearResultsBtn, priceOutput, priceResults, isbnInput) => {
+const setupClearResults = (clearResultsBtn, isbnInput, bulkProgress) => {
   if (!clearResultsBtn) return;
 
   clearResultsBtn.addEventListener("click", () => {
     currentResults = [];
-    priceOutput.innerHTML = "";
-    priceResults.classList.add("hidden");
     isbnInput.value = "";
+    bulkProgress.classList.add("hidden");
   });
 };
+
+// Listen for clear results message from modal
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.command === 'clearPriceResults') {
+    currentResults = [];
+    const isbnInput = document.getElementById("isbn-input");
+    if (isbnInput) isbnInput.value = "";
+  }
+});
 
 /**
  * Sets up all book pricing listeners
@@ -258,14 +242,12 @@ export const setupBookPricingListeners = () => {
   const startBulkCheckBtn = document.getElementById("startBulkCheck");
   const cancelBulkCheckBtn = document.getElementById("cancelBulkCheck");
   const bulkProgress = document.getElementById("bulk-progress");
-  const priceResults = document.getElementById("price-results");
-  const priceOutput = document.getElementById("price-output");
   const copyResultsBtn = document.getElementById("copyResults");
   const clearResultsBtn = document.getElementById("clearResults");
 
   setupBulkPriceToggle(bulkPriceCheckBtn, bulkPriceContainer, isbnInput);
   setupCancelBulkCheck(cancelBulkCheckBtn, bulkPriceContainer, bulkProgress);
-  setupStartBulkCheck(startBulkCheckBtn, isbnInput, bulkProgress, priceResults, priceOutput);
+  setupStartBulkCheck(startBulkCheckBtn, isbnInput, bulkProgress);
   setupCopyResults(copyResultsBtn);
-  setupClearResults(clearResultsBtn, priceOutput, priceResults, isbnInput);
+  setupClearResults(clearResultsBtn, isbnInput, bulkProgress);
 };
