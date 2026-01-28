@@ -47,8 +47,10 @@ const setupCollapseToggleListeners = () => {
   if (!elements.collapseToggle) return;
 
   elements.collapseToggle.forEach((toggle) => {
-    toggle.addEventListener("click", () => {
-      const mainSection = toggle.parentElement.nextElementSibling;
+    // Make the entire header clickable
+    const header = toggle.parentElement;
+    header.addEventListener("click", () => {
+      const mainSection = header.nextElementSibling;
       toggleSection(toggle, mainSection);
     });
   });
