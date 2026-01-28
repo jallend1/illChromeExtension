@@ -1,16 +1,23 @@
 :root {
-  --body-background: linear-gradient(120deg, #fdf6e3 0%, #ffffff 100%);
+  --body-background: #fafafa;
   --header-background: linear-gradient(135deg, #00593d, #007a54);
   --header-text-color: #fff;
-  --section-header-background: linear-gradient(
-    90deg,
-    #e6f9f3 0%,
-    #b2f2e5 60%,
-    #00b894 100%
-  );
-  --button-background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  --toggle-bg-active: #4cd137;
+  --section-header-background: #f0f9f6;
+  --section-header-border: #d0e8df;
+  --button-background: #ffffff;
+  --button-border: #e0e0e0;
+  --button-hover-bg: #f5f5f5;
+  --toggle-bg-active: #00b894;
   --toggle-inactive-bg: #ccc;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --border-radius: 6px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
 }
 
 html,
@@ -27,15 +34,19 @@ body {
 
 body {
   height: 100vh;
-  font-family: "Roboto", sans-serif;
-  background: #fff;
-  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
   background: var(--body-background);
-  /* overflow: hidden; */
+  color: #1a1a1a;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1 {
   text-align: center;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
 }
 
 a {
@@ -57,12 +68,14 @@ a:active {
   color: var(--header-text-color);
   padding: 0;
   width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-header main {
   display: flex;
   justify-content: center;
   text-align: center;
+  padding: var(--spacing-sm) 0;
 }
 
 .sidebar-header img {
@@ -74,13 +87,13 @@ a:active {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-lg);
   color: var(--header-text-color);
   font-size: 0.8rem;
-  margin-top: 1rem;
+  margin-top: var(--spacing-lg);
 
   p {
-    margin: 0.25rem;
+    margin: var(--spacing-xs);
   }
 }
 
@@ -106,14 +119,17 @@ section {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  border-top: solid 1px #fff;
-  padding-bottom: 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+section:has(.collapsible.collapsed) {
+  border-top: none;
 }
 
 /* Only applicable image so far is the collapse toggle */
 img {
-  height: 15px;
-  padding: 1rem;
+  height: 12px;
+  padding: 0.5rem;
 }
 
 section header {
@@ -121,15 +137,40 @@ section header {
   justify-content: center;
   align-items: center;
   width: 100%;
-  /* background-color: var(--section-header-background); */
   background: var(--section-header-background);
-  padding: 0;
+  border-bottom: 1px solid var(--section-header-border);
+  padding: 0.375rem 0;
+  transition: background-color 0.2s ease;
+}
+
+section header:hover {
+  background: #e8f5f0;
 }
 
 section h2 {
-  margin-bottom: 1rem;
-  color: rgb(13, 119, 100);
-  font-size: 0.85rem;
+  margin: 0;
+  color: #006d5b;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Red-themed sections for experimental features */
+#in-development header,
+#vendoring header {
+  background: #fff5f5;
+  border-bottom: 1px solid #ffd6d6;
+}
+
+#in-development header:hover,
+#vendoring header:hover {
+  background: #ffeded;
+}
+
+#in-development h2,
+#vendoring h2 {
+  color: #c92a2a;
 }
 
 section img {
@@ -143,6 +184,7 @@ section main {
   width: 100%;
   justify-content: space-around;
   align-items: center;
+  padding: var(--spacing-sm) 0;
 }
 
 /* ******************* */
@@ -179,38 +221,49 @@ section main {
 
 button {
   cursor: pointer;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-sm);
   padding: 0.4rem 0.7rem;
-  font-size: 0.7rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  font-size: 0.65rem;
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--button-border);
   background: var(--button-background);
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s;
+  color: #2c2c2c;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+  letter-spacing: -0.01em;
 }
 
 button.more-info {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
 }
 
 button:hover {
-  background: linear-gradient(135deg, #e9ecef, #dee2e6);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+  background: var(--button-hover-bg);
+  border-color: #c0c0c0;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 button:active {
-  background: linear-gradient(135deg, #dee2e6, #ced4da);
-  transform: translateY(1px);
+  background: #ececec;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
 }
 
 button:disabled {
-  background: #ccc;
-  color: #666;
+  background: #f5f5f5;
+  color: #999;
+  border-color: #e0e0e0;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;
+  opacity: 0.6;
+}
+
+button:focus-visible {
+  outline: 2px solid #00b894;
+  outline-offset: 2px;
 }
 
 button a {
@@ -285,6 +338,8 @@ img.collapsible.rotated {
   bottom: 0px;
   width: 100%;
   background: var(--header-background);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-xs) 0;
 }
 
 #about {
@@ -349,7 +404,7 @@ img.collapsible.rotated {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   background-color: transparent;
 }
 
@@ -358,8 +413,8 @@ img.collapsible.rotated {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  margin: 0.2rem 0;
-  width: 150px;
+  margin: 0.15rem 0;
+  width: 135px;
 }
 
 .toggle-label {
@@ -371,19 +426,21 @@ img.collapsible.rotated {
 
 .toggle-switch {
   appearance: none;
-  width: 28px;
-  height: 16px;
-  background: var(--toggle-inactive-bg, #ccc);
-  border-radius: 16px;
+  width: 32px;
+  height: 18px;
+  background: #d1d5db;
+  border-radius: 18px;
   position: relative;
   outline: none;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   margin: 0;
   cursor: pointer;
+  border: 1px solid #b8bec6;
 }
 
 .toggle-switch:checked {
-  background: var(--toggle-bg-active, #4cd137);
+  background: var(--toggle-bg-active, #00b894);
+  border-color: var(--toggle-bg-active, #00b894);
 }
 
 .toggle-switch::before {
@@ -395,17 +452,24 @@ img.collapsible.rotated {
   height: 12px;
   border-radius: 50%;
   background: #fff;
-  transition: transform 0.2s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .toggle-switch:checked::before {
-  transform: translateX(12px);
+  transform: translateX(14px);
+}
+
+.toggle-switch:focus-visible {
+  outline: 2px solid #00b894;
+  outline-offset: 2px;
 }
 
 .toggle-text {
-  font-size: 0.7rem;
-  margin: 0.2rem 0 0 0.2rem;
+  font-size: 0.65rem;
+  margin: 0.15rem 0 0 0.25rem;
+  font-weight: 500;
+  color: #4a4a4a;
 }
 
 /* ******************* */
