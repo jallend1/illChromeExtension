@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "3.4.2",
+  "version": "3.5.1",
   "permissions": [
     "activeTab",
     "storage",
@@ -74,5 +74,11 @@
   "side_panel": {
     "default_path": "sidepanel/sidepanel.html",
     "open_at_install": true
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["scripts/priceResultsModal.js"]
+    }
+  ]
 }
