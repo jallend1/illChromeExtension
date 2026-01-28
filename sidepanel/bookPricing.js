@@ -6,36 +6,6 @@ let isProcessing = false;
 let currentResults = [];
 
 /**
- * Sets up single book price check button
- */
-const setupSinglePriceCheck = (checkBookPriceBtn) => {
-  if (!checkBookPriceBtn) return;
-
-  checkBookPriceBtn.addEventListener("click", async () => {
-    const searchTerm = prompt("Enter ISBN, title, or author to search:");
-    if (!searchTerm || searchTerm.trim() === "") return;
-
-    try {
-      checkBookPriceBtn.disabled = true;
-      checkBookPriceBtn.textContent = "Opening Kinokuniya...";
-
-      console.log(`Opening Kinokuniya search for: "${searchTerm}"`);
-
-      await chrome.runtime.sendMessage({
-        command: "openKinokuniyaSearch",
-        searchTerm: searchTerm.trim(),
-      });
-    } catch (error) {
-      console.error("Failed to open Kinokuniya search:", error);
-      alert("Failed to open search: " + error.message);
-    } finally {
-      checkBookPriceBtn.disabled = false;
-      checkBookPriceBtn.textContent = "Check Book Price";
-    }
-  });
-};
-
-/**
  * Sets up bulk price check toggle button
  */
 const setupBulkPriceToggle = (bulkPriceCheckBtn, bulkPriceContainer, isbnInput) => {
@@ -282,7 +252,6 @@ const setupClearResults = (clearResultsBtn, priceOutput, priceResults, isbnInput
  * Sets up all book pricing listeners
  */
 export const setupBookPricingListeners = () => {
-  const checkBookPriceBtn = document.getElementById("checkBookPrice");
   const bulkPriceCheckBtn = document.getElementById("bulkPriceCheck");
   const bulkPriceContainer = document.getElementById("bulk-price-container");
   const isbnInput = document.getElementById("isbn-input");
@@ -294,7 +263,6 @@ export const setupBookPricingListeners = () => {
   const copyResultsBtn = document.getElementById("copyResults");
   const clearResultsBtn = document.getElementById("clearResults");
 
-  setupSinglePriceCheck(checkBookPriceBtn);
   setupBulkPriceToggle(bulkPriceCheckBtn, bulkPriceContainer, isbnInput);
   setupCancelBulkCheck(cancelBulkCheckBtn, bulkPriceContainer, bulkProgress);
   setupStartBulkCheck(startBulkCheckBtn, isbnInput, bulkProgress, priceResults, priceOutput);
