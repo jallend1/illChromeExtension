@@ -427,9 +427,20 @@ export const keyboardCowboy = (message, header = "Be a keyboard cowboy!") => {
     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
   });
 
-  document.body.appendChild(tooltip);
+  // Insert tooltip in the appropriate location
+  const frequentLibraries = document.getElementById("frequentLibraries");
+  const staffNavBar = document.querySelector("eg-staff-nav-bar");
+  
+  if (frequentLibraries) {
+    frequentLibraries.insertAdjacentElement("afterend", tooltip);
+  } else if (staffNavBar) {
+    staffNavBar.insertAdjacentElement("afterend", tooltip);
+  } else {
+    document.body.appendChild(tooltip);
+  }
+  
   console.log(
-    "Tooltip inserted into body, in DOM:",
+    "Tooltip inserted into DOM:",
     document.contains(tooltip),
   );
 };
