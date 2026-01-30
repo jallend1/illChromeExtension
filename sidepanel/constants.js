@@ -51,6 +51,7 @@ export const MESSAGE_TYPES = {
   STORAGE_UPDATED: "storage-updated",
   ADDRESS_READY: "addressReady",
   OVERDUE_NOTICE_READY: "overdueNoticeReady",
+  LIBRARY_INVOICE_READY: "libraryInvoiceReady",
   SIDEPANEL_OPEN: "sidepanel-open",
   SIDEPANEL_CLOSE: "sidepanel-close",
 };

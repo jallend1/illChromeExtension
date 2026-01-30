@@ -75,6 +75,9 @@ export const handleMessage = (message, sender, sendResponse) => {
     case MESSAGE_TYPES.OVERDUE_NOTICE_READY:
       extractFromStorage("overdueNotice");
       break;
+    case MESSAGE_TYPES.LIBRARY_INVOICE_READY:
+      extractFromStorage("libraryInvoice");
+      break;
     default:
       console.log("Unhandled message type:", message.type);
   }
