@@ -35,7 +35,6 @@ export const setCurrentTabUrl = (url) => {
  */
 const handleTabUrlUpdate = (message, sendResponse) => {
   if (message.windowId === windowId) {
-    console.log("Tab URL updated:", message.url);
     currentTabUrl = message.url || "";
     handleURLChange(currentTabUrl);
     sendResponse && sendResponse({ status: "URL handled" });
@@ -62,7 +61,6 @@ const handleStorageUpdate = (message) => {
  * @param {Function} sendResponse - Response callback
  */
 export const handleMessage = (message, sender, sendResponse) => {
-  console.log("Message type:", message.type);
 
   switch (message.type) {
     case MESSAGE_TYPES.TAB_URL_UPDATED:
