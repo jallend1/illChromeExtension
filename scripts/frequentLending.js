@@ -100,24 +100,45 @@ async function loadFrequentLending() {
    */
   const createCloseButton = (container) => {
     const closeButton = document.createElement("button");
-    closeButton.textContent = "X";
+    closeButton.textContent = "×";
+    closeButton.setAttribute("aria-label", "Close frequent lending toolbar");
     Object.assign(closeButton.style, {
-      position: "absolute",
-      top: "0",
-      right: "0",
-      background: "none",
-      border: "none",
-      fontSize: ".5rem",
+      background: "#f1f5f9",
+      border: "1px solid #e2e8f0",
+      borderRadius: "6px",
+      width: "24px",
+      height: "24px",
+      fontSize: "1.1rem",
+      lineHeight: "1",
       cursor: "pointer",
-      color: "#333",
-      padding: "0.5rem",
-      margin: "0.5rem",
-      zIndex: "9999",
+      color: "#64748b",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      transition: "all 0.2s ease",
     });
 
     closeButton.addEventListener("click", () => {
       chrome.storage.local.set({ lendingMode: false });
       container.remove();
+    });
+
+    closeButton.addEventListener("mouseover", () => {
+      Object.assign(closeButton.style, {
+        background: "#ef4444",
+        color: "#ffffff",
+        borderColor: "#dc2626",
+        transform: "scale(1.05)",
+      });
+    });
+
+    closeButton.addEventListener("mouseout", () => {
+      Object.assign(closeButton.style, {
+        background: "#f1f5f9",
+        color: "#64748b",
+        borderColor: "#e2e8f0",
+        transform: "scale(1)",
+      });
     });
 
     container.appendChild(closeButton);
@@ -143,22 +164,43 @@ async function loadFrequentLending() {
     container.id = "frequentLibraries";
     Object.assign(container.style, {
       display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      border: "1px solid #e2e8f0",
+      background: "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)",
+      borderRadius: "12px",
+      marginTop: "35px",
+      padding: "1.25rem 1.5rem",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06)",
+      transition: "box-shadow 0.2s ease",
+    });
+
+    const buttonsContainer = document.createElement("div");
+    Object.assign(buttonsContainer.style, {
+      display: "flex",
       flexWrap: "wrap",
       justifyContent: "center",
       alignItems: "center",
-      border: "1px solid #ccc",
-      background: "linear-gradient(135deg, #f8fafc 0%, #e8f0ee 100%)",
-      borderRadius: "5px",
-      marginTop: "35px",
-      paddingTop: "1rem",
-      paddingBottom: "0.75rem",
-      position: "relative",
+      gap: "0.35rem",
+      flex: "1",
     });
 
     Object.keys(frequentLibraries).forEach((library) =>
-      createLibraryButton(library, container)
+      createLibraryButton(library, buttonsContainer)
     );
-    createCloseButton(container);
+
+    const closeButtonContainer = document.createElement("div");
+    Object.assign(closeButtonContainer.style, {
+      width: "30px",
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "center",
+      flexShrink: "0",
+    });
+
+    container.appendChild(buttonsContainer);
+    container.appendChild(closeButtonContainer);
+    createCloseButton(closeButtonContainer);
     navBar.insertAdjacentElement("afterend", container);
   };
 
