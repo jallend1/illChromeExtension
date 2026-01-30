@@ -149,11 +149,9 @@ async function loadFrequentLending() {
    * @returns {Promise<void>} A promise that resolves when the setup is complete
    */
   const setupFrequentLending = async () => {
-    // Check if script has already run using data attribute
-    if (!isEvergreenPage() || document.body.dataset.frequentLendingLoaded)
+    // Check if the bar already exists or if not on Evergreen page
+    if (!isEvergreenPage() || document.querySelector("#frequentLibraries"))
       return;
-
-    document.body.dataset.frequentLendingLoaded = "true";
 
     const navBar = await waitForElementWithInterval("eg-staff-nav-bar");
     if (!navBar) return;
@@ -207,11 +205,27 @@ async function loadFrequentLending() {
   setupFrequentLending();
 }
 
-// Initialize based on storage
-chrome.storage.local.get("lendingMode", (result) => {
-  if (result.lendingMode) {
-    loadFrequentLending();
-  } else {
-    document.querySelector("#frequentLibraries")?.remove();
-  }
-});
+// Prevent multiple script executions
+if (!window.frequentLendingInitialized) {
+  window.frequentLendingInitialized = true;
+
+  // Initialize based on storage
+  chrome.storage.local.get("lendingMode", (result) => {
+    if (result.lendingMode) {
+      loadFrequentLending();
+    } else {
+      document.querySelector("#frequentLibraries")?.remove();
+    }
+  });
+
+  // Listen for storage changes to toggle the bar on/off
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes.lendingMode) {
+      if (changes.lendingMode.newValue) {
+        loadFrequentLending();
+      } else {
+        document.querySelector("#frequentLibraries")?.remove();
+      }
+    }
+  });
+}
