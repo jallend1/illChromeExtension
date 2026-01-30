@@ -1,12 +1,12 @@
-import { elements, storageKeys, MESSAGE_TYPES } from "./constants.js";
+import { elements, storageKeys, MESSAGE_TYPES } from "./lib/constants.js";
 import {
   handleMessage,
   initializeMessageHandler,
   setCurrentTabUrl,
-} from "./messageHandler.js";
-import { handleURLChange } from "./buttonManager.js";
-import { initializeEventListeners } from "./eventListeners.js";
-import { getStorageValue } from "./utils.js";
+} from "./lib/messageHandler.js";
+import { handleURLChange } from "./lib/buttonManager.js";
+import { initializeEventListeners } from "./lib/eventListeners.js";
+import { getStorageValue } from "./lib/utils.js";
 
 // The window ID for this istance of the side panel
 let myWindowId = null;
