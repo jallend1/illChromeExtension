@@ -37,7 +37,9 @@ body {
 
 body {
   height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue",
+    Arial, sans-serif;
   background: var(--body-background);
   color: #1a1a1a;
   line-height: 1.5;
@@ -155,7 +157,7 @@ a:active {
   padding: 0;
 }
 
-#jurassic-park{
+#jurassic-park {
   width: 300px;
   height: auto;
 }
@@ -347,7 +349,9 @@ button a {
 
 .collapsible {
   /* overflow: hidden; */
-  transition: max-height 300ms ease-out, opacity 300ms ease-out;
+  transition:
+    max-height 300ms ease-out,
+    opacity 300ms ease-out;
   opacity: 1;
   max-height: 1000px;
   display: flex;
@@ -376,7 +380,9 @@ img.collapsible.rotated {
 .collapsible.collapsed {
   max-height: 0;
   opacity: 0;
-  transition: max-height 300ms ease-out, opacity 300ms ease-out;
+  transition:
+    max-height 300ms ease-out,
+    opacity 300ms ease-out;
 }
 
 .hidden {
@@ -430,59 +436,6 @@ img.collapsible.rotated {
   background: var(--header-background);
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   padding: var(--spacing-xs) 0;
-}
-
-#about {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  & a {
-    color: #fff;
-    text-decoration: none;
-
-    & #back-button {
-      margin: 0 0.5rem;
-      font-size: 0.8rem;
-      text-align: center;
-      border: solid 1px #fff;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
-    }
-
-    & #back-button:hover {
-      background-color: #fff;
-      color: rgb(33, 37, 41);
-    }
-
-    & #back-button:active {
-      transform: translateY(1px);
-    }
-  }
-
-  & main {
-    padding: 1rem;
-    font-size: 1rem;
-
-    & h2 {
-      text-align: center;
-    }
-  }
-
-  & li {
-    margin-bottom: 0.5rem;
-    line-height: 1.5rem;
-  }
-}
-
-#about-details {
-  padding: 0 1rem;
-  font-size: 1rem;
-  text-align: center;
-  line-height: 1.8rem;
-  margin: 0 0 1rem 0;
 }
 
 /* ******************* */
