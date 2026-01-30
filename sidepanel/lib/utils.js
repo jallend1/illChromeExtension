@@ -3,7 +3,7 @@
  * @returns {Promise<Object|null>} Parsed CSV data or null on error
  */
 export const parseMailData = async () => {
-  const mailDataUrl = chrome.runtime.getURL("data/mailData.csv");
+  const mailDataUrl = chrome.runtime.getURL("data/mailData - 2025.csv");
   try {
     const response = await fetch(mailDataUrl);
     if (!response.ok) {

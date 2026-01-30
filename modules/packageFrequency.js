@@ -1,5 +1,6 @@
-const { waitForElementWithInterval, ignoreHiddenElements } =
-  await import(chrome.runtime.getURL("modules/utils.js"));
+const { waitForElementWithInterval, ignoreHiddenElements } = await import(
+  chrome.runtime.getURL("modules/utils.js")
+);
 const { createMiniModal } = await import(
   chrome.runtime.getURL("modules/modals.js")
 );
@@ -12,7 +13,7 @@ const extractElements = async (selectors) => {
   const elements = {};
   for (const key in selectors) {
     const element = await waitForElementWithInterval(() =>
-      ignoreHiddenElements(selectors[key])
+      ignoreHiddenElements(selectors[key]),
     );
     if (element) {
       elements[key] = element.value || element.textContent.trim();
@@ -39,7 +40,7 @@ const returnArrayOfMatches = async (zipCode) => {
         if (!zipCode || typeof zipCode !== "string" || zipCode.trim() === "") {
           console.warn(
             "Invalid or missing zipCode in returnArrayOfMatches:",
-            zipCode
+            zipCode,
           );
           resolve([]);
           return;
@@ -108,12 +109,12 @@ export const packageFrequency = async () => {
   // Noticed intermittent error in console after the fact...Hopefully this will highlight when it's occurring
   if (typeof chrome === "undefined" || !chrome.storage) {
     console.error(
-      "Chrome APIs are not available. This function must run in a Chrome extension context."
+      "Chrome APIs are not available. This function must run in a Chrome extension context.",
     );
     createMiniModal(
       "Error: Chrome extension APIs are not available.",
       true,
-      10000
+      10000,
     );
     return;
   }
@@ -126,7 +127,7 @@ export const packageFrequency = async () => {
     createMiniModal(
       `No ZIP codes matching ${zipCodeToCheck} found.`,
       false,
-      10000
+      10000,
     );
     return;
   }
@@ -134,7 +135,7 @@ export const packageFrequency = async () => {
     createMiniModal(
       `No ZIP codes matching ${zipCodeToCheck} found.`,
       false,
-      10000
+      10000,
     );
     return;
   }
@@ -147,9 +148,9 @@ export const packageFrequency = async () => {
       matchingZipCodes[0]["Recipient Name"];
     const averageDays = Math.floor(calculateAverageDays(appearances));
     createMiniModal(
-      `A package was sent to <strong>${libraryName}</strong> every ${averageDays} days in 2024.`,
+      `A package was sent to <strong>${libraryName}</strong> every ${averageDays} days in 2025.`,
       false,
-      10000
+      10000,
     );
   } else {
     // Multiple matches: list names and appearances
@@ -159,14 +160,14 @@ export const packageFrequency = async () => {
           `<li><strong>${library["Recipient Company"] || ""}</strong> (${
             library["Recipient Name"] || ""
           }): ${calculateAverageDays(
-            library["Appearances"]
-          )} days between packages.</li>`
+            library["Appearances"],
+          )} days between packages.</li>`,
       )
       .join("");
     createMiniModal(
       `<div>Multiple matches for this ZIP code:<ul>${list}</ul></div>`,
       false,
-      10000
+      10000,
     );
   }
 };
