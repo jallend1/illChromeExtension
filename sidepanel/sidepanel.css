@@ -97,6 +97,36 @@ a:active {
   height: 40px;
 }
 
+.header-link {
+  display: block;
+  text-align: center;
+  padding: 0.4rem 1rem;
+  margin: 0.5rem auto 0.75rem;
+  width: fit-content;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #4aa3ff;
+  border: 1px solid #4aa3ff;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header-link:hover {
+  background: #00b894;
+  border-color: #00b894;
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.header-link:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .sidebar-header footer {
   display: flex;
   flex-direction: column;
