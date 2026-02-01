@@ -1,12 +1,12 @@
 (async () => {
   // Prevent double execution
-  if (window.checkKinokuniyaScriptExecuted) {
-    console.log("checkKinokuniya.js already executed, skipping");
+  if (window.kinokuniyaSearchResultsExecuted) {
+    console.log("kinokuniyaSearchResults.js already executed, skipping");
     return;
   }
-  window.checkKinokuniyaScriptExecuted = true;
+  window.kinokuniyaSearchResultsExecuted = true;
 
-  console.log("checkKinokuniya.js loaded on:", window.location.href);
+  console.log("kinokuniyaSearchResults.js loaded on:", window.location.href);
 
   // Wait for page to load
   await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -22,7 +22,7 @@
       console.log("Clicking inner box to navigate to product page");
       innerBox.click();
       // Don't send any message here - wait for the product page to load
-      // The kinokuniya.js script will handle sending the result
+      // The kinokuniyaProductPage.js script will handle sending the result
     } else {
       console.error("Could not find inner box link");
       chrome.runtime.sendMessage({

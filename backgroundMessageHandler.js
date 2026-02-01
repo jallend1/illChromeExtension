@@ -250,32 +250,32 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
           // Check what kind of page we're on
           if (tab.url.includes("/products?") && !hasInjectedSearchScript) {
-            // Search results page - inject checkKinokuniya
-            console.log("Background: Detected search results page, injecting checkKinokuniya.js");
+            // Search results page - inject kinokuniyaSearchResults
+            console.log("Background: Detected search results page, injecting kinokuniyaSearchResults.js");
             hasInjectedSearchScript = true;
             chrome.scripting
               .executeScript({
                 target: { tabId: newTab.id },
-                files: ["./scripts/checkKinokuniya.js"],
+                files: ["./scripts/kinokuniyaSearchResults.js"],
               })
               .catch((err) => {
-                console.error("Error injecting checkKinokuniya:", err);
+                console.error("Error injecting kinokuniyaSearchResults:", err);
               });
           } else if (
             (tab.url.includes("/products/") || tab.url.includes("/bw/")) &&
             !tab.url.includes("?")
           ) {
-            // Product page - inject kinokuniya to extract price
-            console.log("Background: Detected product page, injecting kinokuniya.js");
+            // Product page - inject kinokuniyaProductPage to extract price
+            console.log("Background: Detected product page, injecting kinokuniyaProductPage.js");
             clearTimeout(listenerTimeout);
             chrome.tabs.onUpdated.removeListener(listener);
             chrome.scripting
               .executeScript({
                 target: { tabId: newTab.id },
-                files: ["./scripts/kinokuniya.js"],
+                files: ["./scripts/kinokuniyaProductPage.js"],
               })
               .catch((err) => {
-                console.error("Error injecting kinokuniya:", err);
+                console.error("Error injecting kinokuniyaProductPage:", err);
               });
           }
         }
