@@ -20,7 +20,7 @@ async function overdueNotice() {
    */
   const checkForOverdueTitles = () => {
     const lessIntenseAlertDivs = document.querySelectorAll(
-      ".less-intense-alert"
+      ".less-intense-alert",
     );
     lessIntenseAlertDivs.forEach((div) => {
       const anchorTags = div.querySelectorAll("a");
@@ -38,7 +38,7 @@ async function overdueNotice() {
    */
   const checkForLostTitles = () => {
     const divs = document.querySelectorAll(
-      "div.eg-grid-cell.eg-grid-body-cell"
+      "div.eg-grid-cell.eg-grid-body-cell",
     );
     // If lost status, extracts title from two columns earlier and pushes it to overdueTitles
     divs.forEach((div, index) => {
@@ -114,6 +114,8 @@ Please do not hesitate to reach out to me if you have any questions. And if you 
       if (overdueTitles.length === 0) {
         resultHeading = "Heads up!";
         resultMessage = `No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.`;
+        headerColor = "#e85e6a";
+        imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
       } else {
         resultHeading = "Success!";
         resultMessage = `An overdue notice letter was copied to your clipboard for ${
