@@ -61,7 +61,8 @@ async function libraryInvoice() {
       const balanceValue = parseFloat(item.balance.replace("$", "")) || 0;
       totalBalance += balanceValue;
 
-      itemsTable += `${item.title}
+      itemsTable += `ILL Number: 
+${item.title}
 Due Date: ${item.dueDate}
 Balance: ${item.balance}
 
@@ -76,19 +77,15 @@ Date: ${todaysDate}
 
 ${address}
 
-Dear Patron,
+Dear Resource Sharing Partner,
 
-The following interlibrary loan item(s) have been declared lost and require payment:
+The following interlibrary loan item(s) have been declared lost:
 
 ${itemsTable}TOTAL AMOUNT DUE: $${totalBalance.toFixed(2)}
 
-Payment for lost interlibrary loan materials must be received before additional items can be borrowed. Payment can be made at any King County Library System location or online through your library account.
+The costs listed above represent replacement costs for these items. Please only pay if you have given up hope that these items will be returned. We always prefer the original item back over payment.
 
-The costs listed above represent replacement fees charged by the lending library system. These fees are non-refundable processing costs that cover the loss to their collection.
-
-If you have located and returned the item(s) listed above since the date of this notice, please contact the Interlibrary Loan department at 425.369.3490 to verify receipt.
-
-Questions regarding this invoice should be directed to the Interlibrary Loan department.
+If you have any questions or see any errors, please either respond to this email or reach out to illdept@kcls.org.
 
 Sincerely,
 
@@ -121,6 +118,8 @@ Interlibrary Loan Department`;
       if (itemCount === 0) {
         resultHeading = "Heads up!";
         resultMessage = `No lost interlibrary loan items were found on this page, so we've put a blank invoice template on your clipboard that you can modify.`;
+        headerColor = "#e85e6a";
+        imgURL = chrome.runtime.getURL("images/kawaii-book-sad.png");
       } else {
         resultHeading = "Success!";
         resultMessage = `An invoice letter was copied to your clipboard for ${itemCount} ${itemCount === 1 ? "item" : "items"}.`;
