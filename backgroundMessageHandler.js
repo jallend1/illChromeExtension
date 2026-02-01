@@ -11,8 +11,7 @@ import {
   createTabWithScript,
   executeScript,
 } from "./modules/scriptExecutor.js";
-
-let openSidepanels = {};
+import { handleSidepanelMessage } from "./modules/sidepanelCommunication.js";
 
 /**
  * Calculates URL and opens/focuses tab
@@ -37,29 +36,6 @@ const retrievePatron = async () => {
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
   createTabWithScript(url, "retrievePatron");
-};
-
-/**
- * Handles sidepanel messages
- * @param {Object} request
- * @returns {boolean}
- * @description This function handles sidepanel open/close messages to manage the openSidepanels state,
- * and to prevent errors with background.js intercepting the addressReady message intended for sidepanel.
- */
-const handleSidepanelMessage = (request) => {
-  if (request.type === "sidepanel-open") {
-    openSidepanels[request.windowId] = true;
-    return true;
-  }
-  if (request.type === "sidepanel-close") {
-    delete openSidepanels[request.windowId];
-    return true;
-  }
-  if (request.type === "addressReady") {
-    // Message is handled by sidePanel, but this bad boy keeps intercepting it
-    return true;
-  }
-  return false;
 };
 
 /**

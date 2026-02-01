@@ -21,6 +21,10 @@ export const handleSidepanelMessage = (request) => {
     delete openSidepanels[request.windowId];
     return true;
   }
+  if (request.type === "addressReady") {
+    // Message is handled by sidePanel, but background.js keeps intercepting it
+    return true;
+  }
   return false;
 };
 
