@@ -1,6 +1,7 @@
 const countdownElements = {
   countdownTimerElement: document.querySelector("#countdown"),
   countdownTextElement: document.querySelector("#countdown-text"),
+  countdownContainerElement: document.querySelector("#countdown-container"),
 };
 
 const branchHours = {
@@ -31,15 +32,41 @@ function formatTime(ms) {
  * Updates the countdown display.
  * @param {string} mainText
  * @param {string} subText
- * @param {boolean} isAlert
+ * @param {string} state - 'normal', 'warning', or 'alert'
  */
-function updateCountdown(mainText, subText = "", isAlert = false) {
+function updateCountdown(mainText, subText = "", state = "normal") {
   countdownElements.countdownTimerElement.textContent = mainText;
   countdownElements.countdownTextElement.textContent = subText;
+
+  // Remove all state classes
+  countdownElements.countdownContainerElement.classList.remove(
+    "countdown-normal",
+    "countdown-warning",
+    "countdown-alert"
+  );
+
+  // Add the appropriate state class
+  countdownElements.countdownContainerElement.classList.add(`countdown-${state}`);
+
+  // Keep old alert styling on the text element for backwards compatibility
   countdownElements.countdownTimerElement.classList.toggle(
     "countdown-alert",
-    isAlert
+    state === "alert"
   );
+}
+
+/**
+ * Determines the countdown state based on time remaining
+ * @param {string} timeString - formatted time string (HH:MM:SS)
+ * @returns {string} - 'normal', 'warning', or 'alert'
+ */
+function getCountdownState(timeString) {
+  if (timeString.startsWith("00:")) {
+    return "alert"; // Less than 1 hour
+  } else if (timeString.startsWith("01:")) {
+    return "warning"; // Less than 2 hours
+  }
+  return "normal";
 }
 
 /**
@@ -67,17 +94,18 @@ function countdownTimer() {
   );
 
   if (now >= openingTime) {
-    updateCountdown("All branches have opened for the day.");
+    updateCountdown("All branches have opened for the day.", "", "normal");
     clearInterval(intervalID);
     return;
   }
 
   if (now >= bellevueOpeningTime) {
     const branchOpeningTime = formatTime(openingTime - now);
+    const state = getCountdownState(branchOpeningTime);
     updateCountdown(
       "Bellevue has opened.",
       `Other branches: ${branchOpeningTime}`,
-      branchOpeningTime.startsWith("00")
+      state
     );
     return;
   }
@@ -85,18 +113,19 @@ function countdownTimer() {
   // No branches have opened yet
   const bellevueTimeRemaining = formatTime(bellevueOpeningTime - now);
   const systemTimeRemaining = formatTime(openingTime - now);
+  const state = getCountdownState(bellevueTimeRemaining);
 
   if (bellevue === system) {
     updateCountdown(
       `Branches open in ${bellevueTimeRemaining}`,
       "",
-      bellevueTimeRemaining.startsWith("00")
+      state
     );
   } else {
     updateCountdown(
       `Bellevue opens in ${bellevueTimeRemaining}`,
       `Other branches: ${systemTimeRemaining}`,
-      bellevueTimeRemaining.startsWith("00")
+      state
     );
   }
 }
