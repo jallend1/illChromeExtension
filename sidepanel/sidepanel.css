@@ -662,7 +662,6 @@ img.collapsible.rotated {
   background-color: rgba(231, 93, 93, 0.15);
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;
-  border-left: 3px solid rgb(231, 93, 93);
 }
 
 @keyframes pulse-warning {
