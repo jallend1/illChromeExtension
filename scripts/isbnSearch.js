@@ -41,8 +41,9 @@ async function isbnSearch() {
     isbn ? isbn : title && author ? `${title} ${author}` : title || null;
 
   const isbn = extractFields(".yui-field-isbn")
-    ?.split(" ")[0]
-    .replace(/-/g, ""); // Takes the first ISBN and removes any hyphens
+    ?.split(" ")
+    .find((str) => /^\d/.test(str)) // Find first string that starts with a digit
+    ?.replace(/-/g, ""); // Removes any hyphens from the ISBN
   const title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
   // Only takes first author, removes any URLs and author lifespan
   const author = extractFields(".yui-field-author")
