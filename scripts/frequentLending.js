@@ -8,6 +8,21 @@ async function loadFrequentLending() {
   const { buttonStyles, hoverStyles, waitForElementWithInterval } =
     await import(chrome.runtime.getURL("modules/utils.js"));
 
+  // Special styles for KCLS button (light red/coral to stand out)
+  const kclsButtonStyles = {
+    ...buttonStyles,
+    background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
+    color: "#991b1b",
+    border: "1px solid #f87171",
+  };
+
+  const kclsHoverStyles = {
+    ...kclsButtonStyles,
+    background: "linear-gradient(135deg, #fecaca 0%, #fca5a5 100%)",
+    boxShadow: "0 4px 16px rgba(239, 68, 68, 0.25)",
+    transform: "translateY(-2px) scale(1.04)",
+  };
+
   /**
    * Checks if the current page is an Evergreen client page
    * @returns {boolean} True if the current page is an Evergreen client page
@@ -80,14 +95,20 @@ async function loadFrequentLending() {
     const button = document.createElement("button");
     button.textContent = library;
     button.value = frequentLibraries[library];
-    Object.assign(button.style, buttonStyles);
+
+    // Use special styles for KCLS button
+    const isKcls = library === "KCLS";
+    const baseStyles = isKcls ? kclsButtonStyles : buttonStyles;
+    const activeHoverStyles = isKcls ? kclsHoverStyles : hoverStyles;
+
+    Object.assign(button.style, baseStyles);
 
     button.addEventListener("click", (e) => handleBarcodeInput(e.target.value));
     button.addEventListener("mouseover", () =>
-      Object.assign(button.style, hoverStyles)
+      Object.assign(button.style, activeHoverStyles)
     );
     button.addEventListener("mouseout", () =>
-      Object.assign(button.style, buttonStyles)
+      Object.assign(button.style, baseStyles)
     );
 
     container.appendChild(button);
