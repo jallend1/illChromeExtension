@@ -143,3 +143,17 @@ export const getActiveTab = async () => {
     return null;
   }
 };
+
+/**
+ * Finds a non-active Evergreen tab in the current window.
+ * @returns {Promise<chrome.tabs.Tab|null>} - A non-active Evergreen tab if one exists, null otherwise
+ */
+export const getNonActiveEvergreenTab = async () => {
+  const tabs = await chrome.tabs.query({ currentWindow: true });
+  const evergreenTabs = tabs.filter(
+    (tab) =>
+      !tab.active &&
+      (tab.url?.includes("evgclient") || tab.url?.includes("evgmobile"))
+  );
+  return evergreenTabs.length > 0 ? evergreenTabs[0] : null;
+};

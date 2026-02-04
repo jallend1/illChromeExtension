@@ -8,8 +8,8 @@ import {
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
 import { URLS } from "./modules/constants.js";
 import {
-  createTabWithScript,
   executeScript,
+  reuseTabOrCreateWithScript,
 } from "./modules/scriptExecutor.js";
 import { handleSidepanelMessage } from "./modules/sidepanelCommunication.js";
 
@@ -29,13 +29,13 @@ const calculateURL = async (urlSuffix) => {
  * Opens patron retrieval page
  * @returns {Promise<void>}
  * @description This function checks if mobile Evergreen is used and constructs the patron retrieval URL accordingly.
- * It then opens a new tab with the patron retrieval script.
+ * It reuses an existing non-active Evergreen tab if available, otherwise creates a new tab.
  */
 const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
-  createTabWithScript(url, "retrievePatron");
+  reuseTabOrCreateWithScript(url, "retrievePatron");
 };
 
 /**
@@ -54,7 +54,7 @@ const handleWorldShareMessage = (request) => {
       return;
     }
     const worldShareTab = tabs.find(
-      (tab) => tab.url && tab.url.includes("share.worldcat.org")
+      (tab) => tab.url && tab.url.includes("share.worldcat.org"),
     );
     if (worldShareTab && worldShareTab.id) {
       // Switches to WorldShare tab
@@ -159,7 +159,7 @@ const handleDataMessage = (request, activeTab, sendResponse) => {
       },
       () => {
         sendResponse({ success: true });
-      }
+      },
     );
     return true;
   }
@@ -172,7 +172,7 @@ const handleDataMessage = (request, activeTab, sendResponse) => {
       },
       () => {
         sendResponse({ response: "Message received" });
-      }
+      },
     );
     return true;
   }
@@ -187,14 +187,6 @@ const handleDataMessage = (request, activeTab, sendResponse) => {
  * @param {Function} sendResponse
  */
 export const handleMessage = async (request, sender, sendResponse) => {
-  console.log("=== MESSAGE HANDLER DEBUG ===");
-  console.log("Request:", request);
-  console.log("Sender:", sender);
-  // console.log(
-  //   "Kinokuniya search command?",
-  //   request.command === "openKinokuniyaSearch"
-  // );
-
   // Handle sidepanel messages first (no need for active tab)
   if (handleSidepanelMessage(request)) {
     console.log("Handled as sidepanel message");
@@ -245,13 +237,15 @@ export const handleMessage = async (request, sender, sendResponse) => {
       function listener(tabId, info, tab) {
         if (tabId === newTab.id && info.status === "complete") {
           console.log(
-            `Background: Tab ${tabId} loaded: ${tab.url}, status: ${info.status}`
+            `Background: Tab ${tabId} loaded: ${tab.url}, status: ${info.status}`,
           );
 
           // Check what kind of page we're on
           if (tab.url.includes("/products?") && !hasInjectedSearchScript) {
             // Search results page - inject kinokuniyaSearchResults
-            console.log("Background: Detected search results page, injecting kinokuniyaSearchResults.js");
+            console.log(
+              "Background: Detected search results page, injecting kinokuniyaSearchResults.js",
+            );
             hasInjectedSearchScript = true;
             chrome.scripting
               .executeScript({
@@ -266,7 +260,9 @@ export const handleMessage = async (request, sender, sendResponse) => {
             !tab.url.includes("?")
           ) {
             // Product page - inject kinokuniyaProductPage to extract price
-            console.log("Background: Detected product page, injecting kinokuniyaProductPage.js");
+            console.log(
+              "Background: Detected product page, injecting kinokuniyaProductPage.js",
+            );
             clearTimeout(listenerTimeout);
             chrome.tabs.onUpdated.removeListener(listener);
             chrome.scripting
@@ -307,7 +303,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
         const isBulkMode = !!result[`kinokuniya_${tabId}`];
 
         console.log(
-          `Background: ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`
+          `Background: ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`,
         );
 
         // Forward to all open sidepanels
@@ -341,30 +337,18 @@ export const handleMessage = async (request, sender, sendResponse) => {
   }
 
   // For all other messages, get active tab and validate
-  console.log("Getting active tab for validation...");
+
   const activeTab = await getActiveTab();
-  console.log("Active tab result:", activeTab);
 
   if (!activeTab) {
     console.error("No active tab available for message:", request);
     return;
   }
 
-  console.log("Active tab URL:", activeTab.url);
-  console.log("Request type/command/action:", {
-    type: request.type,
-    command: request.command,
-    action: request.action,
-    data: request.data,
-  });
-
   const isKinokuniyaRelated =
     activeTab.url?.includes("kinokuniya.com") ||
     request.command?.includes("kinokuniya") ||
     request.action?.includes("kinokuniya");
-
-  // console.log("Is Kinokuniya related:", isKinokuniyaRelated);
-  // console.log("Is allowed host:", isAllowedHost(activeTab.url));
 
   if (!isKinokuniyaRelated && !isAllowedHost(activeTab.url)) {
     console.log("Message ignored - not on allowed host:", activeTab.url);

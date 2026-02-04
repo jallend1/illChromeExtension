@@ -1,4 +1,4 @@
-import { getActiveTab, createTab } from "../background-utils.js";
+import { getActiveTab, createTab, getNonActiveEvergreenTab, updateTab } from "../background-utils.js";
 
 /**
  * Enhanced script executor with better error handling
@@ -67,6 +67,31 @@ export const createTabWithScript = (url, scriptName) => {
     }
   };
   chrome.tabs.onUpdated.addListener(onTabUpdated);
+};
+
+/**
+ * Navigates an existing non-active Evergreen tab to the URL, or creates a new tab if none exists.
+ * Executes the specified script when the tab loads.
+ * @param {string} url - The URL to open
+ * @param {string} scriptName - Name of the script (without .js extension)
+ */
+export const reuseTabOrCreateWithScript = async (url, scriptName) => {
+  const existingTab = await getNonActiveEvergreenTab();
+
+  if (existingTab) {
+    // Navigate the existing non-active Evergreen tab
+    const onTabUpdated = (tabId, changeInfo, tab) => {
+      if (tabId === existingTab.id && changeInfo.status === "complete") {
+        executeScript(tabId, scriptName);
+        chrome.tabs.onUpdated.removeListener(onTabUpdated);
+      }
+    };
+    chrome.tabs.onUpdated.addListener(onTabUpdated);
+    updateTab(existingTab.id, url);
+  } else {
+    // No existing non-active Evergreen tab, create a new one
+    createTabWithScript(url, scriptName);
+  }
 };
 
 /**
