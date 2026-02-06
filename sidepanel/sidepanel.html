@@ -28,9 +28,17 @@
           alt="ILL Icon"
         />
       </main>
-      <a href="../product-page/index.html" target="_blank" class="header-link">
-        View Features
-      </a>
+      <div class="header-actions">
+        <a href="../product-page/index.html" target="_blank" class="header-link">
+          View Features
+        </a>
+        <button id="settings-gear" aria-label="Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
       <footer id="countdown-container">
         <p id="countdown">Checking branch hours...</p>
         <p id="countdown-text"></p>
@@ -184,57 +192,50 @@
           </div>
         </main>
       </section>
-      <section class="scripts" id="settings">
-        <header>
-          <h2>⚙️ Settings</h2>
-          <img
-            class="collapsible"
-            src="../images/collapse.svg"
-            alt="Collapse"
-          />
-        </header>
-        <main class="hidden collapsed collapsible">
-          <div class="toggles">
-            <div class="toggle-container">
-              <input
-                type="checkbox"
-                id="lending-tools"
-                name="lending-tools"
-                class="toggle-switch"
-              />
-              <label for="lending-tools" class="toggle-label"></label>
-              <label for="lending-tools" class="toggle-text">
-                Lending Mode
-              </label>
-            </div>
-            <div class="toggle-container">
-              <input
-                type="checkbox"
-                id="passive-tools"
-                name="passive-tools"
-                class="toggle-switch"
-              />
-              <label for="passive-tools" class="toggle-label"></label>
-              <label for="passive-tools" class="toggle-text">
-                Passive Tools
-              </label>
-            </div>
-            <div class="toggle-container" id="disable-extension">
-              <input
-                type="checkbox"
-                id="disable-button"
-                name="disable-button"
-                class="toggle-switch"
-                checked
-              />
-              <label for="disable-button" class="toggle-label"></label>
-              <label for="disable-button" class="toggle-text">
-                Turn Off Extension
-              </label>
-            </div>
+      <!-- Settings Modal -->
+      <div id="settings-backdrop" class="settings-backdrop hidden"></div>
+      <div id="settings-modal" class="settings-modal hidden">
+        <h3>Settings</h3>
+        <div class="settings-toggles">
+          <div class="toggle-container">
+            <input
+              type="checkbox"
+              id="lending-tools"
+              name="lending-tools"
+              class="toggle-switch"
+            />
+            <label for="lending-tools" class="toggle-label"></label>
+            <label for="lending-tools" class="toggle-text">
+              Lending Mode
+            </label>
           </div>
-        </main>
-      </section>
+          <div class="toggle-container">
+            <input
+              type="checkbox"
+              id="passive-tools"
+              name="passive-tools"
+              class="toggle-switch"
+            />
+            <label for="passive-tools" class="toggle-label"></label>
+            <label for="passive-tools" class="toggle-text">
+              Passive Tools
+            </label>
+          </div>
+          <div class="toggle-container" id="disable-extension">
+            <input
+              type="checkbox"
+              id="disable-button"
+              name="disable-button"
+              class="toggle-switch"
+              checked
+            />
+            <label for="disable-button" class="toggle-label"></label>
+            <label for="disable-button" class="toggle-text">
+              Turn Off Extension
+            </label>
+          </div>
+        </div>
+      </div>
       <section class="scripts">
         <header>
           <h2>📊 Stats</h2>

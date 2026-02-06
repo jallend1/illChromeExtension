@@ -132,6 +132,45 @@ const setupKeyboardShortcuts = () => {
 };
 
 /**
+ * Sets up settings modal open/close listeners
+ */
+const setupSettingsModal = () => {
+  const gearButton = document.querySelector("#settings-gear");
+  const backdrop = document.querySelector("#settings-backdrop");
+  const modal = document.querySelector("#settings-modal");
+
+  if (!gearButton || !backdrop || !modal) return;
+
+  const openModal = () => {
+    backdrop.classList.remove("hidden");
+    modal.classList.remove("hidden");
+    // Trigger reflow so the transition plays
+    backdrop.offsetHeight;
+    backdrop.classList.add("visible");
+    modal.classList.add("visible");
+  };
+
+  const closeModal = () => {
+    backdrop.classList.remove("visible");
+    modal.classList.remove("visible");
+    const onEnd = () => {
+      backdrop.classList.add("hidden");
+      modal.classList.add("hidden");
+      modal.removeEventListener("transitionend", onEnd);
+    };
+    modal.addEventListener("transitionend", onEnd);
+  };
+
+  gearButton.addEventListener("click", openModal);
+  backdrop.addEventListener("click", closeModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+};
+
+/**
  * Initialize all event listeners
  */
 export const initializeEventListeners = () => {
@@ -142,4 +181,5 @@ export const initializeEventListeners = () => {
   setupCheckboxListeners();
   setupKeyboardShortcuts();
   setupBookPricingListeners();
+  setupSettingsModal();
 };
