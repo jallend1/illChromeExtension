@@ -18,6 +18,7 @@ const URL_MAP = {
   "share.worldcat.org": { scripts: ["worldShareMods"] },
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
+  "/en-US/staff/circ/patron/search": { scripts: ["patronSearchMods"] },
 };
 
 /**
