@@ -17,7 +17,6 @@
 
   let previousLength = 0;
   let stabilityTimer = null;
-  let shortcutsRegistered = false;
 
   // Function to extract and log number cells
   const processNumberCells = () => {
@@ -59,11 +58,13 @@
 
     console.log("Registering shortcuts for cells:", cellsToMap);
 
-    // Create a map of key number to row value
+    // Create a map of key number to row element
     const shortcutMap = {};
     cellsToMap.forEach((cell) => {
       const value = cell.textContent.trim();
-      shortcutMap[value] = value;
+      // Get the parent row of this cell
+      const row = cell.closest('[role="row"]');
+      shortcutMap[value] = row;
     });
 
     console.log("Shortcut map:", shortcutMap);
@@ -76,16 +77,32 @@
         const match = event.code.match(/^Digit(\d)$/);
         if (match) {
           const digit = match[1];
-          if (shortcutMap[digit]) {
+          const row = shortcutMap[digit];
+          if (row) {
             event.preventDefault();
-            console.log(`Row ${digit} has been triggered`);
+
+            // Find the 9th column (0-indexed, so index 8) and get the link
+            const cells = row.querySelectorAll('[role="gridcell"]');
+            if (cells.length >= 9) {
+              const ninthCell = cells[8]; // 0-indexed
+              const link = ninthCell.querySelector("a");
+              if (link) {
+                console.log(
+                  `Row ${digit} triggered - navigating to: ${link.href}`,
+                );
+                window.location.href = link.href;
+              } else {
+                console.error("No link found in 9th column of row", digit);
+              }
+            } else {
+              console.error("Not enough columns in row", digit);
+            }
           }
         }
       }
     });
 
     window.patronSearchShortcutsRegistered = true;
-    shortcutsRegistered = true;
     console.log("Keyboard shortcuts registered successfully");
   };
 
