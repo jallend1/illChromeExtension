@@ -24,13 +24,14 @@
     const numberCells = document.querySelectorAll(
       ".eg-grid-body .eg-grid-number-cell",
     );
-    console.log("Number cells found:", numberCells.length);
 
     const currentLength = numberCells.length;
 
-    // If length changed, reset the stability timer
+    // Only process if length changed (ignore hover/style changes)
     if (currentLength !== previousLength) {
-      console.log(`Length changed from ${previousLength} to ${currentLength}`);
+      console.log(
+        `Number cells changed from ${previousLength} to ${currentLength}`,
+      );
       previousLength = currentLength;
 
       if (stabilityTimer) {
