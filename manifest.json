@@ -78,7 +78,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["scripts/priceResultsModal.js"]
+      "js": ["scripts/priceResultsModal.js"],
+      "css": ["styles/priceResultsModal.css"]
     }
   ]
 }

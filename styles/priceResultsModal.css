@@ -1,0 +1,112 @@
+#powill-price-modal .powill-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999;
+}
+
+#powill-price-modal .powill-modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#powill-price-modal .powill-modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#powill-price-modal .powill-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+#powill-price-modal .powill-modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#powill-price-modal .powill-modal-close:hover {
+  color: #333;
+}
+
+#powill-price-modal .powill-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#powill-price-modal .powill-modal-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+#powill-price-modal .powill-modal-controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  background: #007bff;
+  color: white;
+}
+
+#powill-price-modal .powill-modal-controls button:hover {
+  background: #0056b3;
+}
+
+#powill-price-modal .powill-result-item {
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+#powill-price-modal .powill-result-found {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+#powill-price-modal .powill-result-not-found {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+#powill-price-modal .powill-result-item strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+#powill-price-modal .powill-result-item a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+#powill-price-modal .powill-result-item a:hover {
+  text-decoration: underline;
+}
