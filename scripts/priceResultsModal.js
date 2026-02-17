@@ -88,7 +88,7 @@ class PriceResultsModal {
     // Build HTML table for Excel (preserves unique hyperlinks)
     const htmlRows = this.results.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
-      const source = r.found ? "Kinokuniya" : "";
+      const source = r.source || "";
       const link = r.found && r.url ? `<a href="${r.url}">Link</a>` : "";
       return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td></td><td>${link}</td></tr>`;
     });
@@ -97,7 +97,7 @@ class PriceResultsModal {
     // Build plain text fallback (tab-separated with raw URLs)
     const textLines = this.results.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
-      const source = r.found ? "Kinokuniya" : "";
+      const source = r.source || "";
       const link = r.found && r.url ? r.url : "";
       return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t\t${link}`;
     });

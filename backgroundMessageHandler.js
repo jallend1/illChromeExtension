@@ -284,6 +284,86 @@ export const handleMessage = async (request, sender, sendResponse) => {
     return true;
   }
 
+  // Handle KingStone search - before any tab validation
+  if (request.command === "openKingStoneSearch") {
+    try {
+      const cleanTerm = String(request.searchTerm).replace(/-/g, "").trim();
+      const bulkMode = request.bulkMode || false;
+      const originalIsbn = request.searchTerm;
+
+      // Navigate to KingStone homepage (where the search form lives)
+      const newTab = await chrome.tabs.create({
+        url: "https://www.kingstonebook.com/",
+        active: !bulkMode,
+      });
+
+      if (bulkMode) {
+        chrome.storage.session.set({
+          [`kingStone_${newTab.id}`]: originalIsbn,
+        });
+      }
+
+      let hasSubmittedSearch = false;
+      let listenerTimeout = setTimeout(() => {
+        chrome.tabs.onUpdated.removeListener(listener);
+      }, 40000);
+
+      function listener(tabId, info, tab) {
+        if (tabId === newTab.id && info.status === "complete") {
+          console.log(
+            `Background: KingStone tab ${tabId} loaded: ${tab.url}`,
+          );
+
+          if (!hasSubmittedSearch) {
+            // First load (homepage) - fill the real search form and submit
+            hasSubmittedSearch = true;
+            console.log("Background: Filling KingStone search form on homepage");
+            chrome.scripting
+              .executeScript({
+                target: { tabId: newTab.id },
+                func: (searchTerm) => {
+                  const input = document.querySelector(
+                    'input[name="searchText"]',
+                  );
+                  if (input) {
+                    input.value = searchTerm;
+                    const form = input.closest("form");
+                    if (form) {
+                      form.submit();
+                    }
+                  }
+                },
+                args: [cleanTerm],
+              })
+              .catch((err) => {
+                console.error("Error filling KingStone search form:", err);
+              });
+          } else {
+            // Second load (results page) - extract results
+            console.log(
+              "Background: Injecting kingStoneSearchResults.js",
+            );
+            clearTimeout(listenerTimeout);
+            chrome.tabs.onUpdated.removeListener(listener);
+            chrome.scripting
+              .executeScript({
+                target: { tabId: newTab.id },
+                files: ["./scripts/kingStoneSearchResults.js"],
+              })
+              .catch((err) => {
+                console.error("Error injecting kingStoneSearchResults:", err);
+              });
+          }
+        }
+      }
+
+      chrome.tabs.onUpdated.addListener(listener);
+    } catch (error) {
+      console.error("Error opening KingStone search:", error);
+    }
+    return true;
+  }
+
   // Handle legacy kinokuniyaResults message (for backwards compatibility)
   if (request.type === "kinokuniyaResults") {
     console.log("Received legacy kinokuniyaResults message:", request);
@@ -336,6 +416,47 @@ export const handleMessage = async (request, sender, sendResponse) => {
     return true;
   }
 
+  // Handle KingStone result messages from content script
+  if (request.command === "kingStoneResult") {
+    console.log("Background: Received KingStone result:", request);
+
+    const tabId = sender.tab?.id;
+    if (tabId) {
+      chrome.storage.session.get([`kingStone_${tabId}`], (result) => {
+        const isbn = result[`kingStone_${tabId}`] || request.isbn || "";
+        const isBulkMode = !!result[`kingStone_${tabId}`];
+
+        console.log(
+          `Background: KingStone ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`,
+        );
+
+        const messageToSend = {
+          command: "kingStoneResult",
+          found: request.found,
+          url: request.url,
+          price: request.price,
+          isbn: isbn,
+          extractedIsbn: request.isbn || "",
+        };
+        console.log("Background: Forwarding KingStone result:", messageToSend);
+
+        chrome.runtime.sendMessage(messageToSend);
+
+        chrome.storage.session.remove([`kingStone_${tabId}`]);
+
+        if (isBulkMode) {
+          console.log(`Background: Closing KingStone tab ${tabId} in 500ms`);
+          setTimeout(() => {
+            chrome.tabs.remove(tabId);
+          }, 500);
+        }
+      });
+    } else {
+      console.error("Background: No tab ID in sender for KingStone!");
+    }
+    return true;
+  }
+
   // For all other messages, get active tab and validate
 
   const activeTab = await getActiveTab();
@@ -345,12 +466,15 @@ export const handleMessage = async (request, sender, sendResponse) => {
     return;
   }
 
-  const isKinokuniyaRelated =
+  const isVendorRelated =
     activeTab.url?.includes("kinokuniya.com") ||
+    activeTab.url?.includes("kingstonebook.com") ||
     request.command?.includes("kinokuniya") ||
-    request.action?.includes("kinokuniya");
+    request.command?.includes("kingStone") ||
+    request.action?.includes("kinokuniya") ||
+    request.action?.includes("kingStone");
 
-  if (!isKinokuniyaRelated && !isAllowedHost(activeTab.url)) {
+  if (!isVendorRelated && !isAllowedHost(activeTab.url)) {
     console.log("Message ignored - not on allowed host:", activeTab.url);
     return;
   }

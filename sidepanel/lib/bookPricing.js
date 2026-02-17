@@ -1,9 +1,22 @@
 /**
- * Book pricing functionality for Kinokuniya searches
+ * Book pricing functionality for vendor bulk price checks
  */
 
 let isProcessing = false;
 let currentResults = [];
+
+const VENDORS = {
+  kinokuniya: {
+    command: "openKinokuniyaSearch",
+    resultCommand: "kinokuniyaResult",
+    source: "Kinokuniya",
+  },
+  kingStone: {
+    command: "openKingStoneSearch",
+    resultCommand: "kingStoneResult",
+    source: "KingStone",
+  },
+};
 
 /**
  * Sends current results to the modal on the active tab
@@ -47,23 +60,23 @@ const setupCancelBulkCheck = (cancelBulkCheckBtn, bulkPriceContainer, bulkProgre
 };
 
 /**
- * Waits for a Kinokuniya search result with timeout
+ * Waits for a vendor search result with timeout
  */
-const waitForSearchResult = (isbn) => {
+const waitForSearchResult = (isbn, vendor) => {
   return new Promise((resolve) => {
     const messageListener = (message) => {
       console.log("Sidepanel: Received message:", message);
-      if (message.command === "kinokuniyaResult" && message.isbn === isbn) {
-        console.log(`Sidepanel: Matched result for search term ${isbn}`);
+      if (message.command === vendor.resultCommand && message.isbn === isbn) {
+        console.log(`Sidepanel: Matched ${vendor.source} result for search term ${isbn}`);
         chrome.runtime.onMessage.removeListener(messageListener);
         resolve(message);
       }
     };
     chrome.runtime.onMessage.addListener(messageListener);
-    console.log(`Sidepanel: Waiting for result for search term ${isbn}`);
+    console.log(`Sidepanel: Waiting for ${vendor.source} result for search term ${isbn}`);
 
     chrome.runtime.sendMessage({
-      command: "openKinokuniyaSearch",
+      command: vendor.command,
       searchTerm: isbn,
       bulkMode: true,
     });
@@ -80,14 +93,14 @@ const waitForSearchResult = (isbn) => {
 };
 
 /**
- * Processes a single ISBN search
+ * Processes a single ISBN search for a given vendor
  */
-const processIsbn = async (isbn) => {
+const processIsbn = async (isbn, vendor) => {
   document.getElementById("current-isbn").textContent = isbn;
-  document.getElementById("status-text").textContent = "Searching...";
+  document.getElementById("status-text").textContent = `Searching ${vendor.source}...`;
 
   try {
-    const result = await waitForSearchResult(isbn);
+    const result = await waitForSearchResult(isbn, vendor);
 
     // Determine which ISBN to use for the results
     // If original search term starts with "97", it's already an ISBN
@@ -107,6 +120,7 @@ const processIsbn = async (isbn) => {
       url: result.url || "",
       price: result.price || "",
       error: result.error || "",
+      source: vendor.source,
     };
     currentResults.push(resultEntry);
 
@@ -118,11 +132,13 @@ const processIsbn = async (isbn) => {
   } catch (error) {
     console.error(`Error processing ISBN ${isbn}:`, error);
     const errorEntry = {
+      searchTerm: isbn,
       isbn: isbn,
       found: false,
       url: "",
       price: "",
       error: error.message,
+      source: vendor.source,
     };
     currentResults.push(errorEntry);
     return errorEntry;
@@ -130,16 +146,17 @@ const processIsbn = async (isbn) => {
 };
 
 /**
- * Sets up the start bulk check button
+ * Sets up a start bulk check button for a specific vendor
  */
 const setupStartBulkCheck = (
-  startBulkCheckBtn,
+  startBtn,
   isbnInput,
-  bulkProgress
+  bulkProgress,
+  vendor
 ) => {
-  if (!startBulkCheckBtn) return;
+  if (!startBtn) return;
 
-  startBulkCheckBtn.addEventListener("click", async () => {
+  startBtn.addEventListener("click", async () => {
     const isbnText = isbnInput.value.trim();
     if (!isbnText) {
       alert("Please paste some ISBNs first!");
@@ -159,7 +176,7 @@ const setupStartBulkCheck = (
     isProcessing = true;
     currentResults = [];
     bulkProgress.classList.remove("hidden");
-    startBulkCheckBtn.disabled = true;
+    startBtn.disabled = true;
 
     // Process each line
     for (let i = 0; i < lines.length && isProcessing; i++) {
@@ -174,11 +191,12 @@ const setupStartBulkCheck = (
           url: "",
           price: "",
           error: "",
+          source: "",
         });
         continue;
       }
 
-      await processIsbn(lines[i]);
+      await processIsbn(lines[i], vendor);
 
       // Wait before next search (respect rate limits)
       if (i < lines.length - 1 && isProcessing) {
@@ -187,7 +205,7 @@ const setupStartBulkCheck = (
     }
 
     document.getElementById("status-text").textContent = "Complete!";
-    startBulkCheckBtn.disabled = false;
+    startBtn.disabled = false;
     isProcessing = false;
 
     // Show the last results controls
@@ -209,7 +227,7 @@ const setupCopyResults = (copyResultsBtn) => {
     // Build HTML table for Excel (preserves unique hyperlinks)
     const htmlRows = currentResults.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
-      const source = r.found ? "Kinokuniya" : "";
+      const source = r.source || "";
       const link = r.found && r.url ? `<a href="${r.url}">Link</a>` : "";
       return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td></td><td>${link}</td></tr>`;
     });
@@ -218,7 +236,7 @@ const setupCopyResults = (copyResultsBtn) => {
     // Build plain text fallback (tab-separated with raw URLs)
     const textLines = currentResults.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
-      const source = r.found ? "Kinokuniya" : "";
+      const source = r.source || "";
       const link = r.found && r.url ? r.url : "";
       return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t\t${link}`;
     });
@@ -294,7 +312,8 @@ export const setupBookPricingListeners = () => {
   const bulkPriceCheckBtn = document.getElementById("bulkPriceCheck");
   const bulkPriceContainer = document.getElementById("bulk-price-container");
   const isbnInput = document.getElementById("isbn-input");
-  const startBulkCheckBtn = document.getElementById("startBulkCheck");
+  const startKinokuniyaBtn = document.getElementById("startKinokuniya");
+  const startKingStoneBtn = document.getElementById("startKingStone");
   const cancelBulkCheckBtn = document.getElementById("cancelBulkCheck");
   const bulkProgress = document.getElementById("bulk-progress");
   const copyResultsBtn = document.getElementById("copyResults");
@@ -303,7 +322,8 @@ export const setupBookPricingListeners = () => {
 
   setupBulkPriceToggle(bulkPriceCheckBtn, bulkPriceContainer, isbnInput);
   setupCancelBulkCheck(cancelBulkCheckBtn, bulkPriceContainer, bulkProgress);
-  setupStartBulkCheck(startBulkCheckBtn, isbnInput, bulkProgress);
+  setupStartBulkCheck(startKinokuniyaBtn, isbnInput, bulkProgress, VENDORS.kinokuniya);
+  setupStartBulkCheck(startKingStoneBtn, isbnInput, bulkProgress, VENDORS.kingStone);
   setupCopyResults(copyResultsBtn);
   setupClearResults(clearResultsBtn, isbnInput, bulkProgress);
   setupShowLastResults(showLastResultsBtn);

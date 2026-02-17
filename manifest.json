@@ -19,7 +19,8 @@
     "https://evgmobile.kcls.org/*",
     "https://evgclient.kcls.org/*",
     "https://kingcountylibrarysystem.share.worldcat.org/*",
-    "https://united-states.kinokuniya.com/*"
+    "https://united-states.kinokuniya.com/*",
+    "https://www.kingstonebook.com/*"
   ],
   "background": {
     "service_worker": "background.js",
