@@ -188,16 +188,33 @@ class PriceResultsModal {
   }
 
   copyResults() {
-    const lines = this.results.map((r) => {
+    // Build HTML table for Excel (preserves unique hyperlinks)
+    const htmlRows = this.results.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
       const source = r.found ? "Kinokuniya" : "";
-      const blank = "";
-      const link = r.found && r.url ? `=HYPERLINK("${r.url}","Link")` : "";
-      return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t${blank}\t${link}`;
+      const link = r.found && r.url ? `<a href="${r.url}">Link</a>` : "";
+      return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td></td><td>${link}</td></tr>`;
     });
-    const text = lines.join("\n");
+    const html = `<table>${htmlRows.join("")}</table>`;
 
-    navigator.clipboard.writeText(text).then(
+    // Build plain text fallback (tab-separated with raw URLs)
+    const textLines = this.results.map((r) => {
+      const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
+      const source = r.found ? "Kinokuniya" : "";
+      const link = r.found && r.url ? r.url : "";
+      return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t\t${link}`;
+    });
+    const text = textLines.join("\n");
+
+    const htmlBlob = new Blob([html], { type: "text/html" });
+    const textBlob = new Blob([text], { type: "text/plain" });
+
+    navigator.clipboard.write([
+      new ClipboardItem({
+        "text/html": htmlBlob,
+        "text/plain": textBlob,
+      }),
+    ]).then(
       () => {
         alert("Results copied to clipboard! Paste into Excel.");
       },
