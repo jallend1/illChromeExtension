@@ -131,10 +131,15 @@ class PriceResultsModal {
   }
 }
 
+// Singleton modal instance - prevents stacking multiple modals
+let modalInstance = null;
+
 // Listen for messages to show modal
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.command === 'showPriceResults') {
-    const modal = new PriceResultsModal();
-    modal.show(message.results);
+    if (!modalInstance) {
+      modalInstance = new PriceResultsModal();
+    }
+    modalInstance.show(message.results);
   }
 });

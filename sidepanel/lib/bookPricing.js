@@ -6,6 +6,20 @@ let isProcessing = false;
 let currentResults = [];
 
 /**
+ * Sends current results to the modal on the active tab
+ */
+const showResultsInModal = () => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+      chrome.tabs.sendMessage(tabs[0].id, {
+        command: "showPriceResults",
+        results: currentResults,
+      });
+    }
+  });
+};
+
+/**
  * Sets up bulk price check toggle button
  */
 const setupBulkPriceToggle = (bulkPriceCheckBtn, bulkPriceContainer, isbnInput) => {
@@ -176,15 +190,12 @@ const setupStartBulkCheck = (
     startBulkCheckBtn.disabled = false;
     isProcessing = false;
 
+    // Show the last results controls
+    const lastResultsControls = document.getElementById("last-results-controls");
+    if (lastResultsControls) lastResultsControls.style.display = "flex";
+
     // Show results in modal on active tab
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          command: 'showPriceResults',
-          results: currentResults
-        });
-      }
-    });
+    showResultsInModal();
   });
 };
 
@@ -234,13 +245,34 @@ const setupCopyResults = (copyResultsBtn) => {
 };
 
 /**
+ * Sets up show last results button
+ */
+const setupShowLastResults = (showLastResultsBtn) => {
+  if (!showLastResultsBtn) return;
+
+  showLastResultsBtn.addEventListener("click", () => {
+    if (currentResults.length === 0) return;
+    showResultsInModal();
+  });
+};
+
+/**
+ * Hides the last results controls and clears results data
+ */
+const hideLastResultsControls = () => {
+  currentResults = [];
+  const lastResultsControls = document.getElementById("last-results-controls");
+  if (lastResultsControls) lastResultsControls.style.display = "none";
+};
+
+/**
  * Sets up clear results button
  */
 const setupClearResults = (clearResultsBtn, isbnInput, bulkProgress) => {
   if (!clearResultsBtn) return;
 
   clearResultsBtn.addEventListener("click", () => {
-    currentResults = [];
+    hideLastResultsControls();
     isbnInput.value = "";
     bulkProgress.classList.add("hidden");
   });
@@ -249,7 +281,7 @@ const setupClearResults = (clearResultsBtn, isbnInput, bulkProgress) => {
 // Listen for clear results message from modal
 chrome.runtime.onMessage.addListener((message) => {
   if (message.command === 'clearPriceResults') {
-    currentResults = [];
+    hideLastResultsControls();
     const isbnInput = document.getElementById("isbn-input");
     if (isbnInput) isbnInput.value = "";
   }
@@ -267,10 +299,12 @@ export const setupBookPricingListeners = () => {
   const bulkProgress = document.getElementById("bulk-progress");
   const copyResultsBtn = document.getElementById("copyResults");
   const clearResultsBtn = document.getElementById("clearResults");
+  const showLastResultsBtn = document.getElementById("showLastResults");
 
   setupBulkPriceToggle(bulkPriceCheckBtn, bulkPriceContainer, isbnInput);
   setupCancelBulkCheck(cancelBulkCheckBtn, bulkPriceContainer, bulkProgress);
   setupStartBulkCheck(startBulkCheckBtn, isbnInput, bulkProgress);
   setupCopyResults(copyResultsBtn);
   setupClearResults(clearResultsBtn, isbnInput, bulkProgress);
+  setupShowLastResults(showLastResultsBtn);
 };
