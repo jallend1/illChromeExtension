@@ -776,6 +776,29 @@ img.collapsible.rotated {
   }
 }
 
+/* Vendor search buttons */
+#startKinokuniya {
+  background: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
+  color: #ffffff;
+  border-color: #e65100;
+}
+
+#startKinokuniya:hover {
+  background: linear-gradient(135deg, #d84315 0%, #e65100 100%);
+  border-color: #d84315;
+}
+
+#startKingStone {
+  background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%);
+  color: #ffffff;
+  border-color: #1565c0;
+}
+
+#startKingStone:hover {
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+  border-color: #0d47a1;
+}
+
 .requestingPatronDetails {
   padding: 0.2rem 0.4rem;
   margin-top: 0.5rem;

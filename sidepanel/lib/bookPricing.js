@@ -120,7 +120,7 @@ const processIsbn = async (isbn, vendor) => {
       url: result.url || "",
       price: result.price || "",
       error: result.error || "",
-      source: vendor.source,
+      source: (result.found && result.price && result.url) ? vendor.source : "",
     };
     currentResults.push(resultEntry);
 
