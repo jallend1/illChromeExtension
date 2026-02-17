@@ -80,9 +80,9 @@ const processIsbn = async (isbn) => {
     // Otherwise, use the extracted ISBN from the page
     let isbnForResults = "";
     if (isbn.startsWith("97")) {
-      isbnForResults = isbn;
+      isbnForResults = isbn.replace(/-/g, "");
     } else if (result.extractedIsbn) {
-      isbnForResults = result.extractedIsbn;
+      isbnForResults = result.extractedIsbn.replace(/-/g, "");
     }
 
     // Store result
@@ -132,13 +132,12 @@ const setupStartBulkCheck = (
       return;
     }
 
-    // Parse ISBNs (split by newlines, filter empty lines)
-    const isbns = isbnText
+    // Parse lines (split by newlines, strip invisible chars and whitespace)
+    const lines = isbnText
       .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
+      .map((line) => line.replace(/[\u200E\u200F\u200B\u00A0\uFEFF]/g, "").trim());
 
-    if (isbns.length === 0) {
+    if (lines.every((line) => line.length === 0)) {
       alert("No valid ISBNs found!");
       return;
     }
@@ -148,14 +147,27 @@ const setupStartBulkCheck = (
     bulkProgress.classList.remove("hidden");
     startBulkCheckBtn.disabled = true;
 
-    // Process each ISBN
-    for (let i = 0; i < isbns.length && isProcessing; i++) {
-      document.getElementById("progress-text").textContent = `${i + 1}/${isbns.length}`;
+    // Process each line
+    for (let i = 0; i < lines.length && isProcessing; i++) {
+      document.getElementById("progress-text").textContent = `${i + 1}/${lines.length}`;
 
-      await processIsbn(isbns[i]);
+      if (lines[i].length === 0) {
+        // Blank line - add as not found placeholder
+        currentResults.push({
+          searchTerm: "",
+          isbn: "",
+          found: false,
+          url: "",
+          price: "",
+          error: "",
+        });
+        continue;
+      }
+
+      await processIsbn(lines[i]);
 
       // Wait before next search (respect rate limits)
-      if (i < isbns.length - 1 && isProcessing) {
+      if (i < lines.length - 1 && isProcessing) {
         await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     }
