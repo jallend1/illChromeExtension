@@ -74,6 +74,7 @@ export function generateInvoiceHTML(billsData, address, logoBase64) {
     rowsHTML += `<tr style="background-color: ${rowBg};">
         <td style="border: 1px solid #BDD7EE; padding: 5pt 8pt;">${escapeHTML(item.title)}</td>
         <td style="border: 1px solid #BDD7EE; padding: 5pt 8pt; text-align: center; white-space: nowrap; width: 80pt;" width="107">${escapeHTML(item.dueDate)}</td>
+        <td style="border: 1px solid #BDD7EE; padding: 5pt 8pt; width: 80pt;" width="107"></td>
         <td style="border: 1px solid #BDD7EE; padding: 5pt 8pt; text-align: right; white-space: nowrap; width: 70pt;" width="93">${escapeHTML(item.balance)}</td>
       </tr>`;
   });
@@ -104,6 +105,7 @@ export function generateInvoiceHTML(billsData, address, logoBase64) {
       <tr style="background-color: #1F4E79; color: #ffffff;">
         <th style="border: 1px solid #1F4E79; padding: 6pt 8pt; text-align: left;">Title</th>
         <th style="border: 1px solid #1F4E79; padding: 6pt 8pt; text-align: center; white-space: nowrap; width: 80pt;" width="107">Due Date</th>
+        <th style="border: 1px solid #1F4E79; padding: 6pt 8pt; text-align: left; white-space: nowrap; width: 80pt;" width="107">ILL</th>
         <th style="border: 1px solid #1F4E79; padding: 6pt 8pt; text-align: right; white-space: nowrap; width: 70pt;" width="93">Balance</th>
       </tr>
     </thead>
