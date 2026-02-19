@@ -1,5 +1,5 @@
 import { storageKeys, MESSAGE_TYPES } from "./constants.js";
-import { extractFromStorage } from "./utils.js";
+import { extractFromStorage, extractRichFromStorage } from "./utils.js";
 import { handleURLChange } from "./buttonManager.js";
 
 // State management using closures
@@ -76,7 +76,7 @@ export const handleMessage = (message, sender, sendResponse) => {
       extractFromStorage("overdueNotice");
       break;
     case MESSAGE_TYPES.LIBRARY_INVOICE_READY:
-      extractFromStorage("libraryInvoice");
+      extractRichFromStorage("libraryInvoice");
       break;
     default:
       console.log("Unhandled message type:", message.type);
