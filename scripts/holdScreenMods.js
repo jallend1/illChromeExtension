@@ -3,11 +3,7 @@
     chrome.runtime.getURL("modules/modals.js")
   );
 
-  const { statusModal } = await import(
-    chrome.runtime.getURL("modules/modals.js")
-  );
-
-  let mainObserver;
+let mainObserver;
 
   /**
    * Modifications for the hold screen
@@ -17,49 +13,106 @@
       `Press <span style="font-weight:bold;">Ctrl+Enter</span> after entering the patron barcode to submit this hold without ever touching your mouse!`
     );
 
-    // TODO: Test this bad boy because there has been limited testing due to few requests with second patrons
     /**
-     * If item has a second patron, automatically populate departmental card barcode
+     * If item has a second patron, show a banner prompting staff to place a hold for KCLS
      * @returns {void}
      */
     const handleSecondPatron = () => {
-      statusModal(
-        "Second Patron Detected!",
-        `Please wait while we automatically place a hold on the departmental card.`,
-        "#4CAF50",
-        chrome.runtime.getURL("images/kawaii-dinosaur.png")
-      );
-      const barcodeField = document.querySelector("#patron-barcode");
-      console.log("Barcode Field: ", barcodeField);
-      // Set departmental card barcode
-      barcodeField.value = "0040746158";
-      const event = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      barcodeField.dispatchEvent(event);
-      const placeHoldButton = document.querySelector(
-        '[keydesc="Place Hold(s)"]'
-      );
-      console.log("Place Hold Button: ", placeHoldButton);
-      // Wait for disabled attribute to be removed from placeHoldButton
-      const observer = new MutationObserver((mutationList) => {
-        mutationList.forEach((mutation) => {
-          console.log("Mutation: ", mutation);
-          if (
-            mutation.type === "attributes" &&
-            !placeHoldButton.hasAttribute("disabled")
-          ) {
-            placeHoldButton.click();
-            // TODO: Check for success message and implement standard logic
-            observer.disconnect(); // Stop observing once the button is clicked
+      if (document.querySelector("#second-patron-banner")) return;
+
+      const banner = document.createElement("div");
+      banner.id = "second-patron-banner";
+      banner.style.cssText =
+        "width:100%;background:#e65100;color:#fff;border-top:4px solid #bf360c;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:1.05rem;box-shadow:0 -2px 8px rgba(0,0,0,0.2);";
+
+      const message = document.createElement("span");
+      message.textContent =
+        "Potential Second Patron Detected: Place hold for patron and then place hold for KCLS.";
+      message.style.fontWeight = "700";
+
+      const button = document.createElement("button");
+      button.textContent = "Place Hold for KCLS";
+      button.classList.add("btn", "btn-warning", "btn-sm");
+      button.addEventListener("click", () => {
+        const barcodeField = document.querySelector("#patron-barcode");
+        barcodeField.value = "0040746158";
+        barcodeField.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+        barcodeField.focus();
+
+        // State 1: Placing hold...
+        banner.innerHTML = "";
+        banner.style.background = "#ffc107";
+        banner.style.color = "#000";
+        banner.style.borderTopColor = "#e0a800";
+        const placingMsg = document.createElement("span");
+        placingMsg.textContent = "Placing hold...";
+        placingMsg.style.fontWeight = "700";
+        banner.appendChild(placingMsg);
+
+        // Watch for success and transition to State 2
+        const successSelector =
+          "#staff-content-container > ng-component > ng-component > div.hold-records-list.common-form.striped-even > div.row.mt-1.ms-1.me-1 > div > div > div:nth-child(6) > div";
+        const successObserveTarget = document.querySelector(
+          ".hold-records-list.common-form.striped-even"
+        );
+
+        const checkSuccess = () => {
+          const el = document.querySelector(successSelector);
+          if (el?.textContent.includes("Succeeded")) {
+            successObserver.disconnect();
+            banner.innerHTML = "";
+            banner.style.background = "#0d6efd";
+            banner.style.color = "#fff";
+            banner.style.borderTopColor = "#0a58ca";
+            const successMsg = document.createElement("span");
+            successMsg.textContent = "Success!";
+            successMsg.style.fontWeight = "700";
+            banner.appendChild(successMsg);
+            setTimeout(() => banner.remove(), 2000);
           }
-        });
+        };
+
+        const successObserver = new MutationObserver(checkSuccess);
+        if (successObserveTarget) {
+          successObserver.observe(successObserveTarget, { childList: true, subtree: true, characterData: true });
+        }
+
+        // Click the Place Hold button once KCLS patron is loaded
+        const h3Elements = document.querySelectorAll("h3");
+        const placeHoldH3 = Array.from(h3Elements).find((h3) =>
+          h3.textContent.includes("Place Hold")
+        );
+        const placeHoldButton = document.querySelector(
+          "#staff-content-container > ng-component > ng-component > form > div > div:nth-child(2) > div > ul > li > button.btn.btn-success"
+        );
+
+        const attemptClick = () => {
+          const patronNameSmall = placeHoldH3?.querySelector("small");
+          if (
+            patronNameSmall?.textContent.includes("KING COUNTY LIBRARY SYSTEM") &&
+            placeHoldButton &&
+            !placeHoldButton.disabled
+          ) {
+            nameObserver.disconnect();
+            buttonObserver.disconnect();
+            placeHoldButton.click();
+          }
+        };
+
+        const nameObserver = new MutationObserver(attemptClick);
+        const buttonObserver = new MutationObserver(attemptClick);
+
+        if (placeHoldH3) {
+          nameObserver.observe(placeHoldH3, { childList: true, subtree: true, characterData: true });
+        }
+        if (placeHoldButton) {
+          buttonObserver.observe(placeHoldButton, { attributes: true, attributeFilter: ["disabled"] });
+        }
       });
-      observer.observe(placeHoldButton, {
-        attributes: true,
-        attributeFilter: ["disabled"],
-      });
+
+      banner.appendChild(message);
+      banner.appendChild(button);
+      document.body.appendChild(banner);
     };
 
     /**
@@ -119,9 +172,7 @@
                 if (!result.requestData) return;
 
                 const requestData = JSON.parse(result.requestData);
-                const { isSecondPatron, isLendingFee } = requestData;
-
-                if (isSecondPatron) handleSecondPatron();
+                const { isLendingFee } = requestData;
 
                 console.log("Checking for lending fee...");
                 if (isLendingFee && isLendingFee !== "0.00") {
@@ -158,6 +209,12 @@
     mainObserver = new MutationObserver(handleHoldStatusMutation);
     const config = { childList: true, subtree: true };
     mainObserver.observe(targetNode, config);
+
+    chrome.storage.local.get("requestData").then((result) => {
+      if (!result.requestData) return;
+      const { isSecondPatron } = JSON.parse(result.requestData);
+      if (isSecondPatron) handleSecondPatron();
+    });
   }
 
   holdScreenMods();
