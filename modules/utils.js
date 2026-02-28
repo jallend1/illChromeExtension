@@ -1,20 +1,38 @@
 export const waitForElementWithInterval = (selectorOrFunction) =>
-  new Promise((resolve, reject) => {
-    const startTime = Date.now();
-    const intervalId = setInterval(() => {
-      const element =
-        typeof selectorOrFunction === "function"
-          ? selectorOrFunction()
-          : document.querySelector(selectorOrFunction);
+  new Promise((resolve) => {
+    const find =
+      typeof selectorOrFunction === "function"
+        ? selectorOrFunction
+        : () => document.querySelector(selectorOrFunction);
+
+    // Check if element is already present before observing
+    const existing = find();
+    if (existing) {
+      resolve(existing);
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const element = find();
       if (element) {
-        clearInterval(intervalId); // Clears interval when element is found
+        observer.disconnect();
+        clearTimeout(timeoutId);
         resolve(element);
-      } else if (Date.now() - startTime > 10000) {
-        clearInterval(intervalId);
-        // Resolves with null cuz we don't need to be throwing errors around willy nilly
-        resolve(null);
       }
-    }, 100);
+    });
+
+    // Resolves with null cuz we don't need to be throwing errors around willy nilly
+    const timeoutId = setTimeout(() => {
+      observer.disconnect();
+      resolve(null);
+    }, 10000);
+
+    // Observe childList (element additions) and attributes (class/visibility changes)
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
   });
 
 export const buttonStyles = {
