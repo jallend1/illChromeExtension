@@ -89,7 +89,11 @@ export const handleMessage = (message, sender, sendResponse) => {
         const textBlob = new Blob([message.data.text], { type: "text/plain" });
         navigator.clipboard
           .write([new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob })])
-          .catch((err) => console.error("Failed to copy invoice to clipboard:", err));
+          .catch(() =>
+            navigator.clipboard
+              .write([new ClipboardItem({ "text/html": htmlBlob })])
+              .catch((err) => console.error("Failed to copy invoice to clipboard:", err.message))
+          );
       }
       break;
     default:
