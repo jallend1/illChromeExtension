@@ -70,10 +70,7 @@ async function overdueNotice() {
       let result = "";
       let resultHeading = "";
       let resultMessage = "";
-      // Stores overdue notice in local storage for sidepanel to access
-      chrome.storage.local.set({ overdueNotice: data }, () => {
-        chrome.runtime.sendMessage({ type: "overdueNoticeReady" });
-      });
+      chrome.runtime.sendMessage({ type: "overdueNoticeReady", data });
       if (overdueTitles.length === 0) {
         resultHeading = "Heads up!";
         resultMessage = `No overdue interlibrary loan titles were found on this page, so we've put a blank letter template on your clipboard that you can modify.`;

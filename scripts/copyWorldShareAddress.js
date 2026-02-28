@@ -11,7 +11,7 @@
     chrome.runtime.getURL("modules/dymoFunctions.js")
   );
 
-  const { autoReturnILL, printLabel } = await chrome.storage.local.get(["autoReturnILL", "printLabel"]);
+  const { autoReturnILL: autoReturnEnabled, printLabel } = await chrome.storage.local.get(["autoReturnILL", "printLabel"]);
 
   /**
    * Copies the address information from the WorldShare interface
@@ -140,12 +140,9 @@
 
       // If keyboard shortcut is used, the address is copied to clipboard
       if (document.hasFocus()) navigator.clipboard.writeText(addressString);
-      // If sidePanel click is used, the address is stored and extracted in sidepanel.js
+      // If sidePanel click is used, send address directly to sidepanel
       else {
-        chrome.storage.local.set({ addressString: addressString }, () => {
-          // Send message to sidepanel.js to extract address
-          chrome.runtime.sendMessage({ type: "addressReady" });
-        });
+        chrome.runtime.sendMessage({ type: "addressReady", data: addressString });
       }
 
       if (printLabel) {
@@ -203,7 +200,7 @@
   const currentURL = window.location.href;
   if (currentURL.includes("worldcat.org")) {
     copyWorldShareAddress();
-    if (autoReturnILL) {
+    if (autoReturnEnabled) {
       autoReturnILL();
     }
   } else {

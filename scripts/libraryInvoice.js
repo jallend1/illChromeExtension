@@ -56,10 +56,7 @@ async function libraryInvoice() {
       let resultHeading = "";
       let resultMessage = "";
 
-      // Stores invoice in local storage for sidepanel to access
-      chrome.storage.local.set({ libraryInvoice: data }, () => {
-        chrome.runtime.sendMessage({ type: "libraryInvoiceReady" });
-      });
+      chrome.runtime.sendMessage({ type: "libraryInvoiceReady", data });
 
       if (itemCount === 0) {
         resultHeading = "Heads up!";

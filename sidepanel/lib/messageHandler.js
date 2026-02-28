@@ -1,5 +1,5 @@
 import { storageKeys, MESSAGE_TYPES } from "./constants.js";
-import { extractFromStorage, extractRichFromStorage } from "./utils.js";
+
 import { handleURLChange } from "./buttonManager.js";
 
 // State management using closures
@@ -70,13 +70,27 @@ export const handleMessage = (message, sender, sendResponse) => {
       handleStorageUpdate(message);
       break;
     case MESSAGE_TYPES.ADDRESS_READY:
-      extractFromStorage("addressString");
+      if (message.data) {
+        navigator.clipboard
+          .writeText(message.data)
+          .catch((err) => console.error("Failed to copy address to clipboard:", err));
+      }
       break;
     case MESSAGE_TYPES.OVERDUE_NOTICE_READY:
-      extractFromStorage("overdueNotice");
+      if (message.data) {
+        navigator.clipboard
+          .writeText(message.data)
+          .catch((err) => console.error("Failed to copy overdue notice to clipboard:", err));
+      }
       break;
     case MESSAGE_TYPES.LIBRARY_INVOICE_READY:
-      extractRichFromStorage("libraryInvoice");
+      if (message.data) {
+        const htmlBlob = new Blob([message.data.html], { type: "text/html" });
+        const textBlob = new Blob([message.data.text], { type: "text/plain" });
+        navigator.clipboard
+          .write([new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob })])
+          .catch((err) => console.error("Failed to copy invoice to clipboard:", err));
+      }
       break;
     default:
       console.log("Unhandled message type:", message.type);

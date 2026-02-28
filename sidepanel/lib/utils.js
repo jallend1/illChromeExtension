@@ -22,59 +22,6 @@ export const parseMailData = async () => {
 };
 
 /**
- * Extracts a value from storage and copies it to the clipboard
- * @param {string} key - The key of the value to extract
- * @returns {Promise<void>}
- * @throws {Error} If the extraction fails
- * @description This function retrieves a value from Chrome's local storage,
- * copies it to the clipboard, and then removes it from storage.
- */
-export const extractFromStorage = async (key) => {
-  console.log(`Extracting ${key} from storage...`);
-  try {
-    const result = await new Promise((resolve) =>
-      chrome.storage.local.get(key, resolve)
-    );
-    console.log(`Extracted ${key} from storage:`, result[key]);
-
-    if (result[key]) {
-      await navigator.clipboard.writeText(result[key]);
-      console.log(`Copied ${key} to clipboard`);
-      chrome.storage.local.remove(key);
-    }
-  } catch (error) {
-    console.error(`Failed to copy ${key} to clipboard`, error);
-  }
-};
-
-/**
- * Extracts a {text, html} value from storage and copies it to the clipboard
- * as rich content so Word, Outlook, and Excel preserve formatting on paste.
- * @param {string} key - The key of the value to extract
- * @returns {Promise<void>}
- */
-export const extractRichFromStorage = async (key) => {
-  console.log(`Extracting rich content for ${key} from storage...`);
-  try {
-    const result = await new Promise((resolve) =>
-      chrome.storage.local.get(key, resolve)
-    );
-    const data = result[key];
-    if (data) {
-      const htmlBlob = new Blob([data.html], { type: "text/html" });
-      const textBlob = new Blob([data.text], { type: "text/plain" });
-      await navigator.clipboard.write([
-        new ClipboardItem({ "text/html": htmlBlob, "text/plain": textBlob }),
-      ]);
-      console.log(`Copied rich ${key} to clipboard`);
-      chrome.storage.local.remove(key);
-    }
-  } catch (error) {
-    console.error(`Failed to copy rich ${key} to clipboard`, error);
-  }
-};
-
-/**
  * Toggles the visibility of a section with animation
  * @param {HTMLElement} toggle - The toggle element
  * @param {HTMLElement} mainSection - The main section to show/hide
