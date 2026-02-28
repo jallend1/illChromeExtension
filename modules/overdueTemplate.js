@@ -1,3 +1,5 @@
+import { org } from "../data/orgConfig.js";
+
 /**
  * Generates the body paragraph of the overdue notice based on the number of overdue titles.
  * @param {string[]} overdueTitles
@@ -32,9 +34,9 @@ export function generateOverdueLetter(overdueTitles) {
   const todaysDate = new Date().toLocaleDateString();
   const overdueText = generateOverdueText(overdueTitles);
 
-  return `King County Library System
-Interlibrary Loan
-960 Newport Way NW * Issaquah, WA 98027 * 425.369.3490
+  return `${org.name}
+${org.department}
+${org.address} * ${org.city}, ${org.state} ${org.zip} * ${org.phone}
 
 Date: ${todaysDate}
 

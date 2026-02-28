@@ -8,6 +8,9 @@
   const { orbisLibrarySymbols } = await import(
     chrome.runtime.getURL("data/orbisLibrarySymbols.js")
   );
+  const { dueDateLibraries, paperworkLibraries } = await import(
+    chrome.runtime.getURL("data/libraryRequirements.js")
+  );
 
   async function copyFromOCLC() {
     // Sets up addressObject with names matching OCLC address fields so it can be iterated through later
@@ -214,7 +217,6 @@
     const checkLenderRequirements = async (currentLender) => {
       // Checks to see if the current lender requires paperwork to be kept
       requiresPaperwork(currentLender);
-      const dueDateLibraries = ["BLP", "ZWR", "COW"];
       if (dueDateLibraries.includes(currentLender)) {
         // BLP requires due date on their paperwork, and
         // I'm guessing that is also why ZWR and COW also wants
@@ -233,7 +235,6 @@
      * @description This function checks if the current library is one of the libraries that requires paperwork to be kept and throws an alert if it does.
      */
     const requiresPaperwork = (oclcSymbol) => {
-      const paperworkLibraries = ["COW", "DLC", "WSE", "YEP", "ZWR"];
       if (paperworkLibraries.includes(oclcSymbol)) {
         alert("This library would like us to keep the paperwork.");
       }

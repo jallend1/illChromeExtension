@@ -1,6 +1,6 @@
 async function loadFrequentLending() {
   const { frequentLibraries } = await import(
-    chrome.runtime.getURL("../modules/frequentLibraries.js")
+    chrome.runtime.getURL("data/frequentLibraries.js")
   );
   const { statusModal } = await import(
     chrome.runtime.getURL("modules/modals.js")

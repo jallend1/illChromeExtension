@@ -1,8 +1,5 @@
 import { executeScript } from "./modules/scriptExecutor.js";
-
-const longDueDateIds = [
-  2089608, 2191517, 2372046, 2381743, 2384875, 2645812, 2755234, 4465480,
-];
+import { longDueDateIds } from "./data/longDueDateLibraries.js";
 const isLongCheckout = (url) => longDueDateIds.some((id) => url.includes(id));
 
 // Mapping URL patterns to their associated scripts and styles

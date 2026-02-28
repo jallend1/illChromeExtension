@@ -1,3 +1,5 @@
+import { org } from "../data/orgConfig.js";
+
 /**
  * Generates an invoice letter as PLAIN text.
  * Backup function if HTML copying has issues
@@ -22,11 +24,11 @@ Balance: ${item.balance}
 `;
   });
 
-  return `King County Library System
-Interlibrary Loan
-960 Newport Way NW * Issaquah, WA 98027 
-425.369.3490
-illdept@kcls.org
+  return `${org.name}
+${org.department}
+${org.address} * ${org.city}, ${org.state} ${org.zip}
+${org.phone}
+${org.email}
 
 Date: ${todaysDate}
 
@@ -39,10 +41,10 @@ TOTAL AMOUNT DUE: $${totalBalance.toFixed(2)}
 
 The costs listed above represent replacement costs for these items. Please only pay if you have given up hope that these items will be returned. We always prefer the original item back over payment.
 
-If you have any questions or see any errors, please either respond to this email or reach out to illdept@kcls.org.
+If you have any questions or see any errors, please either respond to this email or reach out to ${org.email}.
 
-King County Library System
-Interlibrary Loan Department`;
+${org.name}
+${org.department} Department`;
 }
 
 /**
@@ -86,14 +88,14 @@ export function generateInvoiceHTML(billsData, address, logoBase64) {
   <table style="border: none; border-collapse: collapse; margin-bottom: 16pt;" cellpadding="0" cellspacing="0">
     <tr>
       <td style="border: none; padding: 0 16pt 0 0; vertical-align: middle;">
-        <img src="${logoBase64}" style="height: 72pt; width: auto;" alt="King County Library System">
+        <img src="${logoBase64}" style="height: 72pt; width: auto;" alt="${org.name}">
       </td>
       <td style="border: none; padding: 0; vertical-align: middle;">
-        <p style="margin: 0 0 2pt 0; font-size: 14pt; font-weight: bold;">King County Library System</p>
-        <p style="margin: 0 0 2pt 0;">Interlibrary Loan</p>
-        <p style="margin: 0 0 2pt 0; color: #555555;">960 Newport Way NW &bull; Issaquah, WA 98027</p>
-        <p style="margin: 0 0 2pt 0; color: #555555;">425.369.3490</p>
-        <p style="margin: 0; color: #555555;">illdept@kcls.org</p>
+        <p style="margin: 0 0 2pt 0; font-size: 14pt; font-weight: bold;">${org.name}</p>
+        <p style="margin: 0 0 2pt 0;">${org.department}</p>
+        <p style="margin: 0 0 2pt 0; color: #555555;">${org.address} &bull; ${org.city}, ${org.state} ${org.zip}</p>
+        <p style="margin: 0 0 2pt 0; color: #555555;">${org.phone}</p>
+        <p style="margin: 0; color: #555555;">${org.email}</p>
       </td>
     </tr>
   </table>
@@ -113,9 +115,9 @@ export function generateInvoiceHTML(billsData, address, logoBase64) {
   </table>
   <p style="margin: 0 0 16pt 0; font-size: 12pt; font-weight: bold; text-align: right;">TOTAL AMOUNT DUE: $${totalBalance.toFixed(2)}</p>
   <p style="margin: 0 0 16pt 0;">The costs listed above represent replacement costs for these items. Please only pay if you have given up hope that these items will be returned. We always prefer the original item back over payment.</p>
-  <p style="margin: 0 0 16pt 0;">If you have any questions or see any errors, please either respond to this email or reach out to <a href="mailto:illdept@kcls.org">illdept@kcls.org</a>.</p>
+  <p style="margin: 0 0 16pt 0;">If you have any questions or see any errors, please either respond to this email or reach out to <a href="mailto:${org.email}">${org.email}</a>.</p>
   <p style="margin: 0 0 24pt 0;">Sincerely,</p>
-  <p style="margin: 0;">King County Library System<br>Interlibrary Loan Department</p>
+  <p style="margin: 0;">${org.name}<br>${org.department} Department</p>
 </div>
 </body></html>`;
 }
