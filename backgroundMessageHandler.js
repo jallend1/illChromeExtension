@@ -113,13 +113,13 @@ const handleCommandMessage = async (request, activeTab) => {
  * @param {Function} sendResponse
  */
 const handleActionMessage = async (request, activeTab, sendResponse) => {
-  // TODO: Clean up logic -- editPatron/retriveOnly/retrievePatron duplicating a lot of functionality
-  if (request.action === "editPatron" || request.action == "retrieveOnly") {
-    // Store patron barcode in local storage
-    chrome.storage.local.set({ patronBarcode: request.patronBarcode }, () => {
-      console.log("Patron barcode stored");
-    });
-    // Open the patron page in a new tab
+  if (["editPatron", "retrieveOnly", "retrievePatron"].includes(request.action)) {
+    // retrievePatron carries a full request object; the barcode-only actions just need the barcode
+    const isFullRequest = request.action === "retrievePatron";
+    chrome.storage.local.set(
+      isFullRequest ? { request } : { patronBarcode: request.patronBarcode },
+      () => console.log(isFullRequest ? "Request data stored" : "Patron barcode stored"),
+    );
     retrievePatron();
     sendResponse({ success: true });
     return true;
@@ -127,15 +127,6 @@ const handleActionMessage = async (request, activeTab, sendResponse) => {
 
   if (request.action === "isbnSearch") {
     await calculateURL(URLS.CATALOG + "/" + request.url);
-    return true;
-  }
-
-  if (request.action === "retrievePatron") {
-    chrome.storage.local.set({ request }, () => {
-      console.log("Request Data stored", request);
-    });
-    retrievePatron();
-    sendResponse({ success: true });
     return true;
   }
 
@@ -178,6 +169,48 @@ const handleDataMessage = (request, activeTab, sendResponse) => {
   }
 
   return false;
+};
+
+/**
+ * Shared handler for vendor price-result messages (Kinokuniya, KingStone).
+ * Looks up the original ISBN from session storage, forwards the result to the
+ * sidepanel, cleans up, and closes the tab when running in bulk mode.
+ * @param {string} vendor - Storage key prefix, e.g. "kinokuniya" or "kingStone"
+ * @param {Object} request
+ * @param {chrome.runtime.MessageSender} sender
+ */
+const handleVendorResult = (vendor, request, sender) => {
+  const tabId = sender.tab?.id;
+  if (!tabId) {
+    console.error(`Background: No tab ID in sender for ${vendor}!`);
+    return;
+  }
+
+  const storageKey = `${vendor}_${tabId}`;
+  chrome.storage.session.get([storageKey], (result) => {
+    const isbn = result[storageKey] || request.isbn || "";
+    const isBulkMode = !!result[storageKey];
+
+    console.log(`Background: ${vendor} ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`);
+
+    const messageToSend = {
+      command: `${vendor}Result`,
+      found: request.found,
+      url: request.url,
+      price: request.price,
+      isbn,
+      extractedIsbn: request.isbn || "",
+    };
+    console.log(`Background: Forwarding ${vendor} result:`, messageToSend);
+
+    chrome.runtime.sendMessage(messageToSend);
+    chrome.storage.session.remove([storageKey]);
+
+    if (isBulkMode) {
+      console.log(`Background: Closing ${vendor} tab ${tabId} in 500ms`);
+      setTimeout(() => chrome.tabs.remove(tabId), 500);
+    }
+  });
 };
 
 /**
@@ -370,90 +403,16 @@ export const handleMessage = async (request, sender, sendResponse) => {
     return true;
   }
 
-  // Handle Kinokuniya result messages from content script
+  // Handle vendor price-result messages from content scripts
   if (request.command === "kinokuniyaResult") {
     console.log("Background: Received kinokuniya result:", request);
-    console.log("Background: Sender tab ID:", sender.tab?.id);
-
-    // Get the ISBN from session storage if available
-    const tabId = sender.tab?.id;
-    if (tabId) {
-      chrome.storage.session.get([`kinokuniya_${tabId}`], (result) => {
-        const isbn = result[`kinokuniya_${tabId}`] || request.isbn || "";
-        const isBulkMode = !!result[`kinokuniya_${tabId}`];
-
-        console.log(
-          `Background: ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`,
-        );
-
-        // Forward to all open sidepanels
-        const messageToSend = {
-          command: "kinokuniyaResult",
-          found: request.found,
-          url: request.url,
-          price: request.price,
-          isbn: isbn, // This is the original search term from storage
-          extractedIsbn: request.isbn || "", // This is the ISBN extracted from the page
-        };
-        console.log("Background: Forwarding to sidepanel:", messageToSend);
-
-        chrome.runtime.sendMessage(messageToSend);
-
-        // Clean up session storage
-        chrome.storage.session.remove([`kinokuniya_${tabId}`]);
-
-        // Close the tab after a short delay only if in bulk mode
-        if (isBulkMode) {
-          console.log(`Background: Closing tab ${tabId} in 500ms`);
-          setTimeout(() => {
-            chrome.tabs.remove(tabId);
-          }, 500);
-        }
-      });
-    } else {
-      console.error("Background: No tab ID in sender!");
-    }
+    handleVendorResult("kinokuniya", request, sender);
     return true;
   }
 
-  // Handle KingStone result messages from content script
   if (request.command === "kingStoneResult") {
     console.log("Background: Received KingStone result:", request);
-
-    const tabId = sender.tab?.id;
-    if (tabId) {
-      chrome.storage.session.get([`kingStone_${tabId}`], (result) => {
-        const isbn = result[`kingStone_${tabId}`] || request.isbn || "";
-        const isBulkMode = !!result[`kingStone_${tabId}`];
-
-        console.log(
-          `Background: KingStone ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`,
-        );
-
-        const messageToSend = {
-          command: "kingStoneResult",
-          found: request.found,
-          url: request.url,
-          price: request.price,
-          isbn: isbn,
-          extractedIsbn: request.isbn || "",
-        };
-        console.log("Background: Forwarding KingStone result:", messageToSend);
-
-        chrome.runtime.sendMessage(messageToSend);
-
-        chrome.storage.session.remove([`kingStone_${tabId}`]);
-
-        if (isBulkMode) {
-          console.log(`Background: Closing KingStone tab ${tabId} in 500ms`);
-          setTimeout(() => {
-            chrome.tabs.remove(tabId);
-          }, 500);
-        }
-      });
-    } else {
-      console.error("Background: No tab ID in sender for KingStone!");
-    }
+    handleVendorResult("kingStone", request, sender);
     return true;
   }
 
