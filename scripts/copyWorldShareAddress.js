@@ -11,8 +11,7 @@
     chrome.runtime.getURL("modules/dymoFunctions.js")
   );
 
-  const autoReturnEnabled = await chrome.storage.local.get("autoReturnILL");
-  const { printLabel } = await chrome.storage.local.get("printLabel");
+  const { autoReturnILL, printLabel } = await chrome.storage.local.get(["autoReturnILL", "printLabel"]);
 
   /**
    * Copies the address information from the WorldShare interface
@@ -204,7 +203,7 @@
   const currentURL = window.location.href;
   if (currentURL.includes("worldcat.org")) {
     copyWorldShareAddress();
-    if (autoReturnEnabled.autoReturnILL) {
+    if (autoReturnILL) {
       autoReturnILL();
     }
   } else {

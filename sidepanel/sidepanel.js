@@ -6,7 +6,6 @@ import {
 } from "./lib/messageHandler.js";
 import { handleURLChange } from "./lib/buttonManager.js";
 import { initializeEventListeners } from "./lib/eventListeners.js";
-import { getStorageValue } from "./lib/utils.js";
 
 // The window ID for this istance of the side panel
 let myWindowId = null;
@@ -50,11 +49,14 @@ const setupWindow = () => {
 };
 
 /**
- * Initialize storage values for UI elements
+ * Initialize storage values for UI elements — single batched read
  */
 const initializeStorageValues = () => {
-  storageKeys.forEach((storageKey) => {
-    getStorageValue(storageKey.key, storageKey.element);
+  const keys = storageKeys.map(({ key }) => key);
+  chrome.storage.local.get(keys, (result) => {
+    storageKeys.forEach(({ key, element }) => {
+      if (element) element.checked = result[key];
+    });
   });
 };
 

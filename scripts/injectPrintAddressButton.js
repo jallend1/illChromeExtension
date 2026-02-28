@@ -14,6 +14,8 @@
     ".patron-summary-container > .patron-status-color"
   );
 
+  if (!patronNameElement) return;
+
   /**
    * Creates the print button element
    * @returns {HTMLButtonElement}
@@ -57,6 +59,10 @@
       const address = await waitForElementWithInterval(
         '[id^="patron-address-copy-"]'
       );
+      if (!address) {
+        createMiniModal("Could not find patron address — is it loaded on the page?", true);
+        return;
+      }
       createMiniModal("Printing address label...");
       dymoFunctions.printDymoLabel(address.textContent);
     });

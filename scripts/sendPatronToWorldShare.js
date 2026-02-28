@@ -97,7 +97,7 @@
     const barcodeField = await waitForElementWithInterval(barcodeSelector);
 
     if (!nameField || !barcodeField) {
-      console.error("Could not find required fields on WorldShare page");
+      createMiniModal("Could not find patron fields on WorldShare — is a request open?", true);
       return;
     }
 

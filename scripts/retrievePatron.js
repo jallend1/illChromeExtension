@@ -5,6 +5,9 @@
   const { addLendingFee } = await import(
     chrome.runtime.getURL("modules/addLendingFee.js")
   );
+  const { createMiniModal } = await import(
+    chrome.runtime.getURL("modules/modals.js")
+  );
 
   try {
     const inputField = await waitForElementWithInterval(
@@ -13,6 +16,11 @@
     const submitButton = await waitForElementWithInterval(
       ".btn.btn-outline-secondary"
     );
+
+    if (!inputField || !submitButton) {
+      createMiniModal("Patron search fields not found — try refreshing the page.", true);
+      return;
+    }
 
     chrome.storage.local.get(["patronToEdit", "request"], (result) => {
       if (result.patronToEdit) {

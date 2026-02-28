@@ -3,6 +3,11 @@
     chrome.runtime.getURL("modules/modals.js")
   );
 
+  // Read once at startup; requestData is set before this script runs and only
+  // removed after a successful hold, so caching here covers all later uses.
+  const { requestData: rawRequestData } = await chrome.storage.local.get("requestData");
+  const cachedRequestData = rawRequestData ? JSON.parse(rawRequestData) : null;
+
 let mainObserver;
 
   /**
@@ -170,20 +175,14 @@ let mainObserver;
                 }, 500);
               }
             } else if (alertNode.textContent.includes("Succeeded")) {
-              chrome.storage.local.get("requestData").then((result) => {
-                if (!result.requestData) return;
-
-                const requestData = JSON.parse(result.requestData);
-                const { isLendingFee } = requestData;
-
+              if (cachedRequestData) {
+                const { isLendingFee, patronID, title } = cachedRequestData;
                 console.log("Checking for lending fee...");
                 if (isLendingFee && isLendingFee !== "0.00") {
-                  const { patronID, title } = requestData;
                   handleFee(isLendingFee, patronID, title);
                 }
-
                 chrome.storage.local.remove("requestData");
-              });
+              }
             }
 
             // TODO: Add logic to display solution for 'No available copies' message here
@@ -212,11 +211,7 @@ let mainObserver;
     const config = { childList: true, subtree: true };
     mainObserver.observe(targetNode, config);
 
-    chrome.storage.local.get("requestData").then((result) => {
-      if (!result.requestData) return;
-      const { isSecondPatron } = JSON.parse(result.requestData);
-      if (isSecondPatron) handleSecondPatron();
-    });
+    if (cachedRequestData?.isSecondPatron) handleSecondPatron();
   }
 
   holdScreenMods();
@@ -354,13 +349,10 @@ let mainObserver;
               );
               const evgLastName = smallTags[0]?.textContent;
 
-              chrome.storage.local.get("requestData").then((result) => {
-                // TODO: Checking storage twice is not the way to live your life -- Lift it to global?
-                if (!result.requestData) return;
-                const { patronName } = JSON.parse(result.requestData);
-                const requestLastName = patronName.split(",")[0];
+              if (cachedRequestData?.patronName) {
+                const requestLastName = cachedRequestData.patronName.split(",")[0];
                 comparePatronNames(evgLastName, requestLastName);
-              });
+              }
               isEditDisabled(!smallTags.length > 0);
             } else if (mutation.removedNodes.length > 0) {
               // Check if any small tags were removed

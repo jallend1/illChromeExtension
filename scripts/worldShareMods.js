@@ -153,8 +153,8 @@
       await highlightRequestStatus(elements);
       // Only displays package frequency if request is in received/recalled status
       if (
-        elements.requestStatus.innerText.includes("Received") ||
-        elements.requestStatus.innerText.includes("Recalled")
+        elements.requestStatus?.innerText.includes("Received") ||
+        elements.requestStatus?.innerText.includes("Recalled")
       ) {
         packageFrequency();
       }

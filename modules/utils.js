@@ -85,5 +85,6 @@ export const isLendingRequestPage = async () => {
     : (borrowingLibrary = await waitForElementWithInterval(
         "div:not(.yui3-default-hidden) span.borrowingLibraryExtra"
       ));
+  if (!borrowingLibrary) return false;
   return !borrowingLibrary.textContent.includes("NTG");
 };
