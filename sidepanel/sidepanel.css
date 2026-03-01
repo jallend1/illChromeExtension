@@ -171,6 +171,7 @@ body > main {
 }
 
 section {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -180,6 +181,10 @@ section {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   transition: all var(--transition-normal);
+}
+
+.scripts:has(.tooltip:hover) {
+  z-index: 10;
 }
 
 section:has(.collapsible.collapsed) {
