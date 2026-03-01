@@ -274,6 +274,10 @@
           ) {
             console.log("New request detected!!");
 
+            // Check if the element is already in the DOM before waiting (stale element check)
+            const preExisting = document.querySelector(".wms-alert.wms-message-confirm > p.msg > a");
+            console.log("Anchor already in DOM before waiting?", !!preExisting, "href:", preExisting?.href);
+
             // The request ID that populates after submission
             const requestAnchorTag = await waitForElementWithInterval(
               ".wms-alert.wms-message-confirm > p.msg > a",
@@ -284,13 +288,17 @@
               return;
             }
 
+            console.log("Same element as pre-existing?", preExisting === requestAnchorTag);
+            console.log("Anchor href at time of click:", requestAnchorTag.href);
+            console.log("Anchor textContent at time of click:", requestAnchorTag.textContent.trim());
+
             const requestId = requestAnchorTag.textContent.trim();
 
             navigator.clipboard.writeText(requestId);
             console.log("Text copied to clipboard:", requestId);
 
             // TODO: Automatically clicking generally works the first time, but after that opens up a blank request (Still copies the appropriate number tho)
-            // requestAnchorTag.click();
+            requestAnchorTag.click();
 
             createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
             return;
