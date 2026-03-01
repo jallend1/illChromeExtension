@@ -11,10 +11,9 @@
     const { createAddToBookshelfButton, doesLibraryAlreadyExist } =
       await import(chrome.runtime.getURL("modules/virtualBookShelf.js"));
 
-    const {
-      waitForElementWithInterval,
-      isLendingRequestPage,
-    } = await import(chrome.runtime.getURL("modules/utils.js"));
+    const { waitForElementWithInterval, isLendingRequestPage } = await import(
+      chrome.runtime.getURL("modules/utils.js")
+    );
 
     const { createMiniModal } = await import(
       chrome.runtime.getURL("modules/modals.js")
@@ -123,34 +122,73 @@
     };
 
     /**
+     * Injects a button into the action bar before the request data actions element.
+     */
+    const injectActionButton = async () => {
+      const actionsEl = await waitForElementWithInterval(
+        ".nd-request-action-bar-request-data-actions",
+      );
+      if (
+        !actionsEl ||
+        actionsEl.parentElement.querySelector("#ill-action-button")
+      )
+        return;
+
+      const button = document.createElement("button");
+      button.id = "ill-action-button";
+      button.textContent = "Retrieve Patron";
+      button.style.cssText =
+        "background-color:#00b894;color:#fff;border:none;border-radius:0.3rem;padding:0.6rem 1.2rem;cursor:pointer;font-weight:400;margin-right:0.5rem;" +
+        "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
+
+      button.addEventListener("click", () => {
+        console.log("Retrieve Patron button clicked");
+        const patronInput = document.querySelector(
+          `[data="requester.patron.userId"]`,
+        );
+        console.log("Patron input field:", patronInput);
+        if (!patronInput?.value) return;
+        chrome.storage.local.set({ patronToEdit: patronInput.value }, () => {
+          chrome.runtime.sendMessage({
+            action: "editPatron",
+            patronBarcode: patronInput.value,
+          });
+        });
+      });
+
+      actionsEl.parentElement.insertBefore(button, actionsEl);
+    };
+
+    /**
      * Runs the borrowing modifications.
      * @param {Object} activeSelectors - The active selectors to use.
      */
     const runBorrowingMods = async (activeSelectors) => {
       const elements = {
         requestHeader: await waitForElementWithInterval(
-          activeSelectors.requestHeader
+          activeSelectors.requestHeader,
         ),
         requestStatus: await waitForElementWithInterval(
-          activeSelectors.requestStatus
+          activeSelectors.requestStatus,
         ),
         dispositionElement: await waitForElementWithInterval(
-          activeSelectors.dispositionElement
+          activeSelectors.dispositionElement,
         ),
         dueDateElement: await waitForElementWithInterval(
-          activeSelectors.dueDateElement
+          activeSelectors.dueDateElement,
         ),
       };
 
       // renewalDueDateElement does not exist on all pages, but will exist if dueDateElement exists
       if (elements.dueDateElement) {
         elements.renewalDueDateElement = document.querySelector(
-          activeSelectors.renewalDueDateElement
+          activeSelectors.renewalDueDateElement,
         );
       }
 
       await highlightDueDate(elements);
       await highlightRequestStatus(elements);
+      await injectActionButton();
       // Only displays package frequency if request is in received/recalled status
       if (
         elements.requestStatus?.innerText.includes("Received") ||
@@ -166,7 +204,7 @@
      */
     const runLendingMods = async (activeSelectors) => {
       const borrowingNotes = await waitForElementWithInterval(
-        activeSelectors.borrowingNotes
+        activeSelectors.borrowingNotes,
       );
       if (borrowingNotes) {
         applyEmphasisStyle(borrowingNotes, "#fff9c4", "black");
@@ -231,14 +269,14 @@
           // Extracts the request number after submission
           if (
             window.currentUrl.includes(
-              "/new?fulfillmentType=OCLC_ILL&role=REQUESTER"
+              "/new?fulfillmentType=OCLC_ILL&role=REQUESTER",
             )
           ) {
             console.log("New request detected!!");
 
             // The request ID that populates after submission
             const requestAnchorTag = await waitForElementWithInterval(
-              ".wms-alert.wms-message-confirm > p.msg > a"
+              ".wms-alert.wms-message-confirm > p.msg > a",
             );
 
             if (!requestAnchorTag || !requestAnchorTag.isConnected) {
@@ -281,7 +319,7 @@
       createMiniModal(
         "Alert! This library has items on the virtual bookshelf!",
         true,
-        10000
+        10000,
       );
     }
 
