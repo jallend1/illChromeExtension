@@ -73,7 +73,7 @@
         requestStatus.innerText.includes("Recalled") ||
         requestStatus.innerText.includes("Missing")
       ) {
-        applyEmphasisStyle(requestStatus, "red", "black");
+        applyEmphasisStyle(requestStatus, "#fde8e8", "#991b1b");
       }
       // If request is received, check for existence of 'Overdue' in the disposition element
       else if (requestStatus.innerText.includes("Received")) {
@@ -81,7 +81,7 @@
           dispositionElement &&
           dispositionElement.innerText.includes("Overdue")
         ) {
-          applyEmphasisStyle(dispositionElement, "red", "black");
+          applyEmphasisStyle(dispositionElement, "#fde8e8", "#991b1b");
         }
       }
     };
@@ -111,8 +111,8 @@
           return;
         // If due date is today or in the past, emphasize it
         if (diffDays <= 0) {
-          applyEmphasisStyle(dueDate, "red", "black");
-          applyEmphasisStyle(requestHeader, "red", "black");
+          applyEmphasisStyle(dueDate, "#fff3cd", "#856404");
+          applyEmphasisStyle(requestHeader, "#fff3cd", "#856404");
         } else if (diffDays >= 21) {
           applyEmphasisStyle(dueDate, "green");
           applyEmphasisStyle(requestHeader, "#d4f0d4", "black");
