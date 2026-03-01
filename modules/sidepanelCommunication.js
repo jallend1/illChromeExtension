@@ -13,6 +13,9 @@ export const isAnySidepanelOpen = () => {
  * @param {Object} request
  */
 export const handleSidepanelMessage = (request) => {
+  // Drop messages the background sent to itself via chrome.runtime.sendMessage
+  if (request._source === "background") return true;
+
   if (request.type === "sidepanel-open") {
     openSidepanels[request.windowId] = true;
     return true;
@@ -43,6 +46,7 @@ export const sendTabUrlUpdate = (details) => {
 
   chrome.runtime.sendMessage(
     {
+      _source: "background",
       type: "tab-url-updated",
       tabId: details.tabId,
       url: details.url,

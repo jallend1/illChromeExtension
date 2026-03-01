@@ -47,24 +47,28 @@ chrome.commands.onCommand.addListener((command) => {
 
 // More complex version to sus out where the uncaught promise errors are coming from
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Received message:", request.action, "from tab:", sender.tab?.id);
+  const msgId =
+    request.action ??
+    request.command ??
+    request.type ??
+    request.data ??
+    "(unknown)";
 
   const result = handleMessage(request, sender, sendResponse);
 
   if (result instanceof Promise) {
     result
       .then((response) => {
-        console.log("Promise resolved for:", request.action);
         sendResponse(response);
       })
       .catch((error) => {
-        console.error("Error in message handler for:", request.action, error);
+        console.error("Error in message handler for:", msgId, error);
         sendResponse({ error: error.message });
       });
     return true;
   }
 
-  console.log("Synchronous response for:", request.action);
+  console.log("Synchronous response for:", msgId);
   return result;
 });
 
@@ -99,7 +103,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         tabId: tab.id,
         url: tab.url,
         windowId: tab.windowId,
-      })
+      }),
   );
 });
 
@@ -116,11 +120,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 
   // Handle URL actions
   urlActions.forEach(({ match, action }) => {
-    console.log("URL from background.js: ", details.url);
-    if (details.url.includes("kinokuniya.com")) {
-      console.log("Matched kinokuniya.com");
-      console.log(match, action);
-    }
     if (match(details.url)) {
       action(details.tabId);
     }

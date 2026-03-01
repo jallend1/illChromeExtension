@@ -113,12 +113,17 @@ const handleCommandMessage = async (request, activeTab) => {
  * @param {Function} sendResponse
  */
 const handleActionMessage = async (request, activeTab, sendResponse) => {
-  if (["editPatron", "retrieveOnly", "retrievePatron"].includes(request.action)) {
+  if (
+    ["editPatron", "retrieveOnly", "retrievePatron"].includes(request.action)
+  ) {
     // retrievePatron carries a full request object; the barcode-only actions just need the barcode
     const isFullRequest = request.action === "retrievePatron";
     chrome.storage.local.set(
       isFullRequest ? { request } : { patronBarcode: request.patronBarcode },
-      () => console.log(isFullRequest ? "Request data stored" : "Patron barcode stored"),
+      () =>
+        console.log(
+          isFullRequest ? "Request data stored" : "Patron barcode stored",
+        ),
     );
     retrievePatron();
     sendResponse({ success: true });
@@ -191,9 +196,12 @@ const handleVendorResult = (vendor, request, sender) => {
     const isbn = result[storageKey] || request.isbn || "";
     const isBulkMode = !!result[storageKey];
 
-    console.log(`Background: ${vendor} ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`);
+    console.log(
+      `Background: ${vendor} ISBN from storage: ${isbn}, bulk mode: ${isBulkMode}`,
+    );
 
     const messageToSend = {
+      _source: "background",
       command: `${vendor}Result`,
       found: request.found,
       url: request.url,
@@ -221,10 +229,7 @@ const handleVendorResult = (vendor, request, sender) => {
  */
 export const handleMessage = async (request, sender, sendResponse) => {
   // Handle sidepanel messages first (no need for active tab)
-  if (handleSidepanelMessage(request)) {
-    console.log("Handled as sidepanel message");
-    return;
-  }
+  if (handleSidepanelMessage(request)) return;
 
   // Handle WorldShare messages (no need for active tab validation)
   if (handleWorldShareMessage(request)) {
@@ -343,14 +348,14 @@ export const handleMessage = async (request, sender, sendResponse) => {
 
       function listener(tabId, info, tab) {
         if (tabId === newTab.id && info.status === "complete") {
-          console.log(
-            `Background: KingStone tab ${tabId} loaded: ${tab.url}`,
-          );
+          console.log(`Background: KingStone tab ${tabId} loaded: ${tab.url}`);
 
           if (!hasSubmittedSearch) {
             // First load (homepage) - fill the real search form and submit
             hasSubmittedSearch = true;
-            console.log("Background: Filling KingStone search form on homepage");
+            console.log(
+              "Background: Filling KingStone search form on homepage",
+            );
             chrome.scripting
               .executeScript({
                 target: { tabId: newTab.id },
@@ -373,9 +378,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
               });
           } else {
             // Second load (results page) - extract results
-            console.log(
-              "Background: Injecting kingStoneSearchResults.js",
-            );
+            console.log("Background: Injecting kingStoneSearchResults.js");
             clearTimeout(listenerTimeout);
             chrome.tabs.onUpdated.removeListener(listener);
             chrome.scripting

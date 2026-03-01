@@ -79,8 +79,6 @@ export const initializeSessionLog = () => {
     if (changeInfo.status === "complete") {
       const pattern = shouldTriggerLog(tab.url);
       if (pattern) {
-        console.log("Initializing session log for:", tab.url);
-        console.log(loggedUrls);
         logWelcomeMessage(tabId, pattern);
       }
     }
