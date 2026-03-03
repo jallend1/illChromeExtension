@@ -106,10 +106,10 @@ const processIsbn = async (isbn, vendor) => {
     // If original search term starts with "97", it's already an ISBN
     // Otherwise, use the extracted ISBN from the page
     let isbnForResults = "";
-    if (isbn.startsWith("97")) {
-      isbnForResults = isbn.replace(/-/g, "");
-    } else if (result.extractedIsbn) {
+    if (result.extractedIsbn) {
       isbnForResults = result.extractedIsbn.replace(/-/g, "");
+    } else if (isbn.startsWith("97")) {
+      isbnForResults = isbn.replace(/-/g, "");
     }
 
     // Store result
