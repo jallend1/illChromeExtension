@@ -142,11 +142,9 @@
         "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
 
       button.addEventListener("click", () => {
-        console.log("Retrieve Patron button clicked");
         const patronInput = document.querySelector(
           `[data="requester.patron.userId"]`,
         );
-        console.log("Patron input field:", patronInput);
         if (!patronInput?.value) return;
         chrome.storage.local.set({ patronToEdit: patronInput.value }, () => {
           chrome.runtime.sendMessage({
@@ -275,8 +273,15 @@
             console.log("New request detected!!");
 
             // Check if the element is already in the DOM before waiting (stale element check)
-            const preExisting = document.querySelector(".wms-alert.wms-message-confirm > p.msg > a");
-            console.log("Anchor already in DOM before waiting?", !!preExisting, "href:", preExisting?.href);
+            const preExisting = document.querySelector(
+              ".wms-alert.wms-message-confirm > p.msg > a",
+            );
+            console.log(
+              "Anchor already in DOM before waiting?",
+              !!preExisting,
+              "href:",
+              preExisting?.href,
+            );
 
             // The request ID that populates after submission
             const requestAnchorTag = await waitForElementWithInterval(
@@ -288,9 +293,15 @@
               return;
             }
 
-            console.log("Same element as pre-existing?", preExisting === requestAnchorTag);
+            console.log(
+              "Same element as pre-existing?",
+              preExisting === requestAnchorTag,
+            );
             console.log("Anchor href at time of click:", requestAnchorTag.href);
-            console.log("Anchor textContent at time of click:", requestAnchorTag.textContent.trim());
+            console.log(
+              "Anchor textContent at time of click:",
+              requestAnchorTag.textContent.trim(),
+            );
 
             const requestId = requestAnchorTag.textContent.trim();
 

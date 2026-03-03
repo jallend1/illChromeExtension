@@ -57,14 +57,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const result = handleMessage(request, sender, sendResponse);
 
   if (result instanceof Promise) {
-    result
-      .then((response) => {
-        sendResponse(response);
-      })
-      .catch((error) => {
-        console.error("Error in message handler for:", msgId, error);
-        sendResponse({ error: error.message });
-      });
+    result.catch((error) => {
+      console.error("Error in message handler for:", msgId, error);
+    });
     return true;
   }
 

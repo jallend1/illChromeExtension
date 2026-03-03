@@ -26,6 +26,8 @@ export const handleStorageChanges = (changes, area) => {
     chrome.runtime.sendMessage({
       type: "storage-updated",
       changes: changes,
+    }).catch(() => {
+      // No receiver (sidepanel closed) — expected, ignore
     });
 
     // If changes include lendingMode, update it on all open tabs

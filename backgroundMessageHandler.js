@@ -4,12 +4,14 @@ import {
   isAllowedHost,
   getActiveTab,
   isEvgMobile,
+  evergreenTabId,
+  updateTab,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
 import { URLS } from "./modules/constants.js";
 import {
   executeScript,
-  reuseTabOrCreateWithScript,
+  createTabWithScript,
 } from "./modules/scriptExecutor.js";
 import { handleSidepanelMessage } from "./modules/sidepanelCommunication.js";
 
@@ -35,7 +37,19 @@ const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
-  reuseTabOrCreateWithScript(url, "retrievePatron");
+  const existingTabId = await evergreenTabId();
+  if (existingTabId) {
+    const onTabUpdated = (tabId, changeInfo) => {
+      if (tabId === existingTabId && changeInfo.status === "complete") {
+        executeScript(tabId, "retrievePatron");
+        chrome.tabs.onUpdated.removeListener(onTabUpdated);
+      }
+    };
+    chrome.tabs.onUpdated.addListener(onTabUpdated);
+    updateTab(existingTabId, url);
+  } else {
+    createTabWithScript(url, "retrievePatron");
+  }
 };
 
 /**
