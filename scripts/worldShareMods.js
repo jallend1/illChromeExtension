@@ -243,6 +243,17 @@
     };
 
     /**
+     * Highlights table records containing a digital item icon.
+     */
+    const highlightDigitalItems = async () => {
+      await waitForElementWithInterval(".uic-txt-ico.uic-ico-it-book-digital");
+      document.querySelectorAll(".uic-txt-ico.uic-ico-it-book-digital").forEach((span) => {
+        const record = span.closest(".uic-table-record-data");
+        if (record) record.style.backgroundColor = "#fffde7";
+      });
+    };
+
+    /**
      * Determines the modifications to apply based on the lending/borrowing context.
      * @returns {Promise<void>}
      */
@@ -254,6 +265,7 @@
       } else {
         runBorrowingMods(activeSelectors);
       }
+      highlightDigitalItems();
     };
 
     /**
