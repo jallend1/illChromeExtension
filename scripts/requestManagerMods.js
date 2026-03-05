@@ -1,5 +1,3 @@
-// TODO: Clean up this madness!
-
 (async () => {
   console.log("Request Manager Mods script starting...");
   if (!window.requestManagerModsInjected) {
@@ -37,10 +35,10 @@
       }
       // Update the global variable to the current grid length
       window.gridItemsLength = gridItems.length;
-      const matchingItems = [];
+      // const matchingItems = [];
       gridItems.forEach((item) => {
         const spans = item.querySelectorAll(
-          'span[tooltipclass="eg-grid-tooltip"]'
+          'span[tooltipclass="eg-grid-tooltip"]',
         );
         spans.forEach((span) => {
           if (
@@ -48,7 +46,7 @@
             span.textContent.includes("ADA Circulation")
           ) {
             item.style.backgroundColor = "#ffeb3b";
-            matchingItems.push(item);
+            // matchingItems.push(item);
           }
         });
       });
@@ -63,7 +61,7 @@
         const modal = document.querySelector(".modal-dialog.modal-xl");
         if (modal) {
           const modalHeader = document.querySelector(
-            ".modal-content > .modal-header"
+            ".modal-content > .modal-header",
           );
           if (modalHeader) {
             if (document.querySelector("#request-manager-mods-buttons")) {
@@ -91,32 +89,30 @@
             searchButtonContainer.style.display = "flex";
             searchButtonContainer.style.marginRight = "10px";
 
+            function getModalFields() {
+              const modalBody = "body > ngb-modal-window > div > div > div.modal-body.form-validated";
+              return {
+                isbn: document.querySelector(`${modalBody} > div:nth-child(5) > div:nth-child(2) > input`),
+                title: document.querySelector(`${modalBody} > div:nth-child(2) > div.col-10 > input`),
+                author: document.querySelector(`${modalBody} > div:nth-child(4) > div:nth-child(4) > input`),
+              };
+            }
+
             // Create the "Search Amazon" button
             const searchButton = document.createElement("button");
             searchButton.textContent = "Search Amazon";
             applyButtonStyles(searchButton, "#28a745");
             searchButton.addEventListener("click", () => {
+              const { isbn, title: titleField, author: authorField } = getModalFields();
               let searchTerm;
-              const isbnField = document.querySelector(
-                "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(5) > div:nth-child(2) > input"
-              );
-              if (isbnField && isbnField.value.trim() !== "") {
-                searchTerm = isbnField.value.trim();
+              if (isbn && isbn.value.trim() !== "") {
+                searchTerm = isbn.value.trim();
               } else {
-                const titleField = document.querySelector(
-                  "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(2) > div.col-10 > input"
-                );
-                const authorField = document.querySelector(
-                  "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(4) > div:nth-child(4) > input"
-                );
                 const title = titleField ? titleField.value.trim() : "";
                 const author = authorField ? authorField.value.trim() : "";
-                console.log("Title:", title, "Author:", author);
                 searchTerm = `${title} ${author}`.trim();
               }
-              const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(
-                searchTerm
-              )}`;
+              const amazonSearchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(searchTerm)}`;
               window.open(amazonSearchUrl, "_blank");
             });
 
@@ -126,12 +122,7 @@
             applyButtonStyles(copyTitleAuthorButton, "#17a2b8");
 
             copyTitleAuthorButton.addEventListener("click", () => {
-              const titleField = document.querySelector(
-                "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(2) > div.col-10 > input"
-              );
-              const authorField = document.querySelector(
-                "body > ngb-modal-window > div > div > div.modal-body.form-validated > div:nth-child(4) > div:nth-child(4) > input"
-              );
+              const { title: titleField, author: authorField } = getModalFields();
               const title = titleField ? titleField.value.trim() : "";
               const author = authorField ? authorField.value.trim() : "";
               const clipboardContent = `${title} ${author}`;
@@ -140,7 +131,7 @@
                 .then(() => {
                   console.log(
                     "Title and Author copied to clipboard:",
-                    clipboardContent
+                    clipboardContent,
                   );
                 })
                 .catch((err) => {
@@ -149,7 +140,7 @@
             });
 
             // Append buttons to the container
-            searchButtonContainer.appendChild(copyTitleAuthorButton);
+            copyButtonContainer.appendChild(copyTitleAuthorButton);
             searchButtonContainer.appendChild(searchButton);
             buttonContainer.appendChild(copyButtonContainer);
             buttonContainer.appendChild(searchButtonContainer);
