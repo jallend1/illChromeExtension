@@ -282,8 +282,6 @@
               "/new?fulfillmentType=OCLC_ILL&role=REQUESTER",
             )
           ) {
-            console.log("New request detected!!");
-
             const addToPrintQueue = async () => {
               // Poll until a visible print_now button exists (page fully rendered)
               const printNowBtn = await new Promise((resolve) => {
@@ -296,33 +294,23 @@
                   }
                 }, 200);
               });
-              console.log("[DEBUG] current URL at time of addToPrintQueue:", window.location.href);
-              console.log("[DEBUG] Visible printNowBtn found:", printNowBtn.outerHTML);
 
               const btnGroup = printNowBtn.closest(".btn-group");
               const printQueueAnchor = btnGroup.querySelector('li[data-action="add_to_print_queue"] a');
               if (!printQueueAnchor) {
-                console.error("[DEBUG] Could not find add_to_print_queue anchor in btn-group");
+                console.error("Could not find add_to_print_queue anchor in btn-group");
                 return;
               }
-              console.log("[DEBUG] printQueueAnchor found:", printQueueAnchor.outerHTML);
-              console.log("[DEBUG] printQueueAnchor isConnected:", printQueueAnchor.isConnected);
-              console.log("[DEBUG] printQueueAnchor offsetParent (visible if non-null):", printQueueAnchor.offsetParent);
-
-              console.log("[DEBUG] Clicking add_to_print_queue anchor");
               printQueueAnchor.click();
-              console.log("[DEBUG] Click dispatched on printQueueAnchor");
             };
 
             const handleAnchorClick = async (anchorTag) => {
               const requestId = anchorTag.textContent.trim();
               const href = anchorTag.href;
-              console.log("[DEBUG] Clicking anchor. href:", href, "textContent:", requestId);
               window.lastClickedRequestHref = href;
               navigator.clipboard.writeText(requestId);
               // Defer the click to let WorldShare finish its own SPA navigation before we trigger another
               setTimeout(() => {
-                console.log("[DEBUG] Executing deferred click. href:", href);
                 anchorTag.click();
               }, 500);
               await addToPrintQueue();
@@ -334,7 +322,6 @@
               ".wms-alert.wms-message-confirm > p.msg > a",
             );
             const isTrulyStale = preExisting && preExisting.href === window.lastClickedRequestHref;
-            console.log("[DEBUG] preExisting:", preExisting?.href, "| lastClicked:", window.lastClickedRequestHref, "| isTrulyStale:", isTrulyStale);
 
             // If a fresh anchor is already in the DOM (WorldShare showed success before URL changed), click it now
             if (preExisting && !isTrulyStale) {
@@ -344,13 +331,11 @@
 
             // If a truly stale anchor exists, wait for it to be replaced
             if (isTrulyStale) {
-              console.log("[DEBUG] Truly stale anchor found. Waiting for replacement...");
               await new Promise((resolve) => {
                 const bodyObserver = new MutationObserver(() => {
                   const fresh = document.querySelector(".wms-alert.wms-message-confirm > p.msg > a");
                   // A fresh anchor has appeared that isn't the stale one
                   if (fresh && fresh.href !== window.lastClickedRequestHref) {
-                    console.log("[DEBUG] Fresh anchor found:", fresh.href);
                     bodyObserver.disconnect();
                     handleAnchorClick(fresh);
                     resolve();
@@ -367,7 +352,7 @@
             );
 
             if (!requestAnchorTag || !requestAnchorTag.isConnected) {
-              console.error("[DEBUG] Could not find valid request anchor tag");
+              console.error("Could not find valid request anchor tag");
               return;
             }
 
