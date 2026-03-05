@@ -90,6 +90,41 @@ const handleWorldShareMessage = (request) => {
 };
 
 /**
+ * Handles switching to the Request Manager tab and pasting the ILL number
+ * @param {Object} request
+ * @returns {boolean}
+ */
+const handleRequestManagerMessage = (request) => {
+  if (request.type !== "findAndSwitchToRequestManager") return false;
+
+  chrome.storage.local.set({ pendingIllNumber: request.illNumber }, () => {
+    chrome.tabs.query({}, (tabs) => {
+      if (chrome.runtime.lastError) {
+        console.error("Error querying tabs:", chrome.runtime.lastError);
+        return;
+      }
+      const requestManagerTab = tabs.find(
+        (tab) => tab.url && tab.url.includes("eg2/en-US/staff/cat/requests"),
+      );
+      if (requestManagerTab) {
+        chrome.tabs.update(requestManagerTab.id, { active: true }, () => {
+          if (chrome.runtime.lastError) {
+            console.error("Error activating tab:", chrome.runtime.lastError);
+            return;
+          }
+          setTimeout(() => {
+            executeScript(requestManagerTab.id, "pasteIllNumber");
+          }, 100);
+        });
+      } else {
+        console.log("No Request Manager tab found");
+      }
+    });
+  });
+  return true;
+};
+
+/**
  * Handles command-type messages
  * @param {Object} request
  * @param {chrome.tabs.Tab} activeTab
@@ -248,6 +283,12 @@ export const handleMessage = async (request, sender, sendResponse) => {
   // Handle WorldShare messages (no need for active tab validation)
   if (handleWorldShareMessage(request)) {
     console.log("Handled as WorldShare message");
+    return;
+  }
+
+  // Handle Request Manager tab switching
+  if (handleRequestManagerMessage(request)) {
+    console.log("Handled as RequestManager message");
     return;
   }
 

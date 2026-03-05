@@ -20,6 +20,7 @@ export const executeScript = (tabId, script) => {
     "dismissOpenTransit",
     "holdScreenMods",
     "searchWorldShare",
+    "pasteIllNumber",
   ];
 
   chrome.scripting.executeScript(

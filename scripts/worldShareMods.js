@@ -302,7 +302,7 @@
               console.log("[DEBUG] Click dispatched on printQueueAnchor");
             };
 
-            const handleAnchorClick = (anchorTag) => {
+            const handleAnchorClick = async (anchorTag) => {
               const requestId = anchorTag.textContent.trim();
               const href = anchorTag.href;
               console.log("[DEBUG] Clicking anchor. href:", href, "textContent:", requestId);
@@ -313,8 +313,9 @@
                 console.log("[DEBUG] Executing deferred click. href:", href);
                 anchorTag.click();
               }, 500);
-              addToPrintQueue();
+              await addToPrintQueue();
               createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
+              chrome.runtime.sendMessage({ type: "findAndSwitchToRequestManager", illNumber: requestId });
             };
 
             const preExisting = document.querySelector(
