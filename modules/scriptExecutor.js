@@ -19,6 +19,7 @@ export const executeScript = (tabId, script) => {
     "requestManagerMods",
     "dismissOpenTransit",
     "holdScreenMods",
+    "searchWorldShare",
   ];
 
   chrome.scripting.executeScript(

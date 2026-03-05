@@ -139,9 +139,29 @@
                 });
             });
 
+            // Create the "Search WorldShare" button
+            const worldShareButton = document.createElement("button");
+            worldShareButton.textContent = "Search WorldShare";
+            applyButtonStyles(worldShareButton, "#ffc107");
+            worldShareButton.addEventListener("click", () => {
+              const { isbn, title: titleField, author: authorField } = getModalFields();
+              let searchTerm;
+              if (isbn && isbn.value.trim() !== "") {
+                searchTerm = isbn.value.trim();
+              } else {
+                const title = titleField ? titleField.value.trim() : "";
+                const author = authorField ? authorField.value.trim() : "";
+                searchTerm = `${title} ${author}`.trim();
+              }
+              chrome.storage.local.set({ worldShareSearchTerm: searchTerm }, () => {
+                chrome.runtime.sendMessage({ type: "findAndSwitchToWorldShare", scriptToRelaunch: "searchWorldShare" });
+              });
+            });
+
             // Append buttons to the container
             copyButtonContainer.appendChild(copyTitleAuthorButton);
             searchButtonContainer.appendChild(searchButton);
+            searchButtonContainer.appendChild(worldShareButton);
             buttonContainer.appendChild(copyButtonContainer);
             buttonContainer.appendChild(searchButtonContainer);
             modalHeader.insertAdjacentElement("afterend", buttonContainer);
