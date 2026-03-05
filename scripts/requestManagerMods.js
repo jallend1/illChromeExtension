@@ -22,6 +22,66 @@
       button.style.cursor = "pointer";
     }
 
+    function applyStaffNotesFilter() {
+      const checkbox = document.querySelector("#staff-notes-filter-checkbox");
+      if (!checkbox) return;
+
+      const rows = document.querySelectorAll("div.eg-grid-body-row");
+
+      if (!checkbox.checked) {
+        rows.forEach((row) => (row.style.display = ""));
+        return;
+      }
+
+      const headers = Array.from(
+        document.querySelectorAll('div[role="columnheader"]'),
+      );
+      const colIndex = headers.findIndex((header) =>
+        Array.from(header.querySelectorAll("span")).some(
+          (span) => span.textContent.trim() === "Staff Notes",
+        ),
+      );
+
+      if (colIndex === -1) return;
+
+      rows.forEach((row) => {
+        const cells = row.querySelectorAll('div[role="gridcell"]');
+        const staffNotesCell = cells[colIndex];
+        const hasNote =
+          staffNotesCell &&
+          Array.from(staffNotesCell.querySelectorAll("span")).some(
+            (span) => span.textContent.trim() !== "",
+          );
+        row.style.display = hasNote ? "none" : "";
+      });
+    }
+
+    const insertStaffNotesFilter = async () => {
+      if (document.querySelector("#staff-notes-filter-container")) return;
+      const staffBanner = await waitForElementWithInterval(() =>
+        document.querySelector("eg-staff-banner"),
+      );
+
+      const container = document.createElement("div");
+      container.id = "staff-notes-filter-container";
+      container.style.textAlign = "right";
+      container.style.padding = "4px 10px";
+
+      const label = document.createElement("label");
+      label.style.cursor = "pointer";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = "staff-notes-filter-checkbox";
+      checkbox.style.marginRight = "5px";
+      checkbox.addEventListener("change", applyStaffNotesFilter);
+
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode("Hide rows with Staff Notes"));
+      container.appendChild(label);
+      staffBanner.insertAdjacentElement("beforebegin", container);
+    };
+
     // Apply highlighting to Outreach and ADA profile types
     const highlightProfileTypes = async () => {
       const gridItems = await waitForElementWithInterval(() => {
@@ -50,6 +110,7 @@
           }
         });
       });
+      applyStaffNotesFilter();
     };
 
     /**
@@ -192,5 +253,6 @@
 
     watchForModal();
     highlightProfileTypes();
+    insertStaffNotesFilter();
   }
 })();
