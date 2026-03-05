@@ -272,46 +272,62 @@
           ) {
             console.log("New request detected!!");
 
-            // Check if the element is already in the DOM before waiting (stale element check)
+            const handleAnchorClick = (anchorTag) => {
+              const requestId = anchorTag.textContent.trim();
+              const href = anchorTag.href;
+              console.log("[DEBUG] Clicking anchor. href:", href, "textContent:", requestId);
+              window.lastClickedRequestHref = href;
+              navigator.clipboard.writeText(requestId);
+              // Defer the click to let WorldShare finish its own SPA navigation before we trigger another
+              setTimeout(() => {
+                console.log("[DEBUG] Executing deferred click. href:", href);
+                anchorTag.click();
+              }, 500);
+              createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
+            };
+
             const preExisting = document.querySelector(
               ".wms-alert.wms-message-confirm > p.msg > a",
             );
-            console.log(
-              "Anchor already in DOM before waiting?",
-              !!preExisting,
-              "href:",
-              preExisting?.href,
-            );
+            const isTrulyStale = preExisting && preExisting.href === window.lastClickedRequestHref;
+            console.log("[DEBUG] preExisting:", preExisting?.href, "| lastClicked:", window.lastClickedRequestHref, "| isTrulyStale:", isTrulyStale);
 
-            // The request ID that populates after submission
+            // If a fresh anchor is already in the DOM (WorldShare showed success before URL changed), click it now
+            if (preExisting && !isTrulyStale) {
+              handleAnchorClick(preExisting);
+              return;
+            }
+
+            // If a truly stale anchor exists, wait for it to be replaced
+            if (isTrulyStale) {
+              console.log("[DEBUG] Truly stale anchor found. Waiting for replacement...");
+              await new Promise((resolve) => {
+                const bodyObserver = new MutationObserver(() => {
+                  const fresh = document.querySelector(".wms-alert.wms-message-confirm > p.msg > a");
+                  // A fresh anchor has appeared that isn't the stale one
+                  if (fresh && fresh.href !== window.lastClickedRequestHref) {
+                    console.log("[DEBUG] Fresh anchor found:", fresh.href);
+                    bodyObserver.disconnect();
+                    handleAnchorClick(fresh);
+                    resolve();
+                  }
+                });
+                bodyObserver.observe(document.body, { childList: true, subtree: true });
+              });
+              return;
+            }
+
+            // No anchor in DOM yet — wait for it to appear
             const requestAnchorTag = await waitForElementWithInterval(
               ".wms-alert.wms-message-confirm > p.msg > a",
             );
 
             if (!requestAnchorTag || !requestAnchorTag.isConnected) {
-              console.error("Could not find valid request anchor tag");
+              console.error("[DEBUG] Could not find valid request anchor tag");
               return;
             }
 
-            console.log(
-              "Same element as pre-existing?",
-              preExisting === requestAnchorTag,
-            );
-            console.log("Anchor href at time of click:", requestAnchorTag.href);
-            console.log(
-              "Anchor textContent at time of click:",
-              requestAnchorTag.textContent.trim(),
-            );
-
-            const requestId = requestAnchorTag.textContent.trim();
-
-            navigator.clipboard.writeText(requestId);
-            console.log("Text copied to clipboard:", requestId);
-
-            // TODO: Automatically clicking generally works the first time, but after that opens up a blank request (Still copies the appropriate number tho)
-            requestAnchorTag.click();
-
-            createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
+            handleAnchorClick(requestAnchorTag);
             return;
           }
           if (isRequestUrl(window.currentUrl)) {
