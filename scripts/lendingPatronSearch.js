@@ -7,36 +7,47 @@
     chrome.storage.local.get("lendingPostalCode", resolve);
   });
 
-  const postalCode = storageData.lendingPostalCode;
-  if (!postalCode) {
+  const rawPostal = storageData.lendingPostalCode;
+  if (!rawPostal) {
     console.error("No lending postal code found in storage");
     return;
   }
 
-  // Trigger F4 to navigate to Patron Search
-  document.dispatchEvent(
-    new KeyboardEvent("keydown", {
-      key: "F4",
-      code: "F4",
-      keyCode: 115,
-      which: 115,
-      bubbles: true,
-      cancelable: true,
-    }),
-  );
+  const postalCode = rawPostal.replace(/\D/g, "").slice(0, 5);
 
-  const postCodeInput = await waitForElementWithInterval(
-    '[aria-label="Post Code"]',
-  );
-  if (!postCodeInput) {
-    console.error("Could not find Post Code input field");
+  // Only trigger F4 if the patron search form isn't already open
+  if (!document.querySelector('[aria-label="Post Code"]')) {
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        key: "F4",
+        code: "F4",
+        keyCode: 115,
+        which: 115,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+  }
+
+  const [postCodeInput, lastNameInput] = await Promise.all([
+    waitForElementWithInterval('[aria-label="Post Code"]'),
+    waitForElementWithInterval('[aria-label="Last Name"]'),
+  ]);
+
+  if (!postCodeInput || !lastNameInput) {
+    console.error("Could not find patron search fields");
     return;
   }
 
-  postCodeInput.value = postalCode;
-  postCodeInput.dispatchEvent(new Event("input", { bubbles: true }));
-  postCodeInput.dispatchEvent(new Event("change", { bubbles: true }));
-  postCodeInput.dispatchEvent(new Event("blur", { bubbles: true }));
+  const fill = (input, value) => {
+    input.value = value;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    input.dispatchEvent(new Event("blur", { bubbles: true }));
+  };
+
+  fill(postCodeInput, postalCode);
+  fill(lastNameInput, "ILL DEPT");
 
   chrome.storage.local.remove("lendingPostalCode");
 })();

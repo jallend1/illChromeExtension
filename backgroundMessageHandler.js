@@ -105,6 +105,7 @@ const handleLogPostalMessage = (request) => {
       if (!evergreenTab) return;
 
       chrome.tabs.update(evergreenTab.id, { active: true }, () => {
+        chrome.windows.update(evergreenTab.windowId, { focused: true });
         setTimeout(() => {
           executeScript(evergreenTab.id, "lendingPatronSearch");
         }, 100);
