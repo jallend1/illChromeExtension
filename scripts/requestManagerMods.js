@@ -88,7 +88,7 @@
         const elements = document.querySelectorAll("eg-grid-body-cell");
         return elements.length > 0 ? elements : null;
       });
-      console.log("Grid items length", gridItems.length);
+      // console.log("Grid items length", gridItems.length);
       if (gridItems.length === window.gridItemsLength) {
         // No change in grid items, exit the function
         return;
@@ -138,6 +138,17 @@
             buttonContainer.style.borderRadius = "5px";
             buttonContainer.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
 
+            // Create the "Send Patron Info to WorldShare" button
+            const sendPatronButton = document.createElement("button");
+            sendPatronButton.textContent = "Send Patron Info to WorldShare";
+            applyButtonStyles(sendPatronButton, "#6f42c1");
+            sendPatronButton.addEventListener("click", () => {
+              chrome.runtime.sendMessage({
+                command: "sendPatronToWorldShare",
+                data: "sendPatronToWorldShare",
+              });
+            });
+
             // Container for copy related actions
             const copyButtonContainer = document.createElement("div");
             copyButtonContainer.id = "request-manager-mods-copy-buttons";
@@ -151,11 +162,18 @@
             searchButtonContainer.style.marginRight = "10px";
 
             function getModalFields() {
-              const modalBody = "body > ngb-modal-window > div > div > div.modal-body.form-validated";
+              const modalBody =
+                "body > ngb-modal-window > div > div > div.modal-body.form-validated";
               return {
-                isbn: document.querySelector(`${modalBody} > div:nth-child(5) > div:nth-child(2) > input`),
-                title: document.querySelector(`${modalBody} > div:nth-child(2) > div.col-10 > input`),
-                author: document.querySelector(`${modalBody} > div:nth-child(4) > div:nth-child(4) > input`),
+                isbn: document.querySelector(
+                  `${modalBody} > div:nth-child(5) > div:nth-child(2) > input`,
+                ),
+                title: document.querySelector(
+                  `${modalBody} > div:nth-child(2) > div.col-10 > input`,
+                ),
+                author: document.querySelector(
+                  `${modalBody} > div:nth-child(4) > div:nth-child(4) > input`,
+                ),
               };
             }
 
@@ -164,7 +182,11 @@
             searchButton.textContent = "Search Amazon";
             applyButtonStyles(searchButton, "#28a745");
             searchButton.addEventListener("click", () => {
-              const { isbn, title: titleField, author: authorField } = getModalFields();
+              const {
+                isbn,
+                title: titleField,
+                author: authorField,
+              } = getModalFields();
               let searchTerm;
               if (isbn && isbn.value.trim() !== "") {
                 searchTerm = isbn.value.trim();
@@ -183,7 +205,8 @@
             applyButtonStyles(copyTitleAuthorButton, "#17a2b8");
 
             copyTitleAuthorButton.addEventListener("click", () => {
-              const { title: titleField, author: authorField } = getModalFields();
+              const { title: titleField, author: authorField } =
+                getModalFields();
               const title = titleField ? titleField.value.trim() : "";
               const author = authorField ? authorField.value.trim() : "";
               const clipboardContent = `${title} ${author}`;
@@ -205,7 +228,11 @@
             worldShareButton.textContent = "Search WorldShare";
             applyButtonStyles(worldShareButton, "#ffc107");
             worldShareButton.addEventListener("click", () => {
-              const { isbn, title: titleField, author: authorField } = getModalFields();
+              const {
+                isbn,
+                title: titleField,
+                author: authorField,
+              } = getModalFields();
               let searchTerm;
               if (isbn && isbn.value.trim() !== "") {
                 searchTerm = isbn.value.trim();
@@ -214,15 +241,22 @@
                 const author = authorField ? authorField.value.trim() : "";
                 searchTerm = `${title} ${author}`.trim();
               }
-              chrome.storage.local.set({ worldShareSearchTerm: searchTerm }, () => {
-                chrome.runtime.sendMessage({ type: "findAndSwitchToWorldShare", scriptToRelaunch: "searchWorldShare" });
-              });
+              chrome.storage.local.set(
+                { worldShareSearchTerm: searchTerm },
+                () => {
+                  chrome.runtime.sendMessage({
+                    type: "findAndSwitchToWorldShare",
+                    scriptToRelaunch: "searchWorldShare",
+                  });
+                },
+              );
             });
 
             // Append buttons to the container
             copyButtonContainer.appendChild(copyTitleAuthorButton);
             searchButtonContainer.appendChild(searchButton);
             searchButtonContainer.appendChild(worldShareButton);
+            buttonContainer.appendChild(sendPatronButton);
             buttonContainer.appendChild(copyButtonContainer);
             buttonContainer.appendChild(searchButtonContainer);
             modalHeader.insertAdjacentElement("afterend", buttonContainer);
