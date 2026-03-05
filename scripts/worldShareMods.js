@@ -272,6 +272,36 @@
           ) {
             console.log("New request detected!!");
 
+            const addToPrintQueue = async () => {
+              // Poll until a visible print_now button exists (page fully rendered)
+              const printNowBtn = await new Promise((resolve) => {
+                const interval = setInterval(() => {
+                  const visible = Array.from(document.querySelectorAll('button[data-action="print_now"]'))
+                    .find((btn) => btn.offsetParent !== null);
+                  if (visible) {
+                    clearInterval(interval);
+                    resolve(visible);
+                  }
+                }, 200);
+              });
+              console.log("[DEBUG] current URL at time of addToPrintQueue:", window.location.href);
+              console.log("[DEBUG] Visible printNowBtn found:", printNowBtn.outerHTML);
+
+              const btnGroup = printNowBtn.closest(".btn-group");
+              const printQueueAnchor = btnGroup.querySelector('li[data-action="add_to_print_queue"] a');
+              if (!printQueueAnchor) {
+                console.error("[DEBUG] Could not find add_to_print_queue anchor in btn-group");
+                return;
+              }
+              console.log("[DEBUG] printQueueAnchor found:", printQueueAnchor.outerHTML);
+              console.log("[DEBUG] printQueueAnchor isConnected:", printQueueAnchor.isConnected);
+              console.log("[DEBUG] printQueueAnchor offsetParent (visible if non-null):", printQueueAnchor.offsetParent);
+
+              console.log("[DEBUG] Clicking add_to_print_queue anchor");
+              printQueueAnchor.click();
+              console.log("[DEBUG] Click dispatched on printQueueAnchor");
+            };
+
             const handleAnchorClick = (anchorTag) => {
               const requestId = anchorTag.textContent.trim();
               const href = anchorTag.href;
@@ -283,6 +313,7 @@
                 console.log("[DEBUG] Executing deferred click. href:", href);
                 anchorTag.click();
               }, 500);
+              addToPrintQueue();
               createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
             };
 
