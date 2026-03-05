@@ -197,6 +197,36 @@
     };
 
     /**
+     * Injects a button into the action bar for lending requests.
+     */
+    const injectLendingActionButton = async () => {
+      const actionsEl = await waitForElementWithInterval(
+        ".nd-request-action-bar-request-data-actions",
+      );
+      if (
+        !actionsEl ||
+        actionsEl.parentElement.querySelector("#ill-lending-action-button")
+      )
+        return;
+
+      const button = document.createElement("button");
+      button.id = "ill-lending-action-button";
+      button.textContent = "Retrieve Patron";
+      button.style.cssText =
+        "background-color:#00b894;color:#fff;border:none;border-radius:0.3rem;padding:0.6rem 1.2rem;cursor:pointer;font-weight:400;margin-right:0.5rem;" +
+        "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
+
+      button.addEventListener("click", () => {
+        const postalSpan = document.querySelector('[data="delivery.address.postal"]');
+        const postalCode = postalSpan?.textContent?.trim();
+        if (!postalCode) return;
+        chrome.runtime.sendMessage({ type: "logPostalInEvergreen", postalCode });
+      });
+
+      actionsEl.parentElement.insertBefore(button, actionsEl);
+    };
+
+    /**
      * Runs the lending modifications.
      * @param {Object} activeSelectors - The active selectors to use.
      */
@@ -207,6 +237,7 @@
       if (borrowingNotes) {
         applyEmphasisStyle(borrowingNotes, "#fff9c4", "black");
       }
+      injectLendingActionButton();
     };
 
     // --- Page Analysis Functions ---

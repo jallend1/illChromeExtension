@@ -90,6 +90,31 @@ const handleWorldShareMessage = (request) => {
 };
 
 /**
+ * Handles switching to Evergreen and searching by postal code for lending requests
+ * @param {Object} request
+ * @returns {boolean}
+ */
+const handleLogPostalMessage = (request) => {
+  if (request.type !== "logPostalInEvergreen") return false;
+
+  chrome.storage.local.set({ lendingPostalCode: request.postalCode }, () => {
+    chrome.tabs.query({}, (tabs) => {
+      const evergreenTab = tabs.find(
+        (tab) => tab.url && (tab.url.includes("evgclient") || tab.url.includes("evgmobile")),
+      );
+      if (!evergreenTab) return;
+
+      chrome.tabs.update(evergreenTab.id, { active: true }, () => {
+        setTimeout(() => {
+          executeScript(evergreenTab.id, "lendingPatronSearch");
+        }, 100);
+      });
+    });
+  });
+  return true;
+};
+
+/**
  * Handles switching to the Request Manager tab and pasting the ILL number
  * @param {Object} request
  * @returns {boolean}
@@ -285,6 +310,9 @@ export const handleMessage = async (request, sender, sendResponse) => {
     console.log("Handled as WorldShare message");
     return;
   }
+
+  // Handle logging postal code in Evergreen
+  if (handleLogPostalMessage(request)) return;
 
   // Handle Request Manager tab switching
   if (handleRequestManagerMessage(request)) {

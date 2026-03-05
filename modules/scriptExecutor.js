@@ -21,6 +21,7 @@ export const executeScript = (tabId, script) => {
     "holdScreenMods",
     "searchWorldShare",
     "pasteIllNumber",
+    "lendingPatronSearch",
   ];
 
   chrome.scripting.executeScript(
