@@ -245,12 +245,19 @@
     /**
      * Highlights table records containing a digital item icon.
      */
-    const highlightDigitalItems = async () => {
-      await waitForElementWithInterval(".uic-txt-ico.uic-ico-it-book-digital");
-      document.querySelectorAll(".uic-txt-ico.uic-ico-it-book-digital").forEach((span) => {
-        const record = span.closest(".uic-table-record-data");
-        if (record) record.style.backgroundColor = "#fffde7";
-      });
+    const highlightDigitalItems = () => {
+      const highlight = () => {
+        document.querySelectorAll(".uic-txt-ico.uic-ico-it-book-digital").forEach((span) => {
+          const record = span.closest(".uic-table-record-data");
+          if (record) record.style.backgroundColor = "#fffde7";
+        });
+      };
+
+      highlight();
+
+      const observer = new MutationObserver(highlight);
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => observer.disconnect(), 5000);
     };
 
     /**
