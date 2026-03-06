@@ -37,11 +37,11 @@
         clearTimeout(stabilityTimer);
       }
 
-      // Set a new timer for 3 seconds
+      // Set a new timer for 2 seconds
       stabilityTimer = setTimeout(() => {
-        console.log("Length stable for 3 seconds, registering shortcuts");
+        console.log("Length stable for 2 seconds, registering shortcuts");
         registerKeyboardShortcuts(numberCells);
-      }, 3000);
+      }, 2000);
     }
   };
 

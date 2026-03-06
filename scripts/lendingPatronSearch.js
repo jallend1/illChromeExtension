@@ -49,5 +49,13 @@
   fill(postCodeInput, postalCode);
   fill(lastNameInput, "ILL DEPT");
 
+  const searchButton = await waitForElementWithInterval(() =>
+    [...document.querySelectorAll("button.btn-success")].find(
+      (btn) => btn.textContent.trim() === "Search"
+    )
+  );
+
+  if (searchButton) searchButton.click();
+
   chrome.storage.local.remove("lendingPostalCode");
 })();
