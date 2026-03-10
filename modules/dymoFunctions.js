@@ -43,6 +43,21 @@ export const dymoFunctions = {
    */
   generateLabelXML: (address) => {
     console.log("Generating label XML...");
+    const lines = address.split("\n");
+    const firstLineFontSize = lines[0].length > 30 ? 8 : 10;
+    const styledElements = lines
+      .map((line, i) => {
+        const fontSize = i === 0 ? firstLineFontSize : 10;
+        const str = i < lines.length - 1 ? `${line}&#13;` : line;
+        return `<Element>
+                        <String>${str}</String>
+                        <Attributes>
+                          <Font Family="Arial" Size="${fontSize}" Bold="False" Italic="False" Underline="False" Strikeout="False" />
+                          <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
+                        </Attributes>
+                      </Element>`;
+      })
+      .join("\n                      ");
     return `
               <DieCutLabel Version="8.0" Units="twips">
                 <PaperOrientation>Landscape</PaperOrientation>
@@ -66,13 +81,7 @@ export const dymoFunctions = {
                     <UseFullFontHeight>True</UseFullFontHeight>
                     <Verticalized>False</Verticalized>
                     <StyledText>
-                      <Element>
-                        <String>${address}</String>
-                        <Attributes>
-                          <Font Family="Arial" Size="10" Bold="False" Italic="False" Underline="False" Strikeout="False" />
-                          <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />
-                        </Attributes>
-                      </Element>
+                      ${styledElements}
                     </StyledText>
                   </TextObject>
                   <Bounds X="332" Y="150" Width="4455" Height="1260" />
@@ -93,13 +102,6 @@ export const dymoFunctions = {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&apos;")
       .replace(/\//g, "&#47;");
-  },
-  // TODO: Implement logic to resize font size to fit label-- Currently not used anywhere
-  resizeToFitLabel: (address, boundsWidth, boundsHeight) => {
-    console.log("Resizing address to fit label...");
-    let fontSize = 12; // Starting font size -- Too small?
-    const addressLines = address.split("\n");
-    const lineHeight = boundHeight / addressLines.length; //Account for the varying lines in the address
   },
   /**
    * Checks if the address is suitable for printing on a Dymo label.
