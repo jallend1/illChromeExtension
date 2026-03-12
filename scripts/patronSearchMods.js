@@ -17,6 +17,7 @@
 
   let previousLength = 0;
   let stabilityTimer = null;
+  let keydownHandler = null;
 
   // Function to extract and log number cells
   const processNumberCells = () => {
@@ -40,17 +41,20 @@
       // Set a new timer for 2 seconds
       stabilityTimer = setTimeout(() => {
         console.log("Length stable for 2 seconds, registering shortcuts");
-        registerKeyboardShortcuts(numberCells);
+        // Re-query fresh cells at registration time rather than using the stale capture
+        const freshCells = document.querySelectorAll(
+          ".eg-grid-body .eg-grid-number-cell",
+        );
+        registerKeyboardShortcuts(freshCells);
       }, 2000);
     }
   };
 
   // Function to register keyboard shortcuts
   const registerKeyboardShortcuts = (numberCells) => {
-    // Use window flag to prevent multiple registrations across script injections
-    if (window.patronSearchShortcutsRegistered) {
-      console.log("Shortcuts already registered globally");
-      return;
+    // Remove any previously registered listener before re-registering
+    if (keydownHandler) {
+      document.removeEventListener("keydown", keydownHandler);
     }
 
     // Get the first 9 cells
@@ -70,7 +74,7 @@
     console.log("Shortcut map:", shortcutMap);
 
     // Add keyboard event listener
-    document.addEventListener("keydown", (event) => {
+    keydownHandler = (event) => {
       // Check for Ctrl+Shift+[1-9]
       if (event.ctrlKey && event.shiftKey) {
         // Extract digit from code like "Digit1" -> "1"
@@ -100,9 +104,9 @@
           }
         }
       }
-    });
+    };
 
-    window.patronSearchShortcutsRegistered = true;
+    document.addEventListener("keydown", keydownHandler);
     console.log("Keyboard shortcuts registered successfully");
   };
 
