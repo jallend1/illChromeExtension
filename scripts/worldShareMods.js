@@ -297,6 +297,7 @@
      * @returns {Promise<void>}
      */
     const determineMods = async () => {
+      highlightDigitalItems();
       const isLending = await isLendingRequestPage();
       const activeSelectors = determineSelectors(isLending);
       if (isLending) {
@@ -304,7 +305,6 @@
       } else {
         runBorrowingMods(activeSelectors);
       }
-      highlightDigitalItems();
     };
 
     /**
