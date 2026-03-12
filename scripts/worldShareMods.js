@@ -220,7 +220,7 @@
           const postalSpan = request?.querySelector('[data="delivery.address.postal"]');
           const postalCode = postalSpan?.textContent?.trim();
           if (!postalCode) return;
-          chrome.runtime.sendMessage({ type: "logPostalInEvergreen", postalCode });
+          chrome.runtime.sendMessage({ type: "librarySearch", postalCode });
         });
 
         actionsEl.parentElement.insertBefore(button, actionsEl);

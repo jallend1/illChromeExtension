@@ -4,7 +4,7 @@ import {
   isAllowedHost,
   getActiveTab,
   isEvgMobile,
-  getNonActiveEvergreenTab,
+  evergreenTabId,
   updateTab,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
@@ -31,22 +31,22 @@ const calculateURL = async (urlSuffix) => {
  * Opens patron retrieval page
  * @returns {Promise<void>}
  * @description This function checks if mobile Evergreen is used and constructs the patron retrieval URL accordingly.
- * It reuses an existing non-active Evergreen tab if available, otherwise creates a new tab.
+ * It reuses an existing Evergreen tab if available, otherwise creates a new tab.
  */
 const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
-  const existingTab = await getNonActiveEvergreenTab();
-  if (existingTab) {
+  const existingTabId = await evergreenTabId();
+  if (existingTabId) {
     const onTabUpdated = (tabId, changeInfo) => {
-      if (tabId === existingTab.id && changeInfo.status === "complete") {
+      if (tabId === existingTabId && changeInfo.status === "complete") {
         executeScript(tabId, "retrievePatron");
         chrome.tabs.onUpdated.removeListener(onTabUpdated);
       }
     };
     chrome.tabs.onUpdated.addListener(onTabUpdated);
-    updateTab(existingTab.id, url);
+    updateTab(existingTabId, url);
   } else {
     createTabWithScript(url, "retrievePatron");
   }
@@ -94,8 +94,8 @@ const handleWorldShareMessage = (request) => {
  * @param {Object} request
  * @returns {boolean}
  */
-const handleLogPostalMessage = (request) => {
-  if (request.type !== "logPostalInEvergreen") return false;
+const handleLibrarySearchMessage = (request) => {
+  if (request.type !== "librarySearch") return false;
 
   chrome.storage.local.set({ lendingPostalCode: request.postalCode }, () => {
     chrome.tabs.query({}, (tabs) => {
@@ -313,7 +313,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
   }
 
   // Handle logging postal code in Evergreen
-  if (handleLogPostalMessage(request)) return;
+  if (handleLibrarySearchMessage(request)) return;
 
   // Handle Request Manager tab switching
   if (handleRequestManagerMessage(request)) {
