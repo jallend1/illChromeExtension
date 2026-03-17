@@ -192,6 +192,21 @@
           </div>
         </main>
       </section>
+      <!-- Selection List Modal -->
+      <div id="selection-list-backdrop" class="settings-backdrop hidden"></div>
+      <div id="selection-list-modal" class="settings-modal hidden">
+        <h3>Selection List</h3>
+        <textarea
+          id="selection-list-input"
+          rows="10"
+          placeholder="Paste ISBNs here, one per line..."
+          style="width: 100%; padding: 5px; font-family: monospace; font-size: 0.73rem; border: var(--border-subtle); border-radius: var(--border-radius); resize: vertical;"
+        ></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+          <button id="selection-list-search">Search</button>
+          <button id="selection-list-cancel">Cancel</button>
+        </div>
+      </div>
       <!-- Settings Modal -->
       <div id="settings-backdrop" class="settings-backdrop hidden"></div>
       <div id="settings-modal" class="settings-modal hidden">
@@ -270,6 +285,9 @@
         <main class="hidden collapsed collapsible">
           <div>
             <button id="import-mailroom-data">Import Mailroom Data</button>
+          </div>
+          <div>
+            <button id="selection-list">Selection List</button>
           </div>
         </main>
       </section>

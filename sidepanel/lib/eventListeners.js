@@ -132,6 +132,68 @@ const setupKeyboardShortcuts = () => {
 };
 
 /**
+ * Sets up Selection List modal open/close listeners
+ */
+const setupSelectionListModal = () => {
+  const button = document.querySelector("#selection-list");
+  const backdrop = document.querySelector("#selection-list-backdrop");
+  const modal = document.querySelector("#selection-list-modal");
+
+  if (!button || !backdrop || !modal) return;
+
+  const openModal = () => {
+    backdrop.classList.remove("hidden");
+    modal.classList.remove("hidden");
+    backdrop.offsetHeight;
+    backdrop.classList.add("visible");
+    modal.classList.add("visible");
+    modal.querySelector("#selection-list-input").focus();
+  };
+
+  const closeModal = () => {
+    backdrop.classList.remove("visible");
+    modal.classList.remove("visible");
+    const onEnd = () => {
+      backdrop.classList.add("hidden");
+      modal.classList.add("hidden");
+      modal.removeEventListener("transitionend", onEnd);
+    };
+    modal.addEventListener("transitionend", onEnd);
+  };
+
+  const cancelButton = document.querySelector("#selection-list-cancel");
+  if (cancelButton) cancelButton.addEventListener("click", closeModal);
+
+  const searchButton = document.querySelector("#selection-list-search");
+  if (searchButton) {
+    searchButton.addEventListener("click", () => {
+      const input = document.querySelector("#selection-list-input");
+      const isbns = input.value.split("\n").map((s) => s.trim()).filter((s) => s !== "");
+      if (isbns.length === 0) return;
+
+      const base = "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/search";
+      const params = new URLSearchParams({ org: "1", limit: isbns.length });
+      isbns.forEach((isbn) => params.append("query", isbn));
+      isbns.forEach(() => params.append("fieldClass", "identifier"));
+      isbns.forEach((_, i) => params.append("joinOp", i === 0 ? "" : "||"));
+      isbns.forEach(() => params.append("matchOp", "contains"));
+      params.append("dateOp", "is");
+      params.append("ridx", "1");
+
+      window.open(`${base}?${params.toString()}`, "_blank");
+    });
+  }
+
+  button.addEventListener("click", openModal);
+  backdrop.addEventListener("click", closeModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+};
+
+/**
  * Sets up settings modal open/close listeners
  */
 const setupSettingsModal = () => {
@@ -182,4 +244,5 @@ export const initializeEventListeners = () => {
   setupKeyboardShortcuts();
   setupBookPricingListeners();
   setupSettingsModal();
+  setupSelectionListModal();
 };

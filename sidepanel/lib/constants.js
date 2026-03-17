@@ -10,6 +10,7 @@ export const elements = {
   printLabel: document.querySelector("#print-label"),
   autoReturnILL: document.querySelector("#auto-return-ill"),
   importMailroomData: document.querySelector("#import-mailroom-data"),
+  selectionList: document.querySelector("#selection-list"),
 };
 
 // Storage keys and their corresponding elements
