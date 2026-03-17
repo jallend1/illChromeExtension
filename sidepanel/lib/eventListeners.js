@@ -6,6 +6,7 @@ import {
   addCheckboxListener,
 } from "./utils.js";
 import { setupBookPricingListeners } from "./bookPricing.js";
+import { getBaseURL } from "../../background-utils.js";
 
 /**
  * Sets up passive tools toggle listener
@@ -166,12 +167,12 @@ const setupSelectionListModal = () => {
 
   const searchButton = document.querySelector("#selection-list-search");
   if (searchButton) {
-    searchButton.addEventListener("click", () => {
+    searchButton.addEventListener("click", async () => {
       const input = document.querySelector("#selection-list-input");
       const isbns = input.value.split("\n").map((s) => s.trim()).filter((s) => s !== "");
       if (isbns.length === 0) return;
 
-      const base = "https://evgmobile.kcls.org/eg2/en-US/staff/catalog/search";
+      const base = await getBaseURL("/eg2/en-US/staff/catalog/search");
       const params = new URLSearchParams({ org: "1", limit: isbns.length });
       isbns.forEach((isbn) => params.append("query", isbn));
       isbns.forEach(() => params.append("fieldClass", "identifier"));

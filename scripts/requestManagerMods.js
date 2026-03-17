@@ -128,6 +128,7 @@
       });
       applyStaffNotesFilter();
       applyBlankIllFilter();
+      if (!gridItems) return;
       // console.log("Grid items length", gridItems.length);
       if (gridItems.length === window.gridItemsLength) {
         // No change in grid items, skip highlighting
