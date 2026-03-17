@@ -22,6 +22,10 @@
       button.style.cursor = "pointer";
     }
 
+    const staffNotesStyle = document.createElement("style");
+    staffNotesStyle.textContent = `div.eg-grid-body-row.snf-hidden { display: none !important; }`;
+    document.head.appendChild(staffNotesStyle);
+
     function applyStaffNotesFilter() {
       const checkbox = document.querySelector("#staff-notes-filter-checkbox");
       if (!checkbox) return;
@@ -29,7 +33,7 @@
       const rows = document.querySelectorAll("div.eg-grid-body-row");
 
       if (!checkbox.checked) {
-        rows.forEach((row) => (row.style.display = ""));
+        rows.forEach((row) => row.classList.remove("snf-hidden"));
         return;
       }
 
@@ -52,7 +56,41 @@
           Array.from(staffNotesCell.querySelectorAll("span")).some(
             (span) => span.textContent.trim() !== "",
           );
-        row.style.display = hasNote ? "none" : "";
+        row.classList.toggle("snf-hidden", hasNote);
+      });
+    }
+
+    function applyBlankIllFilter() {
+      const checkbox = document.querySelector("#blank-ill-filter-checkbox");
+      if (!checkbox) return;
+
+      const rows = document.querySelectorAll("div.eg-grid-body-row");
+
+      if (!checkbox.checked) {
+        rows.forEach((row) => (row.style.display = ""));
+        return;
+      }
+
+      const headers = Array.from(
+        document.querySelectorAll('div[role="columnheader"]'),
+      );
+      const colIndex = headers.findIndex((header) =>
+        Array.from(header.querySelectorAll("span")).some(
+          (span) => span.textContent.trim() === "ILL Number",
+        ),
+      );
+
+      if (colIndex === -1) return;
+
+      rows.forEach((row) => {
+        const cells = row.querySelectorAll('div[role="gridcell"]');
+        const illCell = cells[colIndex];
+        const hasValue =
+          illCell &&
+          Array.from(illCell.querySelectorAll("span")).some(
+            (span) => span.textContent.trim() !== "",
+          );
+        row.style.display = hasValue ? "none" : "";
       });
     }
 
@@ -88,9 +126,11 @@
         const elements = document.querySelectorAll("eg-grid-body-cell");
         return elements.length > 0 ? elements : null;
       });
+      applyStaffNotesFilter();
+      applyBlankIllFilter();
       // console.log("Grid items length", gridItems.length);
       if (gridItems.length === window.gridItemsLength) {
-        // No change in grid items, exit the function
+        // No change in grid items, skip highlighting
         return;
       }
       // Update the global variable to the current grid length
@@ -110,7 +150,32 @@
           }
         });
       });
-      applyStaffNotesFilter();
+    };
+
+    const insertBlankIllFilter = async () => {
+      if (document.querySelector("#blank-ill-filter-container")) return;
+      const staffBanner = await waitForElementWithInterval(() =>
+        document.querySelector("eg-staff-banner"),
+      );
+
+      const container = document.createElement("div");
+      container.id = "blank-ill-filter-container";
+      container.style.textAlign = "right";
+      container.style.padding = "4px 10px";
+
+      const label = document.createElement("label");
+      label.style.cursor = "pointer";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = "blank-ill-filter-checkbox";
+      checkbox.style.marginRight = "5px";
+      checkbox.addEventListener("change", applyBlankIllFilter);
+
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode("Show Only Blank ILL"));
+      container.appendChild(label);
+      staffBanner.insertAdjacentElement("beforebegin", container);
     };
 
     /**
@@ -285,8 +350,30 @@
       removalObserver.observe(targetNode, config);
     }
 
+    const watchGridBody = async () => {
+      const gridBody = await waitForElementWithInterval(() =>
+        document.querySelector("eg-grid-body"),
+      );
+
+      let debounceTimer = null;
+      const gridObserverConfig = { childList: true, subtree: true };
+      const gridObserver = new MutationObserver(() => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          gridObserver.disconnect();
+          applyStaffNotesFilter();
+          applyBlankIllFilter();
+          gridObserver.observe(gridBody, gridObserverConfig);
+        }, 150);
+      });
+
+      gridObserver.observe(gridBody, gridObserverConfig);
+    };
+
     watchForModal();
     highlightProfileTypes();
     insertStaffNotesFilter();
+    insertBlankIllFilter();
+    watchGridBody();
   }
 })();
