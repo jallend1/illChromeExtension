@@ -96,6 +96,25 @@ export const handleMessage = (message, sender, sendResponse) => {
           );
       }
       break;
+    case MESSAGE_TYPES.INGRAM_ISBNS_EXTRACTED: {
+      const input = document.querySelector("#selection-list-input");
+      const backdrop = document.querySelector("#selection-list-backdrop");
+      const modal = document.querySelector("#selection-list-modal");
+      if (message.error) {
+        alert(message.error);
+        break;
+      }
+      if (input) input.value = (message.isbns || []).join("\n");
+      if (backdrop && modal) {
+        backdrop.classList.remove("hidden");
+        modal.classList.remove("hidden");
+        backdrop.offsetHeight; // force reflow for transition
+        backdrop.classList.add("visible");
+        modal.classList.add("visible");
+        if (input) input.focus();
+      }
+      break;
+    }
     default:
       console.log("Unhandled message type:", message.type);
   }

@@ -78,6 +78,13 @@ const setupButtonListeners = () => {
     });
   }
 
+  // Extract ISBNs from Ingram
+  if (elements.extractIngramISBNs) {
+    elements.extractIngramISBNs.addEventListener("click", () => {
+      chrome.runtime.sendMessage({ data: "extractIngramISBNs" });
+    });
+  }
+
   // Import mailroom data
   if (elements.importMailroomData) {
     elements.importMailroomData.addEventListener("click", async () => {

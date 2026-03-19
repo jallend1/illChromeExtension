@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jason's ILL Toolkit",
   "description": "Compilation of ILL tools for Jason",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "permissions": [
     "activeTab",
     "storage",
@@ -20,7 +20,8 @@
     "https://evgclient.kcls.org/*",
     "https://kingcountylibrarysystem.share.worldcat.org/*",
     "https://united-states.kinokuniya.com/*",
-    "https://www.kingstonebook.com/*"
+    "https://www.kingstonebook.com/*",
+    "https://ipage.ingramcontent.com/*"
   ],
   "background": {
     "service_worker": "background.js",

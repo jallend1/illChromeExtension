@@ -11,6 +11,7 @@ export const elements = {
   autoReturnILL: document.querySelector("#auto-return-ill"),
   importMailroomData: document.querySelector("#import-mailroom-data"),
   selectionList: document.querySelector("#selection-list"),
+  extractIngramISBNs: document.querySelector("#extract-isbns-ingram"),
 };
 
 // Storage keys and their corresponding elements
@@ -55,4 +56,5 @@ export const MESSAGE_TYPES = {
   LIBRARY_INVOICE_READY: "libraryInvoiceReady",
   SIDEPANEL_OPEN: "sidepanel-open",
   SIDEPANEL_CLOSE: "sidepanel-close",
+  INGRAM_ISBNS_EXTRACTED: "ingramISBNsExtracted",
 };
