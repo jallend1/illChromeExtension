@@ -204,6 +204,7 @@
         ></textarea>
         <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
           <button id="selection-list-search">Search</button>
+          <button id="selection-list-clear" style="background-color: #4caf50; color: white;">Clear</button>
           <button id="selection-list-cancel">Cancel</button>
         </div>
       </div>
@@ -273,6 +274,21 @@
           </button>
         </main>
       </section>
+      <section class="scripts">
+        <header>
+          <h2>🔖 Selection</h2>
+          <img
+            class="collapsible"
+            src="../images/collapse.svg"
+            alt="Collapse"
+          />
+        </header>
+        <main class="collapsible hidden collapsed">
+          <div>
+            <button id="selection-list">Selection List</button>
+          </div>
+        </main>
+      </section>
       <section class="scripts" id="in-development">
         <header>
           <h2>🔬 In Development</h2>
@@ -285,9 +301,6 @@
         <main class="hidden collapsed collapsible">
           <div>
             <button id="import-mailroom-data">Import Mailroom Data</button>
-          </div>
-          <div>
-            <button id="selection-list">Selection List</button>
           </div>
         </main>
       </section>

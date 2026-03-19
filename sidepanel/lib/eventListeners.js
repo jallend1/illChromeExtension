@@ -165,6 +165,11 @@ const setupSelectionListModal = () => {
   const cancelButton = document.querySelector("#selection-list-cancel");
   if (cancelButton) cancelButton.addEventListener("click", closeModal);
 
+  const clearButton = document.querySelector("#selection-list-clear");
+  if (clearButton) clearButton.addEventListener("click", () => {
+    modal.querySelector("#selection-list-input").value = "";
+  });
+
   const searchButton = document.querySelector("#selection-list-search");
   if (searchButton) {
     searchButton.addEventListener("click", async () => {

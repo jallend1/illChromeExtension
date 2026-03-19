@@ -4,7 +4,7 @@ import {
   isAllowedHost,
   getActiveTab,
   isEvgMobile,
-  evergreenTabId,
+  getNonActiveEvergreenTab,
   updateTab,
 } from "./background-utils.js";
 import { injectDymoFramework } from "./modules/dymoFunctions.js";
@@ -37,16 +37,17 @@ const retrievePatron = async () => {
   const baseUrl = (await isEvgMobile()) ? URLS.MOBILE_BASE : URLS.CLIENT_BASE;
   const url = `${baseUrl}${URLS.PATRON_SEARCH}`;
 
-  const existingTabId = await evergreenTabId();
-  if (existingTabId) {
-    const onTabUpdated = (tabId, changeInfo) => {
-      if (tabId === existingTabId && changeInfo.status === "complete") {
+  const nonActiveTab = await getNonActiveEvergreenTab();
+  const tabId = nonActiveTab?.id ?? null;
+  if (tabId) {
+    const onTabUpdated = (updatedTabId, changeInfo) => {
+      if (updatedTabId === tabId && changeInfo.status === "complete") {
         executeScript(tabId, "retrievePatron");
         chrome.tabs.onUpdated.removeListener(onTabUpdated);
       }
     };
     chrome.tabs.onUpdated.addListener(onTabUpdated);
-    updateTab(existingTabId, url);
+    updateTab(tabId, url);
   } else {
     createTabWithScript(url, "retrievePatron");
   }
