@@ -104,7 +104,12 @@ export const handleMessage = (message, sender, sendResponse) => {
         alert(message.error);
         break;
       }
-      if (input) input.value = (message.isbns || []).join("\n");
+      if (input) {
+        input.value = (message.isbns || []).join("\n");
+        input.dispatchEvent(new Event("input")); // sync search button state
+      }
+      const note = document.querySelector("#selection-list-ingram-note");
+      if (note) note.classList.remove("hidden");
       if (backdrop && modal) {
         backdrop.classList.remove("hidden");
         modal.classList.remove("hidden");

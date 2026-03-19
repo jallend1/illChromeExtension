@@ -159,6 +159,8 @@ const setupSelectionListModal = () => {
   };
 
   const closeModal = () => {
+    const note = modal.querySelector("#selection-list-ingram-note");
+    if (note) note.classList.add("hidden");
     backdrop.classList.remove("visible");
     modal.classList.remove("visible");
     const onEnd = () => {
@@ -169,18 +171,33 @@ const setupSelectionListModal = () => {
     modal.addEventListener("transitionend", onEnd);
   };
 
+  const input = modal.querySelector("#selection-list-input");
+  const searchButton = modal.querySelector("#selection-list-search");
+
+  const syncSearchButton = () => {
+    if (!searchButton) return;
+    const hasContent = input.value.trim().length > 0;
+    searchButton.disabled = !hasContent;
+    searchButton.style.opacity = hasContent ? "1" : "0.5";
+    searchButton.style.cursor = hasContent ? "pointer" : "not-allowed";
+  };
+
+  if (input) {
+    input.addEventListener("input", syncSearchButton);
+    syncSearchButton(); // set initial state
+  }
+
   const cancelButton = document.querySelector("#selection-list-cancel");
   if (cancelButton) cancelButton.addEventListener("click", closeModal);
 
   const clearButton = document.querySelector("#selection-list-clear");
   if (clearButton) clearButton.addEventListener("click", () => {
-    modal.querySelector("#selection-list-input").value = "";
+    input.value = "";
+    syncSearchButton();
   });
 
-  const searchButton = document.querySelector("#selection-list-search");
   if (searchButton) {
     searchButton.addEventListener("click", async () => {
-      const input = document.querySelector("#selection-list-input");
       const isbns = input.value.split("\n").map((s) => s.trim()).filter((s) => s !== "");
       if (isbns.length === 0) return;
 
