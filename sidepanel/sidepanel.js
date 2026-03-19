@@ -74,11 +74,34 @@ const initializeCurrentTab = () => {
 };
 
 /**
+ * Directly monitor tab switches and navigations from the sidepanel,
+ * rather than relying on the background service worker to relay them.
+ * The service worker can be terminated at any time in MV3, causing it
+ * to lose the openSidepanels state and silently drop URL updates.
+ */
+const setupTabListeners = () => {
+  chrome.tabs.onActivated.addListener(async (activeInfo) => {
+    if (myWindowId === null || activeInfo.windowId !== myWindowId) return;
+    const tab = await chrome.tabs.get(activeInfo.tabId);
+    setCurrentTabUrl(tab.url);
+    handleURLChange(tab.url);
+  });
+
+  chrome.tabs.onUpdated.addListener((_tabId, changeInfo, tab) => {
+    if (myWindowId === null || tab.windowId !== myWindowId) return;
+    if (!tab.active || changeInfo.status !== "complete") return;
+    setCurrentTabUrl(tab.url);
+    handleURLChange(tab.url);
+  });
+};
+
+/**
  * Fire up all systems
  */
 const initializeApp = () => {
   try {
     setupWindow();
+    setupTabListeners();
     chrome.runtime.onMessage.addListener(handleMessage);
     initializeEventListeners();
     initializeStorageValues();
