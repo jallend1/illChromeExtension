@@ -105,6 +105,28 @@ const setupButtonListeners = () => {
 };
 
 /**
+ * Updates the "Copy WorldShare Address" button text based on
+ * the current state of the Print Label and Return Request toggles.
+ */
+const syncCopyAddressButtonText = () => {
+  const button = document.querySelector("#copyWorldShareAddress");
+  if (!button) return;
+
+  const printLabel = elements.printLabel?.checked;
+  const returnRequest = elements.autoReturnILL?.checked;
+
+  if (printLabel && returnRequest) {
+    button.textContent = "Print Label and Return";
+  } else if (printLabel) {
+    button.textContent = "Print Label";
+  } else if (returnRequest) {
+    button.textContent = "Return Request";
+  } else {
+    button.textContent = "Copy WorldShare Address";
+  }
+};
+
+/**
  * Sets up checkbox listeners
  */
 const setupCheckboxListeners = () => {
@@ -117,6 +139,9 @@ const setupCheckboxListeners = () => {
   checkboxes.forEach(({ element, key }) => {
     addCheckboxListener(element, key);
   });
+
+  if (elements.printLabel) elements.printLabel.addEventListener("change", syncCopyAddressButtonText);
+  if (elements.autoReturnILL) elements.autoReturnILL.addEventListener("change", syncCopyAddressButtonText);
 };
 
 /**
@@ -265,6 +290,8 @@ const setupSettingsModal = () => {
 /**
  * Initialize all event listeners
  */
+export { syncCopyAddressButtonText };
+
 export const initializeEventListeners = () => {
   setupPassiveToolsListener();
   setupIllActionsListeners();

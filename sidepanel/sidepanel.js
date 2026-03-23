@@ -1,11 +1,11 @@
-import { elements, storageKeys, MESSAGE_TYPES } from "./lib/constants.js";
+import { storageKeys, MESSAGE_TYPES } from "./lib/constants.js";
 import {
   handleMessage,
   initializeMessageHandler,
   setCurrentTabUrl,
 } from "./lib/messageHandler.js";
 import { handleURLChange } from "./lib/buttonManager.js";
-import { initializeEventListeners } from "./lib/eventListeners.js";
+import { initializeEventListeners, syncCopyAddressButtonText } from "./lib/eventListeners.js";
 
 // The window ID for this istance of the side panel
 let myWindowId = null;
@@ -57,6 +57,7 @@ const initializeStorageValues = () => {
     storageKeys.forEach(({ key, element }) => {
       if (element) element.checked = result[key];
     });
+    syncCopyAddressButtonText();
   });
 };
 

@@ -1,6 +1,6 @@
 import { storageKeys, MESSAGE_TYPES } from "./constants.js";
-
 import { handleURLChange } from "./buttonManager.js";
+import { syncCopyAddressButtonText } from "./eventListeners.js";
 
 // State management using closures
 let windowId = null;
@@ -52,6 +52,7 @@ const handleStorageUpdate = (message) => {
       storageKey.element.checked = newValue;
     }
   }
+  syncCopyAddressButtonText();
 };
 
 /**
