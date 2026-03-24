@@ -22,6 +22,7 @@ export const executeScript = (tabId, script) => {
     "searchWorldShare",
     "pasteIllNumber",
     "lendingPatronSearch",
+    "patronSearchMods",
   ];
 
   chrome.scripting.executeScript(
