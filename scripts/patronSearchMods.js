@@ -38,15 +38,14 @@
         clearTimeout(stabilityTimer);
       }
 
-      // Set a new timer for 2 seconds
+      // Set a new timer for 1 second
       stabilityTimer = setTimeout(() => {
-        console.log("Length stable for 2 seconds, registering shortcuts");
         // Re-query fresh cells at registration time rather than using the stale capture
         const freshCells = document.querySelectorAll(
           ".eg-grid-body .eg-grid-number-cell",
         );
         registerKeyboardShortcuts(freshCells);
-      }, 2000);
+      }, 1000);
     }
   };
 
