@@ -32,18 +32,28 @@ async function isbnSearch() {
    */
   const extractFields = (selector) => {
     const latestField = document.querySelector(
-      `div:not(.yui3-default-hidden) span${selector}:not(div.yui3-default-hidden span)`
+      `div:not(.yui3-default-hidden) span${selector}:not(div.yui3-default-hidden span)`,
     );
     return latestField ? latestField.textContent : null;
   };
 
-  const getSearchQuery = (isbn, title, author) =>
-    isbn ? isbn : title && author ? `${title} ${author}` : title || null;
+  const getSearchQuery = (isbn, issn, title, author) =>
+    isbn
+      ? isbn
+      : issn
+        ? issn
+        : title && author
+          ? `${title} ${author}`
+          : title || null;
 
   const isbn = extractFields(".yui-field-isbn")
     ?.split(" ")
     .find((str) => /^\d/.test(str)) // Find first string that starts with a digit
     ?.replace(/-/g, ""); // Removes any hyphens from the ISBN
+  const issn = extractFields(".yui-field-issn")
+    ?.split(" ")
+    .find((str) => /^\d/.test(str)) // Find first string that starts with a digit
+    ?.replace(/-/g, ""); // Removes any hyphens from the ISSN
   const title = extractFields(".yui-field-title")?.replace(/:/g, ""); // Removes any colons from the title
   // Only takes first author, removes any URLs and author lifespan
   const author = extractFields(".yui-field-author")
@@ -52,7 +62,7 @@ async function isbnSearch() {
     ?.split("prf")[0] // Worldshare audio records generally include prf
     ?.split(/, \d{4}/)[0] // Removes any author lifespan information
     ?.trim();
-  const searchQuery = getSearchQuery(isbn, title, author); // Function to get the search query based on the fields
+  const searchQuery = getSearchQuery(isbn, issn, title, author); // Function to get the search query based on the fields
 
   if (searchQuery) {
     const previousIsbnSearch = sessionStorage.getItem("isbnSearch"); // Checks previous isbnSearch to prevent duplicate searches
@@ -61,7 +71,7 @@ async function isbnSearch() {
         "Possible Duplicate Search!",
         "This matches the last search we did. Double check the item is what you're looking for on the next page. If not, try refreshing WorldShare!",
         "#e85e6a",
-        chrome.runtime.getURL("images/kawaii-book-sad.png")
+        chrome.runtime.getURL("images/kawaii-book-sad.png"),
       );
     }
 
@@ -77,7 +87,7 @@ async function isbnSearch() {
       "No Search Parameters Found!",
       "We couldn't find any ISBN or Title/Author fields on this page. Please check the fields and try again.",
       "#e85e6a",
-      chrome.runtime.getURL("images/kawaii-book-sad.png")
+      chrome.runtime.getURL("images/kawaii-book-sad.png"),
     );
   }
 }
