@@ -262,6 +262,54 @@ button:hover {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
+/* Installation Steps */
+.install-steps {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 20px;
+  counter-reset: step;
+  list-style: none;
+}
+
+.install-steps li {
+  position: relative;
+  padding: 16px 16px 16px 56px;
+  margin-bottom: 16px;
+  background-color: #333333;
+  border-radius: 8px;
+  line-height: 1.6;
+  color: #e9e9e9;
+}
+
+.install-steps li::before {
+  content: counter(step);
+  counter-increment: step;
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  background-color: #4aa3ff;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.install-steps code {
+  background-color: #1e1e1e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #4aa3ff;
+}
+
 /* Footer */
 .footer {
   padding: 20px;
