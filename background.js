@@ -40,6 +40,11 @@ initializeLendingMode(executeScript);
 
 // Event Listeners
 chrome.storage.onChanged.addListener(handleStorageChanges);
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && "arePassiveToolsActive" in changes) {
+    arePassiveToolsActive = changes.arePassiveToolsActive.newValue;
+  }
+});
 
 chrome.commands.onCommand.addListener((command) => {
   handleKeyboardShortcut(command, currentOptions, injectDymoFramework);

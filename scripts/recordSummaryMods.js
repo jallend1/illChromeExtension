@@ -1,4 +1,9 @@
 (async () => {
+  const { arePassiveToolsActive } = await chrome.storage.local.get(
+    "arePassiveToolsActive"
+  );
+  if (arePassiveToolsActive === false) return;
+
   const { waitForElementWithInterval } = await import(
     chrome.runtime.getURL("modules/utils.js")
   );
