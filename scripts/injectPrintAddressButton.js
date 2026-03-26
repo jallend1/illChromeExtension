@@ -72,4 +72,27 @@
   if (!jasonsButton) {
     addContainerToDOM();
   }
+
+  /**
+   * Highlights address fieldsets that are likely to span two labels,
+   * identified by containing "BOX" or "SUITE" in the address text.
+   */
+  const highlightTwoLabelAddresses = () => {
+    const legendSpans = document.querySelectorAll("fieldset legend span");
+    legendSpans.forEach((span) => {
+      const label = span.textContent.trim();
+      if (label !== "Mailing" && label !== "Residential") return;
+
+      const fieldset = span.closest("fieldset");
+      if (!fieldset) return;
+
+      const needsTwoLabels = /\b(BOX|SUITE|STE)\b/i.test(fieldset.textContent);
+      fieldset.style.backgroundColor = needsTwoLabels ? "#fffde7" : "";
+    });
+  };
+
+  await waitForElementWithInterval(() =>
+    document.querySelector("fieldset legend span")
+  );
+  highlightTwoLabelAddresses();
 })();
