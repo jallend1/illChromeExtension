@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -29,13 +29,29 @@
         />
       </main>
       <div class="header-actions">
-        <a href="../product-page/index.html" target="_blank" class="header-link">
-          View Features
+        <a
+          href="../product-page/index.html"
+          target="_blank"
+          class="header-link"
+        >
+          About
         </a>
         <button id="settings-gear" aria-label="Settings">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            ></path>
           </svg>
         </button>
       </div>
@@ -196,16 +212,46 @@
       <div id="selection-list-backdrop" class="settings-backdrop hidden"></div>
       <div id="selection-list-modal" class="settings-modal hidden">
         <h3>Selection List</h3>
-        <p id="selection-list-ingram-note" class="hidden" style="font-size: 0.75rem; margin: 0 0 6px; color: var(--text-muted, #666);">The following ISBNs have been extracted from ipage:</p>
+        <p
+          id="selection-list-ingram-note"
+          class="hidden"
+          style="
+            font-size: 0.75rem;
+            margin: 0 0 6px;
+            color: var(--text-muted, #666);
+          "
+        >
+          The following ISBNs have been extracted from ipage:
+        </p>
         <textarea
           id="selection-list-input"
           rows="10"
           placeholder="Paste ISBNs here, one per line..."
-          style="width: 100%; padding: 5px; font-family: monospace; font-size: 0.73rem; border: var(--border-subtle); border-radius: var(--border-radius); resize: vertical;"
+          style="
+            width: 100%;
+            padding: 5px;
+            font-family: monospace;
+            font-size: 0.73rem;
+            border: var(--border-subtle);
+            border-radius: var(--border-radius);
+            resize: vertical;
+          "
         ></textarea>
-        <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-          <button id="selection-list-search" style="background-color: #4caf50; color: white;">Search Evergreen</button>
-          <button id="selection-list-clear" style="background-color: #e53935; color: white;">Clear</button>
+        <div
+          style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap"
+        >
+          <button
+            id="selection-list-search"
+            style="background-color: #4caf50; color: white"
+          >
+            Search Evergreen
+          </button>
+          <button
+            id="selection-list-clear"
+            style="background-color: #e53935; color: white"
+          >
+            Clear
+          </button>
           <button id="selection-list-cancel">Close</button>
         </div>
       </div>
@@ -334,7 +380,14 @@
                 font-family: monospace;
               "
             ></textarea>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap">
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                margin-bottom: 10px;
+                flex-wrap: wrap;
+              "
+            >
               <button id="startKinokuniya">Search Kinokuniya</button>
               <button id="startKingStone">Search KingStone</button>
               <button id="cancelBulkCheck">Cancel</button>
@@ -352,7 +405,11 @@
             </div>
           </div>
         </main>
-        <div id="last-results-controls" class="hidden" style="display: none; gap: 10px; padding: 0 10px 10px">
+        <div
+          id="last-results-controls"
+          class="hidden"
+          style="display: none; gap: 10px; padding: 0 10px 10px"
+        >
           <button id="showLastResults">Show Last Results</button>
           <button id="clearResults">Clear Results</button>
         </div>
@@ -385,7 +442,9 @@
               >
             </li>
             <li>
-              <a href="http://firstsearch.oclc.org/" target="_blank"
+              <a
+                href="http://firstsearch.oclc.org/"
+                target="_blank"
                 class="resource-external"
                 >FirstSearch</a
               >

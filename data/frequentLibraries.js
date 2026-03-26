@@ -17,7 +17,9 @@ export const frequentLibraries = {
   SPL: "00142489",
   "Spokane County": "03143930",
   "Spokane Public": "00049486",
+  Terrell: "00163568",
   Timberland: "0040022287",
   "Walla Walla County": "02976611",
   Whatcom: "0040022303",
+  "Yakima Valley": "00234609",
 };
