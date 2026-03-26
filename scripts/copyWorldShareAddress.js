@@ -11,7 +11,8 @@
     chrome.runtime.getURL("modules/dymoFunctions.js")
   );
 
-  const { autoReturnILL: autoReturnEnabled, printLabel } = await chrome.storage.local.get(["autoReturnILL", "printLabel"]);
+  const { autoReturnILL: autoReturnEnabled, printLabel } =
+    await chrome.storage.local.get(["autoReturnILL", "printLabel"]);
 
   /**
    * Copies the address information from the WorldShare interface
@@ -45,12 +46,12 @@
       let lender;
       // Returns lending request if request pulled up through requests
       lender = document.querySelector(
-        "#requests > div:not([class*='hidden']) span.nd-mainPanelTitle + span.borrowingInformationExtra"
+        "#requests > div:not([class*='hidden']) span.nd-mainPanelTitle + span.borrowingInformationExtra",
       );
       // If nothing is found under requests, returns lending request if request pulled up through search bar
       if (lender === null) {
         lender = document.querySelector(
-          "#requestSearchResults > div:not([class*='hidden']) span.nd-mainPanelTitle + span.borrowingInformationExtra"
+          "#requestSearchResults > div:not([class*='hidden']) span.nd-mainPanelTitle + span.borrowingInformationExtra",
         );
         return lender !== null;
       }
@@ -61,13 +62,13 @@
       Object.keys(selectors).forEach((key) => {
         // If request brought up from borrowing/lending queue, under a #requests div
         let nodeList = document.querySelectorAll(
-          "#requests > div:not([class*='hidden']) " + selectors[key]
+          "#requests > div:not([class*='hidden']) " + selectors[key],
         );
         // If request brought up from search bar, under a #requestSearchResults div
         if (nodeList.length === 0) {
           nodeList = document.querySelectorAll(
             "#requestSearchResults > div:not([class*='hidden']) " +
-              selectors[key]
+              selectors[key],
           );
         }
 
@@ -95,7 +96,7 @@
           case "locality":
             if (!value) {
               const city = prompt(
-                "City not listed in WorldShare. Please enter city name or press enter to dismiss."
+                "City not listed in WorldShare. Please enter city name or press enter to dismiss.",
               );
               return city ? `${city}, ` : "NOT LISTED, ";
             }
@@ -103,7 +104,7 @@
           case "region":
             if (!value) {
               const state = prompt(
-                "State not listed in WorldShare. Please enter state two-letter abbreviation or press enter to dismiss."
+                "State not listed in WorldShare. Please enter state two-letter abbreviation or press enter to dismiss.",
               );
               return state ? `${state.toUpperCase()} ` : "NOT LISTED ";
             }
@@ -128,7 +129,7 @@
           "Error!",
           "Couldn't find a valid address found on this page.",
           "#e85e6a",
-          chrome.runtime.getURL("images/kawaii-book-sad.png")
+          chrome.runtime.getURL("images/kawaii-book-sad.png"),
         );
         return false;
       }
@@ -142,26 +143,28 @@
       if (document.hasFocus()) navigator.clipboard.writeText(addressString);
       // If sidePanel click is used, send address directly to sidepanel
       else {
-        chrome.runtime.sendMessage({ type: "addressReady", data: addressString });
+        chrome.runtime.sendMessage({
+          type: "addressReady",
+          data: addressString,
+        });
       }
 
       if (printLabel) {
         // Prints the Dymo label and indicates as much in status modal
         if (dymoFunctions.isSuitableToPrint(addressString)) {
-          console.log("Calling printDymoLabel with address...");
           dymoFunctions.printDymoLabel(addressString);
           statusModal(
             "Printing label!",
             "The address has also been copied to your clipboard.",
             "#4CAF50",
-            chrome.runtime.getURL("images/kawaii-dinosaur.png")
+            chrome.runtime.getURL("images/kawaii-dinosaur.png"),
           );
         } else {
           statusModal(
             "Error!",
             "Address is not suitable for printing.",
             "#e85e6a",
-            chrome.runtime.getURL("images/kawaii-book-sad.png")
+            chrome.runtime.getURL("images/kawaii-book-sad.png"),
           );
           return;
         }
@@ -171,7 +174,7 @@
           "Address Copied!",
           "The address has been copied to your clipboard.",
           "#4CAF50",
-          chrome.runtime.getURL("images/kawaii-dinosaur.png")
+          chrome.runtime.getURL("images/kawaii-dinosaur.png"),
         );
       }
     } else {
@@ -179,7 +182,7 @@
         "Error!",
         "Address is not valid.",
         "#e85e6a",
-        chrome.runtime.getURL("images/kawaii-book-sad.png")
+        chrome.runtime.getURL("images/kawaii-book-sad.png"),
       );
       return;
     }
@@ -188,7 +191,7 @@
   // TODO: Button is appearing on pages where it isn't actually visible?
   const autoReturnILL = () => {
     const returnButtons = document.querySelectorAll(
-      "button.returned-button.button-return"
+      "button.returned-button.button-return",
     );
     const buttonId = returnButtons[returnButtons.length - 1].id;
     const requestId = buttonId.split("-")[1];
@@ -208,7 +211,7 @@
       "Error!",
       "Please run this from WorldShare.",
       "#e85e6a",
-      chrome.runtime.getURL("images/kawaii-book-sad.png")
+      chrome.runtime.getURL("images/kawaii-book-sad.png"),
     );
   }
 })();

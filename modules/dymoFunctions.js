@@ -124,6 +124,41 @@ export const dymoFunctions = {
     return true;
   },
   /**
+   * Breaks any line longer than 60 characters into at most two lines.
+   * Break points are tried in order: after "Dept"/"Department", at a comma, at a '/'.
+   * @param {string} address - The raw address string.
+   * @returns {string} The address with long lines split.
+   */
+  wrapLongLines: (address) => {
+    return address
+      .split("\n")
+      .flatMap((line) => {
+        if (line.length <= 60) return [line];
+
+        // Break after "Dept" or "Department"
+        const deptMatch = line.match(/\b(Department|Dept\.?)\b/i);
+        if (deptMatch) {
+          const i = deptMatch.index + deptMatch[0].length;
+          return [line.slice(0, i), line.slice(i).trimStart()].filter(Boolean);
+        }
+
+        // Break at the first comma (keep comma on first line)
+        const commaIndex = line.indexOf(",");
+        if (commaIndex !== -1) {
+          return [line.slice(0, commaIndex + 1), line.slice(commaIndex + 1).trimStart()].filter(Boolean);
+        }
+
+        // Break at the first '/' and remove it
+        const slashIndex = line.indexOf("/");
+        if (slashIndex !== -1) {
+          return [line.slice(0, slashIndex).trimEnd(), line.slice(slashIndex + 1).trimStart()].filter(Boolean);
+        }
+
+        return [line];
+      })
+      .join("\n");
+  },
+  /**
    * Prints a Dymo label with the specified address.
    * @param {string} address - The address to print on the label.
    */
@@ -136,7 +171,8 @@ export const dymoFunctions = {
       dymo.label.framework.init(
         () => {
           console.log("Dymo framework init callback fired.");
-          const sanitizedAddress = dymoFunctions.sanitizeForXML(address);
+          const wrappedAddress = dymoFunctions.wrapLongLines(address);
+          const sanitizedAddress = dymoFunctions.sanitizeForXML(wrappedAddress);
           const labelXML = dymoFunctions.generateLabelXML(sanitizedAddress);
           console.log("Generated label XML:", labelXML);
 
