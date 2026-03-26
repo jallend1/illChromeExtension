@@ -42,7 +42,7 @@ async function isbnSearch() {
       ? isbn
       : issn
         ? issn
-        : title && author
+        : title && author && !title.includes("[premium database title]")
           ? `${title} ${author}`
           : title || null;
 
