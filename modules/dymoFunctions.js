@@ -16,7 +16,7 @@ export const injectDymoFramework = (tabId) => {
       if (chrome.runtime.lastError) {
         console.error(
           "Error injecting Dymo framework:",
-          chrome.runtime.lastError
+          chrome.runtime.lastError,
         );
         return;
       }
@@ -27,7 +27,7 @@ export const injectDymoFramework = (tabId) => {
           files: ["./libs/dymo.connect.framework.js"],
         });
       }
-    }
+    },
   );
 };
 
@@ -42,7 +42,6 @@ export const dymoFunctions = {
    * @returns {string} The generated XML.
    */
   generateLabelXML: (address) => {
-    console.log("Generating label XML...");
     const lines = address.split("\n");
     const firstLineFontSize = lines[0].length > 30 ? 8 : 10;
     const styledElements = lines
@@ -94,7 +93,6 @@ export const dymoFunctions = {
    * @returns {string} The sanitized string.
    */
   sanitizeForXML: (str) => {
-    console.log("Sanitizing string for XML...");
     return str
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -109,7 +107,6 @@ export const dymoFunctions = {
    * @returns {boolean} True if the address is suitable, false otherwise.
    */
   isSuitableToPrint: (address) => {
-    console.log("Checking if address is suitable to print...");
     const addressLines = address.split("\n");
     // Address requires name, street address, and city/state/zip
     if (addressLines.length < 3) {
@@ -118,7 +115,7 @@ export const dymoFunctions = {
     }
     // City and State sometimes have "NOT LISTED" or "NOT FOUND" in them
     const invalidLine = addressLines.find(
-      (line) => line.includes("NOT LISTED") || line.includes("NOT FOUND")
+      (line) => line.includes("NOT LISTED") || line.includes("NOT FOUND"),
     );
     if (invalidLine) {
       console.error(`Address is not suitable for printing: ${address}`);
@@ -131,24 +128,62 @@ export const dymoFunctions = {
    * @param {string} address - The address to print on the label.
    */
   printDymoLabel: async (address) => {
-    console.log("Printing Dymo label from inside dymoFunctions...");
     const { statusModal } = await import(
       chrome.runtime.getURL("modules/modals.js")
     );
     if (typeof dymo !== "undefined" && dymo.label.framework) {
-      dymo.label.framework.init(() => {
-        const sanitizedAddress = dymoFunctions.sanitizeForXML(address);
-        const labelXML = dymoFunctions.generateLabelXML(sanitizedAddress);
+      console.log("Dymo framework detected, calling init...");
+      dymo.label.framework.init(
+        () => {
+          console.log("Dymo framework init callback fired.");
+          const sanitizedAddress = dymoFunctions.sanitizeForXML(address);
+          const labelXML = dymoFunctions.generateLabelXML(sanitizedAddress);
+          console.log("Generated label XML:", labelXML);
 
-        const printers = dymo.label.framework.getPrinters();
-        if (printers.length === 0) {
-          // TODO: Pass error to modal?
-          console.error("No Dymo printers found.");
-          return;
-        }
-        const label = dymo.label.framework.openLabelXml(labelXML);
-        label.print(printers[0].name);
-      });
+          let printers;
+          try {
+            printers = dymo.label.framework.getPrinters();
+            console.log("Printers found:", JSON.stringify(printers));
+          } catch (e) {
+            console.error("Error calling getPrinters():", e);
+            return;
+          }
+
+          if (printers.length === 0) {
+            // TODO: Pass error to modal?
+            console.error("No Dymo printers found.");
+            return;
+          }
+
+          console.log(
+            "Attempting to print to printer:",
+            printers[0].name,
+            "| Model:",
+            printers[0].modelName,
+            "| Connected:",
+            printers[0].isConnected,
+          );
+
+          let label;
+          try {
+            label = dymo.label.framework.openLabelXml(labelXML);
+            console.log("Label opened successfully.");
+          } catch (e) {
+            console.error("Error calling openLabelXml():", e);
+            return;
+          }
+
+          try {
+            label.print(printers[0].name);
+            console.log("label.print() called successfully.");
+          } catch (e) {
+            console.error("Error calling label.print():", e);
+          }
+        },
+        (err) => {
+          console.error("Dymo framework init failed:", err);
+        },
+      );
     } else {
       console.error("Dymo framework is not loaded.");
     }

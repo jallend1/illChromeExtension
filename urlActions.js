@@ -16,6 +16,7 @@ const URL_MAP = {
   "/staff/cat/requests": { scripts: ["requestManagerMods"] },
   "/checkout": { scripts: ["dismissOpenTransit"] },
   "/en-US/staff/circ/patron/search": { scripts: ["patronSearchMods"] },
+  "/staff/catalog/record/": { scripts: ["recordSummaryMods"] },
 };
 
 /**
