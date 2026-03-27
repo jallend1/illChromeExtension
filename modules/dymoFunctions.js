@@ -191,13 +191,14 @@ export const dymoFunctions = {
             return;
           }
 
+          const printer = printers.find((p) => p.isConnected) ?? printers[0];
           console.log(
             "Attempting to print to printer:",
-            printers[0].name,
+            printer.name,
             "| Model:",
-            printers[0].modelName,
+            printer.modelName,
             "| Connected:",
-            printers[0].isConnected,
+            printer.isConnected,
           );
 
           let label;
@@ -210,7 +211,7 @@ export const dymoFunctions = {
           }
 
           try {
-            label.print(printers[0].name);
+            label.print(printer.name);
             console.log("label.print() called successfully.");
           } catch (e) {
             console.error("Error calling label.print():", e);
