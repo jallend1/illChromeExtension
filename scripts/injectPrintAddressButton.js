@@ -11,7 +11,7 @@
   );
 
   const patronNameElement = await waitForElementWithInterval(
-    ".patron-summary-container > .patron-status-color"
+    ".patron-summary-container > .patron-status-color",
   );
 
   if (!patronNameElement) return;
@@ -57,10 +57,13 @@
 
     printButton.addEventListener("click", async () => {
       const address = await waitForElementWithInterval(
-        '[id^="patron-address-copy-"]'
+        '[id^="patron-address-copy-"]',
       );
       if (!address) {
-        createMiniModal("Could not find patron address — is it loaded on the page?", true);
+        createMiniModal(
+          "Could not find patron address — is it loaded on the page?",
+          true,
+        );
         return;
       }
       createMiniModal("Printing address label...");
@@ -73,9 +76,30 @@
     addContainerToDOM();
   }
 
+  // Calibrate wrap threshold using the longest known string that fits on one label line.
+  const _canvas = document.createElement("canvas");
+  const _ctx = _canvas.getContext("2d");
+  _ctx.font = "14px Arial";
+  const WRAP_THRESHOLD = _ctx.measureText("NEW YORK PUBLIC LIBRARY  ILL").width;
+
+  /**
+   * Estimates how many printed lines an address string will occupy,
+   * using canvas text measurement to detect lines that will wrap.
+   * @param {string} addressText
+   * @returns {number}
+   */
+  const countPrintedLines = (addressText) =>
+    addressText
+      .split("\n")
+      .filter((line) => line.trim().length > 0)
+      .reduce((total, line) => {
+        const width = _ctx.measureText(line.trim()).width;
+        return total + Math.ceil(width / WRAP_THRESHOLD);
+      }, 0);
+
   /**
    * Highlights address fieldsets that are likely to span two labels,
-   * identified by containing "BOX" or "SUITE" in the address text.
+   * based on whether the predicted printed line count exceeds 4.
    */
   const highlightTwoLabelAddresses = () => {
     const legendSpans = document.querySelectorAll("fieldset legend span");
@@ -86,13 +110,18 @@
       const fieldset = span.closest("fieldset");
       if (!fieldset) return;
 
-      const needsTwoLabels = /\b(BOX|SUITE|STE)\b/i.test(fieldset.textContent);
+      const textarea = fieldset.parentElement?.querySelector(
+        "textarea[id^='patron-address-copy-']",
+      );
+      if (!textarea) return;
+
+      const needsTwoLabels = countPrintedLines(textarea.value) > 4;
       fieldset.style.backgroundColor = needsTwoLabels ? "#fffde7" : "";
     });
   };
 
   await waitForElementWithInterval(() =>
-    document.querySelector("fieldset legend span")
+    document.querySelector("fieldset legend span"),
   );
   highlightTwoLabelAddresses();
 })();
