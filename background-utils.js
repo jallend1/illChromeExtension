@@ -46,7 +46,7 @@ export const isAllowedHost = (url) => {
       console.error("Error testing URL pattern:", error);
       // Fallback to simple string matching
       const simpleMatch = url.includes(
-        pattern.replace("https://", "").replace("/*", "")
+        pattern.replace("https://", "").replace("/*", ""),
       );
       return simpleMatch;
     }
@@ -89,7 +89,7 @@ export const updateTab = (evergreenTab, url) => {
       if (chrome.runtime.lastError) {
         console.error(
           "Error retrieving tab details:",
-          chrome.runtime.lastError.message
+          chrome.runtime.lastError.message,
         );
         return;
       }
@@ -108,7 +108,7 @@ export const createTab = (url) => {
     if (chrome.runtime.lastError) {
       console.error(
         "Error creating new tab:",
-        chrome.runtime.lastError.message
+        chrome.runtime.lastError.message,
       );
       return;
     }
@@ -151,7 +151,9 @@ export const getActiveTab = async () => {
 export const getNonActiveEvergreenTab = async () => {
   const tabs = await chrome.tabs.query({});
   const evergreenTab = tabs.find(
-    (tab) => !tab.active && (tab.url?.includes("evgclient") || tab.url?.includes("evgmobile"))
+    (tab) =>
+      !tab.active &&
+      (tab.url?.includes("evgclient") || tab.url?.includes("evgmobile")),
   );
   return evergreenTab ?? null;
 };

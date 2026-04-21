@@ -121,19 +121,9 @@
       }
     };
 
-    /**
-     * Injects a button into the action bar before the request data actions element.
-     */
-    const injectActionButton = async () => {
-      const actionsEl = await waitForElementWithInterval(
-        ".nd-request-action-bar-request-data-actions",
-      );
-      if (
-        !actionsEl ||
-        actionsEl.parentElement.querySelector("#ill-action-button")
-      )
-        return;
+    let retrievePatronButtonObserver = null;
 
+    const createRetrievePatronButton = (requestPanel) => {
       const button = document.createElement("button");
       button.id = "ill-action-button";
       button.textContent = "Retrieve Patron";
@@ -142,19 +132,99 @@
         "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
 
       button.addEventListener("click", () => {
-        const patronInput = document.querySelector(
+        const patronField = requestPanel.querySelector(
           `[data="requester.patron.userId"]`,
         );
-        if (!patronInput?.value) return;
-        chrome.storage.local.set({ patronToEdit: patronInput.value }, () => {
+        const patronBarcode =
+          patronField?.value?.trim() || patronField?.textContent?.trim();
+        if (!patronBarcode) return;
+
+        chrome.storage.local.set({ patronToEdit: patronBarcode }, () => {
           chrome.runtime.sendMessage({
             action: "editPatron",
-            patronBarcode: patronInput.value,
+            patronBarcode,
           });
         });
       });
 
+      return button;
+    };
+
+    const isPanelVisible = (panel) => {
+      if (!panel) return false;
+
+      const styles = window.getComputedStyle(panel);
+      const hiddenByClass =
+        panel.classList.contains("yui3-viewpanel-hidden") ||
+        panel.classList.contains("yui3-default-hidden") ||
+        panel.classList.contains("yui3-cardpanel-hidden");
+      const hiddenByStyle =
+        styles.display === "none" || styles.visibility === "hidden";
+
+      return !hiddenByClass && !hiddenByStyle;
+    };
+
+    const getVisibleRequestPanel = () => {
+      const requestContainers = ["#requests", "#requestSearchResults"];
+
+      for (const selector of requestContainers) {
+        const container = document.querySelector(selector);
+        if (!isPanelVisible(container)) continue;
+
+        const requestPanels = Array.from(
+          container.querySelectorAll(":scope > div"),
+        );
+        const visiblePanel = requestPanels.find((panel) =>
+          isPanelVisible(panel),
+        );
+        if (visiblePanel) return visiblePanel;
+      }
+
+      return null;
+    };
+
+    const syncRetrievePatronButtonToVisibleRequest = async () => {
+      const visibleRequestPanel = getVisibleRequestPanel();
+      if (!visibleRequestPanel) return;
+
+      const actionsEl = visibleRequestPanel.querySelector(
+        ".nd-request-action-bar-request-data-actions",
+      );
+      if (!actionsEl) return;
+
+      document.querySelectorAll("#ill-action-button").forEach((btn) => {
+        if (!visibleRequestPanel.contains(btn)) btn.remove();
+      });
+
+      if (actionsEl.parentElement.querySelector("#ill-action-button")) return;
+
+      const button = createRetrievePatronButton(visibleRequestPanel);
       actionsEl.parentElement.insertBefore(button, actionsEl);
+    };
+
+    /**
+     * Injects a button into the visible request action bar and keeps it synced as panels change.
+     */
+    const injectActionButton = async () => {
+      await syncRetrievePatronButtonToVisibleRequest();
+
+      if (retrievePatronButtonObserver) return;
+
+      retrievePatronButtonObserver = new MutationObserver(() => {
+        syncRetrievePatronButtonToVisibleRequest();
+      });
+
+      ["#requests", "#requestSearchResults"].forEach((selector) => {
+        const container = document.querySelector(selector);
+        if (!container) return;
+
+        retrievePatronButtonObserver.observe(container, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ["class", "style"],
+        });
+      });
     };
 
     /**
@@ -200,31 +270,40 @@
      * Injects a "Retrieve Patron" button into every lending request action bar under #requests.
      */
     const injectLendingActionButton = async () => {
-      await waitForElementWithInterval("#requests .nd-request-action-bar-request-data-actions");
+      await waitForElementWithInterval(
+        "#requests .nd-request-action-bar-request-data-actions",
+      );
 
       const requestsContainer = document.querySelector("#requests");
       if (!requestsContainer) return;
 
-      requestsContainer.querySelectorAll(".nd-request-action-bar-request-data-actions").forEach((actionsEl) => {
-        if (actionsEl.parentElement.querySelector(".ill-lending-action-button")) return;
+      requestsContainer
+        .querySelectorAll(".nd-request-action-bar-request-data-actions")
+        .forEach((actionsEl) => {
+          if (
+            actionsEl.parentElement.querySelector(".ill-lending-action-button")
+          )
+            return;
 
-        const button = document.createElement("button");
-        button.className = "ill-lending-action-button";
-        button.textContent = "Retrieve Patron";
-        button.style.cssText =
-          "background-color:#00b894;color:#fff;border:none;border-radius:0.3rem;padding:0.6rem 1.2rem;cursor:pointer;font-weight:400;margin-right:0.5rem;" +
-          "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
+          const button = document.createElement("button");
+          button.className = "ill-lending-action-button";
+          button.textContent = "Retrieve Patron";
+          button.style.cssText =
+            "background-color:#00b894;color:#fff;border:none;border-radius:0.3rem;padding:0.6rem 1.2rem;cursor:pointer;font-weight:400;margin-right:0.5rem;" +
+            "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
 
-        button.addEventListener("click", () => {
-          const request = actionsEl.closest("#requests > div");
-          const postalSpan = request?.querySelector('[data="delivery.address.postal"]');
-          const postalCode = postalSpan?.textContent?.trim();
-          if (!postalCode) return;
-          chrome.runtime.sendMessage({ type: "librarySearch", postalCode });
+          button.addEventListener("click", () => {
+            const request = actionsEl.closest("#requests > div");
+            const postalSpan = request?.querySelector(
+              '[data="delivery.address.postal"]',
+            );
+            const postalCode = postalSpan?.textContent?.trim();
+            if (!postalCode) return;
+            chrome.runtime.sendMessage({ type: "librarySearch", postalCode });
+          });
+
+          actionsEl.parentElement.insertBefore(button, actionsEl);
         });
-
-        actionsEl.parentElement.insertBefore(button, actionsEl);
-      });
     };
 
     /**
@@ -279,10 +358,12 @@
      */
     const highlightDigitalItems = () => {
       const highlight = () => {
-        document.querySelectorAll(".uic-txt-ico.uic-ico-it-book-digital").forEach((span) => {
-          const record = span.closest(".uic-table-record-data");
-          if (record) record.style.backgroundColor = "#fffde7";
-        });
+        document
+          .querySelectorAll(".uic-txt-ico.uic-ico-it-book-digital")
+          .forEach((span) => {
+            const record = span.closest(".uic-table-record-data");
+            if (record) record.style.backgroundColor = "#fffde7";
+          });
       };
 
       highlight();
@@ -325,8 +406,11 @@
               // Poll until a visible print_now button exists (page fully rendered)
               const printNowBtn = await new Promise((resolve) => {
                 const interval = setInterval(() => {
-                  const visible = Array.from(document.querySelectorAll('button[data-action="print_now"]'))
-                    .find((btn) => btn.offsetParent !== null);
+                  const visible = Array.from(
+                    document.querySelectorAll(
+                      'button[data-action="print_now"]',
+                    ),
+                  ).find((btn) => btn.offsetParent !== null);
                   if (visible) {
                     clearInterval(interval);
                     resolve(visible);
@@ -335,9 +419,13 @@
               });
 
               const btnGroup = printNowBtn.closest(".btn-group");
-              const printQueueAnchor = btnGroup.querySelector('li[data-action="add_to_print_queue"] a');
+              const printQueueAnchor = btnGroup.querySelector(
+                'li[data-action="add_to_print_queue"] a',
+              );
               if (!printQueueAnchor) {
-                console.error("Could not find add_to_print_queue anchor in btn-group");
+                console.error(
+                  "Could not find add_to_print_queue anchor in btn-group",
+                );
                 return;
               }
               printQueueAnchor.click();
@@ -353,14 +441,20 @@
                 anchorTag.click();
               }, 500);
               await addToPrintQueue();
-              createMiniModal(`Request ID ( ${requestId} ) copied to clipboard.`);
-              chrome.runtime.sendMessage({ type: "findAndSwitchToRequestManager", illNumber: requestId });
+              createMiniModal(
+                `Request ID ( ${requestId} ) copied to clipboard.`,
+              );
+              chrome.runtime.sendMessage({
+                type: "findAndSwitchToRequestManager",
+                illNumber: requestId,
+              });
             };
 
             const preExisting = document.querySelector(
               ".wms-alert.wms-message-confirm > p.msg > a",
             );
-            const isTrulyStale = preExisting && preExisting.href === window.lastClickedRequestHref;
+            const isTrulyStale =
+              preExisting && preExisting.href === window.lastClickedRequestHref;
 
             // If a fresh anchor is already in the DOM (WorldShare showed success before URL changed), click it now
             if (preExisting && !isTrulyStale) {
@@ -372,7 +466,9 @@
             if (isTrulyStale) {
               await new Promise((resolve) => {
                 const bodyObserver = new MutationObserver(() => {
-                  const fresh = document.querySelector(".wms-alert.wms-message-confirm > p.msg > a");
+                  const fresh = document.querySelector(
+                    ".wms-alert.wms-message-confirm > p.msg > a",
+                  );
                   // A fresh anchor has appeared that isn't the stale one
                   if (fresh && fresh.href !== window.lastClickedRequestHref) {
                     bodyObserver.disconnect();
@@ -380,7 +476,10 @@
                     resolve();
                   }
                 });
-                bodyObserver.observe(document.body, { childList: true, subtree: true });
+                bodyObserver.observe(document.body, {
+                  childList: true,
+                  subtree: true,
+                });
               });
               return;
             }
@@ -410,6 +509,8 @@
 
       window.addEventListener("beforeunload", () => {
         observer.disconnect();
+        retrievePatronButtonObserver?.disconnect();
+        retrievePatronButtonObserver = null;
       });
     };
 
