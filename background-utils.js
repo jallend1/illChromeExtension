@@ -151,7 +151,7 @@ export const getActiveTab = async () => {
 export const getNonActiveEvergreenTab = async () => {
   const tabs = await chrome.tabs.query({});
   const evergreenTab = tabs.find(
-    (tab) => tab.url?.includes("evgclient") || tab.url?.includes("evgmobile")
+    (tab) => !tab.active && (tab.url?.includes("evgclient") || tab.url?.includes("evgmobile"))
   );
   return evergreenTab ?? null;
 };
