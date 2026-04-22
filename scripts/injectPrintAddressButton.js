@@ -98,8 +98,29 @@
       }, 0);
 
   /**
+   * Detects whether any address line contains "PO BOX" away from line start.
+   * @param {string} addressText
+   * @returns {boolean}
+   */
+  const hasPOBoxAwayFromLineStart = (addressText) =>
+    addressText
+      .split("\n")
+      .some((line) => line.toUpperCase().indexOf("PO BOX") > 0);
+
+  /**
+   * Detects suite-like address indicators.
+   * @param {string} addressText
+   * @returns {boolean}
+   */
+  const hasSuiteIndicator = (addressText) =>
+    addressText.split("\n").some((line) => {
+      const normalized = line.toUpperCase();
+      return normalized.includes(" STE ") || normalized.includes("SUITE");
+    });
+
+  /**
    * Highlights address fieldsets that are likely to span two labels,
-   * based on whether the predicted printed line count exceeds 4.
+   * or include a PO BOX away from the start of a line.
    */
   const highlightTwoLabelAddresses = () => {
     const legendSpans = document.querySelectorAll("fieldset legend span");
@@ -115,7 +136,11 @@
       );
       if (!textarea) return;
 
-      const needsTwoLabels = countPrintedLines(textarea.value) > 4;
+      const addressText = textarea.value || "";
+      const needsTwoLabels =
+        countPrintedLines(addressText) > 4 ||
+        hasPOBoxAwayFromLineStart(addressText) ||
+        hasSuiteIndicator(addressText);
       fieldset.style.backgroundColor = needsTwoLabels ? "#fffde7" : "";
     });
   };
