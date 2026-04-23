@@ -70,7 +70,8 @@
         "product-page/*",
         "data/*",
         "stats/lendingByState/*",
-        "stats/lendingByState/lib/*"
+        "stats/lendingByState/lib/*",
+        "stats/shippingArcs/*"
       ],
       "matches": ["<all_urls>"]
     }

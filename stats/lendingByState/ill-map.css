@@ -127,6 +127,25 @@ html, body {
   background: rgba(245,240,232,0.12);
 }
 
+.nav-link {
+  pointer-events: all;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.45);
+  text-decoration: none;
+  border: 1px solid rgba(245,240,232,0.15);
+  border-radius: 3px;
+  padding: 4px 10px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--paper);
+  border-color: var(--accent);
+}
+
 /* ── Map canvas ───────────────────────────────────────────────────────────── */
 
 #map {
