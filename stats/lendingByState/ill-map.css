@@ -1,42 +1,3 @@
-/* ── Local fonts (@font-face replaces Google Fonts CDN for CSP compliance) ── */
-/* Download these files and place them in a fonts/ subfolder:
- *
- *   Anybody (variable):
- *     https://fonts.gstatic.com/s/anybody/v6/oY1Z8e7OuLXkJGbAdOpo.woff2
- *     (covers wdth 75, wght 300–600 — the variable axes used here)
- *
- *   DM Mono:
- *     https://fonts.gstatic.com/s/dmmono/v14/aFTR7PB1QTsUX8KYvrumxQ.woff2  (300)
- *     https://fonts.gstatic.com/s/dmmono/v14/aFTU7PB1QTsUX8KYth-orQ.woff2  (400)
- *
- * Rename files to match the src paths below, or adjust the paths to suit your
- * extension's folder structure.
- */
-
-@font-face {
-  font-family: 'Anybody';
-  src: url('fonts/Anybody-variable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-stretch: 50% 125%;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'DM Mono';
-  src: url('fonts/DMMono-Light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'DM Mono';
-  src: url('fonts/DMMono-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ── Reset & root variables ───────────────────────────────────────────────── */
 
 *, *::before, *::after {
@@ -146,51 +107,6 @@ html, body {
   border-color: var(--accent);
 }
 
-/* ── Map canvas ───────────────────────────────────────────────────────────── */
-
-#map {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* ── Tooltip ──────────────────────────────────────────────────────────────── */
-
-#tooltip {
-  position: absolute;
-  z-index: 30;
-  pointer-events: none;
-  display: none;
-  background: rgba(13,17,23,0.92);
-  border: 1px solid rgba(200,75,47,0.6);
-  border-radius: 4px;
-  padding: 10px 14px;
-  font-size: 0.7rem;
-  line-height: 1.7;
-  backdrop-filter: blur(6px);
-  min-width: 160px;
-}
-
-#tooltip .tt-state {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--paper);
-  margin-bottom: 4px;
-  border-bottom: 1px solid rgba(200,75,47,0.3);
-  padding-bottom: 4px;
-}
-
-.tt-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.tt-key { color: rgba(245,240,232,0.5); }
-.tt-val { color: var(--paper); }
-
 /* ── Period selector ──────────────────────────────────────────────────────── */
 
 #period-panel {
@@ -234,7 +150,6 @@ html, body {
   background: rgba(200,75,47,0.18);
 }
 
-/* "All 2025" button has a slightly more prominent resting state */
 .period-btn.all-btn {
   color: rgba(245,240,232,0.65);
   border-color: rgba(245,240,232,0.15);
@@ -246,7 +161,60 @@ html, body {
   background: rgba(200,75,47,0.22);
 }
 
-/* ── Left-side controls ───────────────────────────────────────────────────── */
+/* ── Map ──────────────────────────────────────────────────────────────────── */
+
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Tooltip ──────────────────────────────────────────────────────────────── */
+
+#tooltip {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  display: none;
+  background: rgba(13,17,23,0.92);
+  border: 1px solid rgba(200,75,47,0.6);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  backdrop-filter: blur(6px);
+  min-width: 200px;
+  max-width: 280px;
+}
+
+#tooltip .tt-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--paper);
+  line-height: 1.2;
+}
+
+#tooltip .tt-sub {
+  font-size: 0.65rem;
+  color: rgba(245,240,232,0.5);
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(200,75,47,0.25);
+  line-height: 1.3;
+}
+
+.tt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tt-key { color: rgba(245,240,232,0.45); flex-shrink: 0; }
+.tt-val { color: var(--paper); text-align: right; }
+
+/* ── Controls ─────────────────────────────────────────────────────────────── */
 
 #controls {
   position: absolute;
@@ -307,32 +275,6 @@ input[type=range]::-webkit-slider-thumb {
   text-align: right;
 }
 
-#file-btn {
-  display: block;
-  width: 100%;
-  background: transparent;
-  border: 1px solid rgba(245,240,232,0.2);
-  color: rgba(245,240,232,0.6);
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-  margin-top: 2px;
-}
-
-#file-btn:hover {
-  border-color: var(--accent);
-  color: var(--paper);
-}
-
-#file-input {
-  display: none;
-}
-
 /* ── Legend ───────────────────────────────────────────────────────────────── */
 
 #legend {
@@ -372,13 +314,18 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 .swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 24px;
+  height: 6px;
+  border-radius: 3px;
   flex-shrink: 0;
 }
 
-/* ── Camera controls hint ─────────────────────────────────────────────────── */
+/* Heatmap color stops matching deck.gl colorRange */
+.swatch-hi  { background: rgb(200, 75,  47); }
+.swatch-mid { background: rgb(249, 115, 22); }
+.swatch-lo  { background: rgb(253, 230, 138); }
+
+/* ── Camera hint ──────────────────────────────────────────────────────────── */
 
 #hint {
   position: absolute;
@@ -392,4 +339,49 @@ input[type=range]::-webkit-slider-thumb {
   pointer-events: none;
   text-align: right;
   line-height: 1.9;
+}
+
+/* ── Loading overlay ──────────────────────────────────────────────────────── */
+
+#loading {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  transition: opacity 0.4s;
+}
+
+#loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(245,240,232,0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.35);
 }

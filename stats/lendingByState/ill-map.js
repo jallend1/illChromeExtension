@@ -1,294 +1,234 @@
+// ill-map.js
 // ─────────────────────────────────────────────────────────────────────────────
-// Application logic for the ILL Lending Map.
+// ILL Lending Map — HeatmapLayer weighted by package count per destination.
+// Reads data from ../shippingArcs/data/geocoded_trips.json so both maps
+// share a single source of truth.
+//
+// Two layers run simultaneously:
+//   1. HeatmapLayer  — visual density, not pickable
+//   2. ScatterplotLayer (opacity 0) — invisible but pickable, drives tooltip
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PALETTE = [
-  [38, 198, 218], // teal
-  [255, 213, 79], // amber
-  [200, 75, 47], // terracotta
-];
+// ── State ─────────────────────────────────────────────────────────────────────
 
-function lerp(a, b, t) {
-  return [
-    Math.round(a[0] + (b[0] - a[0]) * t),
-    Math.round(a[1] + (b[1] - a[1]) * t),
-    Math.round(a[2] + (b[2] - a[2]) * t),
-  ];
-}
+let deckInstance  = null;
+let allShipments  = [];   // full geocoded dataset
+let destPoints    = [];   // aggregated: one point per unique destination
+let intensity     = 3;
+let radiusPx      = 40;
+let activePeriod  = 'all';
 
-function triColor(t) {
-  return t <= 0.5
-    ? lerp(PALETTE[0], PALETTE[1], t * 2)
-    : lerp(PALETTE[1], PALETTE[2], (t - 0.5) * 2);
-}
+const tooltip = document.getElementById('tooltip');
 
-function getColor(filled, maxFilled) {
-  const t = maxFilled > 0 ? Math.sqrt(filled / maxFilled) : 0;
-  return [...triColor(t), 220];
-}
-
-// ── Data helpers ──────────────────────────────────────────────────────────────
+// ── Data aggregation ──────────────────────────────────────────────────────────
 
 /**
- * Convert a raw state map ({ ST: [filled, received] }) into the array format
- * deck.gl expects, filtering out states without a known centroid or zero fills.
+ * Aggregate shipments into one record per unique destination (by formatted
+ * address), summing package counts. Returns an array ready for both layers.
  */
-function buildData(stateMap) {
-  return Object.entries(stateMap)
-    .filter(([abbr, arr]) => STATE_CENTROIDS[abbr] && arr[0] > 0)
-    .map(([abbr, arr]) => ({
-      position: [STATE_CENTROIDS[abbr][1], STATE_CENTROIDS[abbr][0]],
-      state: abbr,
-      filled: arr[0],
-      received: arr[1],
-    }));
-}
+function aggregateDestinations(shipments) {
+  const map = new Map();
 
-/** Update the three header stat pills from a rendered data array. */
-function updateStats(data) {
-  const total = data.reduce((s, d) => s + d.filled, 0);
-  const top = [...data].sort((a, b) => b.filled - a.filled)[0];
+  for (const s of shipments) {
+    const key = s.formatted_address || s.address;
+    if (!key || s.lat == null || s.lng == null) continue;
 
-  document.getElementById("stat-filled").textContent = total.toLocaleString();
-  document.getElementById("stat-states").textContent = data.length;
-  document.getElementById("stat-top").textContent = top
-    ? `${top.state} (${top.filled.toLocaleString()})`
-    : "—";
-}
-
-// ── TSV parser ────────────────────────────────────────────────────────────────
-
-/**
- * Parse a WorldShare Lender Detail TSV export.
- * Returns { byState: { ST: [filled, received] }, reportingPeriod: string }
- * or null if the expected header row is not found.
- */
-function parseTSV(text) {
-  const lines = text.split("\n");
-  let headerIdx = -1;
-  let reportingPeriod = "";
-
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith("Reporting Period")) {
-      reportingPeriod = lines[i].split("\t")[1]?.trim() || "";
-    }
-    if (lines[i].startsWith("Institution Name")) {
-      headerIdx = i;
-      break;
+    if (map.has(key)) {
+      map.get(key).count += 1;
+    } else {
+      map.set(key, {
+        position:          [s.lng, s.lat],
+        address:           key,
+        recipient_company: s.recipient_company || '',
+        recipient_name:    s.recipient_name    || '',
+        count:             1,
+      });
     }
   }
 
-  if (headerIdx === -1) return null;
-
-  const headers = lines[headerIdx].split("\t").map((h) => h.trim());
-  const colState = headers.indexOf("Institution State");
-  const colFilled = headers.indexOf("Requests Filled");
-  const colReceived = headers.indexOf("Requests Received");
-  const minCols = Math.max(colState, colFilled, colReceived) + 1;
-
-  const byState = {};
-  for (let i = headerIdx + 1; i < lines.length; i++) {
-    const row = lines[i].split("\t");
-    if (row.length < minCols) continue;
-
-    const state = row[colState]?.trim();
-    const filled = parseInt(row[colFilled], 10) || 0;
-    const received = parseInt(row[colReceived], 10) || 0;
-
-    if (!state || state.length !== 2) continue;
-    if (!byState[state]) byState[state] = [0, 0];
-    byState[state][0] += filled;
-    byState[state][1] += received;
-  }
-
-  return { byState, reportingPeriod };
+  return Array.from(map.values());
 }
 
-// ── deck.gl state ─────────────────────────────────────────────────────────────
+// ── Stats ─────────────────────────────────────────────────────────────────────
 
-let deckInstance = null;
-let currentData = [];
-let heightScale = 1000;
-let radiusM = 40000;
+function updateStats(shipments, points) {
+  const top = [...points].sort((a, b) => b.count - a.count)[0];
+  document.getElementById('stat-packages').textContent     = shipments.length.toLocaleString();
+  document.getElementById('stat-destinations').textContent = points.length.toLocaleString();
+  document.getElementById('stat-top').textContent          = top
+    ? `${top.recipient_company || top.address} (${top.count})`
+    : '—';
+}
 
-function buildLayer() {
-  const maxFilled = Math.max(...currentData.map((d) => d.filled));
+// ── Layer builders ────────────────────────────────────────────────────────────
 
-  return new deck.ColumnLayer({
-    id: "columns",
-    data: currentData,
-    getPosition: (d) => d.position,
-    getElevation: (d) => d.filled,
-    elevationScale: heightScale,
-    diskResolution: 24,
-    radius: radiusM,
-    extruded: true,
-    pickable: true,
-    getFillColor: (d) => getColor(d.filled, maxFilled),
-    getLineColor: [255, 255, 255, 15],
-    lineWidthMinPixels: 0,
-    material: {
-      ambient: 0.35,
-      diffuse: 0.8,
-      shininess: 32,
-      specularColor: [60, 60, 60],
-    },
-    transitions: {
-      getElevation: { duration: 500 },
-      getFillColor: { duration: 400 },
-    },
+function buildHeatmapLayer() {
+  return new deck.HeatmapLayer({
+    id:           'heatmap',
+    data:         destPoints,
+    getPosition:  d => d.position,
+    getWeight:    d => d.count,
+    intensity,
+    radiusPixels: radiusPx,
+    colorRange: [
+      [253, 230, 138, 120],  // pale amber    — sparse
+      [249, 166,  50, 180],  // orange
+      [249, 115,  22, 210],  // deep orange
+      [200,  75,  47, 240],  // terracotta    — dense
+    ],
+    threshold:   0.02,
+    aggregation: 'SUM',
+    pickable:    false,
+  });
+}
+
+function buildPickLayer() {
+  return new deck.ScatterplotLayer({
+    id:          'pick',
+    data:        destPoints,
+    getPosition: d => d.position,
+    getRadius:   50000,       // ~50 km catch radius
+    radiusUnits: 'meters',
+    opacity:     0,
+    pickable:    true,
   });
 }
 
 function render() {
   if (!deckInstance) return;
-  deckInstance.setProps({ layers: [buildLayer()] });
+  deckInstance.setProps({ layers: [buildHeatmapLayer(), buildPickLayer()] });
 }
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 
-const tooltip = document.getElementById("tooltip");
-
 function showTooltip(info) {
-  if (!info.object) {
-    tooltip.style.display = "none";
-    return;
-  }
+  if (!info.object) { tooltip.style.display = 'none'; return; }
   const d = info.object;
-  const rate =
-    d.received > 0 ? ((d.filled / d.received) * 100).toFixed(1) + "%" : "—";
-
-  document.getElementById("tt-state").textContent =
-    STATE_NAMES[d.state] || d.state;
-  document.getElementById("tt-filled").textContent = d.filled.toLocaleString();
-  document.getElementById("tt-received").textContent =
-    d.received.toLocaleString();
-  document.getElementById("tt-rate").textContent = rate;
-
-  tooltip.style.display = "block";
-  tooltip.style.left = info.x + 16 + "px";
-  tooltip.style.top = info.y + 16 + "px";
+  document.getElementById('tt-company').textContent  = d.recipient_company || d.address;
+  document.getElementById('tt-name').textContent     = d.recipient_name    || '';
+  document.getElementById('tt-packages').textContent = d.count.toLocaleString();
+  document.getElementById('tt-address').textContent  = d.address;
+  tooltip.style.display = 'block';
+  tooltip.style.left    = (info.x + 16) + 'px';
+  tooltip.style.top     = (info.y + 16) + 'px';
 }
 
-// ── deck.gl initialisation ────────────────────────────────────────────────────
+// ── deck.gl init ──────────────────────────────────────────────────────────────
 
 function initDeck() {
   deckInstance = new deck.DeckGL({
-    container: "map",
+    container: 'map',
     mapStyle: {
       version: 8,
       sources: {
         carto: {
-          type: "raster",
-          tiles: [
-            "https://basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
-          ],
-          tileSize: 256,
-          attribution: "© CARTO © OpenStreetMap contributors",
+          type:        'raster',
+          tiles:       ['https://basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'],
+          tileSize:    256,
+          attribution: '© CARTO © OpenStreetMap contributors',
         },
       },
-      layers: [{ id: "bg", type: "raster", source: "carto" }],
+      layers: [{ id: 'bg', type: 'raster', source: 'carto' }],
     },
     mapLib: maplibregl,
     initialViewState: {
       longitude: -96,
-      latitude: 40,
-      zoom: 3.4,
-      pitch: 45,
-      bearing: -10,
+      latitude:  40,
+      zoom:      3.8,
+      pitch:     0,
+      bearing:   0,
     },
-    controller: { dragRotate: true },
-    layers: [],
-    onHover: showTooltip,
-    getCursor: ({ isHovering }) => (isHovering ? "pointer" : "grab"),
+    controller: true,
+    layers:     [],
+    onHover:    showTooltip,
+    getCursor:  ({ isHovering }) => isHovering ? 'crosshair' : 'grab',
   });
 }
 
 // ── Period selector ───────────────────────────────────────────────────────────
 
+const MONTH_LABELS = {
+  '2025-01':'January 2025',   '2025-02':'February 2025',
+  '2025-03':'March 2025',     '2025-04':'April 2025',
+  '2025-05':'May 2025',       '2025-06':'June 2025',
+  '2025-07':'July 2025',      '2025-08':'August 2025',
+  '2025-09':'September 2025', '2025-10':'October 2025',
+  '2025-11':'November 2025',  '2025-12':'December 2025',
+};
+
 function switchPeriod(period) {
-  document.querySelectorAll(".period-btn").forEach((b) => {
-    b.classList.toggle("active", b.dataset.period === period);
+  activePeriod = period;
+
+  document.querySelectorAll('.period-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.period === period);
   });
 
-  const stateMap = period === "all" ? ALL_2025 : MONTHLY[period] || {};
-  currentData = buildData(stateMap);
-  updateStats(currentData);
+  const filtered = period === 'all'
+    ? allShipments
+    : allShipments.filter(s => s.date && s.date.startsWith(period));
+
+  destPoints = aggregateDestinations(filtered);
+  updateStats(filtered, destPoints);
   render();
 
-  const label = period === "all" ? "Full Year 2025" : period;
-  document.getElementById("sub-label").textContent =
-    "King County Library System · " + label;
+  const label = period === 'all' ? 'Full Year 2025' : (MONTH_LABELS[period] || period);
+  document.getElementById('sub-label').textContent =
+    'King County Library System · ' + label;
 }
 
-document.querySelectorAll(".period-btn").forEach((btn) => {
-  btn.addEventListener("click", () => switchPeriod(btn.dataset.period));
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchPeriod(btn.dataset.period));
 });
 
-// ── Slider controls ───────────────────────────────────────────────────────────
+// ── Controls ──────────────────────────────────────────────────────────────────
 
-document.getElementById("height-scale").addEventListener("input", (e) => {
-  heightScale = parseInt(e.target.value);
-  document.getElementById("height-val").textContent =
-    heightScale.toLocaleString();
+document.getElementById('intensity').addEventListener('input', e => {
+  intensity = parseFloat(e.target.value);
+  document.getElementById('intensity-val').textContent = intensity.toFixed(1);
   render();
 });
 
-document.getElementById("radius").addEventListener("input", (e) => {
-  radiusM = parseInt(e.target.value);
-  document.getElementById("radius-val").textContent =
-    radiusM >= 1000 ? (radiusM / 1000).toFixed(0) + "k" : radiusM;
+document.getElementById('radius').addEventListener('input', e => {
+  radiusPx = parseInt(e.target.value);
+  document.getElementById('radius-val').textContent = radiusPx;
   render();
 });
 
-// ── File loader ───────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 
-document.getElementById("file-input").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    const result = parseTSV(ev.target.result);
-    if (!result) {
-      alert(
-        'Could not parse TSV — ensure the file contains an "Institution Name" header row.',
-      );
-      return;
-    }
-
-    // Deactivate all period buttons since we're showing ad-hoc data
-    document
-      .querySelectorAll(".period-btn")
-      .forEach((b) => b.classList.remove("active"));
-
-    currentData = buildData(result.byState);
-    updateStats(currentData);
-    render();
-
-    const label = result.reportingPeriod || file.name;
-    document.getElementById("sub-label").textContent =
-      "King County Library System · " + label;
-  };
-
-  reader.readAsText(file);
-});
-
-// ── Initialisation ────────────────────────────────────────────────────────────
-
-window.addEventListener("load", () => {
-  if (typeof deck === "undefined") {
-    document.getElementById("map").innerHTML =
-      '<div style="color:#c84b2f;font-family:monospace;padding:40px;">' +
-      "Error: deck.gl failed to load. Check your internet connection.</div>";
+window.addEventListener('load', async () => {
+  if (typeof deck === 'undefined') {
+    document.getElementById('loading').innerHTML =
+      '<div style="color:#c84b2f;font-family:monospace;padding:40px;font-size:0.85rem;">' +
+      'Error: deck.gl failed to load.</div>';
     return;
   }
 
-  currentData = buildData(ALL_2025);
-  updateStats(currentData);
-  initDeck();
-  render();
+  try {
+    const resp = await fetch('../shippingArcs/data/geocoded_trips.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
 
-  document.getElementById("sub-label").textContent =
-    "King County Library System · Full Year 2025";
+    allShipments = data.shipments.filter(s => s.lat != null && s.lng != null);
+    destPoints   = aggregateDestinations(allShipments);
+
+    updateStats(allShipments, destPoints);
+    initDeck();
+    render();
+
+    document.getElementById('sub-label').textContent =
+      'King County Library System · Full Year 2025';
+
+    const loading = document.getElementById('loading');
+    loading.classList.add('hidden');
+    setTimeout(() => loading.remove(), 450);
+
+  } catch (err) {
+    document.getElementById('loading').innerHTML =
+      `<div style="color:#c84b2f;font-family:monospace;padding:40px;font-size:0.85rem;max-width:500px;">
+        <strong>Failed to load shipment data.</strong><br><br>
+        ${err.message}<br><br>
+        Ensure <code>shippingArcs/data/geocoded_trips.json</code> exists.
+      </div>`;
+  }
 });
