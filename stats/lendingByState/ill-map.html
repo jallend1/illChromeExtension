@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ILL Lending Map — KCLS</title>
+
+  <!-- Third-party libraries (local copies required by Chrome extension CSP) -->
+  <script src="lib/maplibre-gl.js"></script>
+  <link href="lib/maplibre-gl.css" rel="stylesheet" />
+  <script src="lib/deck.gl.min.js"></script>
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="ill-map.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div id="header">
+    <div>
+      <h1>ILL Lending Map</h1>
+      <div class="sub" id="sub-label">King County Library System · 2025</div>
+    </div>
+    <div id="header-right">
+      <div class="stat-pill">
+        <span class="val" id="stat-filled">—</span>
+        <span class="lbl">Requests Filled</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat-pill">
+        <span class="val" id="stat-states">—</span>
+        <span class="lbl">States Reached</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat-pill">
+        <span class="val" id="stat-top">—</span>
+        <span class="lbl">Top State</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Period selector ────────────────────────────────────────────────── -->
+  <div id="period-panel">
+    <button class="period-btn all-btn active" data-period="all">All 2025</button>
+    <button class="period-btn" data-period="Jan 2025">Jan</button>
+    <button class="period-btn" data-period="Feb 2025">Feb</button>
+    <button class="period-btn" data-period="Mar 2025">Mar</button>
+    <button class="period-btn" data-period="Apr 2025">Apr</button>
+    <button class="period-btn" data-period="May 2025">May</button>
+    <button class="period-btn" data-period="Jun 2025">Jun</button>
+    <button class="period-btn" data-period="Jul 2025">Jul</button>
+    <button class="period-btn" data-period="Aug 2025">Aug</button>
+    <button class="period-btn" data-period="Sep 2025">Sep</button>
+    <button class="period-btn" data-period="Oct 2025">Oct</button>
+    <button class="period-btn" data-period="Nov 2025">Nov</button>
+    <button class="period-btn" data-period="Dec 2025">Dec</button>
+  </div>
+
+  <!-- ── Map canvas ─────────────────────────────────────────────────────── -->
+  <div id="map"></div>
+
+  <!-- ── Hover tooltip ──────────────────────────────────────────────────── -->
+  <div id="tooltip">
+    <div class="tt-state" id="tt-state"></div>
+    <div class="tt-row"><span class="tt-key">Filled</span>    <span class="tt-val" id="tt-filled"></span></div>
+    <div class="tt-row"><span class="tt-key">Received</span>  <span class="tt-val" id="tt-received"></span></div>
+    <div class="tt-row"><span class="tt-key">Fill rate</span> <span class="tt-val" id="tt-rate"></span></div>
+  </div>
+
+  <!-- ── Camera controls hint ───────────────────────────────────────────── -->
+  <div id="hint">
+    Left drag · rotate view<br>
+    Right drag · pan<br>
+    Scroll · zoom
+  </div>
+
+  <!-- ── Left-side controls ─────────────────────────────────────────────── -->
+  <div id="controls">
+
+    <div class="panel">
+      <div class="panel-label">Column Height Scale</div>
+      <div class="slider-row">
+        <input type="range" id="height-scale" min="100" max="8000" step="100" value="1000" />
+        <span class="slider-val" id="height-val">1000</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Column Radius (m)</div>
+      <div class="slider-row">
+        <input type="range" id="radius" min="10000" max="120000" step="5000" value="40000" />
+        <span class="slider-val" id="radius-val">40k</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Load TSV</div>
+      <button id="file-btn" onclick="document.getElementById('file-input').click()">Choose file…</button>
+      <input type="file" id="file-input" accept=".tsv,.txt" />
+    </div>
+
+  </div>
+
+  <!-- ── Legend ─────────────────────────────────────────────────────────── -->
+  <div id="legend">
+    <div class="legend-title">Requests Filled</div>
+    <div class="legend-rows">
+      <div class="legend-row"><div class="swatch" style="background:rgb(200,75,47)"></div> <span>High volume</span></div>
+      <div class="legend-row"><div class="swatch" style="background:rgb(255,213,79)"></div><span>Mid volume</span></div>
+      <div class="legend-row"><div class="swatch" style="background:rgb(38,198,218)"></div><span>Low volume</span></div>
+    </div>
+  </div>
+
+  <!-- ── App scripts (data before logic) ───────────────────────────────── -->
+  <script src="ill-map-data.js"></script>
+  <script src="ill-map.js"></script>
+
+</body>
+</html>

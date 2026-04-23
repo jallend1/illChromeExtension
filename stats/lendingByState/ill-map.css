@@ -1,0 +1,376 @@
+/* ── Local fonts (@font-face replaces Google Fonts CDN for CSP compliance) ── */
+/* Download these files and place them in a fonts/ subfolder:
+ *
+ *   Anybody (variable):
+ *     https://fonts.gstatic.com/s/anybody/v6/oY1Z8e7OuLXkJGbAdOpo.woff2
+ *     (covers wdth 75, wght 300–600 — the variable axes used here)
+ *
+ *   DM Mono:
+ *     https://fonts.gstatic.com/s/dmmono/v14/aFTR7PB1QTsUX8KYvrumxQ.woff2  (300)
+ *     https://fonts.gstatic.com/s/dmmono/v14/aFTU7PB1QTsUX8KYth-orQ.woff2  (400)
+ *
+ * Rename files to match the src paths below, or adjust the paths to suit your
+ * extension's folder structure.
+ */
+
+@font-face {
+  font-family: 'Anybody';
+  src: url('fonts/Anybody-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 50% 125%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Mono';
+  src: url('fonts/DMMono-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Mono';
+  src: url('fonts/DMMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Reset & root variables ───────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --ink:     #0d1117;
+  --paper:   #f5f0e8;
+  --accent:  #c84b2f;
+  --mono:    'DM Mono', monospace;
+  --display: 'Anybody', sans-serif;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  overflow: hidden;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+#header {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: linear-gradient(to bottom, rgba(13,17,23,0.97) 70%, transparent);
+  gap: 12px;
+  pointer-events: none;
+}
+
+#header h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+#header .sub {
+  font-size: 0.62rem;
+  color: rgba(245,240,232,0.45);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+#header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stat-pill .val {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.stat-pill .lbl {
+  font-size: 0.58rem;
+  color: rgba(245,240,232,0.4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(245,240,232,0.12);
+}
+
+/* ── Map canvas ───────────────────────────────────────────────────────────── */
+
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Tooltip ──────────────────────────────────────────────────────────────── */
+
+#tooltip {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  display: none;
+  background: rgba(13,17,23,0.92);
+  border: 1px solid rgba(200,75,47,0.6);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  line-height: 1.7;
+  backdrop-filter: blur(6px);
+  min-width: 160px;
+}
+
+#tooltip .tt-state {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--paper);
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(200,75,47,0.3);
+  padding-bottom: 4px;
+}
+
+.tt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tt-key { color: rgba(245,240,232,0.5); }
+.tt-val { color: var(--paper); }
+
+/* ── Period selector ──────────────────────────────────────────────────────── */
+
+#period-panel {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  gap: 4px;
+  background: rgba(13,17,23,0.82);
+  border: 1px solid rgba(245,240,232,0.1);
+  border-radius: 5px;
+  padding: 5px;
+  backdrop-filter: blur(8px);
+}
+
+.period-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(245,240,232,0.45);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.period-btn:hover {
+  color: var(--paper);
+  border-color: rgba(245,240,232,0.2);
+}
+
+.period-btn.active {
+  border-color: var(--accent);
+  color: var(--paper);
+  background: rgba(200,75,47,0.18);
+}
+
+/* "All 2025" button has a slightly more prominent resting state */
+.period-btn.all-btn {
+  color: rgba(245,240,232,0.65);
+  border-color: rgba(245,240,232,0.15);
+}
+
+.period-btn.all-btn.active {
+  border-color: var(--accent);
+  color: var(--paper);
+  background: rgba(200,75,47,0.22);
+}
+
+/* ── Left-side controls ───────────────────────────────────────────────────── */
+
+#controls {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel {
+  background: rgba(13,17,23,0.82);
+  border: 1px solid rgba(245,240,232,0.1);
+  border-radius: 4px;
+  padding: 9px 13px;
+  backdrop-filter: blur(8px);
+  min-width: 180px;
+}
+
+.panel-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.4);
+  margin-bottom: 7px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 2px;
+  background: rgba(245,240,232,0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.slider-val {
+  font-size: 0.7rem;
+  color: var(--paper);
+  min-width: 32px;
+  text-align: right;
+}
+
+#file-btn {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(245,240,232,0.2);
+  color: rgba(245,240,232,0.6);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  margin-top: 2px;
+}
+
+#file-btn:hover {
+  border-color: var(--accent);
+  color: var(--paper);
+}
+
+#file-input {
+  display: none;
+}
+
+/* ── Legend ───────────────────────────────────────────────────────────────── */
+
+#legend {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  z-index: 20;
+  background: rgba(13,17,23,0.82);
+  border: 1px solid rgba(245,240,232,0.1);
+  border-radius: 4px;
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  min-width: 150px;
+}
+
+#legend .legend-title {
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.4);
+  margin-bottom: 8px;
+}
+
+.legend-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.63rem;
+  color: rgba(245,240,232,0.7);
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Camera controls hint ─────────────────────────────────────────────────── */
+
+#hint {
+  position: absolute;
+  top: 58px;
+  right: 18px;
+  z-index: 20;
+  font-size: 0.57rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.22);
+  pointer-events: none;
+  text-align: right;
+  line-height: 1.9;
+}
