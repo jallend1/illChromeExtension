@@ -88,6 +88,44 @@ html, body {
   background: rgba(245,240,232,0.12);
 }
 
+/* ── Animate button ───────────────────────────────────────────────────────── */
+
+.animate-btn {
+  pointer-events: all;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(200,75,47,0.2);
+  border: 1px solid rgba(200,75,47,0.5);
+  border-radius: 3px;
+  padding: 5px 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.animate-btn:hover {
+  background: rgba(200,75,47,0.35);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(200,75,47,0.3);
+}
+
+.animate-btn.is-animated {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(200,75,47,0.45);
+}
+
+.animate-btn.is-animated:hover {
+  background: #a83a22;
+  border-color: #a83a22;
+}
+
+/* ── Nav link ─────────────────────────────────────────────────────────────── */
+
 .nav-link {
   pointer-events: all;
   font-size: 0.6rem;
@@ -214,9 +252,9 @@ html, body {
 .tt-key { color: rgba(245,240,232,0.45); flex-shrink: 0; }
 .tt-val { color: var(--paper); text-align: right; }
 
-/* ── Controls ─────────────────────────────────────────────────────────────── */
+/* ── Controls (shared shell) ──────────────────────────────────────────────── */
 
-#controls {
+.controls {
   position: absolute;
   bottom: 18px;
   left: 18px;
@@ -224,6 +262,10 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.controls.hidden {
+  display: none;
 }
 
 .panel {
@@ -275,6 +317,43 @@ input[type=range]::-webkit-slider-thumb {
   text-align: right;
 }
 
+/* ── Animation controls ───────────────────────────────────────────────────── */
+
+.anim-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.play-btn {
+  background: transparent;
+  border: 1px solid rgba(245,240,232,0.2);
+  color: var(--paper);
+  font-size: 0.65rem;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.play-btn:hover {
+  border-color: var(--accent);
+  background: rgba(200,75,47,0.15);
+}
+
+.play-btn.playing {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.date-display {
+  font-size: 0.68rem;
+  color: rgba(245,240,232,0.7);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Legend ───────────────────────────────────────────────────────────────── */
 
 #legend {
@@ -320,7 +399,6 @@ input[type=range]::-webkit-slider-thumb {
   flex-shrink: 0;
 }
 
-/* Heatmap color stops matching deck.gl colorRange */
 .swatch-hi  { background: rgb(200, 75,  47); }
 .swatch-mid { background: rgb(249, 115, 22); }
 .swatch-lo  { background: rgb(253, 230, 138); }
