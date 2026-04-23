@@ -164,32 +164,28 @@
       return !hiddenByClass && !hiddenByStyle;
     };
 
-const getVisibleRequestPanel = () => {
-  // For queue-style panels: #requests contains viewpanels as direct children
-  const requestsContainer = document.querySelector("#requests");
-  if (isPanelVisible(requestsContainer)) {
-    const visiblePanel = Array.from(
-      requestsContainer.querySelectorAll(":scope > div")
-    ).find((panel) => isPanelVisible(panel));
-    if (visiblePanel) return visiblePanel;
-  }
+    const getVisibleRequestPanel = () => {
+      // For queue-style panels: #requests contains viewpanels as direct children
+      const requestsContainer = document.querySelector("#requests");
+      if (isPanelVisible(requestsContainer)) {
+        const visiblePanel = Array.from(
+          requestsContainer.querySelectorAll(":scope > div"),
+        ).find((panel) => isPanelVisible(panel));
+        if (visiblePanel) return visiblePanel;
+      }
 
-  // For search result / direct-URL panels: the request container is deeply
-  // nested inside #requestSearchResults inside a React-rendered subtree.
-  // We skip the intermediate visibility checks and look for the container directly.
-  const searchResultContainer = document.querySelector(
-    "#requestSearchResults .nd-request-container"
-  );
-  if (searchResultContainer) return searchResultContainer;
+      const searchResultContainer = document.querySelector(
+        "#requestSearchResults .nd-request-container",
+      );
+      if (searchResultContainer) return searchResultContainer;
 
-  // Fallback: focused panel in #main-nd (dashboard context)
-  const focusedPanel = document.querySelector(
-    "#main-nd .yui3-viewpanel-focused .nd-request-container"
-  );
-  if (focusedPanel) return focusedPanel;
+      const focusedPanel = document.querySelector(
+        "#main-nd .yui3-viewpanel-focused .nd-request-container",
+      );
+      if (focusedPanel) return focusedPanel;
 
-  return null;
-};
+      return null;
+    };
     const syncRetrievePatronButtonToVisibleRequest = async () => {
       const visibleRequestPanel = getVisibleRequestPanel();
       if (!visibleRequestPanel) return;
@@ -222,14 +218,14 @@ const getVisibleRequestPanel = () => {
       });
 
       ["#requests", "#requestSearchResults", "#main-nd"].forEach((selector) => {
-  const container = document.querySelector(selector);
-  if (!container) return;
-  retrievePatronButtonObserver.observe(container, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-  });
-});
+        const container = document.querySelector(selector);
+        if (!container) return;
+        retrievePatronButtonObserver.observe(container, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+        });
+      });
     };
 
     /**
@@ -274,66 +270,72 @@ const getVisibleRequestPanel = () => {
     /**
      * Injects a "Retrieve Patron" button into every lending request action bar under #requests.
      */
-const injectLendingActionButton = async () => {
-  const containerSelectors = ["#requests", "#requestSearchResults"];
+    const injectLendingActionButton = async () => {
+      const containerSelectors = ["#requests", "#requestSearchResults"];
 
-  const injectIntoContainer = (container) => {
-    container
-      .querySelectorAll(".nd-request-action-bar-request-data-actions")
-      .forEach((actionsEl) => {
-        if (actionsEl.parentElement.querySelector(".ill-lending-action-button"))
-          return;
+      const injectIntoContainer = (container) => {
+        container
+          .querySelectorAll(".nd-request-action-bar-request-data-actions")
+          .forEach((actionsEl) => {
+            if (
+              actionsEl.parentElement.querySelector(
+                ".ill-lending-action-button",
+              )
+            )
+              return;
 
-        const button = document.createElement("button");
-        button.className = "ill-lending-action-button";
-        button.textContent = "Retrieve Patron";
-        button.style.cssText =
-          "background-color:#00b894;color:#fff;border:none;border-radius:0.3rem;padding:0.6rem 1.2rem;cursor:pointer;font-weight:400;margin-right:0.5rem;" +
-          "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
+            const button = document.createElement("button");
+            button.className = "ill-lending-action-button";
+            button.textContent = "Retrieve Patron";
+            button.style.cssText =
+              "background-color:#00b894;color:#fff;border:none;border-radius:0.3rem;padding:0.6rem 1.2rem;cursor:pointer;font-weight:400;margin-right:0.5rem;" +
+              "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:1rem;line-height:1.5;letter-spacing:normal;text-transform:none;text-shadow:none;filter:none;-webkit-font-smoothing:antialiased;";
 
-        button.addEventListener("click", () => {
-          const request =
-            actionsEl.closest(".nd-request-container") ??
-            actionsEl.closest("#requests > div");
-          const postalSpan = request?.querySelector(
-            '[data="delivery.address.postal"]',
-          );
-          const postalCode = postalSpan?.textContent?.trim();
-          if (!postalCode) return;
-          chrome.runtime.sendMessage({ type: "librarySearch", postalCode });
+            button.addEventListener("click", () => {
+              const request =
+                actionsEl.closest(".nd-request-container") ??
+                actionsEl.closest("#requests > div");
+              const postalSpan = request?.querySelector(
+                '[data="delivery.address.postal"]',
+              );
+              const postalCode = postalSpan?.textContent?.trim();
+              if (!postalCode) return;
+              chrome.runtime.sendMessage({ type: "librarySearch", postalCode });
+            });
+
+            actionsEl.parentElement.insertBefore(button, actionsEl);
+          });
+      };
+
+      // Wait for the first action bar to appear in either container
+      await waitForElementWithInterval(
+        "#requests .nd-request-action-bar-request-data-actions, #requestSearchResults .nd-request-action-bar-request-data-actions",
+      );
+
+      // Inject into whatever is already in the DOM
+      for (const selector of containerSelectors) {
+        const container = document.querySelector(selector);
+        if (container) injectIntoContainer(container);
+      }
+
+      // Observe both containers for panels that render later.
+      // Added debounce to prevent multiple buttons
+      for (const selector of containerSelectors) {
+        const container = document.querySelector(selector);
+        if (!container) continue;
+
+        let debounceTimer = null;
+        const observer = new MutationObserver(() => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => injectIntoContainer(container), 50);
         });
 
-        actionsEl.parentElement.insertBefore(button, actionsEl);
-      });
-  };
-
-  // Wait for the first action bar to appear in either container
-  await waitForElementWithInterval(
-    "#requests .nd-request-action-bar-request-data-actions, #requestSearchResults .nd-request-action-bar-request-data-actions",
-  );
-
-  // Inject into whatever is already in the DOM
-  for (const selector of containerSelectors) {
-    const container = document.querySelector(selector);
-    if (container) injectIntoContainer(container);
-  }
-
-  // Observe both containers for panels that render later
-  // (WorldShare lazily renders request panels as the user opens them)
-  for (const selector of containerSelectors) {
-    const container = document.querySelector(selector);
-    if (!container) continue;
-
-    const observer = new MutationObserver(() => {
-      injectIntoContainer(container);
-    });
-
-    observer.observe(container, {
-      childList: true,
-      subtree: true,
-    });
-  }
-};
+        observer.observe(container, {
+          childList: true,
+          subtree: true,
+        });
+      }
+    };
 
     /**
      * Runs the lending modifications.
