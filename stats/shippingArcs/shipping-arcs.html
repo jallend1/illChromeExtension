@@ -1,209 +1,155 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ILL Shipping Arcs — KCLS</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ILL Shipping Arcs — KCLS</title>
 
-    <!-- Third-party libraries (local copies required by Chrome extension CSP) -->
-    <script src="../lendingByState/lib/maplibre-gl.js"></script>
-    <link href="../lendingByState/lib/maplibre-gl.css" rel="stylesheet" />
-    <script src="../lendingByState/lib/deck.gl.min.js"></script>
+  <!-- Third-party libraries (local copies required by Chrome extension CSP) -->
+  <script src="../lendingByState/lib/maplibre-gl.js"></script>
+  <link href="../lendingByState/lib/maplibre-gl.css" rel="stylesheet" />
+  <script src="../lendingByState/lib/deck.gl.min.js"></script>
 
-    <!-- App styles -->
-    <link rel="stylesheet" href="shipping-arcs.css" />
-  </head>
-  <body>
-    <!-- ── Header ─────────────────────────────────────────────────────────── -->
-    <div id="header">
-      <div>
-        <h1>ILL Shipping</h1>
-        <div class="sub" id="sub-label">
-          King County Library System · Outgoing Packages
-        </div>
+  <!-- Styles: shared first, then page-specific -->
+  <link rel="stylesheet" href="../shared/shared.css" />
+  <link rel="stylesheet" href="shipping-arcs.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div id="header">
+    <div>
+      <h1>ILL Shipping Arcs</h1>
+      <div class="sub" id="sub-label">King County Library System · Outgoing Packages</div>
+    </div>
+    <div id="header-right">
+      <div class="stat-pill">
+        <span class="val" id="stat-packages">—</span>
+        <span class="lbl">Packages</span>
       </div>
-      <div id="header-right">
-        <div class="stat-pill">
-          <span class="val" id="stat-packages">—</span>
-          <span class="lbl">Packages</span>
-        </div>
-        <div class="divider"></div>
-        <div class="stat-pill">
-          <span class="val" id="stat-destinations">—</span>
-          <span class="lbl">Destinations</span>
-        </div>
-        <div class="divider"></div>
-        <div class="stat-pill">
-          <span class="val" id="stat-weight">—</span>
-          <span class="lbl">Total lbs</span>
-        </div>
-        <div class="divider"></div>
-        <div class="stat-pill">
-          <span class="val" id="stat-cost">—</span>
-          <span class="lbl">Total Spent</span>
-        </div>
-        <div class="divider"></div>
-        <button id="animate-btn" class="animate-btn">Let's Get Animated</button>
-        <div class="divider"></div>
-        <a class="nav-link" href="../lendingByState/ill-map.html"
-          >‹ Lending Map</a
-        >
+      <div class="divider"></div>
+      <div class="stat-pill">
+        <span class="val" id="stat-destinations">—</span>
+        <span class="lbl">Destinations</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat-pill">
+        <span class="val" id="stat-weight">—</span>
+        <span class="lbl">Total lbs</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat-pill">
+        <span class="val" id="stat-cost">—</span>
+        <span class="lbl">Total Spent</span>
+      </div>
+      <div class="divider"></div>
+      <button id="animate-btn" class="animate-btn">Let's Get Animated</button>
+      <div class="divider"></div>
+      <a class="nav-link" href="../lendingByState/ill-map.html">‹ Heatmap</a>
+      <a class="nav-link" href="../dashboard/dashboard.html">Dashboard ›</a>
+    </div>
+  </div>
+
+  <!-- ── Period selector ────────────────────────────────────────────────── -->
+  <div id="period-panel">
+    <button class="period-btn all-btn active" data-period="all">All</button>
+    <button class="period-btn" data-period="2025-01">Jan</button>
+    <button class="period-btn" data-period="2025-02">Feb</button>
+    <button class="period-btn" data-period="2025-03">Mar</button>
+    <button class="period-btn" data-period="2025-04">Apr</button>
+    <button class="period-btn" data-period="2025-05">May</button>
+    <button class="period-btn" data-period="2025-06">Jun</button>
+    <button class="period-btn" data-period="2025-07">Jul</button>
+    <button class="period-btn" data-period="2025-08">Aug</button>
+    <button class="period-btn" data-period="2025-09">Sep</button>
+    <button class="period-btn" data-period="2025-10">Oct</button>
+    <button class="period-btn" data-period="2025-11">Nov</button>
+    <button class="period-btn" data-period="2025-12">Dec</button>
+  </div>
+
+  <!-- ── Map canvas ─────────────────────────────────────────────────────── -->
+  <div id="map"></div>
+
+  <!-- ── Hover tooltip ──────────────────────────────────────────────────── -->
+  <div id="tooltip">
+    <div class="tt-company" id="tt-company"></div>
+    <div class="tt-name"    id="tt-name"></div>
+    <div class="tt-row"><span class="tt-key">Address</span>  <span class="tt-val" id="tt-address"></span></div>
+    <div class="tt-row"><span class="tt-key">Date</span>     <span class="tt-val" id="tt-date"></span></div>
+    <div class="tt-row"><span class="tt-key">Class</span>    <span class="tt-val" id="tt-class"></span></div>
+    <div class="tt-row"><span class="tt-key">Weight</span>   <span class="tt-val" id="tt-weight"></span></div>
+  </div>
+
+  <!-- ── Camera hint ────────────────────────────────────────────────────── -->
+  <div id="hint">Left drag · rotate view<br>Right drag · pan<br>Scroll · zoom</div>
+
+  <!-- ── Static controls ────────────────────────────────────────────────── -->
+  <div id="controls-static" class="controls">
+    <div class="panel">
+      <div class="panel-label">Arc Width (px)</div>
+      <div class="slider-row">
+        <input type="range" id="arc-width-static" min="1" max="8" step="0.5" value="1.5" />
+        <span class="slider-val" id="arc-width-static-val">1.5</span>
       </div>
     </div>
-
-    <!-- ── Period selector ────────────────────────────────────────────────── -->
-    <div id="period-panel">
-      <button class="period-btn all-btn active" data-period="all">All</button>
-      <button class="period-btn" data-period="2025-01">Jan</button>
-      <button class="period-btn" data-period="2025-02">Feb</button>
-      <button class="period-btn" data-period="2025-03">Mar</button>
-      <button class="period-btn" data-period="2025-04">Apr</button>
-      <button class="period-btn" data-period="2025-05">May</button>
-      <button class="period-btn" data-period="2025-06">Jun</button>
-      <button class="period-btn" data-period="2025-07">Jul</button>
-      <button class="period-btn" data-period="2025-08">Aug</button>
-      <button class="period-btn" data-period="2025-09">Sep</button>
-      <button class="period-btn" data-period="2025-10">Oct</button>
-      <button class="period-btn" data-period="2025-11">Nov</button>
-      <button class="period-btn" data-period="2025-12">Dec</button>
-    </div>
-
-    <!-- ── Map canvas ─────────────────────────────────────────────────────── -->
-    <div id="map"></div>
-
-    <!-- ── Hover tooltip ──────────────────────────────────────────────────── -->
-    <div id="tooltip">
-      <div class="tt-company" id="tt-company"></div>
-      <div class="tt-name" id="tt-name"></div>
-      <div class="tt-row">
-        <span class="tt-key">Address</span>
-        <span class="tt-val" id="tt-address"></span>
-      </div>
-      <div class="tt-row">
-        <span class="tt-key">Date</span>
-        <span class="tt-val" id="tt-date"></span>
-      </div>
-      <div class="tt-row">
-        <span class="tt-key">Class</span>
-        <span class="tt-val" id="tt-class"></span>
-      </div>
-      <div class="tt-row">
-        <span class="tt-key">Weight</span>
-        <span class="tt-val" id="tt-weight"></span>
+    <div class="panel">
+      <div class="panel-label">Arc Height</div>
+      <div class="slider-row">
+        <input type="range" id="arc-height" min="0.1" max="3" step="0.1" value="1" />
+        <span class="slider-val" id="arc-height-val">1.0</span>
       </div>
     </div>
+  </div>
 
-    <!-- ── Camera hint ────────────────────────────────────────────────────── -->
-    <div id="hint">
-      Left drag · rotate view<br />
-      Right drag · pan<br />
-      Scroll · zoom
-    </div>
-
-    <!-- ── Static controls (default mode) ────────────────────────────────── -->
-    <div id="controls-static" class="controls">
-      <div class="panel">
-        <div class="panel-label">Arc Width (px)</div>
-        <div class="slider-row">
-          <input
-            type="range"
-            id="arc-width-static"
-            min="1"
-            max="8"
-            step="0.5"
-            value="1.5"
-          />
-          <span class="slider-val" id="arc-width-static-val">1.5</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-label">Arc Height</div>
-        <div class="slider-row">
-          <input
-            type="range"
-            id="arc-height"
-            min="0.1"
-            max="3"
-            step="0.1"
-            value="1"
-          />
-          <span class="slider-val" id="arc-height-val">1.0</span>
-        </div>
+  <!-- ── Animated controls ──────────────────────────────────────────────── -->
+  <div id="controls-animated" class="controls hidden">
+    <div class="panel">
+      <div class="panel-label">Animation</div>
+      <div class="anim-row">
+        <button id="play-pause" class="play-btn">&#9646;&#9646;</button>
+        <div class="date-display" id="date-display">—</div>
       </div>
     </div>
-
-    <!-- ── Animated controls (animated mode) ─────────────────────────────── -->
-    <div id="controls-animated" class="controls hidden">
-      <div class="panel">
-        <div class="panel-label">Animation</div>
-        <div class="anim-row">
-          <button id="play-pause" class="play-btn">&#9646;&#9646;</button>
-          <div class="date-display" id="date-display">—</div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-label">Speed</div>
-        <div class="slider-row">
-          <input
-            type="range"
-            id="anim-speed"
-            min="0.1"
-            max="5"
-            step="0.1"
-            value="0.1"
-          />
-          <span class="slider-val" id="speed-val">0.1×</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-label">Trail Length (days)</div>
-        <div class="slider-row">
-          <input
-            type="range"
-            id="trail-length"
-            min="1"
-            max="60"
-            step="1"
-            value="3"
-          />
-          <span class="slider-val" id="trail-val">3</span>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-label">Arc Width (px)</div>
-        <div class="slider-row">
-          <input
-            type="range"
-            id="arc-width-anim"
-            min="1"
-            max="8"
-            step="0.5"
-            value="2"
-          />
-          <span class="slider-val" id="arc-width-anim-val">2.0</span>
-        </div>
+    <div class="panel">
+      <div class="panel-label">Speed</div>
+      <div class="slider-row">
+        <input type="range" id="anim-speed" min="0.1" max="5" step="0.1" value="0.1" />
+        <span class="slider-val" id="speed-val">0.1×</span>
       </div>
     </div>
-
-    <!-- ── Legend ─────────────────────────────────────────────────────────── -->
-    <div id="legend">
-      <div class="legend-title" id="legend-title">Package Weight (lbs)</div>
-      <div class="legend-rows" id="legend-rows"></div>
-    </div>
-
-    <!-- ── Loading overlay ────────────────────────────────────────────────── -->
-    <div id="loading">
-      <div class="loading-inner">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Loading shipment data…</div>
+    <div class="panel">
+      <div class="panel-label">Trail Length (days)</div>
+      <div class="slider-row">
+        <input type="range" id="trail-length" min="1" max="60" step="1" value="3" />
+        <span class="slider-val" id="trail-val">3</span>
       </div>
     </div>
+    <div class="panel">
+      <div class="panel-label">Arc Width (px)</div>
+      <div class="slider-row">
+        <input type="range" id="arc-width-anim" min="1" max="8" step="0.5" value="2" />
+        <span class="slider-val" id="arc-width-anim-val">2.0</span>
+      </div>
+    </div>
+  </div>
 
-    <!-- App script -->
-    <script src="shipping-arcs.js"></script>
-  </body>
+  <!-- ── Legend ─────────────────────────────────────────────────────────── -->
+  <div id="legend">
+    <div class="legend-title" id="legend-title">Package Weight (lbs)</div>
+    <div class="legend-rows"  id="legend-rows"></div>
+  </div>
+
+  <!-- ── Loading overlay ────────────────────────────────────────────────── -->
+  <div id="loading">
+    <div class="loading-inner">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading shipment data…</div>
+    </div>
+  </div>
+
+  <!-- Scripts: shared utilities first, then page logic -->
+  <script src="../shared/shared.js"></script>
+  <script src="shipping-arcs.js"></script>
+
+</body>
 </html>
