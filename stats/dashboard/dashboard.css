@@ -1,0 +1,162 @@
+/* ── dashboard.css ────────────────────────────────────────────────────────────
+   Page-specific styles for the ILL Dashboard.
+   shared.css must be loaded first.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --ink-2:   #161b24;
+  --green:   #81c784;
+  --purple:  #9575cd;
+  --header-h: 58px;
+}
+
+html, body {
+  min-height: 100%;
+  overflow-x: hidden;
+  /* override shared.css overflow:hidden — dashboard needs to scroll */
+  overflow-y: auto;
+}
+
+/* ── Header overrides (dashboard uses sticky, not absolute) ───────────────── */
+
+#header {
+  position: sticky;
+  height: var(--header-h);
+  background: rgba(13,17,23,0.97);
+  border-bottom: 1px solid var(--faint);
+  backdrop-filter: blur(8px);
+  /* remove the gradient that map pages use */
+  background-image: none;
+  padding: 0 22px;
+  pointer-events: all;
+}
+
+#header-left h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  line-height: 1;
+}
+
+#header-left .sub {
+  font-size: 0.58rem;
+  margin-top: 3px;
+}
+
+#header-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Center-align stat pills in the dashboard header */
+.stat-pill { align-items: center; }
+.stat-pill .val { font-size: 1rem; }
+.stat-pill .lbl { font-size: 0.54rem; margin-top: 2px; }
+
+#header-nav { display: flex; gap: 8px; }
+
+/* ── Chart grid ───────────────────────────────────────────────────────────── */
+
+#grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 20px 22px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--ink-2);
+  border: 1px solid var(--faint);
+  border-radius: 6px;
+  padding: 18px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-wide { grid-column: 1 / -1; }
+
+.card-header { flex-shrink: 0; }
+
+.card-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.card-sub {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.chart-area { flex: 1; min-height: 0; }
+
+/* ── D3 chart elements ────────────────────────────────────────────────────── */
+
+.axis path,
+.axis line { stroke: var(--faint); }
+
+.axis text {
+  fill: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.grid-line {
+  stroke: var(--faint);
+  stroke-dasharray: 3 3;
+}
+
+.bar { cursor: default; transition: opacity 0.15s; }
+.bar:hover { opacity: 0.75; }
+
+.line-path { fill: none; stroke-width: 2; }
+
+.arc path { cursor: default; transition: opacity 0.15s; }
+.arc path:hover { opacity: 0.75; }
+
+/* ── D3 tooltip ───────────────────────────────────────────────────────────── */
+
+.d3-tooltip {
+  position: fixed;
+  z-index: 100;
+  background: rgba(13,17,23,0.95);
+  border: 1px solid rgba(200,75,47,0.5);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  line-height: 1.6;
+  pointer-events: none;
+  color: var(--paper);
+  max-width: 220px;
+}
+
+.d3-tooltip .tip-title {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  color: var(--paper);
+  margin-bottom: 2px;
+}
+
+.d3-tooltip .tip-row { display: flex; justify-content: space-between; gap: 12px; }
+.d3-tooltip .tip-key { color: var(--muted); }
+.d3-tooltip .tip-val { color: var(--paper); }
+
+/* ── Loading overlay override (fixed for dashboard) ──────────────────────── */
+
+#loading { position: fixed; }

@@ -39,17 +39,48 @@ function dayToLabel(day, year) {
 // ── Data loading ──────────────────────────────────────────────────────────────
 
 /**
- * Fetch geocoded_trips.json relative to the given base path.
- * Returns the parsed JSON object.
- * Throws a descriptive Error on HTTP failure.
+ * Load a trips_YYYY.json file and the shared geodata.json, join coordinates
+ * onto each shipment, and return the same object shape the pages expect:
+ *   { origin, year, travel_days, shipments: [...] }
+ *
+ * Each shipment in the returned array is enriched with:
+ *   lat, lng, formatted_address  (joined from geodata keyed by raw address)
+ *
+ * @param {string} tripsPath    Relative path to trips_YYYY.json
+ * @param {string} geodataPath  Relative path to geodata.json
  */
-async function loadShipmentData(relativePath = '../shippingArcs/data/geocoded_trips.json') {
-  const resp = await fetch(relativePath);
-  if (!resp.ok) throw new Error(
-    `HTTP ${resp.status} loading ${relativePath}. ` +
-    `Ensure shippingArcs/data/geocoded_trips.json exists.`
+async function loadShipmentData(
+  tripsPath   = '../shippingArcs/data/trips_2025.json',
+  geodataPath = '../data/geodata.json'
+) {
+  const [tripsResp, geoResp] = await Promise.all([
+    fetch(tripsPath),
+    fetch(geodataPath),
+  ]);
+
+  if (!tripsResp.ok) throw new Error(
+    `HTTP ${tripsResp.status} loading ${tripsPath}. ` +
+    `Ensure shippingArcs/data/trips_2025.json exists.`
   );
-  return resp.json();
+  if (!geoResp.ok) throw new Error(
+    `HTTP ${geoResp.status} loading ${geodataPath}. ` +
+    `Ensure stats/data/geodata.json exists.`
+  );
+
+  const [data, geodata] = await Promise.all([tripsResp.json(), geoResp.json()]);
+
+  // Join coordinates onto every shipment record
+  data.shipments = data.shipments.map(s => {
+    const geo = geodata[s.address] || {};
+    return {
+      ...s,
+      lat:               geo.lat               ?? s.lat               ?? null,
+      lng:               geo.lng               ?? s.lng               ?? null,
+      formatted_address: geo.formatted_address ?? s.formatted_address ?? null,
+    };
+  });
+
+  return data;
 }
 
 // ── Loading overlay ───────────────────────────────────────────────────────────

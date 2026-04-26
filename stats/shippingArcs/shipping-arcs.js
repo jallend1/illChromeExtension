@@ -225,10 +225,16 @@ window.addEventListener('load', async () => {
     return;
   }
   try {
-    const data   = await loadShipmentData('data/geocoded_trips.json');
+    const data   = await loadShipmentData(
+      'data/trips_2025.json',
+      '../data/geodata.json'
+    );
     origin       = data.origin;
     dataYear     = data.year || 2025;
-    allShipments = data.shipments.filter(s => s.lat && s.lng);
+    allShipments = data.shipments.filter(s =>
+      s.lat && s.lng &&
+      (s.date || '').startsWith(String(dataYear))
+    );
     visibleShipments = allShipments;
 
     renderLegend();

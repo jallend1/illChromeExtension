@@ -190,9 +190,15 @@ window.addEventListener('load', async () => {
     return;
   }
   try {
-    const data   = await loadShipmentData('../shippingArcs/data/geocoded_trips.json');
+    const data   = await loadShipmentData(
+      '../shippingArcs/data/trips_2025.json',
+      '../data/geodata.json'
+    );
     dataYear     = data.year || 2025;
-    allShipments = data.shipments.filter(s => s.lat != null && s.lng != null);
+    allShipments = data.shipments.filter(s =>
+      s.lat != null && s.lng != null &&
+      (s.date || '').startsWith(String(dataYear))
+    );
     periodShipments = allShipments;
     destPoints   = aggregateDestinations(allShipments);
 
