@@ -80,6 +80,7 @@ def main():
             continue
 
         entry = {
+            'name':              s.get('recipient_company') or s.get('recipient_name') or '',
             'formatted_address': s.get('formatted_address'),
             'lat':               s.get('lat'),
             'lng':               s.get('lng'),

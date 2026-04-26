@@ -213,6 +213,13 @@ def main():
     cache_hits = 0
     failures = 0
 
+    # Build address → name lookup (first company name seen per address)
+    address_names = {}
+    for row in rows:
+        addr = row["address"]
+        if addr and addr not in address_names:
+            address_names[addr] = row["recipient_company"] or row["recipient_name"] or ""
+
     for i, (address, country) in enumerate(sorted(needed)):
         cache_key = f"{address}|{country}"
 
@@ -233,6 +240,7 @@ def main():
         # Add to geodata regardless of success — null coords are valid entries
         # (they'll be skipped by the map rendering)
         geodata[address] = {
+            "name":              address_names.get(address, ""),
             "formatted_address": geo.get("formatted_address"),
             "lat":               geo["lat"],
             "lng":               geo["lng"],
