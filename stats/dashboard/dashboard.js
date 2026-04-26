@@ -440,19 +440,31 @@ window.addEventListener('load', async () => {
   try {
     const data      = await loadShipmentData(
       '../shippingArcs/data/trips_2025.json',
-      '../data/geodata.json'
+      '../data/geodata.json',
+      '../shippingArcs/data/trips_courier_2025.json'
     );
     const year      = data.year || 2025;
-    const shipments = data.shipments.filter(s => (s.date || '').startsWith(String(year)));
-    const prepared  = prepareData(shipments);
+    const allShipments = data.shipments.filter(s => (s.date || '').startsWith(String(year)));
 
-    renderHeaderStats(shipments);
-    renderMonthly(prepared.monthly);
-    renderDonut(prepared.byClass);
-    renderWeight(prepared.byWeight);
-    renderStates(prepared.byState);
-    renderLibraries(prepared.byLibrary);
-    renderLibraryWeight(prepared.byLibraryWeight);
+    function renderAll(shipments) {
+      // Clear all chart areas before re-rendering
+      ['chart-monthly','chart-class','chart-weight',
+       'chart-states','chart-libraries','chart-library-weight']
+        .forEach(id => { document.getElementById(id).innerHTML = ''; });
+
+      const prepared = prepareData(shipments);
+      renderHeaderStats(shipments);
+      renderMonthly(prepared.monthly);
+      renderDonut(prepared.byClass);
+      renderWeight(prepared.byWeight);
+      renderStates(prepared.byState);
+      renderLibraries(prepared.byLibrary);
+      renderLibraryWeight(prepared.byLibraryWeight);
+    }
+
+    renderAll(allShipments);
+    setSourceToggleVisible(data.hasCourier);
+    initSourceToggle(mode => renderAll(filterBySource(allShipments, mode)));
 
     hideLoadingOverlay();
   } catch (err) {

@@ -39,23 +39,29 @@ function dayToLabel(day, year) {
 // ── Data loading ──────────────────────────────────────────────────────────────
 
 /**
- * Load a trips_YYYY.json file and the shared geodata.json, join coordinates
- * onto each shipment, and return the same object shape the pages expect:
+ * Load mail trips, courier trips, and geodata in parallel. Join coordinates
+ * onto mail shipments, tag all records with their source, and return a merged
+ * object:
  *   { origin, year, travel_days, shipments: [...] }
  *
- * Each shipment in the returned array is enriched with:
- *   lat, lng, formatted_address  (joined from geodata keyed by raw address)
+ * Mail shipments get  source: 'mail'    if not already set.
+ * Courier shipments get source: 'courier' (already set by format_courier_trips.py).
+ * Courier trips file is optional — if it 404s it is silently skipped.
  *
- * @param {string} tripsPath    Relative path to trips_YYYY.json
- * @param {string} geodataPath  Relative path to geodata.json
+ * @param {string} tripsPath         Relative path to trips_YYYY.json
+ * @param {string} geodataPath       Relative path to geodata.json
+ * @param {string} courierTripsPath  Relative path to trips_courier_YYYY.json
  */
 async function loadShipmentData(
-  tripsPath   = '../shippingArcs/data/trips_2025.json',
-  geodataPath = '../data/geodata.json'
+  tripsPath        = '../shippingArcs/data/trips_2025.json',
+  geodataPath      = '../data/geodata.json',
+  courierTripsPath = '../shippingArcs/data/trips_courier_2025.json'
 ) {
-  const [tripsResp, geoResp] = await Promise.all([
+  // Fetch all three in parallel; courier is optional so we use allSettled
+  const [tripsResp, geoResp, courierResp] = await Promise.all([
     fetch(tripsPath),
     fetch(geodataPath),
+    fetch(courierTripsPath).catch(() => ({ ok: false })),
   ]);
 
   if (!tripsResp.ok) throw new Error(
@@ -69,7 +75,7 @@ async function loadShipmentData(
 
   const [data, geodata] = await Promise.all([tripsResp.json(), geoResp.json()]);
 
-  // Join coordinates onto every shipment record
+  // Join coordinates onto mail shipments, tag source
   data.shipments = data.shipments.map(s => {
     const geo = geodata[s.address] || {};
     return {
@@ -77,10 +83,61 @@ async function loadShipmentData(
       lat:               geo.lat               ?? s.lat               ?? null,
       lng:               geo.lng               ?? s.lng               ?? null,
       formatted_address: geo.formatted_address ?? s.formatted_address ?? null,
+      source:            s.source              ?? 'mail',
     };
   });
 
+  // Merge courier shipments if the file loaded successfully
+  if (courierResp.ok) {
+    const courierData = await courierResp.json();
+    const courierShipments = (courierData.shipments || [])
+      .filter(s => s.lat != null && s.lng != null);
+    data.shipments = [...data.shipments, ...courierShipments];
+    data.hasCourier = true;
+  } else {
+    data.hasCourier = false;
+  }
+
   return data;
+}
+
+// ── Source filter ─────────────────────────────────────────────────────────────
+
+/**
+ * Filter a shipments array by source mode.
+ * @param {Array}  shipments  Full shipment array
+ * @param {string} mode       'all' | 'mail' | 'courier'
+ */
+function filterBySource(shipments, mode) {
+  if (mode === 'all')     return shipments;
+  if (mode === 'mail')    return shipments.filter(s => (s.source ?? 'mail') === 'mail');
+  if (mode === 'courier') return shipments.filter(s => s.source === 'courier');
+  return shipments;
+}
+
+/**
+ * Wire up the three-state source toggle buttons.
+ * Expects buttons with class .source-btn and data-source="all|mail|courier".
+ *
+ * @param {Function} onChange  Called with the new mode string when a button is clicked.
+ */
+function initSourceToggle(onChange) {
+  document.querySelectorAll('.source-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(btn.dataset.source);
+    });
+  });
+}
+
+/**
+ * Show or hide the source toggle panel depending on whether courier data loaded.
+ * Call after data load with data.hasCourier.
+ */
+function setSourceToggleVisible(visible) {
+  const panel = document.getElementById('source-toggle-panel');
+  if (panel) panel.style.display = visible ? '' : 'none';
 }
 
 // ── Loading overlay ───────────────────────────────────────────────────────────

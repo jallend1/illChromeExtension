@@ -50,6 +50,19 @@
   <!-- ── Charts grid ────────────────────────────────────────────────────── -->
   <div id="grid">
 
+    <!-- Source filter — hidden until courier data loads -->
+    <div class="card card-wide" id="source-toggle-panel" style="display:none">
+      <div class="card-header">
+        <div class="card-title">Package Source</div>
+        <div class="card-sub">Filter all charts by shipping method</div>
+      </div>
+      <div class="toggle-row">
+        <button class="source-btn active" data-source="all">All Packages</button>
+        <button class="source-btn"        data-source="mail">Mail Only</button>
+        <button class="source-btn"        data-source="courier">Courier Only</button>
+      </div>
+    </div>
+
     <div class="card card-wide" id="card-monthly">
       <div class="card-header">
         <div class="card-title">Monthly Package Volume &amp; Cost</div>

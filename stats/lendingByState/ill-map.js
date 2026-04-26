@@ -22,6 +22,7 @@ let animSpeed       = 0.5;
 let animMin         = 1;
 let animMax         = 365;
 let dataYear        = 2025;
+let sourceMode      = 'all'; // 'all' | 'mail' | 'courier'
 
 let anim; // animation controls from shared.js
 
@@ -127,9 +128,12 @@ function switchPeriod(period) {
   setPeriodActive(period);
   setPeriodLabel(period);
 
-  periodShipments = period === 'all'
-    ? allShipments
-    : allShipments.filter(s => s.date && s.date.startsWith(period));
+  periodShipments = filterBySource(
+    period === 'all'
+      ? allShipments
+      : allShipments.filter(s => s.date && s.date.startsWith(period)),
+    sourceMode
+  );
 
   [animMin, animMax] = period === 'all'
     ? [1, 365]
@@ -192,7 +196,8 @@ window.addEventListener('load', async () => {
   try {
     const data   = await loadShipmentData(
       '../shippingArcs/data/trips_2025.json',
-      '../data/geodata.json'
+      '../data/geodata.json',
+      '../shippingArcs/data/trips_courier_2025.json'
     );
     dataYear     = data.year || 2025;
     allShipments = data.shipments.filter(s =>
@@ -210,6 +215,11 @@ window.addEventListener('load', async () => {
     anim = createAnimationControls(tick);
     initAnimateToggle(onStatic, onAnimated);
     initPeriodSelector(switchPeriod);
+    initSourceToggle(mode => {
+      sourceMode = mode;
+      switchPeriod(activePeriod);
+    });
+    setSourceToggleVisible(data.hasCourier);
 
     initSlider('intensity',      'intensity-val',      v => v.toFixed(1),        v => { intensity = v; if (viewMode === 'static') render(); });
     initSlider('radius',         'radius-val',         v => String(Math.round(v)),v => { radiusPx = v;  if (viewMode === 'static') render(); });
