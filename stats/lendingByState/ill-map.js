@@ -95,6 +95,7 @@ function render() {
 // ── Animation tick ────────────────────────────────────────────────────────────
 
 function tick() {
+  if (viewMode !== 'animated') return;
   currentTime += animSpeed * 0.3;
   if (currentTime > animMax) currentTime = animMin;
   document.getElementById('date-display').textContent = dayToLabel(currentTime, dataYear);
@@ -109,6 +110,7 @@ function tick() {
 // ── Mode toggle ───────────────────────────────────────────────────────────────
 
 function onStatic() {
+  anim.pause();
   viewMode = 'static';
   destPoints = aggregateDestinations(periodShipments);
   updateStats(periodShipments, destPoints);
@@ -168,7 +170,7 @@ function showTooltip(info) {
 
 // ── deck.gl init ──────────────────────────────────────────────────────────────
 
-function initDeck() {
+function initDeck(onReady) {
   deckInstance = new deck.DeckGL({
     container: 'map',
     mapStyle: {
@@ -183,6 +185,7 @@ function initDeck() {
     controller: true, layers: [],
     onHover: showTooltip,
     getCursor: ({ isHovering }) => isHovering ? 'crosshair' : 'grab',
+    onLoad: () => requestAnimationFrame(onReady),
   });
 }
 
@@ -208,8 +211,7 @@ window.addEventListener('load', async () => {
     destPoints   = aggregateDestinations(allShipments);
 
     updateStats(allShipments, destPoints);
-    initDeck();
-    render();
+    initDeck(render);
     setPeriodLabel('all');
 
     anim = createAnimationControls(tick);
