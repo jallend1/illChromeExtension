@@ -38,7 +38,8 @@ function weightColor(lbs) {
 }
 
 function getColor(d) {
-  return [...weightColor(d.weight_lbs || 1), 200];
+  if (d.weight_lbs == null) return [160, 160, 160, 180]; // grey for unknown
+  return [...weightColor(d.weight_lbs), 200];
 }
 
 // ── Legend ────────────────────────────────────────────────────────────────────
@@ -49,6 +50,7 @@ function renderLegend() {
     { label: "3+ lbs", color: WEIGHT_PALETTE[2] },
     { label: "2 lbs", color: WEIGHT_PALETTE[1] },
     { label: "1 lb", color: WEIGHT_PALETTE[0] },
+    { label: "Unknown", color: [160, 160, 160] },
   ]
     .map(
       (e) => `
