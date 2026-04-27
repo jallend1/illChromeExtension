@@ -53,6 +53,19 @@ function hideTip() {
   tipEl.style.display = "none";
 }
 
+// Builds tooltip HTML from a title and [[key, value], ...] row pairs.
+function tipHtml(title, rows) {
+  return (
+    `<div class="tip-title">${title}</div>` +
+    rows
+      .map(
+        ([k, v]) =>
+          `<div class="tip-row"><span class="tip-key">${k}</span><span class="tip-val">${v}</span></div>`,
+      )
+      .join("")
+  );
+}
+
 // ── Data preparation ──────────────────────────────────────────────────────────
 
 function prepareData(shipments) {
@@ -130,32 +143,23 @@ function prepareData(shipments) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 20);
 
-  // Libraries by count — keyed by formatted_address (same as heatmap) so
-  // counts match exactly; company name stored separately for display.
+  // Libraries — single pass for both count and weight views
   const libMap = {};
   for (const s of shipments) {
     const key = s.formatted_address || s.address;
     const name = s.recipient_company || s.recipient_name || key;
     if (!key) continue;
-    if (!libMap[key]) libMap[key] = { name, count: 0 };
+    if (!libMap[key]) libMap[key] = { name, count: 0, lbs: 0 };
     libMap[key].count += 1;
+    libMap[key].lbs += parseFloat(s.weight_lbs || 0);
   }
-  const byLibrary = Object.values(libMap)
+  const libs = Object.values(libMap);
+  const byLibrary = libs
+    .slice()
     .sort((a, b) => b.count - a.count)
     .slice(0, 15);
-
-  // Libraries by weight — same address-keyed approach
-  const libWtMap = {};
-  for (const s of shipments) {
-    const key = s.formatted_address || s.address;
-    const name = s.recipient_company || s.recipient_name || key;
-    if (!key) continue;
-    if (!libWtMap[key]) libWtMap[key] = { name, packages: 0, lbs: 0 };
-    libWtMap[key].packages += 1;
-    libWtMap[key].lbs += parseFloat(s.weight_lbs || 0);
-  }
-  const byLibraryWeight = Object.values(libWtMap)
-    .map((d) => ({ ...d, avgLbs: d.packages > 0 ? d.lbs / d.packages : 0 }))
+  const byLibraryWeight = libs
+    .map((d) => ({ ...d, avgLbs: d.count > 0 ? d.lbs / d.count : 0 }))
     .sort((a, b) => b.lbs - a.lbs)
     .slice(0, 15);
 
@@ -192,6 +196,100 @@ function rankColorScale(length) {
     .interpolator(d3.interpolateRgb(C.accent, C.teal));
 }
 
+// Creates an SVG + translated inner group. Returns { svg, g, iW, iH }.
+function initChart(containerId, W, H, m) {
+  const svg = d3
+    .select(`#${containerId}`)
+    .append("svg")
+    .attr("width", W)
+    .attr("height", H);
+  const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
+  return { svg, g, iW: W - m.left - m.right, iH: H - m.top - m.bottom };
+}
+
+// Horizontal grid lines (for charts with vertical bars).
+function drawHGridLines(g, scale, iW, ticks = 5) {
+  g.selectAll(".grid-line")
+    .data(scale.ticks(ticks))
+    .join("line")
+    .attr("class", "grid-line")
+    .attr("x1", 0)
+    .attr("x2", iW)
+    .attr("y1", (d) => scale(d))
+    .attr("y2", (d) => scale(d));
+}
+
+// Vertical grid lines (for horizontal bar charts).
+function drawVGridLines(g, scale, iH, ticks = 5) {
+  g.selectAll(".grid-line")
+    .data(scale.ticks(ticks))
+    .join("line")
+    .attr("class", "grid-line")
+    .attr("x1", (d) => scale(d))
+    .attr("x2", (d) => scale(d))
+    .attr("y1", 0)
+    .attr("y2", iH);
+}
+
+const truncate = (name) =>
+  name.length > 28 ? name.slice(0, 26) + "\u2026" : name;
+
+// Renders a horizontal bar chart (bars grow left\u2192right).
+// config: { H, margin, labelKey, tooltipFn, labelFn }
+function renderHorizontalBars(containerId, data, config) {
+  const el = document.getElementById(containerId);
+  const W = el.clientWidth || 900;
+  const H = config.H || 340;
+  const m = config.margin || { top: 10, right: 80, bottom: 30, left: 210 };
+  const labelKey = config.labelKey || "name";
+  const color = rankColorScale(data.length);
+
+  const { svg, g, iW, iH } = initChart(containerId, W, H, m);
+  const x = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, (d) => d.count) * 1.1])
+    .range([0, iW]);
+  const y = d3
+    .scaleBand()
+    .domain(data.map((d) => d[labelKey]))
+    .range([0, iH])
+    .padding(0.25);
+
+  drawVGridLines(g, x, iH);
+
+  g.selectAll(".bar")
+    .data(data)
+    .join("rect")
+    .attr("class", "bar")
+    .attr("y", (d) => y(d[labelKey]))
+    .attr("width", (d) => x(d.count))
+    .attr("height", y.bandwidth())
+    .attr("fill", (d, i) => color(i))
+    .attr("rx", 2)
+    .on("mousemove", (event, d) => showTip(config.tooltipFn(d), event))
+    .on("mouseleave", hideTip);
+
+  g.selectAll(".bar-label")
+    .data(data)
+    .join("text")
+    .attr("x", (d) => x(d.count) + 5)
+    .attr("y", (d) => y(d[labelKey]) + y.bandwidth() / 2 + 4)
+    .style("font-family", "var(--mono)")
+    .style("font-size", "10px")
+    .style("fill", C.muted)
+    .text((d) =>
+      config.labelFn ? config.labelFn(d) : d.count.toLocaleString(),
+    );
+
+  g.append("g")
+    .attr("class", "axis")
+    .attr("transform", `translate(0,${iH})`)
+    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(",d")));
+  g.append("g").attr("class", "axis").call(d3.axisLeft(y).tickFormat(truncate));
+
+  return { svg, g, x, y, iW, iH };
+}
+
 // ── Chart 1: Monthly packages + cost ─────────────────────────────────────────
 
 function renderMonthly(data) {
@@ -199,16 +297,9 @@ function renderMonthly(data) {
   const W = el.clientWidth || 900,
     H = 240;
   const m = { top: 20, right: 60, bottom: 40, left: 50 };
-  const iW = W - m.left - m.right,
-    iH = H - m.top - m.bottom;
   const LABELS = MONTH_SHORT; // from shared.js
 
-  const svg = d3
-    .select("#chart-monthly")
-    .append("svg")
-    .attr("width", W)
-    .attr("height", H);
-  const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
+  const { svg, g, iW, iH } = initChart("chart-monthly", W, H, m);
 
   const x = d3
     .scaleBand()
@@ -224,14 +315,7 @@ function renderMonthly(data) {
     .domain([0, d3.max(data, (d) => d.cost) * 1.15])
     .range([iH, 0]);
 
-  g.selectAll(".grid-line")
-    .data(yP.ticks(5))
-    .join("line")
-    .attr("class", "grid-line")
-    .attr("x1", 0)
-    .attr("x2", iW)
-    .attr("y1", (d) => yP(d))
-    .attr("y2", (d) => yP(d));
+  drawHGridLines(g, yP, iW);
 
   g.selectAll(".bar")
     .data(data)
@@ -246,10 +330,18 @@ function renderMonthly(data) {
     .on("mousemove", (event, d) => {
       const i = data.indexOf(d);
       showTip(
-        `<div class="tip-title">${LABELS[i]} 2025</div>
-        <div class="tip-row"><span class="tip-key">Packages</span><span class="tip-val">${d.packages.toLocaleString()}</span></div>
-        <div class="tip-row"><span class="tip-key">Cost</span><span class="tip-val">$${d.cost.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-        <div class="tip-row"><span class="tip-key">Weight</span><span class="tip-val">${Math.round(d.lbs).toLocaleString()} lbs</span></div>`,
+        tipHtml(`${LABELS[i]} 2025`, [
+          ["Packages", d.packages.toLocaleString()],
+          [
+            "Cost",
+            "$" +
+              d.cost.toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }),
+          ],
+          ["Weight", Math.round(d.lbs).toLocaleString() + " lbs"],
+        ]),
         event,
       );
     })
@@ -368,10 +460,10 @@ function renderDonut(data) {
     .attr("stroke-width", 2)
     .on("mousemove", (event, d) =>
       showTip(
-        `
-      <div class="tip-title">${d.data.name}</div>
-      <div class="tip-row"><span class="tip-key">Packages</span><span class="tip-val">${d.data.count.toLocaleString()}</span></div>
-      <div class="tip-row"><span class="tip-key">Share</span><span class="tip-val">${((d.data.count / total) * 100).toFixed(1)}%</span></div>`,
+        tipHtml(d.data.name, [
+          ["Packages", d.data.count.toLocaleString()],
+          ["Share", ((d.data.count / total) * 100).toFixed(1) + "%"],
+        ]),
         event,
       ),
     )
@@ -428,8 +520,6 @@ function renderWeight(data) {
   const W = el.clientWidth || 400,
     H = 260;
   const m = { top: 20, right: 20, bottom: 36, left: 52 };
-  const iW = W - m.left - m.right,
-    iH = H - m.top - m.bottom;
   const barColors = [
     C.teal,
     "#4dd0e1",
@@ -440,12 +530,7 @@ function renderWeight(data) {
   ];
   const total = d3.sum(data, (d) => d.count);
 
-  const svg = d3
-    .select("#chart-weight")
-    .append("svg")
-    .attr("width", W)
-    .attr("height", H);
-  const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
+  const { g, iW, iH } = initChart("chart-weight", W, H, m);
   const x = d3
     .scaleBand()
     .domain(data.map((d) => d.label))
@@ -456,14 +541,7 @@ function renderWeight(data) {
     .domain([0, d3.max(data, (d) => d.count) * 1.15])
     .range([iH, 0]);
 
-  g.selectAll(".grid-line")
-    .data(y.ticks(4))
-    .join("line")
-    .attr("class", "grid-line")
-    .attr("x1", 0)
-    .attr("x2", iW)
-    .attr("y1", (d) => y(d))
-    .attr("y2", (d) => y(d));
+  drawHGridLines(g, y, iW, 4);
 
   g.selectAll(".bar")
     .data(data)
@@ -479,10 +557,10 @@ function renderWeight(data) {
     .attr("rx", 2)
     .on("mousemove", (event, d) =>
       showTip(
-        `
-      <div class="tip-title">${d.label}</div>
-      <div class="tip-row"><span class="tip-key">Packages</span><span class="tip-val">${d.count.toLocaleString()}</span></div>
-      <div class="tip-row"><span class="tip-key">Share</span><span class="tip-val">${((d.count / total) * 100).toFixed(1)}%</span></div>`,
+        tipHtml(d.label, [
+          ["Packages", d.count.toLocaleString()],
+          ["Share", ((d.count / total) * 100).toFixed(1) + "%"],
+        ]),
         event,
       ),
     )
@@ -511,147 +589,23 @@ function renderWeight(data) {
 // ── Chart 4: Top 20 states ────────────────────────────────────────────────────
 
 function renderStates(data) {
-  const el = document.getElementById("chart-states");
-  const W = el.clientWidth || 900,
-    H = 320;
-  const m = { top: 10, right: 80, bottom: 30, left: 44 };
-  const iW = W - m.left - m.right,
-    iH = H - m.top - m.bottom;
-  const color = rankColorScale(data.length);
-
-  const svg = d3
-    .select("#chart-states")
-    .append("svg")
-    .attr("width", W)
-    .attr("height", H);
-  const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
-  const x = d3
-    .scaleLinear()
-    .domain([0, d3.max(data, (d) => d.count) * 1.1])
-    .range([0, iW]);
-  const y = d3
-    .scaleBand()
-    .domain(data.map((d) => d.state))
-    .range([0, iH])
-    .padding(0.25);
-
-  g.selectAll(".grid-line")
-    .data(x.ticks(5))
-    .join("line")
-    .attr("class", "grid-line")
-    .attr("x1", (d) => x(d))
-    .attr("x2", (d) => x(d))
-    .attr("y1", 0)
-    .attr("y2", iH);
-
-  g.selectAll(".bar")
-    .data(data)
-    .join("rect")
-    .attr("class", "bar")
-    .attr("y", (d) => y(d.state))
-    .attr("width", (d) => x(d.count))
-    .attr("height", y.bandwidth())
-    .attr("fill", (d, i) => color(i))
-    .attr("rx", 2)
-    .on("mousemove", (event, d) =>
-      showTip(
-        `
-      <div class="tip-title">${d.state}</div>
-      <div class="tip-row"><span class="tip-key">Packages</span><span class="tip-val">${d.count.toLocaleString()}</span></div>`,
-        event,
-      ),
-    )
-    .on("mouseleave", hideTip);
-
-  g.selectAll(".bar-label")
-    .data(data)
-    .join("text")
-    .attr("x", (d) => x(d.count) + 5)
-    .attr("y", (d) => y(d.state) + y.bandwidth() / 2 + 4)
-    .style("font-family", "var(--mono)")
-    .style("font-size", "10px")
-    .style("fill", C.muted)
-    .text((d) => d.count.toLocaleString());
-
-  g.append("g")
-    .attr("class", "axis")
-    .attr("transform", `translate(0,${iH})`)
-    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(",d")));
-  g.append("g").attr("class", "axis").call(d3.axisLeft(y));
+  renderHorizontalBars("chart-states", data, {
+    H: 320,
+    margin: { top: 10, right: 80, bottom: 30, left: 44 },
+    labelKey: "state",
+    tooltipFn: (d) =>
+      tipHtml(d.state, [["Packages", d.count.toLocaleString()]]),
+  });
 }
 
 // ── Chart 5: Top 15 libraries by count ───────────────────────────────────────
 
 function renderLibraries(data) {
-  const el = document.getElementById("chart-libraries");
-  const W = el.clientWidth || 900,
-    H = 340;
-  const m = { top: 10, right: 80, bottom: 30, left: 210 };
-  const iW = W - m.left - m.right,
-    iH = H - m.top - m.bottom;
-  const color = rankColorScale(data.length);
-  const truncate = (name) =>
-    name.length > 28 ? name.slice(0, 26) + "…" : name;
-
-  const svg = d3
-    .select("#chart-libraries")
-    .append("svg")
-    .attr("width", W)
-    .attr("height", H);
-  const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
-  const x = d3
-    .scaleLinear()
-    .domain([0, d3.max(data, (d) => d.count) * 1.1])
-    .range([0, iW]);
-  const y = d3
-    .scaleBand()
-    .domain(data.map((d) => d.name))
-    .range([0, iH])
-    .padding(0.25);
-
-  g.selectAll(".grid-line")
-    .data(x.ticks(5))
-    .join("line")
-    .attr("class", "grid-line")
-    .attr("x1", (d) => x(d))
-    .attr("x2", (d) => x(d))
-    .attr("y1", 0)
-    .attr("y2", iH);
-
-  g.selectAll(".bar")
-    .data(data)
-    .join("rect")
-    .attr("class", "bar")
-    .attr("y", (d) => y(d.name))
-    .attr("width", (d) => x(d.count))
-    .attr("height", y.bandwidth())
-    .attr("fill", (d, i) => color(i))
-    .attr("rx", 2)
-    .on("mousemove", (event, d) =>
-      showTip(
-        `
-      <div class="tip-title">${d.name}</div>
-      <div class="tip-row"><span class="tip-key">Packages</span><span class="tip-val">${d.count.toLocaleString()}</span></div>`,
-        event,
-      ),
-    )
-    .on("mouseleave", hideTip);
-
-  g.selectAll(".bar-label")
-    .data(data)
-    .join("text")
-    .attr("x", (d) => x(d.count) + 5)
-    .attr("y", (d) => y(d.name) + y.bandwidth() / 2 + 4)
-    .style("font-family", "var(--mono)")
-    .style("font-size", "10px")
-    .style("fill", C.muted)
-    .text((d) => d.count.toLocaleString());
-
-  g.append("g")
-    .attr("class", "axis")
-    .attr("transform", `translate(0,${iH})`)
-    .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(",d")));
-  g.append("g").attr("class", "axis").call(d3.axisLeft(y).tickFormat(truncate));
+  renderHorizontalBars("chart-libraries", data, {
+    H: 340,
+    margin: { top: 10, right: 80, bottom: 30, left: 210 },
+    tooltipFn: (d) => tipHtml(d.name, [["Packages", d.count.toLocaleString()]]),
+  });
 }
 
 // ── Chart 6: Top 15 libraries by weight ──────────────────────────────────────
@@ -661,18 +615,9 @@ function renderLibraryWeight(data) {
   const W = el.clientWidth || 900,
     H = 360;
   const m = { top: 14, right: 130, bottom: 30, left: 210 };
-  const iW = W - m.left - m.right,
-    iH = H - m.top - m.bottom;
   const color = rankColorScale(data.length);
-  const truncate = (name) =>
-    name.length > 28 ? name.slice(0, 26) + "…" : name;
 
-  const svg = d3
-    .select("#chart-library-weight")
-    .append("svg")
-    .attr("width", W)
-    .attr("height", H);
-  const g = svg.append("g").attr("transform", `translate(${m.left},${m.top})`);
+  const { svg, g, iW, iH } = initChart("chart-library-weight", W, H, m);
   const x = d3
     .scaleLinear()
     .domain([0, d3.max(data, (d) => d.lbs) * 1.12])
@@ -687,14 +632,7 @@ function renderLibraryWeight(data) {
     .range([0, iH])
     .padding(0.25);
 
-  g.selectAll(".grid-line")
-    .data(x.ticks(5))
-    .join("line")
-    .attr("class", "grid-line")
-    .attr("x1", (d) => x(d))
-    .attr("x2", (d) => x(d))
-    .attr("y1", 0)
-    .attr("y2", iH);
+  drawVGridLines(g, x, iH);
 
   g.selectAll(".bar")
     .data(data)
@@ -707,11 +645,11 @@ function renderLibraryWeight(data) {
     .attr("rx", 2)
     .on("mousemove", (event, d) =>
       showTip(
-        `
-      <div class="tip-title">${d.name}</div>
-      <div class="tip-row"><span class="tip-key">Total lbs</span>   <span class="tip-val">${Math.round(d.lbs).toLocaleString()}</span></div>
-      <div class="tip-row"><span class="tip-key">Packages</span>    <span class="tip-val">${d.packages.toLocaleString()}</span></div>
-      <div class="tip-row"><span class="tip-key">Avg lbs/pkg</span> <span class="tip-val">${d.avgLbs.toFixed(2)}</span></div>`,
+        tipHtml(d.name, [
+          ["Total lbs", Math.round(d.lbs).toLocaleString()],
+          ["Packages", d.count.toLocaleString()],
+          ["Avg lbs/pkg", d.avgLbs.toFixed(2)],
+        ]),
         event,
       ),
     )
@@ -731,21 +669,20 @@ function renderLibraryWeight(data) {
     .data(data)
     .join("path")
     .attr("class", "avg-marker")
-    .attr("transform", (d) => {
-      const cx = xAvg(d.avgLbs);
-      const cy = y(d.name) + y.bandwidth() / 2;
-      return `translate(${cx},${cy})`;
-    })
+    .attr(
+      "transform",
+      (d) => `translate(${xAvg(d.avgLbs)},${y(d.name) + y.bandwidth() / 2})`,
+    )
     .attr("d", d3.symbol().type(d3.symbolDiamond).size(30))
     .attr("fill", C.amber)
     .attr("opacity", 0.9)
     .on("mousemove", (event, d) =>
       showTip(
-        `
-      <div class="tip-title">${d.name}</div>
-      <div class="tip-row"><span class="tip-key">Avg lbs/pkg</span><span class="tip-val">${d.avgLbs.toFixed(2)}</span></div>
-      <div class="tip-row"><span class="tip-key">Total lbs</span>  <span class="tip-val">${Math.round(d.lbs)}</span></div>
-      <div class="tip-row"><span class="tip-key">Packages</span>   <span class="tip-val">${d.packages}</span></div>`,
+        tipHtml(d.name, [
+          ["Avg lbs/pkg", d.avgLbs.toFixed(2)],
+          ["Total lbs", Math.round(d.lbs).toString()],
+          ["Packages", d.count.toString()],
+        ]),
         event,
       ),
     )
