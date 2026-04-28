@@ -122,6 +122,7 @@
     };
 
     let retrievePatronButtonObserver = null;
+    let lendingActionButtonObservers = [];
 
     const createRetrievePatronButton = (requestPanel) => {
       const button = document.createElement("button");
@@ -195,9 +196,16 @@
       );
       if (!actionsEl) return;
 
-      document.querySelectorAll("#ill-action-button").forEach((btn) => {
-        if (!visibleRequestPanel.contains(btn)) btn.remove();
-      });
+      document
+        .querySelectorAll("#ill-action-button, .ill-lending-action-button")
+        .forEach((btn) => {
+          if (!visibleRequestPanel.contains(btn)) btn.remove();
+        });
+
+      // If lending button exists in this same action bar parent, remove it before borrowing injection.
+      actionsEl.parentElement
+        .querySelectorAll(".ill-lending-action-button")
+        .forEach((btn) => btn.remove());
 
       if (actionsEl.parentElement.querySelector("#ill-action-button")) return;
 
@@ -277,6 +285,11 @@
         container
           .querySelectorAll(".nd-request-action-bar-request-data-actions")
           .forEach((actionsEl) => {
+            // If borrowing button exists in this same action bar parent, remove it before lending injection.
+            actionsEl.parentElement
+              .querySelectorAll("#ill-action-button")
+              .forEach((btn) => btn.remove());
+
             if (
               actionsEl.parentElement.querySelector(
                 ".ill-lending-action-button",
@@ -319,7 +332,9 @@
       }
 
       // Observe both containers for panels that render later.
-      // Added debounce to prevent multiple buttons
+      // Guard so we don't stack observers across repeated determineMods calls.
+      if (lendingActionButtonObservers.length) return;
+
       for (const selector of containerSelectors) {
         const container = document.querySelector(selector);
         if (!container) continue;
@@ -334,6 +349,8 @@
           childList: true,
           subtree: true,
         });
+
+        lendingActionButtonObservers.push(observer);
       }
     };
 
@@ -542,6 +559,10 @@
         observer.disconnect();
         retrievePatronButtonObserver?.disconnect();
         retrievePatronButtonObserver = null;
+        lendingActionButtonObservers.forEach((lendingObserver) => {
+          lendingObserver.disconnect();
+        });
+        lendingActionButtonObservers = [];
       });
     };
 
