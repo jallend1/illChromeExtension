@@ -21,7 +21,9 @@
     "https://kingcountylibrarysystem.share.worldcat.org/*",
     "https://united-states.kinokuniya.com/*",
     "https://www.kingstonebook.com/*",
-    "https://ipage.ingramcontent.com/*"
+    "https://ipage.ingramcontent.com/*",
+    "https://oauth.oclc.org/",
+    "https://americas.discovery.api.oclc.org/"
   ],
   "background": {
     "service_worker": "background.js",
