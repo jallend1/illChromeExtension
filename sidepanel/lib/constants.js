@@ -1,3 +1,5 @@
+// TODO: This element situation seems bad and annoying and based on an intial setup that spiraled out of control
+
 // Selectors for various DOM elements in the side panel
 export const elements = {
   collapseToggle: document.querySelectorAll("img.collapsible"),
@@ -12,6 +14,7 @@ export const elements = {
   importMailroomData: document.querySelector("#import-mailroom-data"),
   selectionList: document.querySelector("#selection-list"),
   extractIngramISBNs: document.querySelector("#extract-isbns-ingram"),
+  oclcSearch: document.querySelector("#oclc-search"),
 };
 
 // Storage keys and their corresponding elements
@@ -22,6 +25,7 @@ export const storageKeys = [
   { key: "printLabel", element: elements.printLabel },
   { key: "autoReturnILL", element: elements.autoReturnILL },
   { key: "mailData", element: elements.importMailroomData },
+  { key: "oclcSearch", element: elements.oclcSearch },
 ];
 
 // Scripts that do not require a callback function

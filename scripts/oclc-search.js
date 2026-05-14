@@ -1,3 +1,5 @@
+console.log("OCLC search script loaded");
+
 const CLIENT_ID = "CLIENT_ID_HERE";
 const SECRET = "SECRET_HERE";
 

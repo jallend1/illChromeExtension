@@ -1,5 +1,7 @@
 import { BUTTON_GROUPS, URL_PATTERNS } from "./constants.js";
 
+// TODO: I think I removed URL validation in background.js? Code below might be garbage!
+
 /**
  * Enables the specified buttons
  * @param {string[]} buttonIds - The IDs of the buttons to enable
@@ -33,7 +35,6 @@ export const disableButtons = (buttonIds) => {
  * @param {string} url - The new URL of the active tab
  */
 export const handleURLChange = (url) => {
-
   // Always disable all buttons first
   disableButtons(BUTTON_GROUPS.EVERGREEN);
   disableButtons(BUTTON_GROUPS.WORLDSHARE);
