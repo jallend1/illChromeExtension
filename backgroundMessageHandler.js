@@ -101,7 +101,9 @@ const handleLibrarySearchMessage = (request) => {
   chrome.storage.local.set({ lendingPostalCode: request.postalCode }, () => {
     chrome.tabs.query({}, (tabs) => {
       const evergreenTab = tabs.find(
-        (tab) => tab.url && (tab.url.includes("evgclient") || tab.url.includes("evgmobile")),
+        (tab) =>
+          tab.url &&
+          (tab.url.includes("evgclient") || tab.url.includes("evgmobile")),
       );
       if (!evergreenTab) return;
 
@@ -211,8 +213,33 @@ const handleActionMessage = async (request, activeTab, sendResponse) => {
     return true;
   }
 
+  if (request.action === "searchWorldCat") {
+    searchWorldCat(request.query).then(sendResponse);
+    return true;
+  }
+
   return false;
 };
+
+async function searchWorldCat(query) {
+  const CLIENT_ID = null;
+  const SECRET = null;
+  const response = await fetch(
+    `https://americas.discovery.api.oclc.org/worldcat/search/v2/bibs?q=${encodeURIComponent(query)}&limit=5`,
+    {
+      headers: {
+        Host: "ill.sd00.worldcat.org",
+        Connection: "close",
+        wskey: CLIENT_ID,
+        Accept: "application/json",
+      },
+    },
+  );
+  const text = await response.text();
+  console.log("Status:", response.status);
+  console.log("Raw response:", text);
+  return text;
+}
 
 /**
  * Handles data-type messages
