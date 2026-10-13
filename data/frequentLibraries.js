@@ -22,4 +22,5 @@ export const frequentLibraries = {
   "Walla Walla County": "02976611",
   Whatcom: "0040022303",
   "Yakima Valley": "00234609",
+  WCCLS: "0008710311",
 };
