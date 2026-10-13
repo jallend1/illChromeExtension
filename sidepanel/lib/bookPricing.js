@@ -107,6 +107,32 @@ const waitForSearchResult = (isbn, vendor) => {
 };
 
 /**
+ * Converts an ISBN-10 to ISBN-13 or returns null if no-good
+ */
+const isbn10ToIsbn13 = (raw) => {
+  const clean = raw.replace(/[-\s]/g, "").toUpperCase();
+  if (!/^\d{9}[\dX]$/.test(clean)) return null;
+
+  // Validate the ISBN-10 based on process I lifted from an explanation on ISBNservices.com
+  let sum10 = 0;
+  for (let i = 0; i < 10; i++) {
+    const v = clean[i] === "X" ? 10 : Number(clean[i]);
+    sum10 += v * (10 - i);
+  }
+  if (sum10 % 11 !== 0) return null;
+
+  // Build ISBN-13: 978 + first 9 digits, then compute new check digit
+  const body = "978" + clean.slice(0, 9);
+  let sum13 = 0;
+  for (let i = 0; i < 12; i++) {
+    // Altenrnate multiplying by 1 and 3
+    sum13 += Number(body[i]) * (i % 2 === 0 ? 1 : 3);
+  }
+  const check = (10 - (sum13 % 10)) % 10;
+  return body + check;
+};
+
+/**
  * Processes a single ISBN search for a given vendor
  */
 const processIsbn = async (isbn, vendor) => {
@@ -115,21 +141,24 @@ const processIsbn = async (isbn, vendor) => {
     `Searching ${vendor.source}...`;
 
   try {
-    const result = await waitForSearchResult(isbn, vendor);
+    // Kinokuniya no longer matches ISBN-10s, so convert first.
+    // Non-ISBN-10 input (ISBN-13s, titles, etc.) passes through unchanged.
+    const converted = isbn10ToIsbn13(isbn);
+    const searchTerm = converted || isbn;
 
-    // Determine which ISBN to use for the results
-    // If original search term starts with "97", it's already an ISBN
-    // Otherwise, use the extracted ISBN from the page
+    const result = await waitForSearchResult(searchTerm, vendor);
+
     let isbnForResults = "";
     if (result.extractedIsbn) {
       isbnForResults = result.extractedIsbn.replace(/-/g, "");
-    } else if (isbn.startsWith("97")) {
+    } else if (converted) {
+      isbnForResults = converted;
+    } else if (/^97[89][\d-]{10,}$/.test(isbn)) {
       isbnForResults = isbn.replace(/-/g, "");
     }
 
-    // Store result
     const resultEntry = {
-      searchTerm: isbn,
+      searchTerm: isbn, // keep the original so results line up with the user's list
       isbn: isbnForResults,
       found: result.found,
       url: result.url || "",
@@ -138,6 +167,8 @@ const processIsbn = async (isbn, vendor) => {
       source: result.found && result.price && result.url ? vendor.source : "",
     };
     currentResults.push(resultEntry);
+
+    // ...rest unchanged
 
     document.getElementById("status-text").textContent = result.found
       ? "Found!"
