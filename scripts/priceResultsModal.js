@@ -10,8 +10,8 @@ class PriceResultsModal {
 
   create() {
     // Create modal container
-    this.modal = document.createElement('div');
-    this.modal.id = 'powill-price-modal';
+    this.modal = document.createElement("div");
+    this.modal.id = "powill-price-modal";
     this.modal.innerHTML = `
       <div class="powill-modal-overlay">
         <div class="powill-modal-content">
@@ -33,14 +33,22 @@ class PriceResultsModal {
     document.body.appendChild(this.modal);
 
     // Setup event listeners
-    this.modal.querySelector('.powill-modal-close').addEventListener('click', () => this.hide());
-    this.modal.querySelector('.powill-modal-overlay').addEventListener('click', (e) => {
-      if (e.target.classList.contains('powill-modal-overlay')) {
-        this.hide();
-      }
-    });
-    this.modal.querySelector('#powill-copy-results').addEventListener('click', () => this.copyResults());
-    this.modal.querySelector('#powill-clear-results').addEventListener('click', () => this.clearResults());
+    this.modal
+      .querySelector(".powill-modal-close")
+      .addEventListener("click", () => this.hide());
+    this.modal
+      .querySelector(".powill-modal-overlay")
+      .addEventListener("click", (e) => {
+        if (e.target.classList.contains("powill-modal-overlay")) {
+          this.hide();
+        }
+      });
+    this.modal
+      .querySelector("#powill-copy-results")
+      .addEventListener("click", () => this.copyResults());
+    this.modal
+      .querySelector("#powill-clear-results")
+      .addEventListener("click", () => this.clearResults());
   }
 
   show(results) {
@@ -49,25 +57,25 @@ class PriceResultsModal {
     }
     this.results = results;
     this.renderResults();
-    this.modal.style.display = 'block';
+    this.modal.style.display = "block";
   }
 
   hide() {
     if (this.modal) {
-      this.modal.style.display = 'none';
+      this.modal.style.display = "none";
     }
   }
 
   renderResults() {
-    const container = this.modal.querySelector('#powill-results-container');
-    container.innerHTML = '';
+    const container = this.modal.querySelector("#powill-results-container");
+    container.innerHTML = "";
 
-    this.results.forEach(result => {
-      const resultDiv = document.createElement('div');
-      resultDiv.className = `powill-result-item ${result.found ? 'powill-result-found' : 'powill-result-not-found'}`;
+    this.results.forEach((result) => {
+      const resultDiv = document.createElement("div");
+      resultDiv.className = `powill-result-item ${result.found ? "powill-result-found" : "powill-result-not-found"}`;
 
       if (result.found) {
-        const isbnDisplay = result.isbn ? `<br/>ISBN: ${result.isbn}` : '';
+        const isbnDisplay = result.isbn ? `<br/>ISBN: ${result.isbn}` : "";
         resultDiv.innerHTML = `
           <strong>Search: ${result.searchTerm}</strong>${isbnDisplay}<br/>
           Price: ${result.price}<br/>
@@ -76,7 +84,7 @@ class PriceResultsModal {
       } else {
         resultDiv.innerHTML = `
           <strong>Search: ${result.searchTerm}</strong><br/>
-          Not found${result.error ? ': ' + result.error : ''}
+          Not found${result.error ? ": " + result.error : ""}
         `;
       }
 
@@ -89,8 +97,9 @@ class PriceResultsModal {
     const htmlRows = this.results.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
       const source = r.source || "";
+      const dup = r.duplicate ? "Duplicate" : "";
       const link = r.found && r.url ? `<a href="${r.url}">Link</a>` : "";
-      return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td></td><td>${link}</td></tr>`;
+      return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td>${dup}</td><td>${link}</td></tr>`;
     });
     const html = `<table>${htmlRows.join("")}</table>`;
 
@@ -98,28 +107,31 @@ class PriceResultsModal {
     const textLines = this.results.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
       const source = r.source || "";
+      const dup = r.duplicate ? "Duplicate" : "";
       const link = r.found && r.url ? r.url : "";
-      return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t\t${link}`;
+      return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t${dup}\t${link}`;
     });
     const text = textLines.join("\n");
 
     const htmlBlob = new Blob([html], { type: "text/html" });
     const textBlob = new Blob([text], { type: "text/plain" });
 
-    navigator.clipboard.write([
-      new ClipboardItem({
-        "text/html": htmlBlob,
-        "text/plain": textBlob,
-      }),
-    ]).then(
-      () => {
-        alert("Results copied to clipboard! Paste into Excel.");
-      },
-      (err) => {
-        console.error("Failed to copy:", err);
-        alert("Failed to copy to clipboard.");
-      }
-    );
+    navigator.clipboard
+      .write([
+        new ClipboardItem({
+          "text/html": htmlBlob,
+          "text/plain": textBlob,
+        }),
+      ])
+      .then(
+        () => {
+          alert("Results copied to clipboard! Paste into Excel.");
+        },
+        (err) => {
+          console.error("Failed to copy:", err);
+          alert("Failed to copy to clipboard.");
+        },
+      );
   }
 
   clearResults() {
@@ -127,7 +139,7 @@ class PriceResultsModal {
     this.renderResults();
     this.hide();
     // Notify sidepanel to clear its results
-    chrome.runtime.sendMessage({ command: 'clearPriceResults' });
+    chrome.runtime.sendMessage({ command: "clearPriceResults" });
   }
 }
 
@@ -136,7 +148,7 @@ let modalInstance = null;
 
 // Listen for messages to show modal
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command === 'showPriceResults') {
+  if (message.command === "showPriceResults") {
     if (!modalInstance) {
       modalInstance = new PriceResultsModal();
     }

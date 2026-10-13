@@ -5,6 +5,7 @@
 console.log("bookPricing.js loaded on:", window.location.href);
 let isProcessing = false;
 let currentResults = [];
+const resultCache = new Map();
 
 const VENDORS = {
   kinokuniya: {
@@ -106,6 +107,14 @@ const waitForSearchResult = (isbn, vendor) => {
   });
 };
 
+// ISBN-10 and ISBN-13 forms of the same book share a key.
+const getCacheKey = (isbn) => {
+  const converted = isbn10ToIsbn13(isbn);
+  if (converted) return converted;
+  const clean = isbn.replace(/[-\s]/g, "");
+  return /^97[89]\d{10}$/.test(clean) ? clean : isbn.toLowerCase();
+};
+
 /**
  * Converts an ISBN-10 to ISBN-13 or returns null if no-good
  */
@@ -137,12 +146,28 @@ const isbn10ToIsbn13 = (raw) => {
  */
 const processIsbn = async (isbn, vendor) => {
   document.getElementById("current-isbn").textContent = isbn;
+
+  // Duplicate? Reuse the earlier result instead of searching again please
+  const cacheKey = getCacheKey(isbn);
+  const cached = resultCache.get(cacheKey);
+  console.log("[dup-check]", {
+    isbn,
+    cacheKey,
+    cacheSize: resultCache.size,
+    cachedKeys: [...resultCache.keys()],
+    hit: !!cached,
+  });
+  if (cached) {
+    const duplicateEntry = { ...cached, searchTerm: isbn, duplicate: true };
+    currentResults.push(duplicateEntry);
+    document.getElementById("status-text").textContent = "Duplicate";
+    return duplicateEntry;
+  }
+
   document.getElementById("status-text").textContent =
     `Searching ${vendor.source}...`;
 
   try {
-    // Kinokuniya no longer matches ISBN-10s, so convert first.
-    // Non-ISBN-10 input (ISBN-13s, titles, etc.) passes through unchanged.
     const converted = isbn10ToIsbn13(isbn);
     const searchTerm = converted || isbn;
 
@@ -158,17 +183,18 @@ const processIsbn = async (isbn, vendor) => {
     }
 
     const resultEntry = {
-      searchTerm: isbn, // keep the original so results line up with the user's list
+      searchTerm: isbn,
       isbn: isbnForResults,
       found: result.found,
       url: result.url || "",
       price: result.price || "",
       error: result.error || "",
       source: result.found && result.price && result.url ? vendor.source : "",
+      duplicate: false,
     };
     currentResults.push(resultEntry);
-
-    // ...rest unchanged
+    resultCache.set(cacheKey, resultEntry);
+    console.log("[dup-check] cached", cacheKey, "size now", resultCache.size);
 
     document.getElementById("status-text").textContent = result.found
       ? "Found!"
@@ -218,6 +244,7 @@ const setupStartBulkCheck = (startBtn, isbnInput, bulkProgress, vendor) => {
 
     isProcessing = true;
     currentResults = [];
+    resultCache.clear();
     bulkProgress.classList.remove("hidden");
     startBtn.disabled = true;
 
@@ -240,10 +267,11 @@ const setupStartBulkCheck = (startBtn, isbnInput, bulkProgress, vendor) => {
         continue;
       }
 
-      await processIsbn(lines[i], vendor);
+      const entry = await processIsbn(lines[i], vendor);
+      console.log("[dup-check] line", i, "duplicate:", entry.duplicate);
 
-      // Wait before next search (respect rate limits)
-      if (i < lines.length - 1 && isProcessing) {
+      // Only rate-limit when we actually hit the site instead of incorporating dupes
+      if (!entry.duplicate && i < lines.length - 1 && isProcessing) {
         await new Promise((resolve) => setTimeout(resolve, 3000));
       }
     }
@@ -269,13 +297,22 @@ const setupStartBulkCheck = (startBtn, isbnInput, bulkProgress, vendor) => {
 const setupCopyResults = (copyResultsBtn) => {
   if (!copyResultsBtn) return;
 
+  console.table(
+    currentResults.map((r) => ({
+      searchTerm: r.searchTerm,
+      isbn: r.isbn,
+      duplicate: r.duplicate,
+    })),
+  );
+
   copyResultsBtn.addEventListener("click", () => {
     // Build HTML table for Excel (preserves unique hyperlinks)
     const htmlRows = currentResults.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
       const source = r.source || "";
+      const dup = r.duplicate ? "Duplicate" : "";
       const link = r.found && r.url ? `<a href="${r.url}">Link</a>` : "";
-      return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td></td><td>${link}</td></tr>`;
+      return `<tr><td>${isbn13}</td><td>${r.searchTerm}</td><td>${r.price}</td><td>${source}</td><td>${dup}</td><td>${link}</td></tr>`;
     });
     const html = `<table>${htmlRows.join("")}</table>`;
 
@@ -283,8 +320,9 @@ const setupCopyResults = (copyResultsBtn) => {
     const textLines = currentResults.map((r) => {
       const isbn13 = r.isbn && r.isbn.startsWith("97") ? r.isbn : "";
       const source = r.source || "";
+      const dup = r.duplicate ? "Duplicate" : "";
       const link = r.found && r.url ? r.url : "";
-      return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t\t${link}`;
+      return `${isbn13}\t${r.searchTerm}\t${r.price}\t${source}\t${dup}\t${link}`;
     });
     const text = textLines.join("\n");
 
