@@ -11,13 +11,20 @@
   // Wait for page to load
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const results = document.querySelectorAll(".clearfix > .box");
+  // const results = document.querySelectorAll(".clearfix > .box");
+  // New Kinokuniya search results page format
+  const results = document.querySelectorAll("li.product-item");
   console.log(`Found ${results.length} results`);
 
   if (results.length === 1) {
     console.log("One result found - navigating to product page");
     // Select child of results[0] element that has a class of "inner_box"
-    const innerBox = results[0].querySelector(".inner_box > a");
+    // const innerBox = results[0].querySelector(".inner_box > a");
+    // New Kinokuniya search results page format
+    const innerBox = results[0].querySelector(
+      ".custom-product-item__hero-inner a",
+    );
+
     if (innerBox) {
       console.log("Clicking inner box to navigate to product page");
       innerBox.click();
@@ -45,7 +52,9 @@
       error: "No results found",
     });
   } else {
-    console.log(`Multiple results found (${results.length}) - user needs to select`);
+    console.log(
+      `Multiple results found (${results.length}) - user needs to select`,
+    );
     chrome.runtime.sendMessage({
       command: "kinokuniyaResult",
       found: false,

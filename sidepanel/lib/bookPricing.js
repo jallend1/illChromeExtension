@@ -2,6 +2,7 @@
  * Book pricing functionality for vendor bulk price checks
  */
 
+console.log("bookPricing.js loaded on:", window.location.href);
 let isProcessing = false;
 let currentResults = [];
 
@@ -22,6 +23,7 @@ const VENDORS = {
  * Sends current results to the modal on the active tab
  */
 const showResultsInModal = () => {
+  console.log("Sidepanel: Sending results to modal:", currentResults);
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs[0]) {
       chrome.tabs.sendMessage(tabs[0].id, {
@@ -35,7 +37,11 @@ const showResultsInModal = () => {
 /**
  * Sets up bulk price check toggle button
  */
-const setupBulkPriceToggle = (bulkPriceCheckBtn, bulkPriceContainer, isbnInput) => {
+const setupBulkPriceToggle = (
+  bulkPriceCheckBtn,
+  bulkPriceContainer,
+  isbnInput,
+) => {
   if (!bulkPriceCheckBtn) return;
 
   bulkPriceCheckBtn.addEventListener("click", () => {
@@ -49,7 +55,11 @@ const setupBulkPriceToggle = (bulkPriceCheckBtn, bulkPriceContainer, isbnInput) 
 /**
  * Sets up cancel bulk check button
  */
-const setupCancelBulkCheck = (cancelBulkCheckBtn, bulkPriceContainer, bulkProgress) => {
+const setupCancelBulkCheck = (
+  cancelBulkCheckBtn,
+  bulkPriceContainer,
+  bulkProgress,
+) => {
   if (!cancelBulkCheckBtn) return;
 
   cancelBulkCheckBtn.addEventListener("click", () => {
@@ -67,13 +77,17 @@ const waitForSearchResult = (isbn, vendor) => {
     const messageListener = (message) => {
       console.log("Sidepanel: Received message:", message);
       if (message.command === vendor.resultCommand && message.isbn === isbn) {
-        console.log(`Sidepanel: Matched ${vendor.source} result for search term ${isbn}`);
+        console.log(
+          `Sidepanel: Matched ${vendor.source} result for search term ${isbn}`,
+        );
         chrome.runtime.onMessage.removeListener(messageListener);
         resolve(message);
       }
     };
     chrome.runtime.onMessage.addListener(messageListener);
-    console.log(`Sidepanel: Waiting for ${vendor.source} result for search term ${isbn}`);
+    console.log(
+      `Sidepanel: Waiting for ${vendor.source} result for search term ${isbn}`,
+    );
 
     chrome.runtime.sendMessage({
       command: vendor.command,
@@ -97,7 +111,8 @@ const waitForSearchResult = (isbn, vendor) => {
  */
 const processIsbn = async (isbn, vendor) => {
   document.getElementById("current-isbn").textContent = isbn;
-  document.getElementById("status-text").textContent = `Searching ${vendor.source}...`;
+  document.getElementById("status-text").textContent =
+    `Searching ${vendor.source}...`;
 
   try {
     const result = await waitForSearchResult(isbn, vendor);
@@ -120,7 +135,7 @@ const processIsbn = async (isbn, vendor) => {
       url: result.url || "",
       price: result.price || "",
       error: result.error || "",
-      source: (result.found && result.price && result.url) ? vendor.source : "",
+      source: result.found && result.price && result.url ? vendor.source : "",
     };
     currentResults.push(resultEntry);
 
@@ -148,12 +163,7 @@ const processIsbn = async (isbn, vendor) => {
 /**
  * Sets up a start bulk check button for a specific vendor
  */
-const setupStartBulkCheck = (
-  startBtn,
-  isbnInput,
-  bulkProgress,
-  vendor
-) => {
+const setupStartBulkCheck = (startBtn, isbnInput, bulkProgress, vendor) => {
   if (!startBtn) return;
 
   startBtn.addEventListener("click", async () => {
@@ -166,7 +176,9 @@ const setupStartBulkCheck = (
     // Parse lines (split by newlines, strip invisible chars and whitespace)
     const lines = isbnText
       .split("\n")
-      .map((line) => line.replace(/[\u200E\u200F\u200B\u00A0\uFEFF]/g, "").trim());
+      .map((line) =>
+        line.replace(/[\u200E\u200F\u200B\u00A0\uFEFF]/g, "").trim(),
+      );
 
     if (lines.every((line) => line.length === 0)) {
       alert("No valid ISBNs found!");
@@ -180,7 +192,8 @@ const setupStartBulkCheck = (
 
     // Process each line
     for (let i = 0; i < lines.length && isProcessing; i++) {
-      document.getElementById("progress-text").textContent = `${i + 1}/${lines.length}`;
+      document.getElementById("progress-text").textContent =
+        `${i + 1}/${lines.length}`;
 
       if (lines[i].length === 0) {
         // Blank line - add as not found placeholder
@@ -209,7 +222,9 @@ const setupStartBulkCheck = (
     isProcessing = false;
 
     // Show the last results controls
-    const lastResultsControls = document.getElementById("last-results-controls");
+    const lastResultsControls = document.getElementById(
+      "last-results-controls",
+    );
     if (lastResultsControls) lastResultsControls.style.display = "flex";
 
     // Show results in modal on active tab
@@ -245,20 +260,22 @@ const setupCopyResults = (copyResultsBtn) => {
     const htmlBlob = new Blob([html], { type: "text/html" });
     const textBlob = new Blob([text], { type: "text/plain" });
 
-    navigator.clipboard.write([
-      new ClipboardItem({
-        "text/html": htmlBlob,
-        "text/plain": textBlob,
-      }),
-    ]).then(
-      () => {
-        alert("Results copied to clipboard! Paste into Excel.");
-      },
-      (err) => {
-        console.error("Failed to copy:", err);
-        alert("Failed to copy to clipboard.");
-      }
-    );
+    navigator.clipboard
+      .write([
+        new ClipboardItem({
+          "text/html": htmlBlob,
+          "text/plain": textBlob,
+        }),
+      ])
+      .then(
+        () => {
+          alert("Results copied to clipboard! Paste into Excel.");
+        },
+        (err) => {
+          console.error("Failed to copy:", err);
+          alert("Failed to copy to clipboard.");
+        },
+      );
   });
 };
 
@@ -298,7 +315,7 @@ const setupClearResults = (clearResultsBtn, isbnInput, bulkProgress) => {
 
 // Listen for clear results message from modal
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.command === 'clearPriceResults') {
+  if (message.command === "clearPriceResults") {
     hideLastResultsControls();
     const isbnInput = document.getElementById("isbn-input");
     if (isbnInput) isbnInput.value = "";
@@ -322,8 +339,18 @@ export const setupBookPricingListeners = () => {
 
   setupBulkPriceToggle(bulkPriceCheckBtn, bulkPriceContainer, isbnInput);
   setupCancelBulkCheck(cancelBulkCheckBtn, bulkPriceContainer, bulkProgress);
-  setupStartBulkCheck(startKinokuniyaBtn, isbnInput, bulkProgress, VENDORS.kinokuniya);
-  setupStartBulkCheck(startKingStoneBtn, isbnInput, bulkProgress, VENDORS.kingStone);
+  setupStartBulkCheck(
+    startKinokuniyaBtn,
+    isbnInput,
+    bulkProgress,
+    VENDORS.kinokuniya,
+  );
+  setupStartBulkCheck(
+    startKingStoneBtn,
+    isbnInput,
+    bulkProgress,
+    VENDORS.kingStone,
+  );
   setupCopyResults(copyResultsBtn);
   setupClearResults(clearResultsBtn, isbnInput, bulkProgress);
   setupShowLastResults(showLastResultsBtn);

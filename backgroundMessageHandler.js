@@ -357,8 +357,10 @@ export const handleMessage = async (request, sender, sendResponse) => {
         .replace(/-/g, "")
         .replace(/\s+/g, "+");
 
-      const searchUrl = `https://united-states.kinokuniya.com/products?utf8=%E2%9C%93&is_searching=true&restrictBy%5Bavailable_only%5D=1&keywords=${cleanTerm}&taxon=&x=0&y=0`;
-
+      // const searchUrl = `https://united-states.kinokuniya.com/products?utf8=%E2%9C%93&is_searching=true&restrictBy%5Bavailable_only%5D=1&keywords=${cleanTerm}&taxon=&x=0&y=0`;
+      // New URL format for Kinokuniya search
+      const searchUrl =
+        "https://usa.kinokuniya.com/search?type=product&q=" + cleanTerm;
       // Store the ISBN/search term with the tab so we can track it
       const bulkMode = request.bulkMode || false;
       const originalIsbn = request.searchTerm;
@@ -391,7 +393,11 @@ export const handleMessage = async (request, sender, sendResponse) => {
           );
 
           // Check what kind of page we're on
-          if (tab.url.includes("/products?") && !hasInjectedSearchScript) {
+          // if (tab.url.includes("/products?") && !hasInjectedSearchScript) {
+          // New Kinokuniya search results page format
+          console.log(`Results Page: ${tab.url.includes("product&")}`);
+          console.log(`Product Page: ${tab.url.includes("/products/")}`);
+          if (tab.url.includes("product&") && !hasInjectedSearchScript) {
             // Search results page - inject kinokuniyaSearchResults
             console.log(
               "Background: Detected search results page, injecting kinokuniyaSearchResults.js",
@@ -405,10 +411,7 @@ export const handleMessage = async (request, sender, sendResponse) => {
               .catch((err) => {
                 console.error("Error injecting kinokuniyaSearchResults:", err);
               });
-          } else if (
-            (tab.url.includes("/products/") || tab.url.includes("/bw/")) &&
-            !tab.url.includes("?")
-          ) {
+          } else if (tab.url.includes("/products/")) {
             // Product page - inject kinokuniyaProductPage to extract price
             console.log(
               "Background: Detected product page, injecting kinokuniyaProductPage.js",
